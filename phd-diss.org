@@ -1,6 +1,8 @@
-#+title: High-performance ocean wave simulation models for studying marine object behaviour
-#+author: Ivan Gankevich
-#+latex_class: scrartcl
+#+TITLE: High-performance ocean wave simulation models for studying marine object behaviour
+#+AUTHOR: Ivan Gankevich
+#+LANGUAGE: en
+#+LATEX_CLASS: scrartcl
+#+OPTIONS: H:2 num:0 todo:nil toc:nil
 
 #+begin_latex
 %\organization{Saint Petersburg State University}
@@ -10,3 +12,14 @@
 %\supervisor{Supervisor\\Alexander Degtyarev}
 %\date{Saint Petersburg, 2016}
 #+end_latex
+
+* Introduction
+* Problem statement
+* Related work
+* ARMA model for ocean wave simulation
+* Determining wave pressures for arbitrary wave surface 
+* High-performance software implementation of ocean wave simulation
+* Conclusion
+* Acknowledgements
+* References
+* Appendix
