@@ -1,0 +1,12 @@
+#+title: High-performance ocean wave simulation models for studying marine object behaviour
+#+author: Ivan Gankevich
+#+latex_class: scrartcl
+
+#+begin_latex
+%\organization{Saint Petersburg State University}
+%\manuscript{}
+%\degree{Candidate of science thesis}
+%\speciality{Speciality 05.13.18\\~Mathematical modelling, numerical methods and programme complexes}
+%\supervisor{Supervisor\\Alexander Degtyarev}
+%\date{Saint Petersburg, 2016}
+#+end_latex
