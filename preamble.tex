@@ -1,240 +1,25 @@
-\usepackage{color}
-\usepackage{hyperref}
-\usepackage{url}
-\usepackage{booktabs}
-\usepackage{cite}
-\usepackage{amsmath}
-
-%\usepackage[nonumberlist,nopostdot,toc,section=section]{glossaries}
-%\setglossarystyle{long}
-%\setacronymstyle{long-short}
-%\makeglossaries
-
 % font configuration
 \usepackage{fontspec}
-\usepackage{FiraMono}
-\setmainfont[
-	Extension=.ttf,
-	UprightFont=*-Regular,
-	BoldFont=*-Bold,
-	ItalicFont=*-Italic,
-	BoldItalicFont=*-BoldItalic,
-	Mapping=tex-text
-]{OpenSans}
-\setromanfont[
-	Extension=.otf,
-	UprightFont=*-Regular,
-	BoldFont=*-Bold,
-	ItalicFont=*-Italic,
-	Mapping=tex-text
-]{OldStandard}
-\setsansfont[
-	Extension=.ttf,
-	UprightFont=*-Regular,
-	BoldFont=*-Bold,
-	ItalicFont=*-Italic,
-	BoldItalicFont=*-BoldItalic,
-	Mapping=tex-text
-]{OpenSans}
-\setmonofont[
-	Extension=.otf,
-	UprightFont=*-Regular,
-	BoldFont=*-Bold
-]{FiraMono}
-\newfontfamily\cyrillicfont[
-	Extension=.ttf,
-	UprightFont=*-Regular,
-	BoldFont=*-Bold,
-	ItalicFont=*-Italic,
-	BoldItalicFont=*-BoldItalic,
-	Mapping=tex-text
-]{OpenSans}
-\newfontfamily\cyrillicfontrm[
-	Extension=.otf,
-	UprightFont=*-Regular,
-	BoldFont=*-Bold,
-	ItalicFont=*-Italic,
-	Mapping=tex-text
-]{OldStandard}
-\newfontfamily\cyrillicfontsf[
-	Extension=.ttf,
-	UprightFont=*-Regular,
-	BoldFont=*-Bold,
-	ItalicFont=*-Italic,
-	BoldItalicFont=*-BoldItalic,
-	Mapping=tex-text
-]{OpenSans}
-\newfontfamily\cyrillicfonttt[
-	Extension=.otf,
-	UprightFont=*-Regular,
-	BoldFont=*-Bold
-]{FiraMono}
-\newfontfamily\rmfamily[
-	Extension=.otf,
-	UprightFont=*-Regular,
-	BoldFont=*-Bold,
-	ItalicFont=*-Italic,
-	Mapping=tex-text
-]{OldStandard}
-\newfontfamily\sffamily[
-	Extension=.ttf,
-	UprightFont=*-Regular,
-	BoldFont=*-Bold,
-	ItalicFont=*-Italic,
-	BoldItalicFont=*-BoldItalic,
-	Mapping=tex-text
-]{OpenSans}
-\newfontfamily\cyrillicfonttt[
-	Extension=.otf,
-	UprightFont=*-Regular,
-	BoldFont=*-Bold
-]{FiraMono}
+\setmainfont[Mapping=tex-text]{Old Standard}
+\setromanfont[Mapping=tex-text]{Old Standard}
+\setsansfont[Mapping=tex-text]{Open Sans}
+\setmonofont{Fira Mono}
+\newfontfamily\cyrillicfont[Mapping=tex-text]{Old Standard}
+\newfontfamily\cyrillicfontrm[Mapping=tex-text]{Old Standard}
+\newfontfamily\cyrillicfontsf[Mapping=tex-text]{Open Sans}
+\newfontfamily\cyrillicfonttt{Fira Mono}
+\newfontfamily\rmfamily[Mapping=tex-text]{Old Standard}
+\newfontfamily\sffamily[Mapping=tex-text]{Open Sans}
+\newfontfamily\cyrillicfonttt{Fira Mono}
+\renewcommand{\familydefault}{\rmdefault}
 
+% language configuration
 \usepackage{polyglossia}
 \setdefaultlanguage{russian}
 \setotherlanguage{english}
-
-\usepackage{graphicx}
-
-
-\usepackage{listings}
-\definecolor{mygray}{rgb}{0.4,0.4,0.4}
-\lstset{language=C++,
-    keywordstyle=\color{blue},
-    stringstyle=\color{red},
-    commentstyle=\color{mygray},
-    morecomment=[l][\color{red}]{\#},
-    captionpos=b,
-    tabsize=4
-}
 
 \usepackage{latexsym} % \Box macro
 
 \raggedbottom
 \clubpenalty=10000
 \widowpenalty=10000
-
-
-\DeclareUTFcharacter[\UTFencname]{x0404}{\CYRIE}
-\DeclareUTFcharacter[\UTFencname]{x0405}{\CYRDZE}
-\DeclareUTFcharacter[\UTFencname]{x0406}{\CYRII}
-\DeclareUTFcharacter[\UTFencname]{x0407}{\CYRYI}
-\DeclareUTFcharacter[\UTFencname]{x0408}{\CYRJE}
-\DeclareUTFcharacter[\UTFencname]{x0409}{\CYRLJE}
-\DeclareUTFcharacter[\UTFencname]{x040A}{\CYRNJE}
-\DeclareUTFcharacter[\UTFencname]{x040B}{\CYRTSHE}
-\DeclareUTFcharacter[\UTFencname]{x040E}{\CYRUSHRT}
-\DeclareUTFcharacter[\UTFencname]{x040F}{\CYRDZHE}
-\DeclareUTFcharacter[\UTFencname]{x0410}{\CYRA}
-\DeclareUTFcharacter[\UTFencname]{x0411}{\CYRB}
-\DeclareUTFcharacter[\UTFencname]{x0412}{\CYRV}
-\DeclareUTFcharacter[\UTFencname]{x0413}{\CYRG}
-\DeclareUTFcharacter[\UTFencname]{x0414}{\CYRD}
-\DeclareUTFcharacter[\UTFencname]{x0415}{\CYRE}
-\DeclareUTFcharacter[\UTFencname]{x0416}{\CYRZH}
-\DeclareUTFcharacter[\UTFencname]{x0417}{\CYRZ}
-\DeclareUTFcharacter[\UTFencname]{x0418}{\CYRI}
-\DeclareUTFcharacter[\UTFencname]{x0419}{\CYRISHRT}
-\DeclareUTFcharacter[\UTFencname]{x041A}{\CYRK}
-\DeclareUTFcharacter[\UTFencname]{x041B}{\CYRL}
-\DeclareUTFcharacter[\UTFencname]{x041C}{\CYRM}
-\DeclareUTFcharacter[\UTFencname]{x041D}{\CYRN}
-\DeclareUTFcharacter[\UTFencname]{x041E}{\CYRO}
-\DeclareUTFcharacter[\UTFencname]{x041F}{\CYRP}
-\DeclareUTFcharacter[\UTFencname]{x0420}{\CYRR}
-\DeclareUTFcharacter[\UTFencname]{x0421}{\CYRS}
-\DeclareUTFcharacter[\UTFencname]{x0422}{\CYRT}
-\DeclareUTFcharacter[\UTFencname]{x0423}{\CYRU}
-\DeclareUTFcharacter[\UTFencname]{x0424}{\CYRF}
-\DeclareUTFcharacter[\UTFencname]{x0425}{\CYRH}
-\DeclareUTFcharacter[\UTFencname]{x0426}{\CYRC}
-\DeclareUTFcharacter[\UTFencname]{x0427}{\CYRCH}
-\DeclareUTFcharacter[\UTFencname]{x0428}{\CYRSH}
-\DeclareUTFcharacter[\UTFencname]{x0429}{\CYRSHCH}
-\DeclareUTFcharacter[\UTFencname]{x042A}{\CYRHRDSN}
-\DeclareUTFcharacter[\UTFencname]{x042B}{\CYRERY}
-\DeclareUTFcharacter[\UTFencname]{x042C}{\CYRSFTSN}
-\DeclareUTFcharacter[\UTFencname]{x042D}{\CYREREV}
-\DeclareUTFcharacter[\UTFencname]{x042E}{\CYRYU}
-\DeclareUTFcharacter[\UTFencname]{x042F}{\CYRYA}
-\DeclareUTFcharacter[\UTFencname]{x0430}{\cyra}
-\DeclareUTFcharacter[\UTFencname]{x0431}{\cyrb}
-\DeclareUTFcharacter[\UTFencname]{x0432}{\cyrv}
-\DeclareUTFcharacter[\UTFencname]{x0433}{\cyrg}
-\DeclareUTFcharacter[\UTFencname]{x0434}{\cyrd}
-\DeclareUTFcharacter[\UTFencname]{x0435}{\cyre}
-\DeclareUTFcharacter[\UTFencname]{x0436}{\cyrzh}
-\DeclareUTFcharacter[\UTFencname]{x0437}{\cyrz}
-\DeclareUTFcharacter[\UTFencname]{x0438}{\cyri}
-\DeclareUTFcharacter[\UTFencname]{x0439}{\cyrishrt}
-\DeclareUTFcharacter[\UTFencname]{x043A}{\cyrk}
-\DeclareUTFcharacter[\UTFencname]{x043B}{\cyrl}
-\DeclareUTFcharacter[\UTFencname]{x043C}{\cyrm}
-\DeclareUTFcharacter[\UTFencname]{x043D}{\cyrn}
-\DeclareUTFcharacter[\UTFencname]{x043E}{\cyro}
-\DeclareUTFcharacter[\UTFencname]{x043F}{\cyrp}
-\DeclareUTFcharacter[\UTFencname]{x0440}{\cyrr}
-\DeclareUTFcharacter[\UTFencname]{x0441}{\cyrs}
-\DeclareUTFcharacter[\UTFencname]{x0442}{\cyrt}
-\DeclareUTFcharacter[\UTFencname]{x0443}{\cyru}
-\DeclareUTFcharacter[\UTFencname]{x0444}{\cyrf}
-\DeclareUTFcharacter[\UTFencname]{x0445}{\cyrh}
-\DeclareUTFcharacter[\UTFencname]{x0446}{\cyrc}
-\DeclareUTFcharacter[\UTFencname]{x0447}{\cyrch}
-\DeclareUTFcharacter[\UTFencname]{x0448}{\cyrsh}
-\DeclareUTFcharacter[\UTFencname]{x0449}{\cyrshch}
-\DeclareUTFcharacter[\UTFencname]{x044A}{\cyrhrdsn}
-\DeclareUTFcharacter[\UTFencname]{x044B}{\cyrery}
-\DeclareUTFcharacter[\UTFencname]{x044C}{\cyrsftsn}
-\DeclareUTFcharacter[\UTFencname]{x044D}{\cyrerev}
-\DeclareUTFcharacter[\UTFencname]{x044E}{\cyryu}
-\DeclareUTFcharacter[\UTFencname]{x044F}{\cyrya}
-\DeclareUTFcharacter[\UTFencname]{x0451}{\cyryo}
-\DeclareUTFcharacter[\UTFencname]{x0452}{\cyrdje}
-\DeclareUTFcharacter[\UTFencname]{x0454}{\cyrie}
-\DeclareUTFcharacter[\UTFencname]{x0455}{\cyrdze}
-\DeclareUTFcharacter[\UTFencname]{x0456}{\cyrii}
-\DeclareUTFcharacter[\UTFencname]{x0457}{\cyryi}
-\DeclareUTFcharacter[\UTFencname]{x0458}{\cyrje}
-\DeclareUTFcharacter[\UTFencname]{x0459}{\cyrlje}
-\DeclareUTFcharacter[\UTFencname]{x045A}{\cyrnje}
-\DeclareUTFcharacter[\UTFencname]{x045B}{\cyrtshe}
-\DeclareUTFcharacter[\UTFencname]{x045E}{\cyrushrt}
-\DeclareUTFcharacter[\UTFencname]{x045F}{\cyrdzhe}
-\DeclareUTFcharacter[\UTFencname]{x0490}{\CYRGUP}
-\DeclareUTFcharacter[\UTFencname]{x0491}{\cyrgup}
-\DeclareUTFcharacter[\UTFencname]{x0492}{\CYRGHCRS}
-\DeclareUTFcharacter[\UTFencname]{x0493}{\cyrghcrs}
-\DeclareUTFcharacter[\UTFencname]{x0496}{\CYRZHDSC}
-\DeclareUTFcharacter[\UTFencname]{x0497}{\cyrzhdsc}
-\DeclareUTFcharacter[\UTFencname]{x0498}{\CYRZDSC}
-\DeclareUTFcharacter[\UTFencname]{x0499}{\cyrzdsc}
-\DeclareUTFcharacter[\UTFencname]{x049A}{\CYRKDSC}
-\DeclareUTFcharacter[\UTFencname]{x049B}{\cyrkdsc}
-\DeclareUTFcharacter[\UTFencname]{x049C}{\CYRKVCRS}
-\DeclareUTFcharacter[\UTFencname]{x049D}{\cyrkvcrs}
-\DeclareUTFcharacter[\UTFencname]{x04A0}{\CYRKBEAK}
-\DeclareUTFcharacter[\UTFencname]{x04A1}{\cyrkbeak}
-\DeclareUTFcharacter[\UTFencname]{x04A2}{\CYRNDSC}
-\DeclareUTFcharacter[\UTFencname]{x04A3}{\cyrndsc}
-\DeclareUTFcharacter[\UTFencname]{x04A4}{\CYRNG}
-\DeclareUTFcharacter[\UTFencname]{x04A5}{\cyrng}
-\DeclareUTFcharacter[\UTFencname]{x04AA}{\CYRSDSC}
-\DeclareUTFcharacter[\UTFencname]{x04AB}{\cyrsdsc}
-\DeclareUTFcharacter[\UTFencname]{x04AE}{\CYRY}
-\DeclareUTFcharacter[\UTFencname]{x04AF}{\cyry}
-\DeclareUTFcharacter[\UTFencname]{x04B0}{\CYRYHCRS}
-\DeclareUTFcharacter[\UTFencname]{x04B1}{\cyryhcrs}
-\DeclareUTFcharacter[\UTFencname]{x04B2}{\CYRHDSC}
-\DeclareUTFcharacter[\UTFencname]{x04B3}{\cyrhdsc}
-\DeclareUTFcharacter[\UTFencname]{x04B6}{\CYRCHRDSC}
-\DeclareUTFcharacter[\UTFencname]{x04B7}{\cyrchrdsc}
-\DeclareUTFcharacter[\UTFencname]{x04B8}{\CYRCHVCRS}
-\DeclareUTFcharacter[\UTFencname]{x04B9}{\cyrchvcrs}
-\DeclareUTFcharacter[\UTFencname]{x04BA}{\CYRSHHA}
-\DeclareUTFcharacter[\UTFencname]{x04BB}{\cyrshha}
-\DeclareUTFcharacter[\UTFencname]{x04C0}{\CYRpalochka}
-\DeclareUTFcharacter[\UTFencname]{x04D4}{\CYRAE}
-\DeclareUTFcharacter[\UTFencname]{x04D5}{\cyrae}
-\DeclareUTFcharacter[\UTFencname]{x04D8}{\CYRSCHWA}
-\DeclareUTFcharacter[\UTFencname]{x04D9}{\cyrschwa}
