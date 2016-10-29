@@ -369,8 +369,72 @@ may (and often) overlap.
 
 Verification was performed for standing and propagating waves. The corresponding
 ACFs and quantile-quantile plots of wave characteristics distributions are shown
-in fig.
-\cref{fig:acf-plots,fig:standing-wave-distributions,fig:propagating-wave-distributions}.
+in fig. [[fig:acf-plots]], [[fig:standing-wave-distributions]],
+[[fig:propagating-wave-distributions]].
+
+#+begin_src gnuplot :exports none
+set loadpath "./gnuplot" "./data/verification"
+
+# ACFs of standing and propagating waves
+sx=300
+sy=200
+outext='svg'
+# Standing wave ACF
+do for [i=0:4] {
+  reset
+  infile="standing-acf-" . i
+  load "acf.gnuplot"
+  system "inkscape --without-gui --export-eps=" . infile . ".eps " . infile . ".svg"
+}
+# Propagating wave ACF
+do for [i=0:4] {
+  reset
+  infile="propagating-acf-0" . i
+  load "acf.gnuplot"
+  system "inkscape --without-gui --export-eps=" . infile . ".eps " . infile . ".svg"
+}
+
+# Q-Q plots
+sx=250
+sy=250
+outext='svg'
+# Standing waves
+start_index=15
+do for [i in "elevation wave-height-x wave-length-x wave-period"] {
+  reset
+  infile="standing-" . i
+  load "quantile.gnuplot"
+  system "inkscape --without-gui --export-eps=" . infile . ".eps " . infile . ".svg"
+}
+# Propagating waves
+start_index=18
+do for [i in "elevation wave-height-x wave-length-x wave-period"] {
+  reset
+  infile="propagating-" . i
+  load "quantile.gnuplot"
+  system "inkscape --without-gui --export-eps=" . infile . ".eps " . infile . ".svg"
+}
+#+end_src
+
+#+RESULTS:
+
+#+caption: Time slices of ACF function for standing (left column) and propagating waves (right column).
+#+name: fig:acf-plots
+| \includegraphics{standing-acf-0} | \includegraphics{propagating-acf-00} | 
+| \includegraphics{standing-acf-1} | \includegraphics{propagating-acf-01} | 
+| \includegraphics{standing-acf-2} | \includegraphics{propagating-acf-02} | 
+| \includegraphics{standing-acf-3} | \includegraphics{propagating-acf-03} | 
+| \includegraphics{standing-acf-4} | \includegraphics{propagating-acf-04} | 
+
+#+caption: Quantile-quantile plots for standing waves.
+#+name: fig:standing-wave-distributions
+| \includegraphics{standing-elevation}     | \includegraphics{standing-wave-height-x} |
+| \includegraphics{standing-wave-length-x} | \includegraphics{standing-wave-period}   |
+
+#+caption: Quantile-quantile plots for propagating waves.
+#+name: fig:propagating-wave-distributions
+| \includegraphics{propagating-elevation}     | \includegraphics{propagating-wave-height-x} |
+| \includegraphics{propagating-wave-length-x} | \includegraphics{propagating-wave-period}   |
 
 ** Modeling non-linearity of ocean waves
 ** Non-physical nature of ARMA model
