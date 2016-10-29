@@ -372,7 +372,7 @@ ACFs and quantile-quantile plots of wave characteristics distributions are shown
 in fig. [[fig:acf-plots]], [[fig:standing-wave-distributions]],
 [[fig:propagating-wave-distributions]].
 
-#+begin_src gnuplot :exports none
+#+begin_src gnuplot :exports none :output-dir build
 # set absolute loadpath and go to build directory
 set loadpath GPVAL_PWD."/gnuplot" GPVAL_PWD."/data/verification"
 system "mkdir -p build"
@@ -402,21 +402,23 @@ sx=250
 sy=250
 outext='svg'
 # Standing waves
-start_index=15
 do for [i in "elevation wave-height-x wave-length-x wave-period"] {
   reset
+  show loadpath
+  labelText=i
   infile="standing-" . i
   load "quantile.gnuplot"
   system "inkscape --without-gui --export-eps=" . infile . ".eps " . infile . ".svg"
 }
 # Propagating waves
-start_index=18
 do for [i in "elevation wave-height-x wave-length-x wave-period"] {
   reset
+  labelText=i
   infile="propagating-" . i
   load "quantile.gnuplot"
   system "inkscape --without-gui --export-eps=" . infile . ".eps " . infile . ".svg"
 }
+exit
 #+end_src
 
 #+RESULTS:
