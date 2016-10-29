@@ -1,33 +1,54 @@
 #+TITLE: High-performance ocean wave simulation model for studying marine object behaviour
 #+AUTHOR: Ivan Gankevich
+#+DATE: St. Petersburg, 2016
 #+LANGUAGE: en
-#+LATEX_CLASS: scrartcl
-#+OPTIONS: H:2 num:0 todo:nil toc:nil
+#+LATEX_CLASS: gost
+#+LATEX_CLASS_OPTIONS: [hidelinks,fontsize=14pt,paper=a4,pagesize,DIV=calc]
+#+LATEX_HEADER: \IfFileExists{./preamble.tex}{\input{preamble}}{}
+#+LATEX_HEADER: \organization{Saint Petersburg State University}
+#+LATEX_HEADER: \manuscript{}
+#+LATEX_HEADER: \degree{thesis for candidate of sciences degree}
+#+LATEX_HEADER: \speciality{Speciality 05.13.18\\Mathematical modeling, numerical methods and programme complexes}
+#+LATEX_HEADER: \supervisor{Supervisor\\Alexander Degtyarev}
+#+OPTIONS: todo:nil title:nil H:5
 
 #+begin_latex
-%\organization{Saint Petersburg State University}
-%\manuscript{}
-%\degree{Candidate of science thesis}
-%\speciality{Speciality 05.13.18\\~Mathematical modelling, numerical methods and programme complexes}
-%\supervisor{Supervisor\\Alexander Degtyarev}
-%\date{Saint Petersburg, 2016}
+\clearpage
 #+end_latex
 
 * Introduction
-** Topic relevance
-** State-of-the-art
-** Goals and objectives
-** Scientific novelty
-** Theoretical and practical significance
-** Methodology and research methods
-** Theses for the defense
-** Results verification and approbation
+**** Topic relevance.
+**** State-of-the-art.
+**** Goals and objectives.
+**** Scientific novelty.
+**** Theoretical and practical significance.
+**** Methodology and research methods.
+**** Theses for the defense.
+**** Results verification and approbation.
 * Problem statement
 * Related work
 * ARMA model for ocean wave simulation
-* Determining wave pressures for arbitrary wavy surface 
+** The reasons for the creation of a new ocean simulation model
+** The shape of ACF for different types of waves
+*** Two methods to find ocean wave's ACF
+**** Analytic method of finding the ACF.
+**** Empirical method of finding the ACF.
+*** Examples of ACFs for various types of wave profiles
+**** Standing wave.
+**** Propagating wave.
+*** Comparison of studied methods
+** Governing equations for 3-dimensional ARMA process
+*** Three possible processes
+**** Autoregressive (AR) process.
+**** Moving average (MA) process.
+**** Mixed autoregressive moving average (ARMA) process.
+*** Process selection criteria for different wave profiles
+** Verification of wavy surface integral characteristics
+** Modeling non-linearity of ocean waves
+** Non-physical nature of ARMA model
+* Determining wave pressures for discretely given wavy surface 
 * High-performance software implementation of ocean wave simulation
 * Conclusion
-* Acknowledgements
+* Acknowledgments
 * References
 * Appendix
