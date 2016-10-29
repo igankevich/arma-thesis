@@ -373,7 +373,10 @@ in fig. [[fig:acf-plots]], [[fig:standing-wave-distributions]],
 [[fig:propagating-wave-distributions]].
 
 #+begin_src gnuplot :exports none
-set loadpath "./gnuplot" "./data/verification"
+# set absolute loadpath and go to build directory
+set loadpath GPVAL_PWD."/gnuplot" GPVAL_PWD."/data/verification"
+system "mkdir -p build"
+cd "build"
 
 # ACFs of standing and propagating waves
 sx=300
