@@ -240,7 +240,126 @@ MA process for propagating waves. With new formulae for 3 dimensions a single
 mixed ARMA process might be a better choice, but this is the objective of the
 future research.
 
-** Verification of wavy surface integral characteristics
+** Modeling non-linearity of ocean waves
+** Determining wave pressures for discretely given wavy surface
+* Numerical methods and experimental results
+** The shape of ACF for different types of waves
+*** Two methods to find ocean wave's ACF
+**** Analytic method of finding the ACF.
+The simplest way to find auto-covariate function for a particular ocean wave
+profile is to apply Wiener---Khinchin theorem. According to this theorem the
+autocorrelation $K$ of a function $\zeta$ is given by the Fourier transform of
+the absolute square of the function:
+\begin{equation}
+  K(t) = \Fourier{\left| \zeta(t) \right|^2}.
+  \label{eq:wiener-khinchin}
+\end{equation}
+When $\zeta$ is replaced with actual wave profile, this formula gives you
+analytic expression for the corresponding ACF.
+
+For three-dimensional wave profile (2D in space and 1D in time) analytic
+expression is a polynomial of high order and is best obtained via computer
+algebra software. Then for practical usage it can be approximated by
+superposition of exponentially decaying cosines (which is how ACF of a
+stationary ARMA process looks like cite:box1976time).
+
+**** Empirical method of finding the ACF.
+However, for three-dimensional case there exists simpler empirical method which
+does not require sophisticated software to determine shape of the ACF. It is
+known that ACF represented by exponentially decaying cosines of a wave profile
+satisfies first order Stokes' equations for gravity waves cite:boccotti1983wind.
+So, if the shape of the wave profile is the only concern, then one can simply
+multiply it by a decaying exponent to get appropriate ACF. This ACF will not
+reflect other wave profile parameters such as wave height and period, but opens
+possibility to simulate waves of a particular non-analytic shape by "drawing"
+their profile, then multiplying it by an exponent and using the resulting
+function as ACF. So, this empirical method is imprecise but offers simpler
+alternative to Wiener---Khinchin theorem; it is mainly useful to test ARMA
+model.
+
+*** Examples of ACFs for various types of wave profiles
+**** Standing wave.
+For three-dimensional standing wave the profile is approximated by
+\begin{equation}
+  \zeta(t, x, y) = A \sin (k_x x + k_y y) \sin (\sigma t).
+  \label{eq:standing-wave}
+\end{equation}
+In order to get ACF via analytic method one needs to multiply this expression by
+a decaying exponent, because Fourier transform is defined for a function $f$ that
+$f \underset{x \rightarrow \pm \infty}{\longrightarrow} 0$. The formula of the
+profile then transforms to
+\begin{equation}
+  \zeta(t, x, y) =
+  A
+  \exp\left[-\alpha (|t|+|x|+|y|) \right]
+  \sin (k_x x + k_y y) \sin (\sigma t).
+  \label{eq:decaying-standing-wave}
+\end{equation}
+Then, if one takes 3D Fourier transform of this expression via any capable
+computer algebra software, the resulting polynomial may be fitted to the
+following ACF approximation.
+\begin{equation}
+  K(t,x,y) =
+  \gamma
+  \exp\left[-\alpha (|t|+|x|+|y|) \right]
+  \cos \beta t
+  \cos \left[ \beta x + \beta y \right].
+  \label{eq:standing-wave-acf}
+\end{equation}
+So, after applying Wiener---Khinchin theorem we get the same formula but with
+sines replaced with cosines. This replacement is important because the value of
+ACF at $(0,0,0)$ equals to the variance of wave elevation, and if one used sines
+the value would be wrong.
+
+If one tries to replicate the same formula via empirical method, the usual way
+is to adapt eqref:eq:decaying-standing-wave to match eqref:eq:standing-wave-acf.
+This can be done by changing the phase of the sine, or by replacing sine with
+cosine to move the maximum of the function to $(0,0,0)$.
+
+**** Propagating wave.
+Three-dimensional profile of this type of wave is approximated by
+\begin{equation}
+  \zeta(t, x, y) = A \cos (\sigma t + k_x x + k_y y).
+  \label{eq:propagating-wave}
+\end{equation}
+For the analytic method one may repeat steps from the previous two paragraphs
+with ACF approximated by
+\begin{equation}
+  K(t,x,y) =
+  \gamma
+  \exp\left[-\alpha (|t|+|x|+|y|) \right]
+  \cos\left[\beta (t+x+y) \right].
+  \label{eq:propagating-wave-acf}
+\end{equation}
+For the empirical method propagating wave profile is simply multiplied by
+a decaying exponent without need to adapt the maximum value of ACF.
+
+*** Comparison of studied methods
+To summarise, the analytic method of finding ocean wave's ACF reduces to the
+following steps:
+- Make wave profile decay when approach $\pm \infty$ by multiplying it by
+  a decaying exponent.
+- Take Fourier transform of absolute square of the decaying wave profile using
+  computer algebra software.
+- Fit the resulting polynomial to the appropriate ACF approximation.
+
+Two examples in this section showed that in case of standing and propagating
+waves their decaying profiles resemble the corresponding ACFs with the exception
+that the origin should be moved to the function's maximal value for the ACF to
+be useful in ARMA model simulations. So, using the empirical method the ACF is
+found in the following steps:
+- Make wave profile decay when approach $\pm \infty$ by multiplying it by
+  a decaying exponent.
+- Move maximum value to the origin by adjusting phases or using trigonometric
+  identities to shift the phase of the resulting function.
+
+** Additional formulae, methods and algorithms for ARMA model
+*** Wave elevation distribution approximation
+*** White noise generation
+*** Wavy surface generation
+** ARMA model verification
+*** Numerical experiments implementation methodology
+*** Verification of wavy surface integral characteristics
 Research shows cite:рожков1990вероятностные that several ocean wave
 characteristics (e.g. wave height, wave period, wave length etc.) have Weibull
 distribution differing only in shape parameter (tab. [[tab:weibull-shape]]), and
@@ -324,11 +443,11 @@ exit
 
 #+caption: Time slices of ACF function for standing (left column) and propagating waves (right column).
 #+name: fig:acf-plots
-| \includegraphics{standing-acf-0} | \includegraphics{propagating-acf-00} | 
-| \includegraphics{standing-acf-1} | \includegraphics{propagating-acf-01} | 
-| \includegraphics{standing-acf-2} | \includegraphics{propagating-acf-02} | 
-| \includegraphics{standing-acf-3} | \includegraphics{propagating-acf-03} | 
-| \includegraphics{standing-acf-4} | \includegraphics{propagating-acf-04} | 
+| \includegraphics{standing-acf-0} | \includegraphics{propagating-acf-00} |
+| \includegraphics{standing-acf-1} | \includegraphics{propagating-acf-01} |
+| \includegraphics{standing-acf-2} | \includegraphics{propagating-acf-02} |
+| \includegraphics{standing-acf-3} | \includegraphics{propagating-acf-03} |
+| \includegraphics{standing-acf-4} | \includegraphics{propagating-acf-04} |
 
 #+caption: Quantile-quantile plots for standing waves.
 #+name: fig:standing-wave-distributions
@@ -341,119 +460,8 @@ exit
 | \includegraphics{propagating-wave-length-x} | \includegraphics{propagating-wave-period}   |
 
 *** TODO Discuss graphs
-
-** The shape of ACF for different types of waves
-*** Two methods to find ocean wave's ACF
-**** Analytic method of finding the ACF.
-The simplest way to find auto-covariate function for a particular ocean wave
-profile is to apply Wiener---Khinchin theorem. According to this theorem the
-autocorrelation $K$ of a function $\zeta$ is given by the Fourier transform of
-the absolute square of the function:
-\begin{equation}
-	K(t) = \Fourier{\left| \zeta(t) \right|^2}.
-	\label{eq:wiener-khinchin}
-\end{equation}
-When $\zeta$ is replaced with actual wave profile, this formula gives you
-analytic expression for the corresponding ACF.
-
-For three-dimensional wave profile (2D in space and 1D in time) analytic
-expression is a polynomial of high order and is best obtained via computer
-algebra software. Then for practical usage it can be approximated by
-superposition of exponentially decaying cosines (which is how ACF of a
-stationary ARMA process looks like cite:box1976time).
-
-**** Empirical method of finding the ACF.
-However, for three-dimensional case there exists simpler empirical method which
-does not require sophisticated software to determine shape of the ACF. It is
-known that ACF represented by exponentially decaying cosines of a wave profile
-satisfies first order Stokes' equations for gravity waves cite:boccotti1983wind.
-So, if the shape of the wave profile is the only concern, then one can simply
-multiply it by a decaying exponent to get appropriate ACF. This ACF will not
-reflect other wave profile parameters such as wave height and period, but opens
-possibility to simulate waves of a particular non-analytic shape by "drawing"
-their profile, then multiplying it by an exponent and using the resulting
-function as ACF. So, this empirical method is imprecise but offers simpler
-alternative to Wiener---Khinchin theorem; it is mainly useful to test ARMA
-model.
-
-*** Examples of ACFs for various types of wave profiles
-**** Standing wave.
-For three-dimensional standing wave the profile is approximated by
-\begin{equation}
-	\zeta(t, x, y) = A \sin (k_x x + k_y y) \sin (\sigma t).
-	\label{eq:standing-wave}
-\end{equation}
-In order to get ACF via analytic method one needs to multiply this expression by
-a decaying exponent, because Fourier transform is defined for a function $f$ that
-$f \underset{x \rightarrow \pm \infty}{\longrightarrow} 0$. The formula of the
-profile then transforms to
-\begin{equation}
-	\zeta(t, x, y) =
-	A
-	\exp\left[-\alpha (|t|+|x|+|y|) \right]
-	\sin (k_x x + k_y y) \sin (\sigma t).
-	\label{eq:decaying-standing-wave}
-\end{equation}
-Then, if one takes 3D Fourier transform of this expression via any capable
-computer algebra software, the resulting polynomial may be fitted to the
-following ACF approximation.
-\begin{equation}
-	K(t,x,y) =
-	\gamma
-	\exp\left[-\alpha (|t|+|x|+|y|) \right]
-	\cos \beta t
-	\cos \left[ \beta x + \beta y \right].
-	\label{eq:standing-wave-acf}
-\end{equation}
-So, after applying Wiener---Khinchin theorem we get the same formula but with
-sines replaced with cosines. This replacement is important because the value of
-ACF at $(0,0,0)$ equals to the variance of wave elevation, and if one used sines
-the value would be wrong.
-
-If one tries to replicate the same formula via empirical method, the usual way
-is to adapt eqref:eq:decaying-standing-wave to match eqref:eq:standing-wave-acf.
-This can be done by changing the phase of the sine, or by replacing sine with
-cosine to move the maximum of the function to $(0,0,0)$.
-
-**** Propagating wave.
-Three-dimensional profile of this type of wave is approximated by
-\begin{equation}
-	\zeta(t, x, y) = A \cos (\sigma t + k_x x + k_y y).
-	\label{eq:propagating-wave}
-\end{equation}
-For the analytic method one may repeat steps from the previous two paragraphs
-with ACF approximated by
-\begin{equation}
-	K(t,x,y) =
-	\gamma
-	\exp\left[-\alpha (|t|+|x|+|y|) \right]
-	\cos\left[\beta (t+x+y) \right].
-	\label{eq:propagating-wave-acf}
-\end{equation}
-For the empirical method propagating wave profile is simply multiplied by
-a decaying exponent without need to adapt the maximum value of ACF.
-
-*** Comparison of studied methods
-To summarise, the analytic method of finding ocean wave's ACF reduces to the
-following steps:
-- Make wave profile decay when approach $\pm \infty$ by multiplying it by
-  a decaying exponent.
-- Take Fourier transform of absolute square of the decaying wave profile using
-  computer algebra software.
-- Fit the resulting polynomial to the appropriate ACF approximation.
-
-Two examples in this section showed that in case of standing and propagating
-waves their decaying profiles resemble the corresponding ACFs with the exception
-that the origin should be moved to the function's maximal value for the ACF to
-be useful in ARMA model simulations. So, using the empirical method the ACF is
-found in the following steps:
-- Make wave profile decay when approach $\pm \infty$ by multiplying it by
-  a decaying exponent.
-- Move maximum value to the origin by adjusting phases or using trigonometric
-  identities to shift the phase of the resulting function.
-
-** Modeling non-linearity of ocean waves
-** Non-physical nature of ARMA model
+*** Verification of velocity potential fields
+*** Non-physical nature of ARMA model
 ARMA model, owing to its non-physical nature, does not have the notion of ocean
 wave; it simulates wavy surface as a whole instead. Motions of individual waves
 and their shape are often rough, and the total number of waves can not be
@@ -464,7 +472,6 @@ In theory, ocean waves themselves can be chosen as ACFs, the only pre-processing
 step is to make them decay exponentially. This is required to make AR model
 stationary and MA model parameters finding algorithm to converge.
 
-* Determining wave pressures for discretely given wavy surface 
 * High-performance software implementation of ocean wave simulation
 * Conclusion
 * Acknowledgments
