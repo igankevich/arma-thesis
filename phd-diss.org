@@ -241,18 +241,18 @@ mixed ARMA process might be a better choice, but this is the objective of the
 future research.
 
 ** Verification of wavy surface integral characteristics
-Research shows that several ocean wave characteristics (e.g. wave height, wave
-period, wave length etc.) have Weibull distribution differing only in shape
-parameter (tab. [[tab:weibull-shape]]), and wave elevation has Gaussian
-distribution. In order to verify that distributions corresponding to generated
-realisation are correct, we use quantile-quantile plots (plots where analytic
-quantile values are used for X axis and estimated quantile values for Y axis).
-If the estimated distribution matches analytic then the graph is the straight
-line. Tails of the graph may diverge from the straight line, because they can
-not be reliably estimated from the realisation. Different methods of extracting
-waves from realisation produce variations in quantile function tails, it is
-probably impractical to extract every possible wave from realisation since they
-may (and often) overlap.
+Research shows cite:рожков1990вероятностные that several ocean wave
+characteristics (e.g. wave height, wave period, wave length etc.) have Weibull
+distribution differing only in shape parameter (tab. [[tab:weibull-shape]]), and
+wave elevation has Gaussian distribution. In order to verify that distributions
+corresponding to generated realisation are correct, quantile-quantile plots are
+used (plots where analytic quantile values are used for X axis and estimated
+quantile values for Y axis). If the estimated distribution matches analytic then
+the graph has the form of the straight line. Tails of the graph may diverge from
+the straight line, because they can not be reliably estimated from the
+realisation. Different methods of extracting waves from realisation produce
+variations in quantile function tails, it is probably impractical to extract
+every possible wave from realisation since they may (and often) overlap.
 
 #+name: tab:weibull-shape
 #+caption: Values of Weibull shape parameter for different wave characteristics.
@@ -340,6 +340,8 @@ exit
 | \includegraphics{propagating-elevation}     | \includegraphics{propagating-wave-height-x} |
 | \includegraphics{propagating-wave-length-x} | \includegraphics{propagating-wave-period}   |
 
+*** TODO Discuss graphs
+
 ** The shape of ACF for different types of waves
 *** Two methods to find ocean wave's ACF
 **** Analytic method of finding the ACF.
@@ -392,7 +394,7 @@ profile then transforms to
 	\sin (k_x x + k_y y) \sin (\sigma t).
 	\label{eq:decaying-standing-wave}
 \end{equation}
-Them, if one takes 3D Fourier transform of this expression via any capable
+Then, if one takes 3D Fourier transform of this expression via any capable
 computer algebra software, the resulting polynomial may be fitted to the
 following ACF approximation.
 \begin{equation}
