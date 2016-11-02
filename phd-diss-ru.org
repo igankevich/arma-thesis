@@ -415,6 +415,10 @@ $\gamma_2$ --- эксцесс, $f$ --- плотность распределен
 распределения при различных параметрах показан на~\cref{fig:skew-normal-1}.
 
 #+begin_src gnuplot :exports results
+set loadpath GPVAL_PWD."/gnuplot"
+system "mkdir -p build"
+cd "build"
+
 load 'style.gnuplot'
 #load 'style-paper.gnuplot'
 
@@ -462,6 +466,7 @@ a(i) = word(alphas, i)
 plot for [i=1:words(alphas)] \
 skew_normal_2(x, a(i)) with lines ls i \
 title 'α='.a(i).', 𝛾_1='.sprintf('%.2f',skewness(a(i))).', 𝛾_2='.sprintf('%.2f',kurtosis(a(i)))
+exit
 #+end_src
 
 \begin{figure}
