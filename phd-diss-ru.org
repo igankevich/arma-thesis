@@ -624,8 +624,10 @@ eqref:eq:solution-2d-full были исключены члены, которым
 
 #+name: fig:potential-field-nonlinear
 #+caption: Поле потенциала скорости прогрессивной волны $\zeta(x,y,t) = \cos(2\pi x - t/2)$. Поле, полученное по формуле eqref:eq:solution-2d-full (слева) и по формуле линейной теории волн (справа).
-[[graphics/pressure/potentil-5.eps]]
-[[graphics/pressure/potentil-6.eps]]
+#+begin_figure
+[[file:graphics/pressure/potentil-5.eps]]
+[[file:graphics/pressure/potentil-6.eps]]
+#+end_figure
 
 **** Отличие от формул теории волн малой амплитуды.
 В ходе численного эксперимента результаты, полученные по формуле
@@ -678,8 +680,11 @@ exit
 
 #+name: fig:velocity-field-2d
 #+caption: Сравнение полей скоростей на поверхности моря, полученных по общей формуле ($u_1$) и формуле для волн малой амплитуды ($u_2$). Поле скоростей для поверхности волн малой амплитуды (слева) и большой амплитуды (справа).
-[[build/low-amp-nocolor.eps]]
-[[build/high-amp-nocolor.eps]]
+#+begin_figure
+[[file:build/low-amp-nocolor.eps]]
+[[file:build/high-amp-nocolor.eps]]
+#+end_figure
+
 
 *** TODO Нефизическая природа модели
 * Высокопроизводительный программный комплекс для моделирования морского волнения
