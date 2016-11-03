@@ -26,3 +26,15 @@
 
 % automatically find figures from build directory
 \graphicspath{{build/}}
+
+% custom mathematical expressions
+\newcommand{\Var}[1]{\sigma_{#1}^2}
+\newcommand{\Fourier}[1]{\mathcal{F}\left\{#1\right\}}
+\newcommand{\InverseFourier}[1]{\mathcal{F}^{-1}\left\{#1\right\}}
+\newcommand{\Fun}[1]{\mathcal{D}_1\left(x,#1\right)}
+\newcommand{\FunSecond}[1]{\mathcal{D}_2\left(x,#1\right)}
+\newcommand{\FunThird}[1]{\mathcal{D}_2\left(x,#1\right)}
+\newcommand{\Sinh}[1]{\cosh\left(#1\right)}
+
+\newcommand{\FourierX}[3]{\mathcal{F}_{#2}\!\left\{#1\right\}\!\left(#3\right)}
+\newcommand{\InverseFourierX}[3]{\mathcal{F}^{-1}_{#2}\!\left\{#1\right\}\!\left(#3\right)}
