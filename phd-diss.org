@@ -10,10 +10,8 @@
 #+LATEX_HEADER: \degree{thesis for candidate of sciences degree}
 #+LATEX_HEADER: \speciality{Speciality 05.13.18\\Mathematical modeling, numerical methods and programme complexes}
 #+LATEX_HEADER: \supervisor{Supervisor\\Alexander Degtyarev}
+#+LATEX_HEADER: \newcites{published}{Publications on the subject of thesis}
 #+LATEX_HEADER: }{}
-#+LATEX_HEADER: \newcommand{\Fourier}[1]{\mathcal{F}\left\{#1\right\}}
-#+LATEX_HEADER: \newcommand{\InverseFourier}[1]{\mathcal{F}^{-1}\left\{#1\right\}}
-#+LATEX_HEADER: \newcommand{\Var}[1]{\sigma_{#1}^2}
 #+OPTIONS: todo:nil title:nil ':t H:5
 
 #+begin_latex
@@ -473,7 +471,72 @@ step is to make them decay exponentially. This is required to make AR model
 stationary and MA model parameters finding algorithm to converge.
 
 * High-performance software implementation of ocean wave simulation
+** Computational model
+*** Governing principles
+- There are no messages in the model, a kernel is itself a message that can
+  be sent over network to another node and directly access any kernel on the
+  local node. It is responsibility of a programmer to ensure that such kernel
+  exist.
+- A kernel is best viewed as a cooperative routine, which is submitted to
+  execution queue upon the call and is executed asynchronously by system
+  scheduler. There can be any number of calls to other subroutines inside
+  routine body. Every call submits corresponding subroutine to execution
+  queue and returns immediately. Kernels in the queue can be executed in any
+  order; this fact is used by system scheduler to exploit parallelism
+  offered by the computer by distributed kernels from the queue across
+  available cluster nodes and processor cores.
+- Asynchronous execution prevents the use of explicit synchronisation after
+  the call to subroutine is made; system scheduler returns control flow to
+  the routine each time one of its subroutine returns. Such *cooperation*
+  transforms each routine which calls subroutines into event handler, where
+  each event is a subroutine and the handler is the routine that called
+  them. In many batch processing programmes control flow enters each routine
+  which calls subroutines at least two times: the first time it occurs upon
+  the call to the routine and the second time happens when control flow
+  returns to the caller after completion of a subroutine.
+- The routine may communicate with any number of local kernels, addresses of
+  which it knows; communication with routines which are not adjacent in the
+  call stack complexifies control flow and call stack looses its tree shape.
+  It is responsibility of a programmer to ensure that communicating kernels
+  are present in memory. One way to ensure this is to perform communication
+  between subroutines which are called from the same routine. Incidentally,
+  it is the usual way of writing batch parallel programmes: each such
+  communication creates a cycle in the call stack graph, and a cycle between
+  different (possibly non-adjacent) layers of kernel hierarchy is redundant,
+  because there are other edges that can be used instead. The situation may
+  be different when the programme is interactive or event-based.
+- The other disadvantage of communication which does no occur along
+  hierarchical links is that it complexifies resiliency algorithms when
+  executed across cluster network. Since it is difficult to ensure that
+  a kernel resides in memory of a neighbour node, because a node may fail in
+  the middle of its execution. Thus, upon failure of a node all of the
+  subroutines which are called from the same routine must be restarted. This
+  encourage a programmer to construct
+   - deep hierarchies of tightly-coupled kernels (which require
+    communication on the same level of hierarchy) to reduce overhead of
+    recomputation,
+   - fat hierarchies of loosely-coupled kernels.
+  Deep hierarchy is not only requirement of technology, it helps optimise
+  communication of cluster nodes limiting it to adjacent nodes.
+- No explicit synchronisation.
+- Local communications between adjacent nodes in the hierarchy.
+*** Mapping wavy surface generation algorithm on computational model
+** SMP implementation
+*** Load balancing algorithm
+*** Evaluation
+**** Performance of MPI, OpenMP, OpenCL implementations.
+**** Performance of load balancing algorithm.
+** MPP implementation
+*** Cluster node discovery algorithm
+*** Fail over algorithm
+**** Fault tolerance.
+**** High availability.
 * Conclusion
 * Acknowledgments
+* List of abbreviations and symbols
+#+begin_latex
+\input{postamble}
+#+end_latex
+
 * References
 * Appendix
