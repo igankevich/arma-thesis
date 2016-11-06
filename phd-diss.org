@@ -581,10 +581,26 @@ stationary and MA model parameters finding algorithm to converge.
 **** High availability.
 * Conclusion
 * Acknowledgments
-* List of abbreviations and symbols
+* List of acronyms and symbols
+
+#+attr_latex: :booktabs t :align lp{0.8\linewidth}
+| <<<MPP>>>  | Massively Parallel Processing, computers with distributed memory |
+| <<<SMP>>>  | Symmetric Multi-Processing, computers with shared memory         |
+| <<<ACF>>>  | auto-covatiate function                                          |
+| <<<FFT>>>  | fast Fourier transform                                           |
+| <<<PRNG>>> | pseudo-random number generator                                   |
+| <<<BC>>>   | boundary condition                                               |
+| <<<PDE>>>  | partial differential equation                                    |
+| <<<NIT>>>  | non-linear intertialess transform                                |
+| <<<AR>>>   | autoregressive process                                           |
+| <<<ARMA>>> | autoregressive moving average process                            |
+| <<<MA>>>   | moving average process                                           |
+
 #+begin_latex
 \input{postamble}
 #+end_latex
 
-* References
+bibliographystyle:ugost2008
+bibliography:bib/refs.bib
+
 * Appendix
