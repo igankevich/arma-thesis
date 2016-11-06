@@ -13,10 +13,6 @@
 #+LATEX_HEADER_EXTRA: \newcites{published}{Publications on the subject of thesis}
 #+OPTIONS: todo:nil title:nil ':t H:5
 
-#+begin_latex
-\clearpage
-#+end_latex
-
 * Introduction
 **** Topic relevance.
 Softwarea programmes, which simulates vessel behaviour in sea waves, are widely
@@ -581,6 +577,7 @@ stationary and MA model parameters finding algorithm to converge.
 **** High availability.
 * Conclusion
 * Acknowledgments
+#+latex: \clearpage
 * List of acronyms and symbols
 
 #+attr_latex: :booktabs t :align lp{0.8\linewidth}
