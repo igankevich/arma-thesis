@@ -32,20 +32,11 @@ methods for ocean simulation software may increase number of its application
 scenarios and foster a study of ship motion in extreme conditions in particular.
 
 **** State-of-the-art.
-**** Goals and objectives.
-**** Scientific novelty.
-**** Theoretical and practical significance.
-**** Methodology and research methods.
-**** Theses for the defense.
-**** Results verification and approbation.
-* Problem statement
-* Related work
-* ARMA model for ocean wave simulation
-** The reasons for the search for a new ocean simulation model
-ARMA model emerged in response to difficulties encountered by practitioners who
-used wave simulation models developed in the framework of linear wave theory.
-The problems they have encountered with Longuet---Higgins model (a model which
-is entirely based on linear wave theory) can be summarised as the following.
+Autoregressive moving average (ARMA) model emerged in response to difficulties
+encountered by practitioners who used wave simulation models developed in the
+framework of linear wave theory. The problems they have encountered with
+Longuet---Higgins model (a model which is entirely based on linear wave theory)
+can be summarised as the following.
 1. /Periodicity/. Linear wave theory approximates waves by a sum of harmonics,
    so period of the whole wavy surface realisation depends on the number of
    harmonics in the model. The more realisation size is, the more coefficients
@@ -79,6 +70,7 @@ studies were found to have all the required mathematical apparatus.
 4. White noise --- the only probabilistic term in ARMA process --- has
    Gaussian distribution; so, convergence rate is not probabilistic.
 
+**** Goals and objectives.
 ARMA process became the basis for ARMA ocean simulation model, however, there
 was still much work to be done to make it useful in practice.
 1. One have to investigate how different ACF shapes affect the choice of ARMA
@@ -95,9 +87,18 @@ was still much work to be done to make it useful in practice.
    without linearisation of boundaries and assumption of small-amplitude waves.
 4. Finally, verify wavy surface integral characteristics to match the ones of
    real ocean waves.
-These points, as well as a number of auxiliary formulae, methods and algorithms,
-are discussed in this and the following sections.
+5. In the final stage, develop software programme that implements ARMA model and
+   pressure calculation method, and allows running simulations on both shared
+   memory (SMP) and distributed memory (MPP) computer systems.
 
+**** Scientific novelty.
+**** Theoretical and practical significance.
+**** Methodology and research methods.
+**** Theses for the defense.
+**** Results verification and approbation.
+* Problem statement
+* Related work
+* ARMA model for ocean wave simulation
 ** Governing equations for 3-dimensional ARMA process
 *** Three possible processes
 Three-dimensional autoregressive moving average process is defined by
