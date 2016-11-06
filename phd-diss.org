@@ -4,14 +4,13 @@
 #+LANGUAGE: en
 #+LATEX_CLASS: gost
 #+LATEX_CLASS_OPTIONS: [hidelinks,fontsize=14pt,paper=a4,pagesize,DIV=calc]
-#+LATEX_HEADER: \IfFileExists{./preamble.tex}{\input{preamble}
-#+LATEX_HEADER: \organization{Saint Petersburg State University}
-#+LATEX_HEADER: \manuscript{}
-#+LATEX_HEADER: \degree{thesis for candidate of sciences degree}
-#+LATEX_HEADER: \speciality{Speciality 05.13.18\\Mathematical modeling, numerical methods and programme complexes}
-#+LATEX_HEADER: \supervisor{Supervisor\\Alexander Degtyarev}
-#+LATEX_HEADER: \newcites{published}{Publications on the subject of thesis}
-#+LATEX_HEADER: }{}
+#+LATEX_HEADER_EXTRA: \input{preamble}
+#+LATEX_HEADER_EXTRA: \organization{Saint Petersburg State University}
+#+LATEX_HEADER_EXTRA: \manuscript{}
+#+LATEX_HEADER_EXTRA: \degree{thesis for candidate of sciences degree}
+#+LATEX_HEADER_EXTRA: \speciality{Speciality 05.13.18\\Mathematical modeling, numerical methods and programme complexes}
+#+LATEX_HEADER_EXTRA: \supervisor{Supervisor\\Alexander Degtyarev}
+#+LATEX_HEADER_EXTRA: \newcites{published}{Publications on the subject of thesis}
 #+OPTIONS: todo:nil title:nil ':t H:5
 
 #+begin_latex

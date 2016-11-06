@@ -4,14 +4,13 @@
 #+LANGUAGE: ru
 #+LATEX_CLASS: gost
 #+LATEX_CLASS_OPTIONS: [hidelinks,fontsize=14pt,paper=a4,pagesize,DIV=calc]
-#+LATEX_HEADER: \IfFileExists{./preamble.tex}{\input{preamble}
-#+LATEX_HEADER: \organization{Санкт-Петербургский государственный университет}
-#+LATEX_HEADER: \manuscript{на правах рукописи}
-#+LATEX_HEADER: \degree{Диссертация на соискание ученой степени\\кандидата физико-математических наук}
-#+LATEX_HEADER: \speciality{Специальность 05.13.18\\Математическое моделирование, численные методы и комплексы программ}
-#+LATEX_HEADER: \supervisor{Научный руководитель\\д.т.н Дегтярев Александр Борисович}
-#+LATEX_HEADER: \newcites{published}{Список опубликованных по теме диссертации работ}
-#+LATEX_HEADER: }{}
+#+LATEX_HEADER_EXTRA: \input{preamble}
+#+LATEX_HEADER_EXTRA: \organization{Санкт-Петербургский государственный университет}
+#+LATEX_HEADER_EXTRA: \manuscript{на правах рукописи}
+#+LATEX_HEADER_EXTRA: \degree{Диссертация на соискание ученой степени\\кандидата физико-математических наук}
+#+LATEX_HEADER_EXTRA: \speciality{Специальность 05.13.18\\Математическое моделирование, численные методы и комплексы программ}
+#+LATEX_HEADER_EXTRA: \supervisor{Научный руководитель\\д.т.н Дегтярев Александр Борисович}
+#+LATEX_HEADER_EXTRA: \newcites{published}{Список опубликованных по теме диссертации работ}
 #+OPTIONS: todo:nil title:nil H:5
 
 #+begin_latex
