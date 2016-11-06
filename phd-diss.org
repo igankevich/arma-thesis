@@ -18,8 +18,24 @@
 \clearpage
 #+end_latex
 
-* TODO Introduction
+* Introduction
 **** Topic relevance.
+Softwarea programmes, which simulates vessel behaviour in sea waves, are widely
+used to model ship motion, estimate impact of external forces on floating
+platform or other marine object, and estimate capsize probability under given
+weather conditions; however, to model ocean waves most of the simulation codes
+use linear wave theory
+cite:shin2003nonlinear,van2007forensic,kat2001prediction,van2002development, in
+the framework of which it is difficult to reproduce certain peculiarities of
+wind wave climate. Among them are transition between normal and storm weather,
+and sea composed of multiple wave systems --- both wind waves and swell ---
+heading from multiple directions. Another shortcoming of linear wave theory is
+an assumption, that wave amplitude is small compared to wave length. This makes
+calculations inprecise when modeling ship motion in irregular waves, for which
+the assumption does not hold. So, studying new and more advanced models and
+methods for ocean simulation software may increase number of its application
+scenarios and foster a study of ship motion in extreme conditions in particular.
+
 **** State-of-the-art.
 **** Goals and objectives.
 **** Scientific novelty.
@@ -27,9 +43,9 @@
 **** Methodology and research methods.
 **** Theses for the defense.
 **** Results verification and approbation.
-* TODO Problem statement
-* TODO Related work
-* TODO ARMA model for ocean wave simulation
+* Problem statement
+* Related work
+* ARMA model for ocean wave simulation
 ** The reasons for the search for a new ocean simulation model
 ARMA model emerged in response to difficulties encountered by practitioners who
 used wave simulation models developed in the framework of linear wave theory.
