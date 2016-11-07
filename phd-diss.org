@@ -604,6 +604,7 @@ stationary and MA model parameters finding algorithm to converge.
 | <<<AR>>>   | autoregressive process                                           |
 | <<<ARMA>>> | autoregressive moving average process                            |
 | <<<MA>>>   | moving average process                                           |
+| <<<LH>>>   | Longuet---Higgins model                                          |
 
 #+begin_latex
 \input{postamble}

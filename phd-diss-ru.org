@@ -11,7 +11,7 @@
 #+LATEX_HEADER_EXTRA: \speciality{Специальность 05.13.18\\Математическое моделирование, численные методы и комплексы программ}
 #+LATEX_HEADER_EXTRA: \supervisor{Научный руководитель\\д.т.н Дегтярев Александр Борисович}
 #+LATEX_HEADER_EXTRA: \newcites{published}{Список опубликованных по теме диссертации работ}
-#+OPTIONS: todo:nil title:nil H:5
+#+OPTIONS: todo:nil title:nil ':t H:5
 
 # default export options
 #+begin_src emacs-lisp :exports none :results silent
@@ -1270,6 +1270,7 @@ exit
 | <<<АР>>>   | процесс авторегрессии                                                            |
 | <<<АРСС>>> | процесс авторегрессии скользящего среднего                                       |
 | <<<СС>>>   | процесс скользящего среднего                                                     |
+| <<<ЛХ>>>   | модель Лонге---Хиггинса                                                          |
 
 #+begin_latex
 \input{postamble}
