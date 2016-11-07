@@ -92,6 +92,8 @@ was still much work to be done to make it useful in practice.
    memory (SMP) and distributed memory (MPP) computer systems.
 
 **** Scientific novelty.
+
+
 **** Theoretical and practical significance.
 **** Methodology and research methods.
 **** Theses for the defense.
