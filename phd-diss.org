@@ -92,7 +92,16 @@ was still much work to be done to make it useful in practice.
    memory (SMP) and distributed memory (MPP) computer systems.
 
 **** Scientific novelty.
-
+ARMA model, as opposed to other ocean sumulation models, does not use linear
+wave theory. This makes it capable of
+- generating waves with arbitrary amplitudes by adjusting wave steepness via
+  ACF;
+- generating waves with arbitrary profiles by adjusting asymmetry of wave
+  elevation distribution via non-linear inertialess transform (NIT).
+This makes it possible to use ARMA process to model transition between normal
+and storm weather taking into account climate spectra and assimilation data of a
+particular ocean region, which is not possible with models based on linear wave
+theory.
 
 **** Theoretical and practical significance.
 **** Methodology and research methods.
