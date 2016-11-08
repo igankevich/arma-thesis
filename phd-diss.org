@@ -593,18 +593,19 @@ stationary and MA model parameters finding algorithm to converge.
 * List of acronyms and symbols
 
 #+attr_latex: :booktabs t :align lp{0.8\linewidth}
-| <<<MPP>>>  | Massively Parallel Processing, computers with distributed memory |
-| <<<SMP>>>  | Symmetric Multi-Processing, computers with shared memory         |
-| <<<ACF>>>  | auto-covatiate function                                          |
-| <<<FFT>>>  | fast Fourier transform                                           |
-| <<<PRNG>>> | pseudo-random number generator                                   |
-| <<<BC>>>   | boundary condition                                               |
-| <<<PDE>>>  | partial differential equation                                    |
-| <<<NIT>>>  | non-linear intertialess transform                                |
-| <<<AR>>>   | autoregressive process                                           |
-| <<<ARMA>>> | autoregressive moving average process                            |
-| <<<MA>>>   | moving average process                                           |
-| <<<LH>>>   | Longuet---Higgins model                                          |
+| <<<MPP>>>  | Massively Parallel Processing, computers with distributed memory                           |
+| <<<SMP>>>  | Symmetric Multi-Processing, computers with shared memory                                   |
+| <<<ACF>>>  | auto-covatiate function                                                                    |
+| <<<FFT>>>  | fast Fourier transform                                                                     |
+| <<<PRNG>>> | pseudo-random number generator                                                             |
+| <<<BC>>>   | boundary condition                                                                         |
+| <<<PDE>>>  | partial differential equation                                                              |
+| <<<NIT>>>  | non-linear intertialess transform                                                          |
+| <<<AR>>>   | autoregressive process                                                                     |
+| <<<ARMA>>> | autoregressive moving average process                                                      |
+| <<<MA>>>   | moving average process                                                                     |
+| <<<LH>>>   | Longuet---Higgins model                                                                    |
+| <<<LAMP>>> | Large Amplitude Motion Programme, a programme that simulates ship behaviour in ocean waves |
 
 #+begin_latex
 \input{postamble}
