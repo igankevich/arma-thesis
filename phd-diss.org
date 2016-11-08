@@ -137,6 +137,13 @@ wave elevation etc.) were inspected via graphical means built into the
 programming language allowing visual control of programme correctness.
 
 **** Theses for the defense.
+- Wind wave model which allows generating wavy surface realisations with large
+  period and consisting of wave of arbitrary amplitudes;
+- Pressure field formulae derived for this model without assumptions of linear
+  wave theory;
+- Software implementation of the model and the formula for shared memory (SMP)
+  and distributed memory (MPP) systems.
+
 **** Results verification and approbation.
 * Problem statement
 * Related work
