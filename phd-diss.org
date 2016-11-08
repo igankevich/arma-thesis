@@ -196,6 +196,9 @@ inverse problem of hydrodynamics reduces to Laplace equation with mixed boundary
 condition --- Robin problem.
 
 * Related work
+*** ARMA Model in ocean sciences
+cite:mignolet1992simulation,spanos1982arma,spanos1983arma
+
 * ARMA model for ocean wave simulation
 ** Governing equations for 3-dimensional ARMA process
 *** Three possible processes
