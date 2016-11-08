@@ -157,6 +157,44 @@ where they were compared to previously used LH model. Preliminary numerical
 experiments showed higher computational efficiency of ARMA model.
 
 * Problem statement
+The aim of the study reported here is to investigate possibilities of applying
+ARMA process mathematical apparatus to ocean wave modeling and to derive formula
+for pressure field under generated wavy surface without assumptions of linear
+wave theory.
+- In case of small-amplitude waves resulting formula must correspond to the
+  one from linear wave theory; in all other cases the formula must not diverge.
+- Integral characteristics of generated wavy surface must match the ones of real
+  ocean waves.
+- Software implementation of ARMA model and pressure field formula must work on
+  shared memory (SMP) and distributed memory (MPP) systems.
+
+**** Pressure field formula.
+The problem of finding pressure field under wavy sea surface represents inverse
+problem of hydrodynamics for incompressible inviscid fluid. System of equations
+for it in general case is written as cite:kochin1966theoretical
+\begin{align}
+    & \nabla^2\phi = 0,\nonumber\\
+    & \phi_t+\frac{1}{2} |\vec{\upsilon}|^2 + g\zeta=-\frac{p}{\rho}, & \text{на }z=\zeta(x,y,t),\label{eq:problem}\\
+    & D\zeta = \nabla \phi \cdot \vec{n}, & \text{на }z=\zeta(x,y,t),\nonumber
+\end{align}
+where $\phi$ --- velocity potential, $\zeta$ --- elevation ($z$ coordinate) of
+wavy surface, $p$ --- wave pressure, $\rho$ --- fluid density, $\vec{\upsilon} =
+(\phi_x, \phi_y, \phi_z)$ --- velocity vector, $g$ --- acceleration of gravity,
+and $D$ --- substantial (Lagrange) derivative. The first equation is called
+continuity (Laplace) equation, the second one is the conservation of momentum
+law (the so called called dynamic boundary condition); the third one is
+kinematic boundary condition for free wavy surface, which states that rate of
+change of wavy surface elevation ($D\zeta$) equals to the change of velocity
+potential derivative along the wavy surface normal ($\nabla \phi \cdot
+\vec{n}$).
+
+Inverse problem of hydrodynamics consists in solving this system of equations
+for $\phi$. In this formulation dynamic boundary condition becomes explicit
+formula to determine pressure field using velocity potential derivatives
+obtained from the remaining equations. So, from mathematical point of view
+inverse problem of hydrodynamics reduces to Laplace equation with mixed boundary
+condition --- Robin problem.
+
 * Related work
 * ARMA model for ocean wave simulation
 ** Governing equations for 3-dimensional ARMA process
