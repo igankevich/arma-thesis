@@ -196,9 +196,51 @@ inverse problem of hydrodynamics reduces to Laplace equation with mixed boundary
 condition --- Robin problem.
 
 * Related work
-*** ARMA Model in ocean sciences
+** Ocean wave models analysis
+Pressure computation is only possible when the shape of wavy surface is known.
+It is defined either at discrete grid points, or continuously via some analytic
+formula. As will be shown in section [[#linear-boundary]], such formula may simplify
+pressure computation by effectively reducing the task to pressure field
+generation, instead of wavy surface generation.
+
+*** Longuet---Higgins model
+The simplest model, formula of which is derived in the framework of linear wave
+theory, is Longuet---Higgins (LH) model cite:longuet1957statistical. In-depth
+comparative analysis of this model and ARMA model is done in
+cite:degtyarev2011modelling,boukhanovsky1997thesis.
+
+LH model represents ocean wavy surface as a superposition of
+sine waves with random amplitudes $c_n$ and phases $\epsilon_n$, continuously
+distributed on interval $[0,2\pi]$. Wavy surface elevation ($z$ coordinate) is
+defined by
+#+name: eq:longuet-higgins
+\begin{equation}
+    \zeta(x,y,t) = \sum\limits_n c_n \cos(u_n x + v_n y - \omega_n t + \epsilon_n).
+\end{equation}
+Here wave numbers $(u_n,v_n)$ are continuously distributed on plane $(u,v)$,
+i.e. area $du \times dv$ contains infinite quantity of wave numbers. Frequency
+is related to wave numbers via dispersion relation $\omega_n=\omega(u_n,v_n)$.
+Function $\zeta(x,y,t)$ is a three-dimensional ergodic stationary homogeneous
+Gaussian process defined by
+\begin{equation*}
+    2E_\zeta(u,v)\, du\,  dv = \sum\limits_n c_n^2,
+\end{equation*}
+where $E_\zeta(u,v)$ --- two-dimensional wave energy spectral density.
+Coefficients $c_n$ are derived from wave energy spectrum $S(\omega)$ via
+\begin{equation*}
+    c_n = \sqrt{ \textstyle\int\limits_{\omega_n}^{\omega_{n+1}} S(\omega) d\omega}.
+\end{equation*}
+
+*** Disadvantages of Longuet-Higgins model
+*** ARMA model in ocean sciences
 cite:mignolet1992simulation,spanos1982arma,spanos1983arma
 
+** Known pressure field formulae
+*** Small-amplitude waves theory
+*** Linearisation of boundary condition
+:PROPERTIES:
+:CUSTOM_ID: linear-boundary
+:END:
 * ARMA model for ocean wave simulation
 ** Governing equations for 3-dimensional ARMA process
 *** Three possible processes
