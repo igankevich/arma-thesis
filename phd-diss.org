@@ -145,6 +145,17 @@ programming language allowing visual control of programme correctness.
   and distributed memory (MPP) systems.
 
 **** Results verification and approbation.
+ARMA model is verified by comparing generated wavy surface integral
+characteristics (distribution of wave elevation, wave heights and lengths etc.)
+to the ones of real ocean waves. Pressure field formula is derived in
+Mathematica language, where resulting expressions are verified by built-in
+graphical means.
+
+ARMA model and pressure field formula were incorporated into Large Amplitude
+Motion Programme (LAMP) --- an ship motion simulation software programme ---
+where they were compared to previously used LH model. Preliminary numerical
+experiments showed higher computational efficiency of ARMA model.
+
 * Problem statement
 * Related work
 * ARMA model for ocean wave simulation
