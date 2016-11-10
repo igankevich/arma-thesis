@@ -232,6 +232,35 @@ Coefficients $c_n$ are derived from wave energy spectrum $S(\omega)$ via
 \end{equation*}
 
 *** Disadvantages of Longuet-Higgins model
+Although LH model is simple and easy to understand, there are shortcomings one
+should be aware of.
+
+1. LH model simulates only stationary Gaussian process. This is consequence of
+   central limit theorem (CLT): sum of large number of sines with random
+   amplitudes and phases has normal distribution, no matter what spectrum is
+   used as the model input. Using lower number of coefficients may solve the
+   problem, but it makes realisation periodic. So, using LH model to simulate
+   waves with non-Gaussian distribution of elevation --- a distribution which
+   real ocean waves have cite:huang1980experimental,рожков1996теория --- is
+   impractical.
+2. From computational point of view, the deficiency of the model is non-linear
+   increase of wavy surface generation time with the increase of realisation
+   size. The larger the size of the realisation, the higher number of
+   coefficients (discrete points of frequency-directional spectrum) is needed to
+   eliminate periodicity. This makes LH model inefficient for long-time
+   simulations.
+3. Finally, there are peculiearities which make LH model unsuitable base for
+   building more advanced simulation models.
+   - In software implementation convergence rate of ([[eq:longuet-higgins]]) may be
+     low due to randomness of phases $\epsilon_n$.
+   - It is difficult to generalise LH model for non-Gaussian processes as it
+     involves incorporating non-linear terms in ([[eq:longuet-higgins]]) for which
+     there is no known formula to determine coefficients
+     cite:рожков1990вероятностные.
+
+To summarise, LH model is linear, computationally inefficient for long-time
+simiualtions, and difficult to use as a base for more advanced models.
+
 *** ARMA model in ocean sciences
 cite:mignolet1992simulation,spanos1982arma,spanos1983arma
 
@@ -732,12 +761,13 @@ stationary and MA model parameters finding algorithm to converge.
 | <<<PRNG>>> | pseudo-random number generator                                                             |
 | <<<BC>>>   | boundary condition                                                                         |
 | <<<PDE>>>  | partial differential equation                                                              |
-| <<<NIT>>>  | non-linear inertia-less transform                                                         |
+| <<<NIT>>>  | non-linear inertia-less transform                                                          |
 | <<<AR>>>   | autoregressive process                                                                     |
 | <<<ARMA>>> | autoregressive moving average process                                                      |
 | <<<MA>>>   | moving average process                                                                     |
 | <<<LH>>>   | Longuet---Higgins model                                                                    |
 | <<<LAMP>>> | Large Amplitude Motion Programme, a programme that simulates ship behaviour in ocean waves |
+| <<<CLT>>>  | central limit theorem                                                                      |
 
 #+begin_latex
 \input{postamble}
