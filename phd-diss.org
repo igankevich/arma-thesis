@@ -232,17 +232,17 @@ Coefficients $c_n$ are derived from wave energy spectrum $S(\omega)$ via
 \end{equation*}
 
 *** Disadvantages of Longuet-Higgins model
-Although LH model is simple and easy to understand, there are shortcomings one
-should be aware of.
+Although LH model is simple and easy to understand, there are shortcomings that
+appear in practice.
 
-1. LH model simulates only stationary Gaussian process. This is consequence of
+1. The model simulates only stationary Gaussian process. This is consequence of
    central limit theorem (CLT): sum of large number of sines with random
    amplitudes and phases has normal distribution, no matter what spectrum is
    used as the model input. Using lower number of coefficients may solve the
-   problem, but it makes realisation periodic. So, using LH model to simulate
-   waves with non-Gaussian distribution of elevation --- a distribution which
-   real ocean waves have cite:huang1980experimental,рожков1996теория --- is
-   impractical.
+   problem, but also make realisation period smaller. So, using LH model to
+   simulate waves with non-Gaussian distribution of elevation --- a distribution
+   which real ocean waves have cite:huang1980experimental,рожков1996теория ---
+   is impractical.
 2. From computational point of view, the deficiency of the model is non-linear
    increase of wavy surface generation time with the increase of realisation
    size. The larger the size of the realisation, the higher number of
