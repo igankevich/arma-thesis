@@ -199,7 +199,7 @@ condition --- Robin problem.
 ** Ocean wave models analysis
 Pressure computation is only possible when the shape of wavy surface is known.
 It is defined either at discrete grid points, or continuously via some analytic
-formula. As will be shown in section [[#linear-boundary]], such formula may simplify
+formula. As will be shown in section [[#linearisation]], such formula may simplify
 pressure computation by effectively reducing the task to pressure field
 generation, instead of wavy surface generation.
 
@@ -262,14 +262,40 @@ To summarise, LH model is linear, computationally inefficient for long-time
 simiualtions, and difficult to use as a base for more advanced models.
 
 *** ARMA model
-cite:mignolet1992simulation,spanos1982arma,spanos1983arma
+In cite:spanos1982arma ARMA model is used to generate time series spectrum of
+which is compatible with Pierson---Moskowitz (PM) approximation of ocean wave
+spectrum. The authors carry out experiments for one-dimensional AR, MA and ARMA
+models. They mention excellent agreement between target and initial spectra and
+higher performance of ARMA model compared to models based on summing large
+number of harmonic components with random phases. The also mention that in order
+to reach agreement between target and initial spectrum MA model require lesser
+number of coefficients than AR model. In cite:spanos1996efficient the authors
+generalise ARMA model coefficients determination formulae for multi-variate
+(vector) case.
 
-** Known pressure field formulae
-*** Small-amplitude waves theory
+One thing that distinguishes present work with respect to afore-mentioned ones
+is the study of three-dimensional (2D in space and 1D in time) ARMA model, which
+is mostly a different problem.
+1. Yule---Walker system of equations, which are used to determine AR
+   coefficients, has complex block-block structure.
+2. Optimal model order (in a sense that target spectrum agrees with initial) is
+   determined manually.
+3. Instead of PM spectrum, analytic expressions for standing and propagating
+   waves ACF are used as the model input.
+4. Three-dimensional wavy surface should be compatible with real ocean surface
+   not only in terms of spectral characteristics, but also in the shape of wave
+   profiles. So, model verification includes distributions of various parameters
+   of generated waves (lengths, heights, periods etc.).
+Multi-dimensionality of investigated model not only complexifies the task, but
+also allows carrying out visual validation of generated wavy surface. It is the
+opportunity to visualise output of the programme that allowed to ensure that
+generated surface is compatible with real ocean surface, and is not abstract
+multi-dimensional stochastic process that is real only statistically.
+
+** Pressure field determination formulae
+*** Small amplitude waves theory
 *** Linearisation of boundary condition
-:PROPERTIES:
-:CUSTOM_ID: linear-boundary
-:END:
+
 * ARMA model for ocean wave simulation
 ** Governing equations for 3-dimensional ARMA process
 *** Three possible processes
@@ -750,7 +776,6 @@ stationary and MA model parameters finding algorithm to converge.
 **** High availability.
 * Conclusion
 * Acknowledgements
-#+latex: \clearpage
 * List of acronyms and symbols
 
 #+attr_latex: :booktabs t :align lp{0.8\linewidth}
@@ -768,6 +793,8 @@ stationary and MA model parameters finding algorithm to converge.
 | <<<LH>>>   | Longuet---Higgins model                                                                    |
 | <<<LAMP>>> | Large Amplitude Motion Programme, a programme that simulates ship behaviour in ocean waves |
 | <<<CLT>>>  | central limit theorem                                                                      |
+| <<<PM>>>   | Pierson---Moskowitz ocean wave spectrum approximation                                      |
+| <<<YW>>>   | Yule---Walker equations                                                                    |
 
 #+begin_latex
 \input{postamble}
