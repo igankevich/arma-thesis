@@ -3,7 +3,7 @@
 #+DATE: Санкт-Петербург, 2016
 #+LANGUAGE: ru
 #+LATEX_CLASS: beamer
-#+LATEX_CLASS_OPTIONS: [12pt,aspectratio=169]
+#+LATEX_CLASS_OPTIONS: [14pt,aspectratio=169]
 #+LATEX_HEADER_EXTRA: \input{slides-preamble}
 #+BEAMER_THEME: SaintPetersburg
 #+OPTIONS: todo:nil title:nil ':t toc:nil H:2
@@ -13,25 +13,27 @@
 #+end_latex
 
 ** Модель Лонге---Хиггинса
-Формула аппликаты волны:
+#+begin_latex
+\small
+Исследовать возможности математического аппарата и численных методов для
+имитационного моделирования морских волн произвольных амплитуд.
+\vskip\baselineskip
+\textcolor{spbuTerracotta}{Текущий уровень развития.} Формула аппликаты волны:
 \begin{equation*}
   \arraycolsep=1.4pt
   \begin{array}{ll}
     \zeta(x,y,t) &= \sum\limits_n c_n \cos(u_n x + v_n y - \omega_n t + \epsilon_n), \\
   \end{array}
 \end{equation*}
-
 Формула потенциала скорости:
 \begin{equation*}
   \phi(x,y,z,t) = \sum_n \frac{c_n g}{\omega_n}
   e^{z\sqrt{u_n^2+v_n^2}}
   \sin(u_n x + v_n y - \omega_n t + \epsilon_n).
 \end{equation*}
+#+end_latex
 
-Недостатки:
-- периодичность,
-- вероятностная сходимость,
-- линейная теория волн.
+Недостатки: периодичность, вероятностная сходимость, линейная теория волн.
 
 ** Цель и задачи
 Разработать /без предположений линейной теории волн/
@@ -40,8 +42,8 @@
 - программную реализацию для SMP и MPP.
 
 
-* Модель АРСС
-** Модель АРСС
+* Трехмерная модель АРСС
+** Основные формулы
 \begin{equation*}
   \zeta_{i,j,k} =
   \sum\limits_{l=0}^{p_1}
@@ -66,8 +68,102 @@
 - трехмерная,
 - исследуются трехмерные АКФ, а не спектры.
 
+** Определение коэффициентов                                      :noexport:
+#+begin_latex
+\framesubitile{Модель АР}
+    \small%
+    Решить СЛАУ (трехмерные уравнения Юла---Уокера) относительно $\Phi$:
+    \begin{equation*}
+        \Gamma
+        \left[
+            \begin{array}{l}
+                \Phi_{0,0,0}\\
+                \Phi_{0,0,1}\\
+                \vdotswithin{\Phi_{0,0,0}}\\
+                \Phi_{p_1,p_2,p_3}
+            \end{array}
+        \right]
+        =
+        \left[
+            \begin{array}{l}
+                K_{0,0,0}-\Var{\epsilon}\\
+                K_{0,0,1}\\
+                \vdotswithin{K_{0,0,0}}\\
+                K_{p_1,p_2,p_3}
+            \end{array}
+        \right],
+        \qquad
+        \Gamma=
+        \left[
+            \begin{array}{llll}
+                \Gamma_0 & \Gamma_1 & \cdots & \Gamma_{p_1} \\
+                \Gamma_1 & \Gamma_0 & \ddots & \vdotswithin{\Gamma_0} \\
+                \vdotswithin{\Gamma_0} & \ddots & \ddots & \Gamma_1 \\
+                \Gamma_{p_1} & \cdots & \Gamma_1 & \Gamma_0
+            \end{array}
+        \right],
+    \end{equation*}
+    \begin{equation*}
+      \Gamma_i =
+      \left[
+      \begin{array}{llll}
+        \Gamma^0_i & \Gamma^1_i & \cdots & \Gamma^{p_2}_i \\
+        \Gamma^1_i & \Gamma^0_i & \ddots & \vdotswithin{\Gamma^0_i} \\
+        \vdotswithin{\Gamma^0_i} & \ddots & \ddots & \Gamma^1_i \\
+        \Gamma^{p_2}_i & \cdots & \Gamma^1_i & \Gamma^0_i
+      \end{array}
+      \right]
+      \qquad
+      \Gamma_i^j=
+      \left[
+      \begin{array}{llll}
+        K_{i,j,0} & K_{i,j,1} & \cdots & K_{i,j,p_3} \\
+        K_{i,j,1} & K_{i,j,0} & \ddots &x \vdotswithin{K_{i,j,0}} \\
+        \vdotswithin{K_{i,j,0}} & \ddots & \ddots & K_{i,j,1} \\
+        K_{i,j,p_3} & \cdots & K_{i,j,1} & K_{i,j,0}
+      \end{array}
+      \right].
+    \end{equation*}
+#+end_latex
+
+** Определение коэффициентов                                      :noexport:
+#+begin_latex
+\framesubitile{Модель СС}
+    \small%
+    Solve non-linear system of equations for $\Theta$:
+    \begin{equation*}
+      K_{i,j,k} =
+      \left[
+        \displaystyle
+        \sum\limits_{l=i}^{q_1}
+        \sum\limits_{m=j}^{q_2}
+        \sum\limits_{n=k}^{q_3}
+        \Theta_{l,m,n}\Theta_{l-i,m-j,n-k}
+      \right]
+      \Var{\epsilon}
+    \end{equation*}
+    via fixed-point iteration method:
+    \begin{equation*}
+      \theta_{i,j,k} =
+        -\frac{K_{0,0,0}}{\Var{\epsilon}}
+        +
+        \sum\limits_{l=i}^{q_1}
+        \sum\limits_{m=j}^{q_2}
+        \sum\limits_{n=k}^{q_3}
+        \Theta_{l,m,n} \Theta_{l-i,m-j,n-k}.
+    \end{equation*}
+#+end_latex
+
+** Критерии выбора моделей АР и СС
+Использовать модель АР для стоячих волн и модель СС для прогрессивных.
+#+latex: \newline\newline
+Экспериментальный результат:
+- модели расходятся, если делать наоборот;
+- характеристики взволнованной поверхности соответствуют реальным.
+
 ** АКФ морской поверхности
 #+begin_latex
+\small
 \begin{tikzpicture}[remember picture,overlay]
   \node[fill=spbuWhite2,text width=2.3cm,xshift=1cm,yshift=1.5cm,anchor=west] (waveProfile) at (current page.west) {Формула профиля волны или спектра};
   \node[fill=spbuWhite2,text width=2.0cm,yshift=1.5cm] (bigPoly) at (current page.center) {Полином высокой степени};
@@ -210,11 +306,11 @@
     \path[->,thick] (oldDistLabel.north) edge [bend left=20,out=0](oldDist.south);
 
     % second block
-    \node[fill=none,anchor=south east,yshift=0.4cm] (hermitePolyLabel) at (current page.south east) {\small полином Эрмита};
+    \node[fill=none,anchor=south east,yshift=0.1cm] (hermitePolyLabel) at (current page.south east) {\small полином Эрмита};
     \path[->,thick] (hermitePolyLabel.north) edge [bend left=20,out=0](hermitePoly.south);
-    \node[fill=none,anchor=south,yshift=0.4cm] (solutionDistLabel) at (current page.south) {\small решение ур.~\ref{eq:distribution}};
+    \node[fill=none,anchor=south,yshift=0.1cm] (solutionDistLabel) at (current page.south) {\small решение ур.~\ref{eq:distribution}};
     \path[->,thick] (solutionDistLabel.north) edge [bend right=20,out=0](solutionDist.south);
-    \node[fill=none,baseline,anchor=south west,xshift=0.5cm,yshift=0.4cm] (newACFLabel) at (current page.south west) {\small\hspace{-0.5cm}новая АКФ};
+    \node[fill=none,baseline,anchor=south west,xshift=0.5cm,yshift=0.1cm] (newACFLabel) at (current page.south west) {\small\hspace{-0.5cm}новая АКФ};
     \path[->,thick] (newACFLabel.north west) edge [bend right=20,out=0](newACF.south);
 
     % picture
@@ -361,6 +457,12 @@
   \end{column}
 \end{columns}
 #+end_latex
+
+** Выводы
+Метод подходит для
+- дискретно заданной $\zeta(x,y,t)$,
+- волн произвольных амплитуд,
+- произвольной глубины $h=\text{const}$.
 
 * Программный комплекс
 ** Диаграмма
