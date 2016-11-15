@@ -1,0 +1,47 @@
+\titlegraphic{%
+  \scriptsize%
+  \begin{tabular}{p{0.45\textwidth}p{0.45\textwidth}}
+    \hfill Научный руководитель: & д.т.н. Дегтярев А.Б.\\
+    \hfill Специальность 05.13.18: & мат. моделирование,\\
+    & численные методы\\
+    & и комплексы программ \\
+  \end{tabular}
+}
+
+\usepackage{colortbl}
+\usepackage{tikz}
+\usetikzlibrary{shapes}
+
+\graphicspath{{build/}{graphics/slides/}}
+
+% custom mathematical expressions
+\newcommand{\Var}[1]{\sigma_{#1}^2}
+\newcommand{\Fourier}[1]{\mathcal{F}\left\{#1\right\}}
+\newcommand{\InverseFourier}[1]{\mathcal{F}^{-1}\left\{#1\right\}}
+\newcommand{\Fun}[1]{\mathcal{D}_1\left(x,#1\right)}
+\newcommand{\FunSecond}[1]{\mathcal{D}_2\left(x,#1\right)}
+\newcommand{\FunThird}[1]{\mathcal{D}_2\left(x,#1\right)}
+\newcommand{\Sinh}[1]{\cosh\left(#1\right)}
+
+\newcommand{\FourierX}[3]{\mathcal{F}_{#2}\!\left\{#1\right\}\!\left(#3\right)}
+\newcommand{\InverseFourierX}[3]{\mathcal{F}^{-1}_{#2}\!\left\{#1\right\}\!\left(#3\right)}
+
+
+% tikz helper macros
+\definecolor{markBlue}{HTML}{40C0F0}
+\definecolor{markRed}{HTML}{C00000}
+\definecolor{markBlueFg}{HTML}{226680}
+\newcommand*{\circleemph}[2]{%
+  \begin{tikzpicture}[baseline=(#1tmp.base),remember picture]
+    \node[fill=none,inner sep=0mm] (#1tmp) {$\phantom{#2}$};%
+    \node[overlay,ellipse, fill=markBlue!50, inner xsep=0mm, inner ysep=0.5mm] (#1) at (#1tmp) {$#2$};%
+  \end{tikzpicture}
+}
+\newcommand*{\rectemph}[2]{%
+  \begin{tikzpicture}[baseline=(#1tmp.base),remember picture]
+    \node[fill=none,inner sep=0mm] (#1tmp) {$\displaystyle\phantom{#2}$};%
+    \node[overlay,rectangle,fill=none,ultra thick,draw=markBlue, inner xsep=0.5mm, inner ysep=1mm] (#1) at (#1tmp) {$\displaystyle#2$};%
+  \end{tikzpicture}
+}
+
+\AtBeginSection[]{\frame{\sectionpage}}

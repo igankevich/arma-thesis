@@ -1,0 +1,523 @@
+#+TITLE: Высокопроизводительная модель морского волнения для программ динамики морских объектов
+#+AUTHOR: Иван Ганкевич
+#+DATE: Санкт-Петербург, 2016
+#+LANGUAGE: ru
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [12pt,aspectratio=169]
+#+LATEX_HEADER_EXTRA: \input{slides-preamble}
+#+BEAMER_THEME: SaintPetersburg
+#+OPTIONS: todo:nil title:nil ':t toc:nil H:2
+
+#+begin_latex
+\frame{\maketitle}
+#+end_latex
+
+** Модель Лонге---Хиггинса
+Формула аппликаты волны:
+\begin{equation*}
+  \arraycolsep=1.4pt
+  \begin{array}{ll}
+    \zeta(x,y,t) &= \sum\limits_n c_n \cos(u_n x + v_n y - \omega_n t + \epsilon_n), \\
+  \end{array}
+\end{equation*}
+
+Формула потенциала скорости:
+\begin{equation*}
+  \phi(x,y,z,t) = \sum_n \frac{c_n g}{\omega_n}
+  e^{z\sqrt{u_n^2+v_n^2}}
+  \sin(u_n x + v_n y - \omega_n t + \epsilon_n).
+\end{equation*}
+
+Недостатки:
+- периодичность,
+- вероятностная сходимость,
+- линейная теория волн.
+
+** Цель и задачи
+Разработать /без предположений линейной теории волн/
+- модель ветрового волнения,
+- формулу для поля давлений,
+- программную реализацию для SMP и MPP.
+
+
+* Модель АРСС
+** Модель АРСС
+\begin{equation*}
+  \zeta_{i,j,k} =
+  \sum\limits_{l=0}^{p_1}
+  \sum\limits_{m=0}^{p_2}
+  \sum\limits_{n=0}^{p_3}
+  \Phi_{l,m,n} \zeta_{i-l,j-m,k-n}
+  +
+  \sum\limits_{l=0}^{q_1}
+  \sum\limits_{m=0}^{q_2}
+  \sum\limits_{n=0}^{q_3}
+  \Theta_{l,m,n} \epsilon_{i-l,j-m,k-n}
+  ,
+  \label{eq:arma-process}
+\end{equation*}
+
+По сравнению с моделью ЛХ
+- высоко-производительная,
+- непериодическая,
+- чисто математическая.
+
+По сравнению с другими работами
+- трехмерная,
+- исследуются трехмерные АКФ, а не спектры.
+
+** АКФ морской поверхности
+#+begin_latex
+\begin{tikzpicture}[remember picture,overlay]
+  \node[fill=spbuWhite2,text width=2.3cm,xshift=1cm,yshift=1.5cm,anchor=west] (waveProfile) at (current page.west) {Формула профиля волны или спектра};
+  \node[fill=spbuWhite2,text width=2.0cm,yshift=1.5cm] (bigPoly) at (current page.center) {Полином высокой степени};
+  \node[fill=spbuWhite2,text width=2.0cm,xshift=-1cm,yshift=1.5cm,anchor=east] (acfApprox) at (current page.east) {Формула АКФ};
+  \draw[->,thick] (waveProfile) to node[above] {\scriptsize теорема} node[below] {\scriptsize Винера---Хинчина} (bigPoly);
+  \draw[->,thick] (bigPoly) to node[above] {\scriptsize аппроксимация} node[below] {\scriptsize модельной функцией} (acfApprox);
+\end{tikzpicture}
+\only<1>{
+\begin{tikzpicture}[remember picture,overlay]
+  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-0}};
+  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-00}};
+\end{tikzpicture}
+}
+\only<2>{
+\begin{tikzpicture}[remember picture,overlay]
+  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-1}};
+  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-00}};
+\end{tikzpicture}
+}
+\only<3>{
+\begin{tikzpicture}[remember picture,overlay]
+  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-3}};
+  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-00}};
+\end{tikzpicture}
+}
+\only<4>{
+\begin{tikzpicture}[remember picture,overlay]
+  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-4}};
+  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-00}};
+\end{tikzpicture}
+}
+\only<5>{
+\begin{tikzpicture}[remember picture,overlay]
+  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-4}};
+  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-00}};
+\end{tikzpicture}
+}
+\only<6>{
+\begin{tikzpicture}[remember picture,overlay]
+  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-4}};
+  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-01}};
+\end{tikzpicture}
+}
+\only<7>{
+\begin{tikzpicture}[remember picture,overlay]
+  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-4}};
+  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-03}};
+\end{tikzpicture}
+}
+\only<8>{
+\begin{tikzpicture}[remember picture,overlay]
+  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-4}};
+  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-04}};
+\end{tikzpicture}
+}
+#+end_latex
+
+** Верификация модели АРСС
+#+begin_latex
+\small%
+\centering
+\begin{columns}
+  \begin{column}{0.5\textwidth}
+    \centering%
+    Стоячие волны
+    \begin{tabular}{ll}
+      \includegraphics[scale=0.5]{standing-elevation} &
+      \includegraphics[scale=0.5]{standing-wave-height-x} \\
+      \addlinespace
+      \includegraphics[scale=0.5]{standing-wave-length-x} &
+      \includegraphics[scale=0.5]{standing-wave-period} \\
+    \end{tabular}
+  \end{column}
+  \begin{column}{0.5\textwidth}
+    \centering%
+    Прогрессивные волны
+    \begin{tabular}{ll}
+      \includegraphics[scale=0.5]{propagating-elevation} &
+      \includegraphics[scale=0.5]{propagating-wave-height-x} \\
+      \addlinespace
+      \includegraphics[scale=0.5]{propagating-wave-length-x} &
+      \includegraphics[scale=0.5]{propagating-wave-period} \\
+    \end{tabular}
+  \end{column}
+\end{columns}
+#+end_latex
+
+** Взволнованная морская поверхность
+#+begin_latex
+\begin{tikzpicture}[remember picture,overlay]
+  \node[inner sep=0pt,rectangle] at (current page.center){%
+    \includegraphics[width=0.95\paperwidth]{wavy}
+  };%
+\end{tikzpicture}
+#+end_latex
+
+** Нелинейное волнение
+
+#+begin_latex
+  \flushleft%
+  \vskip\baselineskip
+  \begin{minipage}{0.4\textwidth}
+    \begin{block}{\small\centering Преобразование аппликат}
+      \begin{equation}
+        \label{eq:distribution}
+        \only<1>{\Phi(\zeta_k)}
+        \only<2->{\rectemph{oldDist}{\Phi(\zeta_k)}}
+          =
+        \only<1>{F(\zeta^{*}_k)}
+        \only<2->{\rectemph{newDist}{F(\zeta^{*}_k)}}
+      \end{equation}
+      \vspace{-\baselineskip}
+    \end{block}
+  \end{minipage}
+  \vskip2\baselineskip
+  \begin{block}{\small Преобразование АКФ}
+    \begin{equation*}
+      \only<1>{K_{\zeta^{*}}}
+      \only<2->{\rectemph{newACF}{K_{\zeta^{*}}}}
+      \left( \vec u \right)
+        =
+        \sum\limits_{m=0}^{\infty}
+        C_m^2 \frac{K_\zeta^m \left( \vec u \right)}{m!}
+      \quad
+        C_m = \frac{1}{\sqrt{2\pi}}
+        \int\limits_0^\infty
+      \only<1>{\zeta^{*}(y)}
+      \only<2->{\rectemph{solutionDist}{\zeta^{*}(y)}}
+      \,
+      \only<1>{H_m(y)}
+      \only<2->{\rectemph{hermitePoly}{H_m(y)}}
+      \exp\!\left[ -\frac{y^2}{2} \right]
+    \end{equation*}
+    \vspace{-\baselineskip}
+  \end{block}
+  \only<2->{%
+  \begin{tikzpicture}[remember picture,overlay]
+    % first block
+    \node[fill=none,baseline,anchor= west,yshift=0cm] (oldDistLabel) at (current page.west) {\small гауссов закон распределения};
+    \path[->,thick] (oldDistLabel.north) edge [bend left=20,out=0](oldDist.south);
+
+    % second block
+    \node[fill=none,anchor=south east,yshift=0.4cm] (hermitePolyLabel) at (current page.south east) {\small полином Эрмита};
+    \path[->,thick] (hermitePolyLabel.north) edge [bend left=20,out=0](hermitePoly.south);
+    \node[fill=none,anchor=south,yshift=0.4cm] (solutionDistLabel) at (current page.south) {\small решение ур.~\ref{eq:distribution}};
+    \path[->,thick] (solutionDistLabel.north) edge [bend right=20,out=0](solutionDist.south);
+    \node[fill=none,baseline,anchor=south west,xshift=0.5cm,yshift=0.4cm] (newACFLabel) at (current page.south west) {\small\hspace{-0.5cm}новая АКФ};
+    \path[->,thick] (newACFLabel.north west) edge [bend right=20,out=0](newACF.south);
+
+    % picture
+    \node[fill=spbuWhite2,anchor=north east,xshift=-0.8cm,yshift=-1.2cm]
+      (skewNormal2Graph) at (current page.north east) {%
+      \includegraphics[scale=0.4]{skew-normal-2}
+    };
+    \path[->,thick] (skewNormal2Graph.west) edge [bend left=40](newDist.south);
+  \end{tikzpicture}
+  }
+#+end_latex
+
+* Формула для поля давлений
+** Уравнения потенциального течения
+#+begin_latex
+\begin{align*}
+  & \nabla^2\phi = 0 & \text{\small уравнение неразрывности}\\
+    & \phi_t+\frac{1}{2} |\vec{\upsilon}|^2 + g\zeta=-\frac{p}{\rho}
+    & \text{\small динамическое ГУ на }z=\zeta(x,y,t)\\
+  &
+    \only<1>{D\zeta}
+    \only<2->{\circleemph{dzeta}{D\zeta}}
+    =
+    \only<1>{\nabla \phi \cdot \vec{n}}
+    \only<2->{\circleemph{dphi}{\nabla \phi \cdot \vec{n}}}
+    & \text{\small кинематическое ГУ на }z=\zeta(x,y,t)
+\end{align*}
+\only<2->{%
+\begin{tikzpicture}[remember picture,overlay]
+  \node[fill=none,baseline,anchor=south west,xshift=1cm,yshift=0cm]
+    (dzetaLabel) at (current page.south west) {%
+    \small\hspace{-1cm}субстациональная производная $\zeta$%
+  };
+  \node[fill=none,baseline,anchor=south east,yshift=0cm]
+    (dphiLabel) at (current page.south east) {%
+    \small производная по нормали к $\zeta$%
+  };
+  \path[->,thick] (dzetaLabel.north west) edge [bend left](dzeta.west);
+  \path[->,thick] (dphiLabel.north) edge [bend left,out=0](dphi.south east);
+\end{tikzpicture}
+}
+#+end_latex
+
+** Двухмерный случай
+
+#+begin_latex
+\small%
+\begin{minipage}{0.4\textwidth}
+  \vspace{-\baselineskip}
+  \begin{align*}
+      & \phi_{xx}+\phi_{zz}=0\\
+      & \zeta_t =
+    \only<1>{\left(\zeta_x/\sqrt{1 + \zeta_x^2}-\zeta_x\right) \phi_x}%
+    \only<2->{\rectemph{dzetadphi2}{\left(\zeta_x/\sqrt{1 + \zeta_x^2}-\zeta_x\right) \phi_x}}
+    - \phi_z
+  \end{align*}
+\end{minipage}
+\newline
+Решение в рамках линейной теории
+\begin{equation*}
+  \phi(x,z,t)
+  =
+  \InverseFourierX{
+    \frac{\Sinh{2\pi u (z+h)}}{2\pi u \Sinh{2\pi u h}}
+    \FourierX{-\zeta_t}{x}{u}
+  }{u}{x}
+  =
+  \only<1>{\mathcal{W}(x,z)}
+  \only<2->{\rectemph{windowFunc}{\mathcal{W}(x,z)}}
+  \mathrel{*} \zeta_t(x,t)
+\end{equation*}
+Общее решение
+\begin{equation*}
+  \boxed{
+    \phi(x,z,t)
+    =
+    \InverseFourierX{
+      \frac{\Sinh{2\pi u (z+h)}}{2\pi u}
+      \frac{
+        \FourierX{ \zeta_t / \left(i \:\!\:\! f(x) - 1\right) }{x}{u}
+      }{
+        \FourierX{ \FunSecond{\zeta(x,t)} }{x}{u}
+      }
+    }{u}{x}
+  }
+\end{equation*}
+\only<2->{%
+\begin{tikzpicture}[remember picture,overlay]
+  \node[fill=none,baseline,anchor=north,xshift=0cm,yshift=-1.2cm]
+    (dzetadphiLabel) at (current page.north) {%
+    \small нет в линейной теории%
+  };
+  \path[->,thick] (dzetadphiLabel.west) edge [bend right=20](dzetadphi2.north);
+  \node[fill=spbuWhite2,anchor=north east,xshift=-0.2cm,yshift=-1.2cm]
+    (windowFunctionGraph) at (current page.north east) {%
+    \includegraphics[scale=0.4]{window-function-2}
+  };
+  \path[->,thick] (windowFunctionGraph.south) edge [bend right,out=0](windowFunc.north);
+\end{tikzpicture}
+}
+#+end_latex
+
+** Сравнение с линейной теорией
+#+begin_latex
+\centering
+\begin{columns}
+  \begin{column}{0.15\textwidth}
+    \only<1>{$A=1$м}%
+    \only<2>{$A=2$м}%
+    \only<3>{$A=4$м}%
+  \end{column}
+  \begin{column}{0.4\textwidth}
+    \begin{block}{\small Линейная теория}
+      \includegraphics<1>{velocity-ref-1}
+      \includegraphics<2>{velocity-ref-2}
+      \includegraphics<3>{velocity-ref-4}
+    \end{block}
+  \end{column}
+  \begin{column}{0.4\textwidth}
+    \begin{block}{\small Новая формула}
+      \includegraphics<1>{velocity-1}
+      \includegraphics<2>{velocity-2}
+      \includegraphics<3>{velocity-4}
+    \end{block}
+  \end{column}
+\end{columns}
+#+end_latex
+
+** Сравнение с формулой для ВМА
+#+begin_latex
+\centering
+\begin{columns}[T]
+  \begin{column}{0.45\textwidth}
+    \begin{block}{\small Малая амплитуда}
+      \vspace{0.25\baselineskip}%
+      \includegraphics{low-amp-color}
+    \end{block}
+  \end{column}
+  \begin{column}{0.45\textwidth}
+    \begin{block}{\small Высокая амплитуда}
+      \vspace{0.25\baselineskip}%
+      \includegraphics{high-amp-color}
+    \end{block}
+  \end{column}
+\end{columns}
+#+end_latex
+
+* Программный комплекс
+** Диаграмма
+:PROPERTIES:
+:BEAMER_ENV: fullframe
+:END:
+
+#+begin_latex
+  \tikzset{DataBlock/.style={rectangle,draw=spbuDarkGray,thick,text width=2cm,align=center}}%
+  \tikzset{Terminator/.style={circle,fill=spbuDarkGray,thick,minimum size=0.4cm,text width=0pt}}%
+  \tikzset{Comment/.style={draw=none,fill=none,text width=8.8cm}}%
+  \small
+  \begin{tikzpicture}[x=6cm,y=0.80cm]
+    % UML blocks
+    \node[Terminator] (umlStart) at (0,0) {};
+    \node[DataBlock] (umlSpec) at (0,-1) {$S(\omega,\theta)$};
+    \node[DataBlock] (umlK) at (0,-2) {$K_{i,j,k}$};
+    \node[DataBlock,fill=spbuWhite2] (umlK2) at (0,-3) {$K_{i,j,k}^{*}$};
+    \node[DataBlock] (umlPhi) at (0,-4) {$\Phi_{i,j,k}$};
+    \node[DataBlock] (umlEps) at (0,-5) {$\epsilon_{i,j,k}$};
+    \node[DataBlock,fill=spbuWhite2] (umlZeta2) at (0,-6) {$\zeta_{i,j,k}^{*}$};
+    \node[DataBlock] (umlZeta) at (0,-7) {$\zeta_{i,j,k}$};
+    \node[DataBlock] (umlVelocity) at (0,-8) {$\phi(x,y,z)$};
+    \node[DataBlock] (umlPressure) at (0,-9) {$p(x,y,z)$};
+    \node[Terminator] (umlEnd) at (0,-10) {};
+    \node[circle,draw=spbuDarkGray,thick,minimum size=0.5cm,text width=0pt] at (0,-10) {};
+
+    % edges
+    \path[->,thick] (umlStart.south) edge (umlSpec.north);
+    \path[thick] (umlSpec.south) edge (umlK.north);
+    \path[thick] (umlK.south) edge (umlK2.north);
+    \path[thick] (umlK2.south) edge (umlPhi.north);
+    \path[thick] (umlPhi.south) edge (umlEps.north);
+    \path[thick] (umlEps.south) edge (umlZeta2.north);
+    \path[thick] (umlZeta2.south) edge (umlZeta.north);
+    \path[thick] (umlZeta.south) edge (umlVelocity.north);
+    \path[thick] (umlVelocity.south) edge (umlPressure.north);
+    \path[->,thick] (umlPressure.south) edge (umlEnd.north);
+
+    % comments
+    \node[align=left,draw=none] at (1,-1) {Частотно-направленный спектр волнения,};
+    \node[Comment] at (1,-2) {автоковариационная функция (АКФ),};
+    \node[Comment] at (1,-3) {преобразованная АКФ,};
+    \node[Comment] at (1,-4) {коэффициенты авторегрессии,};
+    \node[Comment] at (1,-5) {белый шум,};
+    \node[Comment] at (1,-6) {преобразованная реализация,};
+    \node[Comment] at (1,-7) {реализация взволнованной поверхности,};
+    \node[Comment] at (1,-8) {потенциал скорости,};
+    \node[Comment] at (1,-9) {давление.};
+  \end{tikzpicture}
+#+end_latex
+
+** Время генерации, сек.
+#+begin_latex
+\centering
+\small
+  \begin{tabular}{c lll lll}
+  \toprule
+  & \multicolumn{3}{c}{Модель Лонге---Хиггинса} & \multicolumn{3}{c}{Авторег. модель}\tabularnewline
+  \cmidrule{2-7}
+  Размер & OpenCL & OpenMP & MPI & OpenCL & OpenMP & MPI \\
+  \midrule
+  400000 & 0.82 & 40.44 & 32.60 & 1.80 & 0.800 & 0.750\\
+  440000 & 0.90 & 44.59 & 35.78 & 1.92 & 0.100 & 0.930\\
+  480000 & 0.99 & 48.49 & 38.93 & 2.29 & 0.970 & 0.126\\
+  520000 & 1.07 & 52.65 & 41.92 & 2.43 & 0.118 & 0.117\\
+  560000 & 1.15 & 56.45 & 45.00 & 2.51 & 0.117 & 0.161\\
+  600000 & 1.23 & 60.85 & 48.80 & 2.54 & 0.123 & 0.132\\
+  640000 & 1.31 & 65.07 & 53.02 & 2.73 & 0.123 & 0.160\\
+  680000 & 1.40 & 68.90 & 54.92 & 2.80 & 0.138 & 0.136\\
+  720000 & 1.48 & 72.49 & 58.42 & 2.88 & 0.144 & 0.173\\
+  760000 & \only<2>{\cellcolor{markBlue!50}}{1.56} & 76.86 & 61.41 & 3.47 & \only<2>{\cellcolor{markBlue!50}}{0.156} & 0.155\\
+  800000 & 1.64 & 81.03 & 66.42 & 3.25 & 0.166 & 0.174\\
+  \bottomrule
+\end{tabular}
+#+end_latex
+
+** Оптимизация записи в файл
+#+begin_latex
+  \begin{columns}[T]
+    \begin{column}{0.575\textwidth}
+      \begin{block}{\small Диаграмма событий}
+        \vspace{0.25\baselineskip}%
+        \includegraphics{overlap-color}
+      \end{block}
+    \end{column}
+    \begin{column}{0.425\textwidth}
+      \begin{block}{\small Время генерации}
+        \vspace{0.25\baselineskip}%
+        \includegraphics{performance-color}
+      \end{block}
+    \end{column}
+  \end{columns}
+#+end_latex
+
+** Отказоустойчивость
+#+begin_latex
+\centering%
+\includegraphics{mpp-time-color}
+#+end_latex
+
+** Выводы
+Программная реализация
+- масштабируется на SMP и MPP системы,
+- эффективна и без использования GPU
+- и отказоустойчива.
+
+** Апробация
+:PROPERTIES:
+:BEAMER_ENV: fullframe
+:END:
+
+#+begin_latex
+\begin{columns}[T]
+  \begin{column}{0.55\textwidth}
+    \begin{block}{\small Апробация в LAMP4}
+      \vspace{0.25\baselineskip}%
+      \includegraphics[width=\textwidth]{lamp4-ar-waves}
+    \end{block}
+  \end{column}
+  \begin{column}{0.35\textwidth}
+    \begin{block}{\small Апробация в Spark}
+      \centering
+      \includegraphics[width=0.7\textwidth]{spark-logo}
+    \end{block}
+    \begin{block}{\small Награды}
+      \vspace{0.25\baselineskip}%
+      \includegraphics[width=\textwidth]{hpcs-15-poster-paper-award}
+    \end{block}
+  \end{column}
+\end{columns}
+#+end_latex
+
+** Заключение
+- Изучена модель ветрового волнения для генерации волн произвольных амплитуд.
+- Разработан гибридный метод расчета давлений в двухмерной постановке.
+- Программная реализация метода была сведена к параллельному вычислению большого
+  количества преобразований Фурье.
+- Предварительная апробация модели и метода была произведена в пакете Large
+  Amplitude Motion Program 4.
+
+#+begin_latex
+\setbeamercolor{bgcolor}{fg=white,bg=black!50}
+#+end_latex
+
+** Спасибо за внимание
+:PROPERTIES:
+:BEAMER_ENV: fullframe
+:END:
+
+#+begin_latex
+\begin{tikzpicture}[remember picture,overlay]
+  \node[anchor=north west,xshift=-5,yshift=5] at (current page.north west) {%
+    \includegraphics[width=\paperwidth]{sea}
+  };
+  \node[anchor=center,fill=black,text=spbuWhite3,fill opacity=0.5,text opacity=1,yshift=1.5cm] at (current page.center) {%
+    \Large\textbf{Спасибо за внимание!}
+  };
+\end{tikzpicture}
+#+end_latex
