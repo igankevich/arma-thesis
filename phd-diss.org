@@ -490,42 +490,50 @@ eqref:eq:yule-walker by plugging $\vec k = \vec 0$:
 \end{equation*}
 
 **** Moving average (MA) process.
-The coefficients $\Theta$ are calculated from ACF via the following non-linear
+MA process is ARMA process with $\Phi\equiv0$:
+\begin{equation}
+    \zeta_{\vec i}
+    =
+    \sum\limits_{\vec j = \vec 0}^{\vec M}
+    \Theta_{\vec j} \epsilon_{\vec i - \vec j}
+    .
+    \label{eq:ma-process}
+\end{equation}
+MA coefficients $\Theta$ are defined implicitly via the following non-linear
 system of equations:
 \begin{equation*}
-	K_{i,j,k} = 
+  \gamma_{\vec i} =
 	\left[
 		\displaystyle
-		\sum\limits_{l=i}^{q_1}
-		\sum\limits_{m=j}^{q_2}
-		\sum\limits_{n=k}^{q_3}
-		\Theta_{l,m,n}\Theta_{l-i,m-j,n-k}
+    \sum\limits_{\vec j = \vec i}^{\vec M}
+    \Theta_{\vec j}\Theta_{\vec j - \vec i}
 	\right]
-	\Var{\epsilon},
+  \Var{\epsilon}.
 \end{equation*}
-which is solved by fixed-point iteration method via the following formulae
+The system is solved numerically by fixed-point iteration method via the
+following formulae
 \begin{equation*}
-	\theta_{i,j,k} =
-		-\frac{K_{0,0,0}}{\Var{\epsilon}}
+  \Theta_{\vec i} =
+    -\frac{\gamma_{\vec 0}}{\Var{\epsilon}}
 		+
-		\sum\limits_{l=i}^{q_1}
-		\sum\limits_{m=j}^{q_2}
-		\sum\limits_{n=k}^{q_3}
-		\Theta_{l,m,n} \Theta_{l-i,m-j,n-k}
+    \sum\limits_{\vec j = \vec i}^{\vec M}
+    \Theta_{\vec j} \Theta_{\vec j - \vec i}.
 \end{equation*}
-Coefficients are updated from back to front: from
-$(i,j,k) = (q_1,q_2,q_3)$ to $(i,j,k) = (0,0,0)$. White noise variance is
-estimated by
+Here coefficients $\Theta$ are calculated from back to front: from
+$\vec{i}=\vec{M}$ to $\vec{i}=\vec{0}$. White noise variance is estimated by
 \begin{equation*}
-	\Var{\epsilon} = \frac{K_{0,0,0}}{
+    \Var{\epsilon} = \frac{\gamma_{\vec 0}}{
 		1
 		+
-		\sum\limits_{i=0}^{q_1}
-		\sum\limits_{i=0}^{q_2}
-		\sum\limits_{k=0}^{q_3}
-		\Theta_{i,j,k}^2
-	}.
+    \sum\limits_{\vec j = \vec 0}^{\vec M}
+    \Theta_{\vec j}^2
+    }.
 \end{equation*}
+Authors of cite:box1976time suggest using Newton---Raphson method to solve this
+equation with higher precision, however, this method does not work in three
+dimensions. Using slower method does not have dramatic effect on the overall
+programme performance, because the number of coefficients is small and most of
+the time is spent generating wavy surface.
 
 **** Mixed autoregressive moving average (ARMA) process.
 Generally speaking, formulae for mixed process are the same as for AR and MA
