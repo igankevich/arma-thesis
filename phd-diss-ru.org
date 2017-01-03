@@ -14,6 +14,7 @@
 #+OPTIONS: todo:nil title:nil ':t H:5
 #+STARTUP: indent
 
+* Config                                                           :noexport:
 # default export options
 #+begin_src emacs-lisp :exports none :results silent
 ;; For the full list of options see
@@ -24,6 +25,103 @@
 (setq org-latex-image-default-width nil)
 #+end_src
 
+** Plot distributions                                         :noexport:
+#+begin_src gnuplot :exports none
+set loadpath GPVAL_PWD."/gnuplot"
+system "mkdir -p build"
+cd "build"
+
+load 'style.gnuplot'
+#load 'style-paper.gnuplot'
+
+set terminal svg fixed enhanced size 1920/5,900/3 font 'Old Standard, 12' dashed rounded
+set key top center Left reverse width -10 maxrows 2
+set xlabel 'z' offset 0,0.33
+set ylabel 'f(z)' offset 2,0
+
+set xrange [-3:3]
+set ytics 0,0.1
+set yrange [0:0.6]
+
+skew_normal_1(z, skewness, kurtosis) = (24 + 4*z*(-3 + z**2)* \
+      skewness + (3 - 6*z**2 + z**4)* kurtosis)/(24*(exp((z**2)/2)*sqrt(2*pi)))
+
+#print skew_normal_1(1, 0.6, 1.0)
+# regular gamma γ
+
+set output 'skew-normal-1.svg'
+plot \
+skew_normal_1(x, 0, 0) with lines ls 1 title '𝛾_1=0, 𝛾_2=0', \
+skew_normal_1(x, 0.52, 0) with lines ls 2 title '𝛾_1=0.52, 𝛾_2=0', \
+skew_normal_1(x, 0, 0.7) with lines ls 3 title '𝛾_1=0, 𝛾_2=0.7', \
+skew_normal_1(x, 0.52, 0.7) with lines ls 4 title '𝛾_1=0.52, 𝛾_2=0.7'
+system "inkscape --without-gui --export-eps=skew-normal-1.eps skew-normal-1.svg
+
+skew_normal_2(z, alpha) = \
+  erfc( -((z*alpha)/sqrt(2)) ) / \
+  (exp((z**2)/2)*sqrt(2*pi))
+
+skewness(alpha) = \
+  (sqrt(2) * (4 - pi) * (alpha**3)) \
+  / \
+  (sqrt(pi + (pi-2) * (alpha**2))**3)
+
+kurtosis(alpha) = \
+  (8*(-3 + pi)*(alpha**4))/ \
+  ((pi + (-2 + pi)*(alpha**2))**2)
+
+set terminal svg fixed enhanced size 1920/4,900/3 font 'Times, 12' dashed rounded
+set key top left Left reverse maxcols 1 maxrows 4
+set yrange [0:0.8]
+set output 'skew-normal-2.svg'
+alphas="0.00 0.87 2.25 4.90"
+a(i) = word(alphas, i)
+plot for [i=1:words(alphas)] \
+skew_normal_2(x, a(i)) with lines ls i \
+title 'α='.a(i).', 𝛾_1='.sprintf('%.2f',skewness(a(i))).', 𝛾_2='.sprintf('%.2f',kurtosis(a(i)))
+system "inkscape --without-gui --export-eps=skew-normal-2.eps skew-normal-2.svg
+
+exit
+#+end_src
+
+#+RESULTS:
+
+** Plot velocities                                            :noexport:
+#+begin_src gnuplot :exports none
+set loadpath GPVAL_PWD."/gnuplot" GPVAL_PWD."/data/velocity"
+system "mkdir -p build"
+cd "build"
+
+set terminal svg size 320, 200 font "Open Sans Regular, 12" linewidth 1 enhanced rounded dashed
+
+load 'linestyle.gnuplot'
+
+unset border
+set border 3
+set xtics nomirror out offset 0,0.5
+set ytics nomirror out offset 0.5,0
+
+set xrange [0:90]
+set yrange [-2:4]
+set xtics 0,30
+set ytics -2,2,4
+set xlabel 'x' offset 0,1
+set ylabel 'u(x)' offset 1.75,0
+
+set output 'high-amp-nocolor.svg'
+plot 'high-amp'   title 'u_1(x)' ls 1 smooth csplines, \
+     'high-amp-0' title 'u_2(x)' ls 2 smooth csplines
+system "inkscape --without-gui --export-eps=high-amp-nocolor.eps high-amp-nocolor.svg
+
+set output 'low-amp-nocolor.svg'
+plot 'low-amp'   title 'u_1(x)' ls 1 smooth csplines, \
+     'low-amp-0' title 'u_2(x)' ls 2 smooth csplines
+system "inkscape --without-gui --export-eps=low-amp-nocolor.eps low-amp-nocolor.svg
+
+exit
+#+end_src
+
+#+RESULTS:
 * Введение
 **** Актуальность темы.
 Программы, моделирующие поведение судна на морских волнах, широко применяются
@@ -962,65 +1060,6 @@ $\gamma_2$ --- эксцесс, $f$ --- плотность распределен
 значение эксцесса на интервале $0,1 \leq \gamma_2 \leq 0,7$. Вид плотности
 распределения при различных параметрах показан на [[fig:skew-normal-1]].
 
-#+begin_src gnuplot :exports none
-set loadpath GPVAL_PWD."/gnuplot"
-system "mkdir -p build"
-cd "build"
-
-load 'style.gnuplot'
-#load 'style-paper.gnuplot'
-
-set terminal svg fixed enhanced size 1920/5,900/3 font 'Old Standard, 12' dashed rounded
-set key top center Left reverse width -10 maxrows 2
-set xlabel 'z' offset 0,0.33
-set ylabel 'f(z)' offset 2,0
-
-set xrange [-3:3]
-set ytics 0,0.1
-set yrange [0:0.6]
-
-skew_normal_1(z, skewness, kurtosis) = (24 + 4*z*(-3 + z**2)* \
-      skewness + (3 - 6*z**2 + z**4)* kurtosis)/(24*(exp((z**2)/2)*sqrt(2*pi)))
-
-#print skew_normal_1(1, 0.6, 1.0)
-# regular gamma γ
-
-set output 'skew-normal-1.svg'
-plot \
-skew_normal_1(x, 0, 0) with lines ls 1 title '𝛾_1=0, 𝛾_2=0', \
-skew_normal_1(x, 0.52, 0) with lines ls 2 title '𝛾_1=0.52, 𝛾_2=0', \
-skew_normal_1(x, 0, 0.7) with lines ls 3 title '𝛾_1=0, 𝛾_2=0.7', \
-skew_normal_1(x, 0.52, 0.7) with lines ls 4 title '𝛾_1=0.52, 𝛾_2=0.7'
-system "inkscape --without-gui --export-eps=skew-normal-1.eps skew-normal-1.svg
-
-skew_normal_2(z, alpha) = \
-  erfc( -((z*alpha)/sqrt(2)) ) / \
-  (exp((z**2)/2)*sqrt(2*pi))
-
-skewness(alpha) = \
-  (sqrt(2) * (4 - pi) * (alpha**3)) \
-  / \
-  (sqrt(pi + (pi-2) * (alpha**2))**3)
-
-kurtosis(alpha) = \
-  (8*(-3 + pi)*(alpha**4))/ \
-  ((pi + (-2 + pi)*(alpha**2))**2)
-
-set terminal svg fixed enhanced size 1920/4,900/3 font 'Times, 12' dashed rounded
-set key top left Left reverse maxcols 1 maxrows 4
-set yrange [0:0.8]
-set output 'skew-normal-2.svg'
-alphas="0.00 0.87 2.25 4.90"
-a(i) = word(alphas, i)
-plot for [i=1:words(alphas)] \
-skew_normal_2(x, a(i)) with lines ls i \
-title 'α='.a(i).', 𝛾_1='.sprintf('%.2f',skewness(a(i))).', 𝛾_2='.sprintf('%.2f',kurtosis(a(i)))
-system "inkscape --without-gui --export-eps=skew-normal-2.eps skew-normal-2.svg
-
-exit
-#+end_src
-
-#+RESULTS:
 
 
 #+name: fig:skew-normal-1
@@ -1214,41 +1253,6 @@ eqref:eq:solution-2d-full велось по соответствующему с�
 образом, полученная формула показывает удовлетворительные результаты для
 различных морских поверхностей, не вводя ограничения на величины амплитуд волн.
 
-#+begin_src gnuplot :exports none
-set loadpath GPVAL_PWD."/gnuplot" GPVAL_PWD."/data/velocity"
-system "mkdir -p build"
-cd "build"
-
-set terminal svg size 320, 200 font "Open Sans Regular, 12" linewidth 1 enhanced rounded dashed
-
-load 'linestyle.gnuplot'
-
-unset border
-set border 3
-set xtics nomirror out offset 0,0.5
-set ytics nomirror out offset 0.5,0
-
-set xrange [0:90]
-set yrange [-2:4]
-set xtics 0,30
-set ytics -2,2,4
-set xlabel 'x' offset 0,1
-set ylabel 'u(x)' offset 1.75,0
-
-set output 'high-amp-nocolor.svg'
-plot 'high-amp'   title 'u_1(x)' ls 1 smooth csplines, \
-     'high-amp-0' title 'u_2(x)' ls 2 smooth csplines
-system "inkscape --without-gui --export-eps=high-amp-nocolor.eps high-amp-nocolor.svg
-
-set output 'low-amp-nocolor.svg'
-plot 'low-amp'   title 'u_1(x)' ls 1 smooth csplines, \
-     'low-amp-0' title 'u_2(x)' ls 2 smooth csplines
-system "inkscape --without-gui --export-eps=low-amp-nocolor.eps low-amp-nocolor.svg
-
-exit
-#+end_src
-
-#+RESULTS:
 
 #+name: fig:velocity-field-2d
 #+caption: Сравнение полей скоростей на поверхности моря, полученных по общей формуле ($u_1$) и формуле для волн малой амплитуды ($u_2$). Поле скоростей для поверхности волн малой амплитуды (слева) и большой амплитуды (справа).
