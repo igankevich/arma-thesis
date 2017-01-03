@@ -12,6 +12,7 @@
 #+LATEX_HEADER_EXTRA: \supervisor{Supervisor\\Alexander Degtyarev}
 #+LATEX_HEADER_EXTRA: \newcites{published}{Publications on the subject of thesis}
 #+OPTIONS: todo:nil title:nil ':t H:5
+#+STARTUP: indent
 
 * Introduction
 **** Topic relevance.
@@ -359,95 +360,133 @@ are plugged to dynamic boundary condition to obtain pressures.
 * ARMA model for ocean wave simulation
 ** Governing equations for 3-dimensional ARMA process
 *** Three possible processes
-Three-dimensional autoregressive moving average process is defined by
+ARMA ocean simulation model defines ocean wavy surface as three-dimensional (two
+dimensions in space and one in time) autoregressive moving average process:
+every surface point is represented as a weighted sum of previous in time and
+space points plus weighted sum of previous in time and space normally
+distributed random impulses. The governing equation for 3-D ARMA process is
 \begin{equation}
-	\zeta_{i,j,k} =
-	\sum\limits_{l=0}^{p_1}
-	\sum\limits_{m=0}^{p_2}
-	\sum\limits_{n=0}^{p_3}
-	\Phi_{l,m,n} \zeta_{i-l,j-m,k-n}
-	+
-	\sum\limits_{l=0}^{q_1}
-	\sum\limits_{m=0}^{q_2}
-	\sum\limits_{n=0}^{q_3}
-	\Theta_{l,m,n} \epsilon_{i-l,j-m,k-n}
-	,
-	\label{eq:arma-process}
+    \zeta_{\vec i}
+    =
+    \sum\limits_{\vec j = \vec 0}^{\vec N}
+    \Phi_{\vec j} \zeta_{\vec i - \vec j}
+    +
+    \sum\limits_{\vec j = \vec 0}^{\vec M}
+    \Theta_{\vec j} \epsilon_{\vec i - \vec j}
+    ,
+    \label{eq:arma-process}
 \end{equation}
-where $\zeta$ --- wave elevation, $\Phi$ --- AR coefficients, $\Theta$ --- MA
-coefficients, $\epsilon$ --- white noise with Gaussian distribution,
-$(p_1,p_2,p_3)$ --- AR process order, $(q_1,q_2,q_3)$ --- MA process order, and
-$\Phi_{0,0,0} \equiv 0$, $\Theta_{0,0,0} \equiv 0$. The input parameters are
-AR/MA process coefficients and order.
+where $\zeta$ --- wave elevation, $\Phi$ --- AR process coefficients, $\Theta$
+--- MA process coefficients, $\epsilon$ --- white noise with Gaussian
+distribution, $\vec N$ --- AR process order, $\vec M$ --- MA process order, and
+$\Phi_{\vec 0} \equiv 0$, $\Theta_{\vec 0} \equiv 0$. Here arrows denote
+multi-component indices with a component for each dimension. In general, any
+scalar quantity can be a component (temperature, salinity, concentration of some
+substance in water etc.). Equation parameters are AR and MA process coefficients
+and order.
 
 **** Autoregressive (AR) process.
+AR process is ARMA process with only one random impulse instead of theirs
+weighted sum:
+\begin{equation}
+    \zeta_{\vec i}
+    =
+    \sum\limits_{\vec j = \vec 0}^{\vec N}
+    \Phi_{\vec j} \zeta_{\vec i - \vec j}
+    +
+    \epsilon_{i,j,k}
+    .
+    \label{eq:ar-process}
+\end{equation}
 The coefficients $\Phi$ are calculated from ACF via three-dimensional
-Yule---Walker equations:
+Yule---Walker equations, which are obtained after multiplying both parts of the
+previous equation by $\zeta_{\vec{i}-\vec{k}}$ and computing the expected value.
+Generic form of YW equations is
+\begin{equation}
+    \label{eq:yule-walker}
+    \gamma_{\vec k}
+    =
+    \sum\limits_{\vec j = \vec 0}^{\vec N}
+    \Phi_{\vec j}
+    \text{ }\gamma_{\vec{k}-\vec{j}}
+    +
+    \Var{\epsilon} \delta_{\vec{k}},
+    \qquad
+    \delta_{\vec{k}} =
+    \begin{cases}
+        1, \quad \text{if } \vec{k}=0 \\
+        0, \quad \text{if } \vec{k}\neq0,
+    \end{cases}
+\end{equation}
+where $\gamma$ --- ACF of process $\zeta$, $\Var{\epsilon}$ --- white noise
+variance. Matrix form of three-dimensional YW equations, which is used in the
+present work, is
 \begin{equation*}
     \Gamma
     \left[
         \begin{array}{l}
-            \Phi_{0,0,0}\\
+            \Phi_{\vec 0}\\
             \Phi_{0,0,1}\\
-            \vdotswithin{\Phi_{0,0,0}}\\
-            \Phi_{p_1,p_2,p_3}
+            \vdotswithin{\Phi_{\vec 0}}\\
+            \Phi_{\vec N}
         \end{array}
     \right]
-    = 
+    =
     \left[
         \begin{array}{l}
-            K_{0,0,0}-\Var{\epsilon}\\
-            K_{0,0,1}\\
-            \vdotswithin{K_{0,0,0}}\\
-            K_{p_1,p_2,p_3}
+            \gamma_{0,0,0}-\Var{\epsilon}\\
+            \gamma_{0,0,1}\\
+            \vdotswithin{\gamma_{\vec 0}}\\
+            \gamma_{\vec N}
         \end{array}
     \right],
     \qquad
     \Gamma=
     \left[
         \begin{array}{llll}
-            \Gamma_0 & \Gamma_1 & \cdots & \Gamma_{p_1} \\
+            \Gamma_0 & \Gamma_1 & \cdots & \Gamma_{N_1} \\
             \Gamma_1 & \Gamma_0 & \ddots & \vdotswithin{\Gamma_0} \\
             \vdotswithin{\Gamma_0} & \ddots & \ddots & \Gamma_1 \\
-            \Gamma_{p_1} & \cdots & \Gamma_1 & \Gamma_0
+            \Gamma_{N_1} & \cdots & \Gamma_1 & \Gamma_0
         \end{array}
     \right],
 \end{equation*}
-where $\vec N = \left( p_1, p_2, p_3 \right)$, $\Var{\epsilon}$ --- white noise
-variance, and
+where $\vec N = \left( p_1, p_2, p_3 \right)$ and
 \begin{equation*}
-    \Gamma_i = 
+    \Gamma_i =
     \left[
     \begin{array}{llll}
-        \Gamma^0_i & \Gamma^1_i & \cdots & \Gamma^{p_2}_i \\
+        \Gamma^0_i & \Gamma^1_i & \cdots & \Gamma^{N_2}_i \\
         \Gamma^1_i & \Gamma^0_i & \ddots & \vdotswithin{\Gamma^0_i} \\
         \vdotswithin{\Gamma^0_i} & \ddots & \ddots & \Gamma^1_i \\
-        \Gamma^{p_2}_i & \cdots & \Gamma^1_i & \Gamma^0_i
+        \Gamma^{N_2}_i & \cdots & \Gamma^1_i & \Gamma^0_i
     \end{array}
     \right]
     \qquad
-    \Gamma_i^j= 
+    \Gamma_i^j=
     \left[
     \begin{array}{llll}
-        K_{i,j,0} & K_{i,j,1} & \cdots & K_{i,j,p_3} \\
-        K_{i,j,1} & K_{i,j,0} & \ddots &x \vdotswithin{K_{i,j,0}} \\
-        \vdotswithin{K_{i,j,0}} & \ddots & \ddots & K_{i,j,1} \\
-        K_{i,j,p_3} & \cdots & K_{i,j,1} & K_{i,j,0}
+        \gamma_{i,j,0} & \gamma_{i,j,1} & \cdots & \gamma_{i,j,N_3} \\
+        \gamma_{i,j,1} & \gamma_{i,j,0} & \ddots &x \vdotswithin{\gamma_{i,j,0}} \\
+        \vdotswithin{\gamma_{i,j,0}} & \ddots & \ddots & \gamma_{i,j,1} \\
+        \gamma_{i,j,N_3} & \cdots & \gamma_{i,j,1} & \gamma_{i,j,0}
     \end{array}
     \right],
 \end{equation*}
-Since $\Phi_{0,0,0}\equiv0$, the first row and column of $\Gamma$ can be
+Since $\Phi_{\vec 0}\equiv0$, the first row and column of $\Gamma$ can be
 eliminated. Matrix $\Gamma$ is block-toeplitz, positive definite and symmetric,
-hence the system is solved by Cholesky decomposition. White noise variance is
-estimated by
+hence the system is efficiently solved by Cholesky decomposition, which is
+particularly suitable for these types of matrices.
+
+After solving this system of equations white noise variance is estimated from
+eqref:eq:yule-walker by plugging $\vec k = \vec 0$:
 \begin{equation*}
-    \Var{\epsilon} = 
-	K_{0,0,0}
-    - 
-	\sum\limits_{i=0}^{p_1}
-	\sum\limits_{i=0}^{p_2}
-	\sum\limits_{k=0}^{p_3}
-    \Phi_{i,j,k} K_{i,j,k}.
+    \Var{\epsilon} =
+    \Var{\zeta}
+    -
+    \sum\limits_{\vec j = \vec 0}^{\vec N}
+    \Phi_{\vec j}
+    \text{ }\gamma_{\vec{j}}.
 \end{equation*}
 
 **** Moving average (MA) process.
@@ -762,6 +801,10 @@ exit
 
 *** TODO Discuss graphs
 *** Verification of velocity potential fields
+:PROPERTIES:
+:CUSTOM_ID: sec:compare-formulae
+:END:
+
 *** Non-physical nature of ARMA model
 ARMA model, owing to its non-physical nature, does not have the notion of ocean
 wave; it simulates wavy surface as a whole instead. Motions of individual waves
