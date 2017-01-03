@@ -26,6 +26,7 @@
 % page numbering
 \RequirePackage{scrlayer-scrpage}
 \cohead{\thepage}
+\cofoot{}
 \setkomafont{pagehead}{\scriptsize\mdseries\upshape}
 \pagestyle{scrheadings}
 
