@@ -536,20 +536,21 @@ programme performance, because the number of coefficients is small and most of
 the time is spent generating wavy surface.
 
 **** Mixed autoregressive moving average (ARMA) process.
-Generally speaking, formulae for mixed process are the same as for AR and MA
-part, but there are several approaches to mix them.
-- The approach proposed in~\cite{box1976time} which involves dividing ACF into
-  MA and AR part is not applicable here, because in three dimensions the
-  division is not possible: there always be parts of the ACF that are not taken
-  into account by AR and MA process.
+Generally speaking, ARMA process is obtained by plugging MA generated wavy
+surface as random impulse to AR process, however, in order to get the process
+with desired ACF one should re-compute AR coefficients before plugging. There
+are several approaches to "mix" AR and MA processes.
+- The approach proposed in cite:box1976time which involves dividing ACF into MA
+  and AR part along each dimension is not applicable here, because in three
+  dimensions such division is not possible: there always be parts of the ACF
+  that are not taken into account by AR and MA process.
 - The alternative approach is to use the same (undivided) ACF for both AR and MA
-  part but use different process order, however, then realisation
+  processes but use different process order, however, then realisation
   characteristics (mean, variance etc.) become skewed: these are characteristics
   of the two overlapped processes.
-For the first approach there is a formula to recompute ACF for AR part to make
-the mixed process correspond to the initial ACF, but there is no such formula
-for the second approach. So, the best solution for now is to simply use AR and
-MA process exclusively.
+For the first approach there is a formula to re-compute ACF for AR process, but
+there is no such formula for the second approach. So, the best solution for now
+is to simply use AR and MA process exclusively.
 
 *** Process selection criteria for different wave profiles
 The main problem of ARMA model application to ocean wave generation is that for
