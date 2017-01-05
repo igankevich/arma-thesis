@@ -710,8 +710,97 @@ determining pressures under wavy ocean surface.
 :PROPERTIES:
 :CUSTOM_ID: sec:pressure-2d
 :END:
-
 **** Formula for of infinite depth fluid.
+Two-dimensional Laplace equation with Robin boundary condition is written as
+\begin{align}
+    \label{eq:problem-2d}
+    & \phi_{xx}+\phi_{zz}=0,\\
+    & \zeta_t + \zeta_x\phi_x = \frac{\zeta_x}{\sqrt{1 + \zeta_x^2}} \phi_x - \phi_z, & \text{на }z=\zeta(x,t).\nonumber
+\end{align}
+Use Fourier method to solve this problem. Applying Fourier transform to both
+sides of the equation yields
+\begin{equation*}
+    -4 \pi^2 \left( u^2 + v^2 \right)
+    \Fourier{\phi(x,z)}(u,v) = 0,
+\end{equation*}
+hence $v = \pm i u$. Hereinafter we use the following symmetric form of Fourier
+transform:
+\begin{equation*}
+    \Fourier{f(x,y)}(u,v) =
+    \iint\limits_{-\infty}^{\phantom{--}\infty}
+    f(x,y)
+    e^{-2\pi i (x u + y v)}
+    dx dy
+\end{equation*}
+We seek solution in the form of inverse Fourier transform
+$\phi(x,z)=\InverseFourier{E(u,v)}(x,z)$. Plugging
+$v={i}{u}$\footnote{$v={-i}{u}$ is not applicable because velocity potential
+must go to nought when depth goes to infinity.} into the formula yields
+\begin{equation}
+    \label{eq:guessed-sol-2d}
+    \phi(x,z) = \InverseFourier{e^{2\pi u z}E(u)}(x).
+\end{equation}
+In order to make substitution $z=\zeta(x,t)$ not interfere with Fourier
+transforms, we rewrite eqref:eq:guessed-sol-2d as a convolution:
+\begin{equation*}
+    \phi(x,z)
+    =
+    \Fun{z}
+    \ast
+    \InverseFourier{E(u)}(x),
+\end{equation*}
+where $\Fun{z}$ --- a function, form of which is defined in section
+[[#sec:compute-delta]] and which satisfies equation
+$\Fourier{\Fun{z}}(u)=e^{2\pi{u}{z}}$. Plugging expressions for $\phi$ into the
+boundary condition yields
+\begin{equation*}
+    \zeta_t
+    =
+    \left( i f(x) - 1 \right)
+    \left[
+        \Fun{z}
+        \ast
+        \InverseFourier{2\pi u E(u)}(x)
+    \right],
+\end{equation*}
+where $f(x)={\zeta_x}/{\sqrt{1+\zeta_x^2}}-\zeta_x$. Applying Fourier transform
+to both sides of this equation yields formula for coefficients $E$:
+\begin{equation*}
+    E(u) =
+    \frac{1}{2\pi u}
+    \frac{
+    \Fourier{\zeta_t / \left(i f(x) - 1\right)}(u)
+    }{
+    \Fourier{\Fun{z}}(u)
+    }
+\end{equation*}
+Finally, substituting $z$ for $\zeta(x,t)$ and plugging resulting equation into
+eqref:eq:guessed-sol-2d yields formula for $\phi(x,z)$:
+\begin{equation}
+    \label{eq:solution-2d}
+    \boxed{
+        \phi(x,z)
+        =
+        \InverseFourier{
+            \frac{e^{2\pi u z}}{2\pi u}
+            \frac{
+            \Fourier{ \zeta_t / \left(i f(x) - 1\right) }(u)
+            }{
+            \Fourier{ \Fun{\zeta(x,t)} }(u)
+            }
+        }(x).
+    }
+\end{equation}
+
+Multiplier $e^{2\pi{u}{z}}/(2\pi{u})$ makes graph of a function to which Fourier
+transform of which is applied asymmetric with respect to $OY$ axis. This makes
+it difficult to apply FFT which expects periodic function with nought on both
+ends of the interval. Using numerical integration instead of FFT is not faster
+than solving the initial system of equations with numerical schemes. This
+problem is alleviated by using formula eqref:eq:solution-2d-full for finite
+depth fluid with wittingly large depth $h$. This formula is derived in the
+following section.
+
 **** Formula for of finite depth fluid.
 **** Reducing to the formulae from linear wave theory.
 *** Three-dimensional velocity field
