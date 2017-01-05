@@ -710,7 +710,7 @@ determining pressures under wavy ocean surface.
 :PROPERTIES:
 :CUSTOM_ID: sec:pressure-2d
 :END:
-**** Formula for of infinite depth fluid.
+**** Formula for infinite depth fluid.
 Two-dimensional Laplace equation with Robin boundary condition is written as
 \begin{align}
     \label{eq:problem-2d}
@@ -801,7 +801,7 @@ problem is alleviated by using formula eqref:eq:solution-2d-full for finite
 depth fluid with wittingly large depth $h$. This formula is derived in the
 following section.
 
-**** Formula for of finite depth fluid.
+**** Formula for finite depth fluid.
 **** Reducing to the formulae from linear wave theory.
 *** Three-dimensional velocity field
 
