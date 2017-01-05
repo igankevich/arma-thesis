@@ -668,6 +668,54 @@ bisection method. Using the same approximation in Gram---Charlier series does
 not lead to such errors.
 
 ** Determining wave pressures for discretely given wavy surface
+Analytic solutions to boundary problems in classical equations are often used to
+study different properties of the solution, and for that purpose general
+solution formula is too difficult to study, as it contains integrals of unknown
+functions. Fourier method is one of the methods to find analytic solutions to
+PDE. It is based on application of Fourier transform to each part of PDE, which
+reduces the equation to algebraic, and the solution is written as inverse
+Fourier transform of some function (which may contain Fourier transforms of
+other functions). Since, it is not possible to write analytic forms of these
+Fourier transforms in all cases, unique solutions are found and their behaviour
+is studied in different domains instead. At the same time, computing discrete
+Fourier transforms on the computer is possible for any discretely defined
+function and efficient when using FFT algorithms. These algorithms use symmetry
+of complex exponentials to decrease asymptotic complexity from
+$\mathcal{O}(n^2)$ to $\mathcal{O}(n\log_{2}n)$. So, even if general solution
+contains Fourier transforms of unknown functions, they still can be computed
+numerically, and FFT family of algorithms makes this approach efficient.
+
+Alternative approach to solve PDE is to reduce it to difference equations, which
+are solved by constructing various numerical schemes. This approach leads to
+approximate solution, and asymptotic complexity of corresponding algorithms is
+comparable to that of FFT. For example, stationary elliptic PDE transforms to
+implicit numerical scheme which is solved by iterative method on each step of
+which a tridiagonal of five-diagonal system of algebraic equations is solved by
+Thomas algorithm. Asymptotic complexity of this approach is
+$\mathcal{O}({n}{m})$, where $n$ --- number of wavy surface grid points, $m$ ---
+number of iterations. Despite their wide spread, iterative algorithms are
+inefficient on parallel computer architectures; in particular, their mapping to
+co-processors may involve copying data in and out of the co-processor in each
+iteration, which negatively affects their performance. At the same time, high
+number of Fourier transforms in the solution is an advantage, rather than a
+disadvantage. First, solutions obtained by Fourier method are explicit, hence
+their implementations scales with the large number of parallel computer cores.
+Second, there are implementations of FFT optimised for different processor
+architectures as well as co-processors (GPU, MIC) which makes it easy to get
+high performance on any computing platform. These advantages substantiate the
+choice of Fourier method to obtain explicit analytic solution to the problem of
+determining pressures under wavy ocean surface.
+
+*** Two-dimensional velocity field
+:PROPERTIES:
+:CUSTOM_ID: sec:pressure-2d
+:END:
+
+**** Formula for of infinite depth fluid.
+**** Formula for of finite depth fluid.
+**** Reducing to the formulae from linear wave theory.
+*** Three-dimensional velocity field
+
 * Numerical methods and experimental results
 ** The shape of ACF for different types of waves
 *** Two methods to find ocean waves ACF
