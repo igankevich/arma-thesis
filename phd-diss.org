@@ -84,7 +84,7 @@ was still much work to be done to make it useful in practice.
    Usually, such formulae are derived for a particular model by substituting
    wave profile into the eq. eqref:eq:problem, however, ARMA process does not
    provide explicit wave profile formula, so this problem had to be solved for
-   general wavy surface (which is not defined by an analytic expression),
+   general wavy surface (which is not defined by an analytic formula),
    without linearisation of boundaries and assumption of small-amplitude waves.
 4. Finally, verify wavy surface integral characteristics to match the ones of
    real ocean waves.
@@ -149,7 +149,7 @@ programming language allowing visual control of programme correctness.
 ARMA model is verified by comparing generated wavy surface integral
 characteristics (distribution of wave elevation, wave heights and lengths etc.)
 to the ones of real ocean waves. Pressure field formula is derived in
-Mathematica language, where resulting expressions are verified by built-in
+Mathematica language, where resulting formulae are verified by built-in
 graphical means.
 
 ARMA model and pressure field formula were incorporated into Large Amplitude
@@ -281,7 +281,7 @@ is mostly a different problem.
    coefficients, has complex block-block structure.
 2. Optimal model order (in a sense that target spectrum agrees with initial) is
    determined manually.
-3. Instead of PM spectrum, analytic expressions for standing and propagating
+3. Instead of PM spectrum, analytic formulae for standing and propagating
    waves ACF are used as the model input.
 4. Three-dimensional wavy surface should be compatible with real ocean surface
    not only in terms of spectral characteristics, but also in the shape of wave
@@ -639,7 +639,7 @@ where
 \end{equation*}
 $H_m$ --- Hermite polynomial, and $f(y)$ --- solution to equation
 eqref:eq:distribution-transformation. Plugging polynomial approximation
-$f(y)\approx\sum\limits_{i}d_{i}y^i$ and analytic expressions for Hermite
+$f(y)\approx\sum\limits_{i}d_{i}y^i$ and analytic formulae for Hermite
 polynomial yields
 \begin{equation*}
     \frac{1}{\sqrt{2\pi}}
@@ -721,24 +721,24 @@ Use Fourier method to solve this problem. Applying Fourier transform to both
 sides of the equation yields
 \begin{equation*}
     -4 \pi^2 \left( u^2 + v^2 \right)
-    \Fourier{\phi(x,z)}(u,v) = 0,
+    \FourierY{\phi(x,z)}{u,v} = 0,
 \end{equation*}
 hence $v = \pm i u$. Hereinafter we use the following symmetric form of Fourier
 transform:
 \begin{equation*}
-    \Fourier{f(x,y)}(u,v) =
+    \FourierY{f(x,y)}{u,v} =
     \iint\limits_{-\infty}^{\phantom{--}\infty}
     f(x,y)
     e^{-2\pi i (x u + y v)}
     dx dy
 \end{equation*}
 We seek solution in the form of inverse Fourier transform
-$\phi(x,z)=\InverseFourier{E(u,v)}(x,z)$. Plugging
-$v={i}{u}$\footnote{$v={-i}{u}$ is not applicable because velocity potential
-must go to nought when depth goes to infinity.} into the formula yields
+$\phi(x,z)=\InverseFourierY{E(u,v)}{x,z}$. Plugging[fn::$v={-i}{u}$ is not
+applicable because velocity potential must go to nought when depth goes to
+infinity.] $v={i}{u}$ into the formula yields
 \begin{equation}
     \label{eq:guessed-sol-2d}
-    \phi(x,z) = \InverseFourier{e^{2\pi u z}E(u)}(x).
+    \phi(x,z) = \InverseFourierY{e^{2\pi u z}E(u)}{x}.
 \end{equation}
 In order to make substitution $z=\zeta(x,t)$ not interfere with Fourier
 transforms, we rewrite eqref:eq:guessed-sol-2d as a convolution:
@@ -747,12 +747,12 @@ transforms, we rewrite eqref:eq:guessed-sol-2d as a convolution:
     =
     \Fun{z}
     \ast
-    \InverseFourier{E(u)}(x),
+    \InverseFourierY{E(u)}{x},
 \end{equation*}
 where $\Fun{z}$ --- a function, form of which is defined in section
 [[#sec:compute-delta]] and which satisfies equation
-$\Fourier{\Fun{z}}(u)=e^{2\pi{u}{z}}$. Plugging expressions for $\phi$ into the
-boundary condition yields
+$\FourierY{\Fun{z}}{u}=e^{2\pi{u}{z}}$. Plugging formula $\phi$ into the boundary
+condition yields
 \begin{equation*}
     \zeta_t
     =
@@ -760,7 +760,7 @@ boundary condition yields
     \left[
         \Fun{z}
         \ast
-        \InverseFourier{2\pi u E(u)}(x)
+        \InverseFourierY{2\pi u E(u)}{x}
     \right],
 \end{equation*}
 where $f(x)={\zeta_x}/{\sqrt{1+\zeta_x^2}}-\zeta_x$. Applying Fourier transform
@@ -769,9 +769,9 @@ to both sides of this equation yields formula for coefficients $E$:
     E(u) =
     \frac{1}{2\pi u}
     \frac{
-    \Fourier{\zeta_t / \left(i f(x) - 1\right)}(u)
+    \FourierY{\zeta_t / \left(i f(x) - 1\right)}{u}
     }{
-    \Fourier{\Fun{z}}(u)
+    \FourierY{\Fun{z}}{u}
     }
 \end{equation*}
 Finally, substituting $z$ for $\zeta(x,t)$ and plugging resulting equation into
@@ -781,14 +781,14 @@ eqref:eq:guessed-sol-2d yields formula for $\phi(x,z)$:
     \boxed{
         \phi(x,z)
         =
-        \InverseFourier{
+        \InverseFourierY{
             \frac{e^{2\pi u z}}{2\pi u}
             \frac{
-            \Fourier{ \zeta_t / \left(i f(x) - 1\right) }(u)
+            \FourierY{ \zeta_t / \left(i f(x) - 1\right) }{u}
             }{
-            \Fourier{ \Fun{\zeta(x,t)} }(u)
+            \FourierY{ \Fun{\zeta(x,t)} }{u}
             }
-        }(x).
+        }{x}.
     }
 \end{equation}
 
@@ -802,8 +802,179 @@ depth fluid with wittingly large depth $h$. This formula is derived in the
 following section.
 
 **** Formula for finite depth fluid.
+On the sea bottom vertical fluid velocity component equals nought: $\phi_z=0$ on
+$z=-h$, where $h$ --- water depth. In this case equation $v=-{i}{u}$, which came
+from Laplace equation, can not be neglected, hence the solution is sought in the
+following form:
+\begin{equation}
+    \phi(x,z)
+    =
+    \InverseFourierY{
+        \left( C_1 e^{2\pi u z} + C_2 e^{-2\pi u z} \right)
+        E(u)
+    }{x}.
+    \label{eq:guessed-sol-2d-full}
+\end{equation}
+Plugging $\phi$ into the boundary condition on the sea bottom yields
+\begin{equation*}
+    C_1 e^{-2\pi u h} - C_2 e^{2\pi u h} = 0,
+\end{equation*}
+hence $C_1=\frac{1}{2}C{e}^{2\pi{u}{h}}$ and
+$C_2=-\frac{1}{2}C{e}^{-2\pi{u}{h}}$. Constant $C$ may take arbitrary value
+here, because after plugging it becomes part of unknown coefficients $E(u)$.
+Plugging formulae for $C_1$ and $C_2$ into eqref:eq:guessed-sol-2d-full yields
+\begin{equation*}
+    \phi(x,z) = \InverseFourierY{ \Sinh{2\pi u (z+h)} E(u) }{x}.
+\end{equation*}
+Performing analogous to the previous section transformations yields final
+formula for $\phi(x,z)$:
+\begin{equation}
+\boxed{
+    \phi(x,z,t)
+    =
+  \InverseFourierY{
+        \frac{\Sinh{2\pi u (z+h)}}{2\pi u}
+        \frac{
+            \FourierY{ \zeta_t / \left(i f(x) - 1\right) }{u}
+        }{
+            \FourierY{ \FunSecond{\zeta(x,t)} }{u}
+        }
+    }{x},
+}
+    \label{eq:solution-2d-full}
+\end{equation}
+where $\FunSecond{z}$ --- a function, form of which is defined in section
+[[#sec:compute-delta]] and which satisfies equation
+$\FourierY{\FunSecond{z}}{u}=\Sinh{2\pi{u}{z}}$.
+
 **** Reducing to the formulae from linear wave theory.
+Check the validity of derived formulae by substituting $\zeta(x,t)$ with known
+analytic formula for plain waves. Symbolic computation of Fourier transforms in
+this section were performed in Mathematica cite:mathematica10. In the framework
+of linear wave theory assume that waves have small amplitude compared to their
+lengths, which allows us simplifying initial system of equations
+eqref:eq:problem-2d to
+\begin{align*}
+    & \phi_{xx}+\phi_{zz}=0,\\
+    & \zeta_t = -\phi_z & \text{на }z=\zeta(x,t),
+\end{align*}
+solution to which is written as
+\begin{equation*}
+    \phi(x,z,t)
+    =
+    -\InverseFourierY{
+        \frac{e^{2\pi u z}}{2\pi u}
+        \FourierY{\zeta_t}{u}
+    }{x}
+    .
+\end{equation*}
+Propagating wave profile is defined as $\zeta(x,t)=A\cos(2\pi(kx-t))$. Plugging
+this formula into eqref:eq:solution-2d yields
+$\phi(x,z,t)=-\frac{A}{k}\sin(2\pi(kx-t))\Sinh{2\pi{k}{z}}$. In order to reduce
+it to the formula from linear wave theory, rewrite hyperbolic sine in
+exponential form, discard the term containing $e^{-2\pi{k}{z}}$ as contradicting
+condition $\phi\underset{z\rightarrow-\infty}{\longrightarrow}0$. Taking real
+part of the resulting formula yields
+$\phi(x,z,t)=\frac{A}{k}e^{2\pi{k}{z}}\sin(2\pi(kx-t))$, which corresponds to
+the known formula from linear wave theory. Similarly, under small-amplitude
+waves assumption the formula for finite depth fluid eqref:eq:solution-2d-full is
+reduced to
+\begin{equation*}
+    \phi(x,z,t)
+    =
+    -\InverseFourierY{
+        \frac{\Sinh{2\pi u (z+h)}}{2\pi u \Sinh{2\pi u h}}
+        \FourierY{\zeta_t}{u}
+    }{x}.
+\end{equation*}
+Substituting $\zeta(x,t)$ with propagating plain wave profile formula yields
+\begin{equation}
+    \label{eq:solution-2d-linear}
+    \phi(x,z,t)=\frac{A}{k}
+    \frac{\Sinh{2 \pi k (z+h)}}{ \Sinh{2 \pi k h} }
+    \sin(2 \pi (k x-t)),
+\end{equation}
+which corresponds to the formula from linear wave theory for finite depth fluid.
+
+Different forms of Laplace equation solutions, in which decaying exponent is
+written with either "+" or "-" signs, may cause incompatibilities between
+formulae from linear wave theory and formulae derived in this work, where
+$\sinh$ is used instead of $\cosh$. Equality
+$\frac{\Sinh{2\pi{k}(z+h)}}{\Sinh{2\pi{k}{h}}}\approx\frac{\sinh(2\pi{k}(z+h))}{\sinh(2\pi{k}{h})}$
+becomes strict on the free surface, and difference between left-hand and
+right-hand sides increases when approaching sea bottom (for sufficiently large
+depth difference near free surface is negligible). So, for sufficiently large
+depth any function ($\cosh$ or $\sinh$) may be used for velocity potential
+computation near free surface.
+
+Reducing eqref:eq:solution-2d и eqref:eq:solution-2d-full to the known formulae
+from linear wave theory shows, that formula for infinite depth
+eqref:eq:solution-2d is not suitable to compute velocity potentials with Fourier
+method, because it does not have symmetry, which is required for discrete
+Fourier transform. However, formula for finite depth can be used instead by
+setting $h$ to some characteristic water depth. For standing wave reducing to
+linear wave theory formulae is made under the same assumptions.
+
 *** Three-dimensional velocity field
+Three-dimensional version of eqref:eq:problem is written as
+\begin{align}
+    \label{eq:problem-3d}
+    & \phi_xx + \phi_yy + \phi_zz = 0,\\
+    & \zeta_t + \zeta_x\phi_x + \zeta_y\phi_y
+    =
+    \frac{\zeta_x}{\sqrt{1 + \zeta_x^2}} \phi_x
+    +\frac{\zeta_y}{\sqrt{\vphantom{\zeta_x^2}\smash[b]{1 + \zeta_y^2}}} \phi_y
+    - \phi_z, & \text{на }z=\zeta(x,y,t).\nonumber
+\end{align}
+Again, use Fourier method to solve it. Applying Fourier transform to both sides
+of Laplace equation yields
+\begin{equation*}
+    -4 \pi^2 \left( u^2 + v^2 + w^2 \right)
+    \FourierY{\phi(x,y,z)}{u,v,w} = 0,
+\end{equation*}
+hence $w=\pm{i}\sqrt{u^2+v^2}$. We seek solution in the form of inverse Fourier
+transform $\phi(x,y,z)=\InverseFourierY{E(u,v,w)}{x,y,z}$. Plugging
+$w=i\sqrt{u^2+v^2}$ into the formula yields
+\begin{equation*}
+    \phi(x,y,z) = \InverseFourierY{
+        \left(
+            C_1 e^{2\pi \sqrt{u^2+v^2} z}
+            -C_2 e^{-2\pi \sqrt{u^2+v^2} z}
+        \right)
+        E(u,v)
+    }{x,y}.
+\end{equation*}
+Plugging $\phi$ into the boundary condition on the sea bottom (analogous to
+two-dimensional case) yields
+\begin{equation}
+    \label{eq:guessed-sol-3d}
+    \phi(x,y,z) = \InverseFourierY{
+        \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)
+    }{x,y}.
+\end{equation}
+Plugging $\phi$ into the boundary condition on the free surface yields
+\begin{equation*}
+    \arraycolsep=1.4pt
+    \begin{array}{rl}
+        \zeta_t = & i f_1(x,y) \InverseFourierY{2 \pi u \Sinh{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y} \\
+        + & i f_2(x,y) \InverseFourierY{2 \pi v \Sinh{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y} \\
+        - & \InverseFourierY{2 \pi \sqrt{u^2+v^2} \Sinh{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y}
+    \end{array}
+\end{equation*}
+where $f_1(x,y)={\zeta_x}/{\sqrt{1+\zeta_x^2}}-\zeta_x$ and
+$f_2(x,y)={\zeta_y}/{\sqrt{\vphantom{\zeta_x^2}\smash[b]{1+\zeta_y^2}}}-\zeta_y$.
+Applying Fourier transform to both sides of the equation yields formula for
+coefficients $E$:
+\begin{equation*}
+    \arraycolsep=1.4pt
+    \begin{array}{rl}
+        \FourierY{\zeta_t}{u,v} = &
+        \FourierY{i f_1(x,y) \InverseFourierY{2 \pi u \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)}{x,y}}{u,v}  \\
+        + & \FourierY{i f_2(x,y) \InverseFourierY{2 \pi v \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)}{x,y}}{u,v}  \\
+        - & 2 \pi \sqrt{u^2+v^2} \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)
+    \end{array}
+\end{equation*}
+Final solution is obtained after plugging $E(u,v)$ into eqref:eq:guessed-sol-3d.
 
 * Numerical methods and experimental results
 ** The shape of ACF for different types of waves
@@ -818,10 +989,10 @@ the absolute square of the function:
   \label{eq:wiener-khinchin}
 \end{equation}
 When $\zeta$ is replaced with actual wave profile, this formula gives you
-analytic expression for the corresponding ACF.
+analytic formula for the corresponding ACF.
 
 For three-dimensional wave profile (2D in space and 1D in time) analytic
-expression is a polynomial of high order and is best obtained via computer
+formula is a polynomial of high order and is best obtained via computer
 algebra software. Then for practical usage it can be approximated by
 superposition of exponentially decaying cosines (which is how ACF of a
 stationary ARMA process looks like cite:box1976time).
@@ -847,7 +1018,7 @@ For three-dimensional standing wave the profile is approximated by
   \zeta(t, x, y) = A \sin (k_x x + k_y y) \sin (\sigma t).
   \label{eq:standing-wave}
 \end{equation}
-In order to get ACF via analytic method one needs to multiply this expression by
+In order to get ACF via analytic method one needs to multiply this formula by
 a decaying exponent, because Fourier transform is defined for a function $f$ that
 $f \underset{x \rightarrow \pm \infty}{\longrightarrow} 0$. The formula of the
 profile then transforms to
@@ -858,7 +1029,7 @@ profile then transforms to
   \sin (k_x x + k_y y) \sin (\sigma t).
   \label{eq:decaying-standing-wave}
 \end{equation}
-Then, if one takes 3D Fourier transform of this expression via any capable
+Then, if one takes 3D Fourier transform of this formula via any capable
 computer algebra software, the resulting polynomial may be fitted to the
 following ACF approximation.
 \begin{equation}
@@ -920,6 +1091,10 @@ found in the following steps:
 *** Wave elevation distribution approximation
 *** White noise generation
 *** Wavy surface generation
+*** Velocity potential normalisation formulae
+:PROPERTIES:
+:CUSTOM_ID: sec:compute-delta
+:END:
 ** ARMA model verification
 *** Numerical experiments implementation methodology
 *** Verification of wavy surface integral characteristics
