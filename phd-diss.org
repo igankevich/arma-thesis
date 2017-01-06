@@ -730,7 +730,7 @@ transform:
     \iint\limits_{-\infty}^{\phantom{--}\infty}
     f(x,y)
     e^{-2\pi i (x u + y v)}
-    dx dy
+    dx dy.
 \end{equation*}
 We seek solution in the form of inverse Fourier transform
 $\phi(x,z)=\InverseFourierY{E(u,v)}{x,z}$. Plugging[fn::$v={-i}{u}$ is not
@@ -826,8 +826,15 @@ Plugging formulae for $C_1$ and $C_2$ into eqref:eq:guessed-sol-2d-full yields
 \begin{equation*}
     \phi(x,z) = \InverseFourierY{ \Sinh{2\pi u (z+h)} E(u) }{x}.
 \end{equation*}
-Performing analogous to the previous section transformations yields final
-formula for $\phi(x,z)$:
+Plugging $\phi$ into the boundary condition on the free surface yields
+\begin{equation*}
+    \zeta_t = f(x) \InverseFourierY{ 2\pi i u \Sinh{2\pi u (z+h)} E(u) }{x}
+            - \InverseFourierY{ 2\pi u \SinhX{2\pi u (z+h)} E(u) }{x}.
+\end{equation*}
+Here $\sinh$ and $\cosh$ give similar results near free surface, and since this
+is the main area of interest in practical applications, we assume that
+$\Sinh{2\pi{u}(z+h)}\approx\SinhX{2\pi{u}(z+h)}$. Performing analogous to the
+previous section transformations yields final formula for $\phi(x,z)$:
 \begin{equation}
 \boxed{
     \phi(x,z,t)
@@ -910,10 +917,10 @@ computation near free surface.
 Reducing eqref:eq:solution-2d и eqref:eq:solution-2d-full to the known formulae
 from linear wave theory shows, that formula for infinite depth
 eqref:eq:solution-2d is not suitable to compute velocity potentials with Fourier
-method, because it does not have symmetry, which is required for discrete
-Fourier transform. However, formula for finite depth can be used instead by
-setting $h$ to some characteristic water depth. For standing wave reducing to
-linear wave theory formulae is made under the same assumptions.
+method, because it does not have symmetry, which is required for Fourier
+transform. However, formula for finite depth can be used instead by setting $h$
+to some characteristic water depth. For standing wave reducing to linear wave
+theory formulae is made under the same assumptions.
 
 *** Three-dimensional velocity field
 Three-dimensional version of eqref:eq:problem is written as
@@ -958,7 +965,7 @@ Plugging $\phi$ into the boundary condition on the free surface yields
     \begin{array}{rl}
         \zeta_t = & i f_1(x,y) \InverseFourierY{2 \pi u \Sinh{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y} \\
         + & i f_2(x,y) \InverseFourierY{2 \pi v \Sinh{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y} \\
-        - & \InverseFourierY{2 \pi \sqrt{u^2+v^2} \Sinh{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y}
+        - & \InverseFourierY{2 \pi \sqrt{u^2+v^2} \SinhX{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y}
     \end{array}
 \end{equation*}
 where $f_1(x,y)={\zeta_x}/{\sqrt{1+\zeta_x^2}}-\zeta_x$ and
@@ -971,7 +978,7 @@ coefficients $E$:
         \FourierY{\zeta_t}{u,v} = &
         \FourierY{i f_1(x,y) \InverseFourierY{2 \pi u \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)}{x,y}}{u,v}  \\
         + & \FourierY{i f_2(x,y) \InverseFourierY{2 \pi v \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)}{x,y}}{u,v}  \\
-        - & 2 \pi \sqrt{u^2+v^2} \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)
+        - & 2 \pi \sqrt{u^2+v^2} \SinhX{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)
     \end{array}
 \end{equation*}
 Final solution is obtained after plugging $E(u,v)$ into eqref:eq:guessed-sol-3d.
