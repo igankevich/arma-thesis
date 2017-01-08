@@ -30,8 +30,8 @@ arma.ALL_WAVE_CHARACTERISTICS <- list(
 )
 
 arma.load_wave_parameters <- function (
-	wave_params = arma.ALL_WAVE_CHARACTERISTICS,
 	dir = "output",
+	wave_params = arma.ALL_WAVE_CHARACTERISTICS,
 	qfuncs = arma.QFUNCTIONS
 ) {
 	sapply(wave_params, function (filename) {
@@ -64,9 +64,9 @@ arma.qqplot <- function (param, nsamples=100) {
 	qqline(param$data, distribution=param$qfunc)
 }
 
-wave_params <- arma.load_wave_parameters()
-par(pty="s", mfrow=c(3, 3))
-for (name in names(wave_params)) {
-	print(name)
-	arma.qqplot(wave_params[[name]])
-}
+#wave_params <- arma.load_wave_parameters()
+#par(pty="s", mfrow=c(3, 3))
+#for (name in names(wave_params)) {
+#	print(name)
+#	arma.qqplot(wave_params[[name]])
+#}

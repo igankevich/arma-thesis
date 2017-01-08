@@ -14,6 +14,246 @@
 #+OPTIONS: todo:nil title:nil ':t H:5
 #+STARTUP: indent
 
+* Config                                                           :noexport:
+** Produce data for Q-Q and ACF plots
+#+begin_src sh :exports none :results verbatim
+root=$(pwd)
+for testname in propagating_wave standing_wave
+do
+    wd=$root/build/$testname
+    rm -rf $wd
+    mkdir -p $wd
+    cd $wd
+    arma -c $root/config/$testname.arma 2>&1
+done
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Input file                     = /home/igankevich/workspace/phd-diss/config/propagating_wave.arma
+ACF grid size                  = (20,10,10)
+ACF grid patch size            = (0.526316,0.555556,0.555556)
+Output grid size               = (200,40,40)
+Output grid patch size         = (1,1,1)
+AR order                       = (10,10,10)
+Do least squares               = 0
+ACF function                   = propagating_wave
+Model                          = MA
+MA algorithm                   = fixed_point_iteration
+Verification scheme            = manual
+ACF variance = 5
+fixed_point_iteration:Iteration=0, var_wn=2.70831
+fixed_point_iteration:Iteration=1, var_wn=1.93791
+fixed_point_iteration:Iteration=2, var_wn=1.54801
+fixed_point_iteration:Iteration=3, var_wn=1.31202
+fixed_point_iteration:Iteration=4, var_wn=1.15328
+fixed_point_iteration:Iteration=5, var_wn=1.0386
+fixed_point_iteration:Iteration=6, var_wn=0.951442
+fixed_point_iteration:Iteration=7, var_wn=0.882674
+fixed_point_iteration:Iteration=8, var_wn=0.82688
+fixed_point_iteration:Iteration=9, var_wn=0.780623
+fixed_point_iteration:Iteration=10, var_wn=0.74161
+fixed_point_iteration:Iteration=11, var_wn=0.708244
+fixed_point_iteration:Iteration=12, var_wn=0.679374
+fixed_point_iteration:Iteration=13, var_wn=0.654145
+fixed_point_iteration:Iteration=14, var_wn=0.63191
+fixed_point_iteration:Iteration=15, var_wn=0.612168
+fixed_point_iteration:Iteration=16, var_wn=0.594523
+fixed_point_iteration:Iteration=17, var_wn=0.578663
+fixed_point_iteration:Iteration=18, var_wn=0.564333
+fixed_point_iteration:Iteration=19, var_wn=0.551325
+fixed_point_iteration:Iteration=20, var_wn=0.539469
+fixed_point_iteration:Iteration=21, var_wn=0.528623
+fixed_point_iteration:Iteration=22, var_wn=0.518666
+fixed_point_iteration:Iteration=23, var_wn=0.509497
+fixed_point_iteration:Iteration=24, var_wn=0.50103
+fixed_point_iteration:Iteration=25, var_wn=0.493191
+fixed_point_iteration:Iteration=26, var_wn=0.485916
+fixed_point_iteration:Iteration=27, var_wn=0.479148
+fixed_point_iteration:Iteration=28, var_wn=0.472841
+fixed_point_iteration:Iteration=29, var_wn=0.466951
+fixed_point_iteration:Iteration=30, var_wn=0.461442
+fixed_point_iteration:Iteration=31, var_wn=0.456279
+fixed_point_iteration:Iteration=32, var_wn=0.451435
+fixed_point_iteration:Iteration=33, var_wn=0.446882
+fixed_point_iteration:Iteration=34, var_wn=0.442597
+fixed_point_iteration:Iteration=35, var_wn=0.43856
+fixed_point_iteration:Iteration=36, var_wn=0.434752
+fixed_point_iteration:Iteration=37, var_wn=0.431155
+fixed_point_iteration:Iteration=38, var_wn=0.427755
+fixed_point_iteration:Iteration=39, var_wn=0.424538
+fixed_point_iteration:Iteration=40, var_wn=0.42149
+fixed_point_iteration:Iteration=41, var_wn=0.418601
+fixed_point_iteration:Iteration=42, var_wn=0.415859
+fixed_point_iteration:Iteration=43, var_wn=0.413256
+fixed_point_iteration:Iteration=44, var_wn=0.410782
+fixed_point_iteration:Iteration=45, var_wn=0.40843
+fixed_point_iteration:Iteration=46, var_wn=0.406191
+fixed_point_iteration:Iteration=47, var_wn=0.404059
+fixed_point_iteration:Iteration=48, var_wn=0.402029
+fixed_point_iteration:Iteration=49, var_wn=0.400092
+fixed_point_iteration:Iteration=50, var_wn=0.398246
+fixed_point_iteration:Iteration=51, var_wn=0.396483
+fixed_point_iteration:Iteration=52, var_wn=0.3948
+fixed_point_iteration:Iteration=53, var_wn=0.393193
+fixed_point_iteration:Iteration=54, var_wn=0.391656
+fixed_point_iteration:Iteration=55, var_wn=0.390188
+fixed_point_iteration:Iteration=56, var_wn=0.388782
+fixed_point_iteration:Iteration=57, var_wn=0.387438
+fixed_point_iteration:Iteration=58, var_wn=0.386151
+fixed_point_iteration:Iteration=59, var_wn=0.384918
+fixed_point_iteration:Iteration=60, var_wn=0.383738
+fixed_point_iteration:Iteration=61, var_wn=0.382606
+fixed_point_iteration:Iteration=62, var_wn=0.381522
+fixed_point_iteration:Iteration=63, var_wn=0.380482
+fixed_point_iteration:Iteration=64, var_wn=0.379485
+fixed_point_iteration:Iteration=65, var_wn=0.378528
+fixed_point_iteration:Iteration=66, var_wn=0.37761
+fixed_point_iteration:Iteration=67, var_wn=0.376729
+fixed_point_iteration:Iteration=68, var_wn=0.375882
+fixed_point_iteration:Iteration=69, var_wn=0.37507
+fixed_point_iteration:Iteration=70, var_wn=0.374289
+fixed_point_iteration:Iteration=71, var_wn=0.373539
+fixed_point_iteration:Iteration=72, var_wn=0.372818
+fixed_point_iteration:Iteration=73, var_wn=0.372126
+fixed_point_iteration:Iteration=74, var_wn=0.37146
+fixed_point_iteration:Iteration=75, var_wn=0.37082
+fixed_point_iteration:Iteration=76, var_wn=0.370204
+fixed_point_iteration:Iteration=77, var_wn=0.369612
+fixed_point_iteration:Iteration=78, var_wn=0.369042
+fixed_point_iteration:Iteration=79, var_wn=0.368494
+fixed_point_iteration:Iteration=80, var_wn=0.367966
+fixed_point_iteration:Iteration=81, var_wn=0.367458
+fixed_point_iteration:Iteration=82, var_wn=0.366969
+fixed_point_iteration:Iteration=83, var_wn=0.366499
+fixed_point_iteration:Iteration=84, var_wn=0.366046
+fixed_point_iteration:Iteration=85, var_wn=0.36561
+fixed_point_iteration:Iteration=86, var_wn=0.365189
+fixed_point_iteration:Iteration=87, var_wn=0.364785
+fixed_point_iteration:Iteration=88, var_wn=0.364395
+fixed_point_iteration:Iteration=89, var_wn=0.364019
+fixed_point_iteration:Iteration=90, var_wn=0.363657
+fixed_point_iteration:Iteration=91, var_wn=0.363309
+fixed_point_iteration:Iteration=92, var_wn=0.362973
+fixed_point_iteration:Iteration=93, var_wn=0.362649
+fixed_point_iteration:Iteration=94, var_wn=0.362337
+fixed_point_iteration:Iteration=95, var_wn=0.362036
+fixed_point_iteration:Iteration=96, var_wn=0.361746
+fixed_point_iteration:Iteration=97, var_wn=0.361466
+fixed_point_iteration:Iteration=98, var_wn=0.361197
+fixed_point_iteration:Iteration=99, var_wn=0.360937
+fixed_point_iteration:Iteration=100, var_wn=0.360686
+fixed_point_iteration:Iteration=101, var_wn=0.360444
+fixed_point_iteration:Iteration=102, var_wn=0.360211
+fixed_point_iteration:Iteration=103, var_wn=0.359986
+fixed_point_iteration:Iteration=104, var_wn=0.359769
+fixed_point_iteration:Iteration=105, var_wn=0.35956
+fixed_point_iteration:Iteration=106, var_wn=0.359358
+fixed_point_iteration:Iteration=107, var_wn=0.359163
+fixed_point_iteration:Iteration=108, var_wn=0.358975
+fixed_point_iteration:Iteration=109, var_wn=0.358794
+fixed_point_iteration:Iteration=110, var_wn=0.358619
+fixed_point_iteration:Iteration=111, var_wn=0.35845
+fixed_point_iteration:Iteration=112, var_wn=0.358288
+fixed_point_iteration:Iteration=113, var_wn=0.35813
+fixed_point_iteration:Iteration=114, var_wn=0.357979
+fixed_point_iteration:Iteration=115, var_wn=0.357832
+fixed_point_iteration:Iteration=116, var_wn=0.357691
+fixed_point_iteration:Iteration=117, var_wn=0.357555
+fixed_point_iteration:Iteration=118, var_wn=0.357423
+fixed_point_iteration:Iteration=119, var_wn=0.357296
+fixed_point_iteration:Iteration=120, var_wn=0.357173
+fixed_point_iteration:Iteration=121, var_wn=0.357055
+fixed_point_iteration:Iteration=122, var_wn=0.356941
+fixed_point_iteration:Iteration=123, var_wn=0.356831
+fixed_point_iteration:Iteration=124, var_wn=0.356724
+fixed_point_iteration:Iteration=125, var_wn=0.356621
+fixed_point_iteration:Iteration=126, var_wn=0.356522
+fixed_point_iteration:Iteration=127, var_wn=0.356426
+fixed_point_iteration:Iteration=128, var_wn=0.356334
+fixed_point_iteration:Iteration=129, var_wn=0.356244
+fixed_point_iteration:Iteration=130, var_wn=0.356158
+fixed_point_iteration:Iteration=131, var_wn=0.356075
+fixed_point_iteration:Iteration=132, var_wn=0.355994
+fixed_point_iteration:Iteration=133, var_wn=0.355917
+fixed_point_iteration:Iteration=134, var_wn=0.355842
+fixed_point_iteration:Iteration=135, var_wn=0.355769
+fixed_point_iteration:Iteration=136, var_wn=0.355699
+fixed_point_iteration:Iteration=137, var_wn=0.355632
+fixed_point_iteration:Iteration=138, var_wn=0.355567
+fixed_point_iteration:Iteration=139, var_wn=0.355504
+fixed_point_iteration:Iteration=140, var_wn=0.355443
+fixed_point_iteration:Iteration=141, var_wn=0.355384
+fixed_point_iteration:Iteration=142, var_wn=0.355327
+fixed_point_iteration:Iteration=143, var_wn=0.355273
+fixed_point_iteration:Iteration=144, var_wn=0.35522
+fixed_point_iteration:Iteration=145, var_wn=0.355169
+fixed_point_iteration:Iteration=146, var_wn=0.355119
+fixed_point_iteration:Iteration=147, var_wn=0.355072
+fixed_point_iteration:Iteration=148, var_wn=0.355026
+fixed_point_iteration:Iteration=149, var_wn=0.354981
+fixed_point_iteration:Iteration=150, var_wn=0.354938
+fixed_point_iteration:Iteration=151, var_wn=0.354897
+fixed_point_iteration:Iteration=152, var_wn=0.354856
+fixed_point_iteration:Iteration=153, var_wn=0.354818
+fixed_point_iteration:Iteration=154, var_wn=0.35478
+fixed_point_iteration:Iteration=155, var_wn=0.354744
+fixed_point_iteration:Iteration=156, var_wn=0.354709
+fixed_point_iteration:Iteration=157, var_wn=0.354676
+fixed_point_iteration:Iteration=158, var_wn=0.354643
+fixed_point_iteration:Iteration=159, var_wn=0.354612
+fixed_point_iteration:Iteration=160, var_wn=0.354581
+fixed_point_iteration:Iteration=161, var_wn=0.354552
+fixed_point_iteration:Iteration=162, var_wn=0.354524
+fixed_point_iteration:Iteration=163, var_wn=0.354496
+fixed_point_iteration:Iteration=164, var_wn=0.35447
+fixed_point_iteration:Iteration=165, var_wn=0.354444
+fixed_point_iteration:Iteration=166, var_wn=0.35442
+fixed_point_iteration:Iteration=167, var_wn=0.354396
+fixed_point_iteration:Iteration=168, var_wn=0.354373
+fixed_point_iteration:Iteration=169, var_wn=0.35435
+fixed_point_iteration:Iteration=170, var_wn=0.354329
+fixed_point_iteration:Iteration=171, var_wn=0.354308
+fixed_point_iteration:Iteration=172, var_wn=0.354288
+fixed_point_iteration:Iteration=173, var_wn=0.354269
+fixed_point_iteration:Iteration=174, var_wn=0.35425
+fixed_point_iteration:Iteration=175, var_wn=0.354232
+fixed_point_iteration:Iteration=176, var_wn=0.354214
+fixed_point_iteration:Iteration=177, var_wn=0.354198
+fixed_point_iteration:Iteration=178, var_wn=0.354181
+fixed_point_iteration:Iteration=179, var_wn=0.354165
+fixed_point_iteration:Iteration=180, var_wn=0.35415
+fixed_point_iteration:Iteration=181, var_wn=0.354136
+fixed_point_iteration:Iteration=182, var_wn=0.354121
+fixed_point_iteration:Iteration=183, var_wn=0.354108
+fixed_point_iteration:Iteration=184, var_wn=0.354094
+fixed_point_iteration:Iteration=185, var_wn=0.354082
+fixed_point_iteration:Iteration=186, var_wn=0.354069
+fixed_point_iteration:Iteration=187, var_wn=0.354057
+fixed_point_iteration:Iteration=188, var_wn=0.354046
+fixed_point_iteration:Iteration=189, var_wn=0.354034
+fixed_point_iteration:Iteration=190, var_wn=0.354024
+fixed_point_iteration:Iteration=191, var_wn=0.354013
+fixed_point_iteration:Iteration=192, var_wn=0.354003
+fixed_point_iteration:Iteration=193, var_wn=0.353994
+WN variance = 0.353994
+Input file                     = /home/igankevich/workspace/phd-diss/config/standing_wave.arma
+ACF grid size                  = (10,10,10)
+ACF grid patch size            = (0.277778,0.555556,0.555556)
+Output grid size               = (200,40,40)
+Output grid patch size         = (1,1,1)
+AR order                       = (7,7,7)
+Do least squares               = 0
+ACF function                   = standing_wave
+Model                          = AR
+MA algorithm                   = fixed_point_iteration
+Verification scheme            = manual
+ACF variance = 5
+WN variance = 0.00261323
+Zeta size = (193,33,33)
+NaN: 29, -nan, 1.798e+36, -1.04284e+38, inf, -1.798e+36, -1.798e+36
+#+end_example
+
 * Introduction
 **** Topic relevance.
 Software programmes, which simulates vessel behaviour in sea waves, are widely
@@ -250,7 +490,7 @@ appear in practice.
    coefficients (discrete points of frequency-directional spectrum) is needed to
    eliminate periodicity. This makes LH model inefficient for long-time
    simulations.
-3. Finally, there are peculiearities which make LH model unsuitable base for
+3. Finally, there are peculiarities which make LH model unsuitable base for
    building more advanced simulation models.
    - In software implementation convergence rate of ([[eq:longuet-higgins]]) may be
      low due to randomness of phases $\epsilon_n$.
@@ -260,7 +500,7 @@ appear in practice.
      cite:рожков1990вероятностные.
 
 To summarise, LH model is linear, computationally inefficient for long-time
-simiualtions, and difficult to use as a base for more advanced models.
+simulations, and difficult to use as a base for more advanced models.
 
 *** ARMA model
 In cite:spanos1982arma ARMA model is used to generate time series spectrum of
@@ -1102,6 +1342,8 @@ found in the following steps:
 :PROPERTIES:
 :CUSTOM_ID: sec:compute-delta
 :END:
+** Propagating waves QQ-plots                                     :noexport:
+
 ** ARMA model verification
 *** Numerical experiments implementation methodology
 *** Verification of wavy surface integral characteristics
@@ -1132,8 +1374,36 @@ every possible wave from realisation since they may (and often) overlap.
 
 Verification was performed for standing and propagating waves. The corresponding
 ACFs and quantile-quantile plots of wave characteristics distributions are shown
-in fig. [[fig:acf-plots]], [[fig:standing-wave-distributions]],
-[[fig:propagating-wave-distributions]].
+in fig. [[fig:acf-plots]], [[standing-wave-distributions]],
+[[propagating-wave-distributions]].
+
+#+name: propagating-wave-distributions
+#+begin_src R :results output graphics :exports results :file build/propagating-wave-qqplots.pdf
+source(file.path("R", "common.R"))
+par(pty="s", mfrow=c(2, 2))
+arma.qqplot_grid(
+  file.path("build", "propagating_wave"),
+  c("elevation", "heights_x", "lengths_x", "periods")
+)
+#+end_src
+
+#+caption: Quantile-quantile plots for propagating waves.
+#+RESULTS: propagating-wave-distributions
+[[file:build/propagating-wave-qqplots.pdf]]
+
+#+name: standing-wave-distributions
+#+begin_src R :results output graphics :exports results :file build/standing-wave-qqplots.pdf
+source(file.path("R", "common.R"))
+par(pty="s", mfrow=c(2, 2))
+arma.qqplot_grid(
+  file.path("build", "standing_wave"),
+  c("elevation", "heights_x", "lengths_x", "periods")
+)
+#+end_src
+
+#+caption: Quantile-quantile plots for standing waves.
+#+RESULTS: standing-wave-distributions
+[[file:build/standing-wave-qqplots.pdf]]
 
 #+begin_src gnuplot :exports none :output-dir build
 # set absolute loadpath and go to build directory
@@ -1159,28 +1429,6 @@ do for [i=0:4] {
   load "acf.gnuplot"
   system "inkscape --without-gui --export-eps=" . infile . ".eps " . infile . ".svg"
 }
-
-# Q-Q plots
-sx=250
-sy=250
-outext='svg'
-# Standing waves
-do for [i in "elevation wave-height-x wave-length-x wave-period"] {
-  reset
-  show loadpath
-  labelText=i
-  infile="standing-" . i
-  load "quantile.gnuplot"
-  system "inkscape --without-gui --export-eps=" . infile . ".eps " . infile . ".svg"
-}
-# Propagating waves
-do for [i in "elevation wave-height-x wave-length-x wave-period"] {
-  reset
-  labelText=i
-  infile="propagating-" . i
-  load "quantile.gnuplot"
-  system "inkscape --without-gui --export-eps=" . infile . ".eps " . infile . ".svg"
-}
 exit
 #+end_src
 
@@ -1194,15 +1442,6 @@ exit
 | \includegraphics{standing-acf-3} | \includegraphics{propagating-acf-03} |
 | \includegraphics{standing-acf-4} | \includegraphics{propagating-acf-04} |
 
-#+caption: Quantile-quantile plots for standing waves.
-#+name: fig:standing-wave-distributions
-| \includegraphics{standing-elevation}     | \includegraphics{standing-wave-height-x} |
-| \includegraphics{standing-wave-length-x} | \includegraphics{standing-wave-period}   |
-
-#+caption: Quantile-quantile plots for propagating waves.
-#+name: fig:propagating-wave-distributions
-| \includegraphics{propagating-elevation}     | \includegraphics{propagating-wave-height-x} |
-| \includegraphics{propagating-wave-length-x} | \includegraphics{propagating-wave-period}   |
 
 *** TODO Discuss graphs
 *** Verification of velocity potential fields
@@ -1304,9 +1543,9 @@ stationary and MA model parameters finding algorithm to converge.
 | <<<PM>>>   | Pierson---Moskowitz ocean wave spectrum approximation                                      |
 | <<<YW>>>   | Yule---Walker equations                                                                    |
 
-#+begin_latex
+#+begin_export latex
 \input{postamble}
-#+end_latex
+#+end_export
 
 bibliographystyle:ugost2008
 bibliography:bib/refs.bib

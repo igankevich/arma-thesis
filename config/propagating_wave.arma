@@ -1,0 +1,9 @@
+out_grid = (200,40,40)
+acf_grid = (20,10,10) : (10,5,5)
+ma_order = (20,10,10)
+
+least_squares = 0
+acf = propagating_wave
+model = MA
+ma_algorithm = fixed_point_iteration
+verification = manual
