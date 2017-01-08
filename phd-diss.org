@@ -1374,8 +1374,7 @@ every possible wave from realisation since they may (and often) overlap.
 
 Verification was performed for standing and propagating waves. The corresponding
 ACFs and quantile-quantile plots of wave characteristics distributions are shown
-in fig. [[fig:acf-plots]], [[standing-wave-distributions]],
-[[propagating-wave-distributions]].
+in fig. [[acf-slices]], [[standing-wave-distributions]], [[propagating-wave-distributions]].
 
 #+name: propagating-wave-distributions
 #+begin_src R :results output graphics :exports results :file build/propagating-wave-qqplots.pdf
@@ -1405,43 +1404,21 @@ arma.qqplot_grid(
 #+RESULTS: standing-wave-distributions
 [[file:build/standing-wave-qqplots.pdf]]
 
-#+begin_src gnuplot :exports none :output-dir build
-# set absolute loadpath and go to build directory
-set loadpath GPVAL_PWD."/gnuplot" GPVAL_PWD."/data/verification"
-system "mkdir -p build"
-cd "build"
-
-# ACFs of standing and propagating waves
-sx=300
-sy=200
-outext='svg'
-# Standing wave ACF
-do for [i=0:4] {
-  reset
-  infile="standing-acf-" . i
-  load "acf.gnuplot"
-  system "inkscape --without-gui --export-eps=" . infile . ".eps " . infile . ".svg"
+#+name: acf-slices
+#+begin_src R :results output graphics :exports results :file build/acf-slices.pdf
+source(file.path("R", "common.R"))
+propagating_acf <- read.csv(file.path("build", "propagating_wave", "acf.csv"))
+standing_acf <- read.csv(file.path("build", "standing_wave", "acf.csv"))
+par(mfrow=c(5, 2), mar=c(0,0,0,0))
+for (i in seq(0, 4)) {
+  arma.wavy_plot(propagating_acf, i, zlim=c(-5,5))
+  arma.wavy_plot(standing_acf, i, zlim=c(-5,5))
 }
-# Propagating wave ACF
-do for [i=0:4] {
-  reset
-  infile="propagating-acf-0" . i
-  load "acf.gnuplot"
-  system "inkscape --without-gui --export-eps=" . infile . ".eps " . infile . ".svg"
-}
-exit
 #+end_src
 
-#+RESULTS:
-
 #+caption: Time slices of ACF function for standing (left column) and propagating waves (right column).
-#+name: fig:acf-plots
-| \includegraphics{standing-acf-0} | \includegraphics{propagating-acf-00} |
-| \includegraphics{standing-acf-1} | \includegraphics{propagating-acf-01} |
-| \includegraphics{standing-acf-2} | \includegraphics{propagating-acf-02} |
-| \includegraphics{standing-acf-3} | \includegraphics{propagating-acf-03} |
-| \includegraphics{standing-acf-4} | \includegraphics{propagating-acf-04} |
-
+#+RESULTS: acf-slices
+[[file:build/acf-slices.pdf]]
 
 *** TODO Discuss graphs
 *** Verification of velocity potential fields
