@@ -1405,14 +1405,15 @@ arma.qqplot_grid(
 [[file:build/standing-wave-qqplots.pdf]]
 
 #+name: acf-slices
+#+header: :width 6 :height 9
 #+begin_src R :results output graphics :exports results :file build/acf-slices.pdf
 source(file.path("R", "common.R"))
 propagating_acf <- read.csv(file.path("build", "propagating_wave", "acf.csv"))
 standing_acf <- read.csv(file.path("build", "standing_wave", "acf.csv"))
 par(mfrow=c(5, 2), mar=c(0,0,0,0))
 for (i in seq(0, 4)) {
-  arma.wavy_plot(propagating_acf, i, zlim=c(-5,5))
   arma.wavy_plot(standing_acf, i, zlim=c(-5,5))
+  arma.wavy_plot(propagating_acf, i, zlim=c(-5,5))
 }
 #+end_src
 
