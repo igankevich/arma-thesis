@@ -1260,15 +1260,14 @@ to test ARMA model.
 
 *** Examples of ACFs for various types of wave profiles
 **** Standing wave.
-For three-dimensional plain standing wave the profile is approximated by
+For three-dimensional plain standing wave the profile is given by
 \begin{equation}
   \zeta(t, x, y) = A \sin (k_x x + k_y y) \sin (\sigma t).
   \label{eq:standing-wave}
 \end{equation}
-In order to get ACF via analytic method one needs to multiply this formula by
-a decaying exponent, because Fourier transform is defined for a function $f$ that
-$f \underset{x \rightarrow \pm \infty}{\longrightarrow} 0$. The formula of the
-profile then transforms to
+Find ACF via analytic method. Multiplying the formula by a decaying exponent
+(because Fourier transform is defined for a function $f$ that
+$f\underset{x\rightarrow\pm\infty}{\longrightarrow}0$) yields
 \begin{equation}
   \zeta(t, x, y) =
   A
@@ -1276,9 +1275,9 @@ profile then transforms to
   \sin (k_x x + k_y y) \sin (\sigma t).
   \label{eq:decaying-standing-wave}
 \end{equation}
-Then, if one takes 3D Fourier transform of this formula via any capable
-symbolic computation programme, the resulting polynomial may be fitted to the
-following ACF approximation.
+Then, apply 3D Fourier transform to both sides of the equation via symbolic
+computation programme, fit the resulting polynomial to the following
+approximation:
 \begin{equation}
   K(t,x,y) =
   \gamma
@@ -1287,24 +1286,24 @@ following ACF approximation.
   \cos \left[ \beta x + \beta y \right].
   \label{eq:standing-wave-acf}
 \end{equation}
-So, after applying Wiener---Khinchin theorem we get the same formula but with
-sines replaced with cosines. This replacement is important because the value of
-ACF at $(0,0,0)$ equals to the ARMA process variance, and if one used sines
-the value would be wrong.
+So, after applying Wiener---Khinchin theorem we get initial formula but with
+cosines instead of sines. This difference is important because the value of ACF
+at $(0,0,0)$ equals to the ARMA process variance, and if one used sines the
+value would be wrong.
 
 If one tries to replicate the same formula via empirical method, the usual way
 is to adapt eqref:eq:decaying-standing-wave to match eqref:eq:standing-wave-acf.
-This can be done by changing the phase of the sine, or by replacing sine with
-cosine to move the maximum of the function to $(0,0,0)$.
+This can be done either by changing the phase of the sine, or by substituting
+sine with cosine to move the maximum of the function to the origin of
+coordinates.
 
 **** Propagating wave.
-Three-dimensional profile of this type of wave is approximated by
+Three-dimensional profile of plain propagating wave is given by
 \begin{equation}
   \zeta(t, x, y) = A \cos (\sigma t + k_x x + k_y y).
   \label{eq:propagating-wave}
 \end{equation}
-For the analytic method one may repeat steps from the previous two paragraphs
-with ACF approximated by
+For the analytic method repeating steps from the previous two paragraphs yields
 \begin{equation}
   K(t,x,y) =
   \gamma
@@ -1312,8 +1311,9 @@ with ACF approximated by
   \cos\left[\beta (t+x+y) \right].
   \label{eq:propagating-wave-acf}
 \end{equation}
-For the empirical method propagating wave profile is simply multiplied by
-a decaying exponent without need to adapt the maximum value of ACF.
+For the empirical method the wave profile is simply multiplied by a decaying
+exponent without need to adapt the maximum value of ACF (as it is required for
+standing wave).
 
 *** Comparison of studied methods
 To summarise, the analytic method of finding ocean wave's ACF reduces to the
