@@ -1317,22 +1317,22 @@ standing wave).
 
 *** Comparison of studied methods
 To summarise, the analytic method of finding ocean wave's ACF reduces to the
-following steps:
-- Make wave profile decay when approach $\pm\infty$ by multiplying it by
+following steps.
+- Make wave profile decay when approaching $\pm\infty$ by multiplying it by
   a decaying exponent.
-- Take Fourier transform of absolute square of the decaying wave profile using
+- Apply Fourier transform to the absolute square of the resulting equation using
   symbolic computation programme.
 - Fit the resulting polynomial to the appropriate ACF approximation.
 
 Two examples in this section showed that in case of standing and propagating
 waves their decaying profiles resemble the corresponding ACFs with the exception
-that the origin should be moved to the function's maximal value for the ACF to
-be useful in ARMA model simulations. So, using the empirical method the ACF is
-found in the following steps:
-- Make wave profile decay when approach $\pm\infty$ by multiplying it by
+that the ACF's maximum should be moved to the origin to preserve simulated
+process variance. Empirical method of finding ACF reduces to the following
+steps.
+- Make wave profile decay when approaching $\pm\infty$ by multiplying it by
   a decaying exponent.
-- Move maximum value to the origin by adjusting phases or using trigonometric
-  identities to shift the phase of the resulting function.
+- Move maximum value of the resulting function to the origin by using
+  trigonometric identities to shift the phase.
 
 ** Additional formulae, methods and algorithms for ARMA model
 *** Wave elevation distribution approximation
