@@ -1260,7 +1260,7 @@ model.
 
 *** Examples of ACFs for various types of wave profiles
 **** Standing wave.
-For three-dimensional standing wave the profile is approximated by
+For three-dimensional plain standing wave the profile is approximated by
 \begin{equation}
   \zeta(t, x, y) = A \sin (k_x x + k_y y) \sin (\sigma t).
   \label{eq:standing-wave}
@@ -1289,7 +1289,7 @@ following ACF approximation.
 \end{equation}
 So, after applying Wiener---Khinchin theorem we get the same formula but with
 sines replaced with cosines. This replacement is important because the value of
-ACF at $(0,0,0)$ equals to the variance of wave elevation, and if one used sines
+ACF at $(0,0,0)$ equals to the ARMA process variance, and if one used sines
 the value would be wrong.
 
 If one tries to replicate the same formula via empirical method, the usual way
