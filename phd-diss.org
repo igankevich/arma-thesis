@@ -1227,10 +1227,10 @@ Final solution is obtained after plugging $E(u,v)$ into eqref:eq:guessed-sol-3d.
 ** The shape of ACF for different types of waves
 *** Two methods to find ocean waves ACF
 **** Analytic method of finding the ACF.
-The simplest way to find auto-covariate function for a particular ocean wave
-profile is to apply Wiener---Khinchin theorem. According to this theorem the
-autocorrelation $K$ of a function $\zeta$ is given by the Fourier transform of
-the absolute square of the function:
+The straightforward way to find ACF for a given ocean wave profile is to apply
+Wiener---Khinchin theorem. According to this theorem the autocorrelation $K$ of
+a function $\zeta$ is given by the Fourier transform of the absolute square of
+the function:
 \begin{equation}
   K(t) = \Fourier{\left| \zeta(t) \right|^2}.
   \label{eq:wiener-khinchin}
@@ -1238,25 +1238,25 @@ the absolute square of the function:
 When $\zeta$ is replaced with actual wave profile, this formula gives you
 analytic formula for the corresponding ACF.
 
-For three-dimensional wave profile (2D in space and 1D in time) analytic
-formula is a polynomial of high order and is best obtained via computer
-algebra software. Then for practical usage it can be approximated by
-superposition of exponentially decaying cosines (which is how ACF of a
-stationary ARMA process looks like cite:box1976time).
+For three-dimensional wave profile (2D in space and 1D in time) analytic formula
+is a polynomial of high order and is best obtained via symbolic computation
+programme. Then for practical usage it can be approximated by superposition of
+exponentially decaying cosines (which is how ACF of a stationary ARMA process
+looks like cite:box1976time).
 
 **** Empirical method of finding the ACF.
 However, for three-dimensional case there exists simpler empirical method which
 does not require sophisticated software to determine shape of the ACF. It is
-known that ACF represented by exponentially decaying cosines of a wave profile
-satisfies first order Stokes' equations for gravity waves cite:boccotti1983wind.
-So, if the shape of the wave profile is the only concern, then one can simply
-multiply it by a decaying exponent to get appropriate ACF. This ACF will not
-reflect other wave profile parameters such as wave height and period, but opens
-possibility to simulate waves of a particular non-analytic shape by "drawing"
-their profile, then multiplying it by an exponent and using the resulting
-function as ACF. So, this empirical method is imprecise but offers simpler
-alternative to Wiener---Khinchin theorem; it is mainly useful to test ARMA
-model.
+known that ACF represented by exponentially decaying cosines satisfies first
+order Stokes' equations for gravity waves cite:boccotti1983wind. So, if the
+shape of the wave profile is the only concern in the simulation, then one can
+simply multiply it by a decaying exponent to get appropriate ACF. This ACF does
+not reflect other wave profile parameters, such as wave height and period, but
+opens possibility to simulate waves of a particular non-analytic shape by
+"drawing" their profile, then multiplying it by an exponent and using the
+resulting function as ACF. So, this empirical method is imprecise but offers
+simpler alternative to Wiener---Khinchin theorem approach; it is mainly useful
+to test ARMA model.
 
 *** Examples of ACFs for various types of wave profiles
 **** Standing wave.
@@ -1277,7 +1277,7 @@ profile then transforms to
   \label{eq:decaying-standing-wave}
 \end{equation}
 Then, if one takes 3D Fourier transform of this formula via any capable
-computer algebra software, the resulting polynomial may be fitted to the
+symbolic computation programme, the resulting polynomial may be fitted to the
 following ACF approximation.
 \begin{equation}
   K(t,x,y) =
@@ -1318,10 +1318,10 @@ a decaying exponent without need to adapt the maximum value of ACF.
 *** Comparison of studied methods
 To summarise, the analytic method of finding ocean wave's ACF reduces to the
 following steps:
-- Make wave profile decay when approach $\pm \infty$ by multiplying it by
+- Make wave profile decay when approach $\pm\infty$ by multiplying it by
   a decaying exponent.
 - Take Fourier transform of absolute square of the decaying wave profile using
-  computer algebra software.
+  symbolic computation programme.
 - Fit the resulting polynomial to the appropriate ACF approximation.
 
 Two examples in this section showed that in case of standing and propagating
@@ -1329,7 +1329,7 @@ waves their decaying profiles resemble the corresponding ACFs with the exception
 that the origin should be moved to the function's maximal value for the ACF to
 be useful in ARMA model simulations. So, using the empirical method the ACF is
 found in the following steps:
-- Make wave profile decay when approach $\pm \infty$ by multiplying it by
+- Make wave profile decay when approach $\pm\infty$ by multiplying it by
   a decaying exponent.
 - Move maximum value to the origin by adjusting phases or using trigonometric
   identities to shift the phase of the resulting function.
