@@ -1342,8 +1342,6 @@ found in the following steps:
 :PROPERTIES:
 :CUSTOM_ID: sec:compute-delta
 :END:
-** Propagating waves QQ-plots                                     :noexport:
-
 ** ARMA model verification
 *** Numerical experiments implementation methodology
 *** Verification of wavy surface integral characteristics
