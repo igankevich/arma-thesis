@@ -1487,6 +1487,34 @@ is created preliminary with knowingly larger number of parallel threads and
 saved to a file, which is then read before starting white noise generation.
 
 *** Wavy surface generation
+In ARMA model value of wavy surface elevation at a particular point depends on
+previous in space and time points, as a result the so called /ramp-up interval/,
+in which realisation does not correspond to specified ACF, forms in the
+beginning of the realisation. There are several solutions to this problem which
+depend on the simulation context.
+
+If realisation is used in the context of ship stability simulation without
+manoeuvring, ramp-up interval will not affect results of the simulation, because
+it is located on the border (too far away from the studied marine object). If
+ship stability with manoeuvring is studied, then the interval may be simply
+discarded from the realisation (the size of the interval approximately equals
+the number of AR coefficients in each dimension). However, this may lead to loss
+of a very large number of points, because discarding occurs for each dimension.
+Alternative approach is to generate ocean wavy surface on ramp-up interval with
+LH model and generate the rest of the realisation with ARMA model.
+
+Algorithm of wavy surface generation is data-parallel: realisation is divided
+into equal parts each of which is generated independently, however, in the
+beginning of each realisation there is ramp-up interval. To eliminate it
+/overlap-add/ method
+cite:oppenheim1989discrete,svoboda2011efficient,pavel2013algorithms (a popular
+method in signal processing) is used. The essence of the method is to add
+another interval, size of which is equal to the ramp-up interval size, to the
+end of each part. Then wavy surface is generated in each point of each part
+(including points from the added interval), the interval at the end of part $N$
+is superimposed on the ramp-up interval at the beginning of the part $N+1$, and
+values in corresponding points are added.
+
 *** Velocity potential normalisation formulae
 :PROPERTIES:
 :CUSTOM_ID: sec:compute-delta
