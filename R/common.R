@@ -1,4 +1,5 @@
 source(file.path("R", "waves.R"))
+source(file.path("R", "transform.R"))
 
 arma.qqplot_grid <- function (dir, params) {
 	wave_params <- arma.load_wave_parameters(dir, params)
@@ -29,4 +30,38 @@ arma.wavy_plot <- function (data, t, ...) {
 	# Recode facet z-values into color indices
 	facetcol <- cut(zfacet, nbcol)
 	persp(x, y, z, phi=30, theta=30, col=color[facetcol], ...)
+}
+
+arma.skew_normal_1_plot <- function(x, params) {
+  data <- mapply(
+    function (s, k) arma.skew_normal_1(x, s, k),
+    params$skewness,
+    params$kurtosis
+  )
+  plot.new()
+  plot.window(xlim=range(x),ylim=range(data))
+  axis(1); axis(2); box()
+  for (i in seq_len(ncol(data))) {
+    d <- data[,i]
+    lines(x, d, lty=paste(params$linetypes[[i]]))
+  }
+}
+
+
+arma.skew_normal_2_plot <- function(x, params) {
+  data <- mapply(
+    function (a) arma.skew_normal_2(x, a),
+    params$alpha
+  )
+  plot.new()
+  plot.window(xlim=range(x),ylim=range(data))
+  axis(1); axis(2); box()
+  for (i in seq_len(ncol(data))) {
+    d <- data[,i]
+    lines(x, d, lty=paste(params$linetypes[[i]]))
+  }
+}
+
+arma.fmt <- function(x, ndigits) {
+  format(round(x, ndigits), nsmall=ndigits)
 }

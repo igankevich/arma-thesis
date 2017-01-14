@@ -1288,8 +1288,34 @@ $\gamma_2$ --- эксцесс, $f$ --- ФПР, $F$ --- функция распр
 распределения при различных параметрах показано на [[fig:skew-normal-1]].
 
 #+name: fig:skew-normal-1
+#+begin_src R :results output graphics :exports results :file build/skew-normal-1.pdf
+source(file.path("R", "common.R"))
+x <- seq(-3, 3, length.out=100)
+params <- data.frame(
+  skewness = c(0.00, 0.52, 0.00, 0.52),
+  kurtosis = c(0.00, 0.00, 0.70, 0.70),
+  linetypes = c("solid", "dashed", "dotdash", "dotted")
+)
+arma.skew_normal_1_plot(x, params)
+legend(
+  "topleft",
+  mapply(
+    function (s, k) {
+      as.expression(bquote(list(
+        gamma[1] == .(arma.fmt(s, 2)),
+        gamma[2] == .(arma.fmt(k, 2))
+      )))
+    },
+    params$skewness,
+    params$kurtosis
+  ),
+  lty = paste(params$linetypes)
+)
+#+end_src
+
 #+caption: Вид плотности распределения eqref:eq:skew-normal-1 аппликат взволнованной морской поверхности при различных значениях асимметрии $\gamma_1$ и эксцесса $\gamma_2$.
-[[file:build/skew-normal-1.eps]]
+#+RESULTS: fig:skew-normal-1
+[[file:build/skew-normal-1.pdf]]
 
 **** Асимметричное нормальное распределение.
 Альтернативной аппроксимацией распределения волновых аппликат служит формула
@@ -1309,8 +1335,38 @@ $\gamma_2$ --- эксцесс, $f$ --- ФПР, $F$ --- функция распр
 на [[fig:skew-normal-2]].
 
 #+name: fig:skew-normal-2
+#+begin_src R :results output graphics :exports results :file build/skew-normal-2.pdf
+source(file.path("R", "common.R"))
+x <- seq(-3, 3, length.out=100)
+alpha <- c(0.00, 0.87, 2.25, 4.90)
+params <- data.frame(
+  alpha = alpha,
+  skewness = arma.bits.skewness_2(alpha),
+  kurtosis = arma.bits.kurtosis_2(alpha),
+  linetypes = c("solid", "dashed", "dotdash", "dotted")
+)
+arma.skew_normal_2_plot(x, params)
+legend(
+  "topleft",
+  mapply(
+    function (a, s, k) {
+      as.expression(bquote(list(
+        alpha == .(arma.fmt(a, 2)),
+        gamma[1] == .(arma.fmt(s, 2)),
+        gamma[2] == .(arma.fmt(k, 2))
+      )))
+    },
+    params$alpha,
+    params$skewness,
+    params$kurtosis
+  ),
+  lty = paste(params$linetypes)
+)
+#+end_src
+
 #+caption: Вид плотности распределения eqref:eq:skew-normal-2 волновых аппликат при различных значениях коэффициента асимметрии $\alpha$.
-[[file:build/skew-normal-2.eps]]
+#+RESULTS: fig:skew-normal-2
+[[file:build/skew-normal-2.pdf]]
 
 **** Тестирование.
 Решение уравнения eqref:eq:distribution-transformation с выбранной функцией
