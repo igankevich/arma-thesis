@@ -1336,6 +1336,82 @@ steps.
 
 ** Additional formulae, methods and algorithms for ARMA model
 *** Wave elevation distribution approximation
+One of the parameters of ocean wavy surface generator is probability density
+function (PDF) of the surface elevation. This distribution is given by either
+polynomial approximation of /in situ/ data or analytic formula.
+
+**** Gram---Charlier series expansion.
+In cite:huang1980experimental the authors experimentally show, that PDF of sea
+surface elevation is distinguished from normal distribution by non-nought
+kurtosis and skewness. In cite:рожков1996теория the authors show, that this type
+of PDF expands in Gram---Charlier series:
+\begin{align}
+    \label{eq:skew-normal-1}
+    F(z; \gamma_1, \gamma_2) & = \phi(z)
+        - \gamma_1 \frac{\phi'''(z)}{3!}
+        + \gamma_2 \frac{\phi''''(z)}{4!} \nonumber \\
+    & =
+    \frac{1}{2} \text{erf}\left[\frac{z}{\sqrt{2}}\right]
+    -
+    \frac{e^{-\frac{z^2}{2}}}{\sqrt{2\pi}}
+    \left[
+        \frac{1}{6} \gamma_1 \left(z^2-1\right)
+        + \frac{1}{24} \gamma_2 z \left(z^2-3\right)
+    \right]
+    ,\nonumber \\
+    f(z; \gamma_1, \gamma_2) & =
+    \frac{e^{-\frac{z^2}{2}}}{\sqrt{2 \pi }}
+    \left[
+        \frac{1}{6} \gamma_1 z \left(z^2-3\right)
+        + \frac{1}{24} \gamma_2 \left(z^4-6z^2+3\right)
+        +1
+    \right],
+\end{align}
+where $\phi(z)=\frac{1}{2}\mathrm{erf}(z/\sqrt{2})$, $\gamma_1$ --- skewness,
+$\gamma_2$ --- kurtosis, $f$ --- PDF, $F$ --- cumulative distribution function
+(CDF). According to cite:рожков1990вероятностные for ocean waves skewness is
+selected from interval $0.1\leq\gamma_1\leq{0.52}]$ and kurtosis from interval
+$0.1\leq\gamma_2\leq{0.7}$. Family of probability density functions for
+different parameters is shown in [[fig:skew-normal-1]].
+
+#+name: fig:skew-normal-1
+#+caption: Probability density function eqref:eq:skew-normal-1 of ocean wavy surface elevation for different values of skewness $\gamma_1$ and kurtosis $\gamma_2$.
+[[file:build/skew-normal-1.eps]]
+
+**** Skew-normal distribution.
+Alternative approach is to approximate distribution of ocean wavy surface
+elevation by skew-normal distribution:
+\begin{align}
+    \label{eq:skew-normal-2}
+    F(z; \alpha) & = \frac{1}{2}
+   \mathrm{erfc}\left[-\frac{z}{\sqrt{2}}\right]-2 T(z,\alpha ), \nonumber \\
+    f(z; \alpha) & = \frac{e^{-\frac{z^2}{2}}}{\sqrt{2 \pi }}
+   \mathrm{erfc}\left[-\frac{\alpha z}{\sqrt{2}}\right],
+\end{align}
+where $T$ --- Owen $T$-function cite:owen1956tables. Using this formula it is
+impossible to specify skewness and kurtosis separately --- both values are
+adjusted via $\alpha$ parameter. The only advantage of the formula is its
+relative computational simplicity: this function is available in some programmes
+and mathematical libraries. Its graph for different values of $\alpha$ is shown
+in [[fig:skew-normal-2]].
+
+#+name: fig:skew-normal-2
+#+caption: Probability density function eqref:eq:skew-normal-2 of ocean wavy surface for different values of skewness coefficient $\alpha$.
+[[file:build/skew-normal-2.eps]]
+
+**** Evaluation.
+Equation eqref:eq:distribution-transformation with selected wave elevation
+distribution may be solved either in every point of generated wavy surface,
+which gives the most accurate results, or in every fixed grid point
+interpolating result via least-squares (LS) polynomial. In the second case
+precision is lower. For example, interpolating 12^th order polynomial on a fixed
+grid of 500 points on interval $-5\sigma_z\leq{z}\leq{5}\sigma_z$ gives error of
+$\approx{0.43}\cdot10^{-3}$. Increasing polynomial order leads to either numeric
+overflows during LS interpolation, or more coefficient close to nought;
+increasing the size of the grid has insignificant effect on the result. In the
+majority of cases three Gram---Charlier series coefficients is enough to
+transform ACF; relative error without interpolation is $10^{-5}$.
+
 *** White noise generation
 *** Wavy surface generation
 *** Velocity potential normalisation formulae
@@ -1518,6 +1594,9 @@ stationary and MA model parameters finding algorithm to converge.
 | <<<CLT>>>  | central limit theorem                                                                      |
 | <<<PM>>>   | Pierson---Moskowitz ocean wave spectrum approximation                                      |
 | <<<YW>>>   | Yule---Walker equations                                                                    |
+| <<<LS>>>   | least squares                                                                              |
+| <<<PDF>>>  | probability density function                                                   |
+| <<<CDF>>>  | cumulative distribution function                                                |
 
 #+begin_export latex
 \input{postamble}
