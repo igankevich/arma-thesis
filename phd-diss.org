@@ -1469,6 +1469,23 @@ majority of cases three Gram---Charlier series coefficients is enough to
 transform ACF; relative error without interpolation is $10^{-5}$.
 
 *** White noise generation
+In order to eliminate periodicity from generated wavy surface, it is imperative
+to use PRNG with sufficiently large period to generate white noise. Parallel
+Mersenne Twister cite:matsumoto1998mersenne with a period of $2^{19937}-1$ is
+used as a generator in this work. It allows producing aperiodic ocean wavy
+surface realisations in any practical usage scenarios.
+
+There is no guarantee that multiple Mersenne Twisters executed in parallel
+threads with distinct initial states produce uncorrelated pseudo-random number
+sequences, however, algorithm of dynamic creation of Mersenne Twisters
+cite:matsumoto1998dynamic may be used to provide such guarantee. The essence of
+the algorithm is to find matrices of initial generator states, that give
+maximally uncorrelated pseudo-random number sequences when Mersenne Twisters are
+executed in parallel with these initial states. Since finding such initial
+states consumes considerable amount of processor time, vector of initial states
+is created preliminary with knowingly larger number of parallel threads and
+saved to a file, which is then read before starting white noise generation.
+
 *** Wavy surface generation
 *** Velocity potential normalisation formulae
 :PROPERTIES:
