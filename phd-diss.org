@@ -1547,20 +1547,32 @@ which terms with $\zeta$ are omitted.
 | $\FunSecond{z}$ | $\frac{1}{2}\left[\delta (x-i z) + \delta (x+i z) \right]$ | $\frac{1}{4 h}\left[\text{sech}\left(\frac{\pi  (x-i (h+z))}{2 h}\right)+\text{sech}\left(\frac{\pi  (x+i(h+z))}{2 h}\right)\right]$ |
 
 ** ARMA model verification
-*** Numerical experiments implementation methodology
+:PROPERTIES:
+:CUSTOM_ID: sec:verification
+:END:
+
+In cite:degtyarev2011modelling,degtyarev2013synoptic,boukhanovsky1997thesis AR
+model the following items are verified experimentally:
+- probability distributions of different wave characteristics (wave heights,
+  lengths, crests, periods, slopes, three-dimensionality),
+- dispersion relation,
+- retention of integral characteristics for mixed wave sea state.
+In this work both AR and MA model are verified by comparing probability
+distributions of different wave characteristics.
+
 *** Verification of wavy surface integral characteristics
-Research shows cite:рожков1990вероятностные that several ocean wave
-characteristics (e.g. wave height, wave period, wave length etc.) have Weibull
-distribution differing only in shape parameter (tab. [[tab:weibull-shape]]), and
-wave elevation has Gaussian distribution. In order to verify that distributions
-corresponding to generated realisation are correct, quantile-quantile plots are
-used (plots where analytic quantile values are used for X axis and estimated
-quantile values for Y axis). If the estimated distribution matches analytic then
-the graph has the form of the straight line. Tails of the graph may diverge from
-the straight line, because they can not be reliably estimated from the
-realisation. Different methods of extracting waves from realisation produce
-variations in quantile function tails, it is probably impractical to extract
-every possible wave from realisation since they may (and often) overlap.
+In cite:рожков1990вероятностные the authors show that several ocean wave
+characteristics (listed in table [[tab:weibull-shape]]) have Weibull distribution,
+and wavy surface elevation has Gaussian distribution. In order to verify that
+distributions corresponding to generated realisation are correct,
+quantile-quantile plots are used (plots where analytic quantile values are used
+for $OX$ axis and estimated quantile values for $OY$ axis). If the estimated
+distribution matches analytic then the graph has the form of the straight line.
+Tails of the graph may diverge from the straight line, because they can not be
+reliably estimated from the finite-size realisation. Different methods of
+extracting waves from realisation produce variations in quantile function tails,
+it is probably impractical to extract every possible wave from realisation since
+they may (and often) overlap.
 
 #+name: tab:weibull-shape
 #+caption: Values of Weibull shape parameter for different wave characteristics.
@@ -1619,7 +1631,7 @@ for (i in seq(0, 4)) {
 }
 #+end_src
 
-#+caption: Time slices of ACF function for standing (left column) and propagating waves (right column).
+#+caption: Time slices of ACF for standing (left column) and propagating waves (right column).
 #+RESULTS: acf-slices
 [[file:build/acf-slices.pdf]]
 
@@ -1636,9 +1648,9 @@ and their shape are often rough, and the total number of waves can not be
 predicted precisely. However, integral characteristics of wavy surface match the
 ones of real ocean waves.
 
-In theory, ocean waves themselves can be chosen as ACFs, the only pre-processing
-step is to make them decay exponentially. This is required to make AR model
-stationary and MA model parameters finding algorithm to converge.
+Theoretically, ocean waves themselves can be chosen as ACFs, the only
+pre-processing step is to make them decay exponentially. This is required to
+make AR model stationary and MA model parameters finding algorithm to converge.
 
 * High-performance software implementation of ocean wave simulation
 ** Computational model
