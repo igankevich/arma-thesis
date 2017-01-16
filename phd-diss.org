@@ -1657,9 +1657,9 @@ sinusoidal shape, which is different from oval shape described by linear wave
 theory. Second, velocity potential decays more rapidly than in linear wave
 theory as getting closer to the bottom, and the region where the majority of
 wave energy is concentrated is closer to the wave crest. Similar numerical
-experiment, in which all terms of eqref:eq:solution-2d-full that are not present
-in linear wave theory are eliminated, shows no difference (as much as machine
-precision allows) in resulting velocity potential fields.
+experiment, in which all terms of eqref:eq:solution-2d-full that are neglected
+in the framework of linear wave theory are eliminated, shows no difference (as
+much as machine precision allows) in resulting velocity potential fields.
 
 #+name: fig:potential-field-nonlinear
 #+caption: Velocity potential field of propagating wave $\zeta(x,y,t) = \cos(2\pi x - t/2)$. Field produced by formula eqref:eq:solution-2d-full (left) and linear wave theory formula (right).
@@ -1670,17 +1670,36 @@ precision allows) in resulting velocity potential fields.
 #+end_figure
 
 **** The difference with small-amplitude wave theory.
+The experiment shows that velocity fields produced by formula
+eqref:eq:solution-2d-full and eqref:eq:old-sol-2d correspond to each other for
+small-amplitude waves. Two ocean wavy surface realisations are made by AR model:
+one contains small-amplitude waves, other contains large-amplitude waves.
+Integration in formula eqref:eq:solution-2d-full is done over wave numbers range
+extracted from the generated wavy surface. For small-amplitude waves both
+formulae show comparable results (the difference in the velocity is attributed
+to stochastic nature of AR model), whereas for large-amplitude waves stable
+velocity field is produced only by formula eqref:eq:solution-2d-full (fig.
+[[fig:velocity-field-2d]]). So, generic formula eqref:eq:solution-2d-full gives
+satisfactory results without restriction on wave amplitudes.
+
+#+name: fig:velocity-field-2d
+#+caption: Comparison of velocity field on the ocean wavy surface obtained by generic formula ($u_1$) and formula for small-amplitude waves ($u_2$). Velocity field for realisations containing small-amplitude (left) and large-amplitude (right) waves.
+#+begin_figure
+[[file:build/low-amp-nocolor.eps]]
+[[file:build/high-amp-nocolor.eps]]
+#+end_figure
 
 *** Non-physical nature of ARMA model
 ARMA model, owing to its non-physical nature, does not have the notion of ocean
 wave; it simulates wavy surface as a whole instead. Motions of individual waves
 and their shape are often rough, and the total number of waves can not be
-predicted precisely. However, integral characteristics of wavy surface match the
-ones of real ocean waves.
+determined precisely. However, integral characteristics of wavy surface match
+the ones of real ocean waves.
 
 Theoretically, ocean waves themselves can be chosen as ACFs, the only
-pre-processing step is to make them decay exponentially. This is required to
-make AR model stationary and MA model parameters finding algorithm to converge.
+pre-processing step is to make them decay exponentially. This may allow
+generating waves of arbitrary profiles, and is one of the directions of future
+work.
 
 * High-performance software implementation of ocean wave simulation
 ** Computational model
