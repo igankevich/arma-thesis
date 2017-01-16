@@ -1641,6 +1641,15 @@ for (i in seq(0, 4)) {
 :CUSTOM_ID: sec:compare-formulae
 :END:
 
+Comparing obtained generic formulae eqref:eq:solution-2d and
+eqref:eq:solution-2d-full to the known formulae from linear wave theory allows
+seeing the difference between velocity fields for both large and small amplitude
+waves. In general analytic formula for velocity potential in not known, even for
+plain waves, so comparison is done numerically. Taking into account conclusions
+of [[#sec:pressure-2d]], only finite depth formulae are compared.
+
+**** The difference with linear wave theory formulae.
+
 *** Non-physical nature of ARMA model
 ARMA model, owing to its non-physical nature, does not have the notion of ocean
 wave; it simulates wavy surface as a whole instead. Motions of individual waves
