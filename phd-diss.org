@@ -1649,6 +1649,27 @@ plain waves, so comparison is done numerically. Taking into account conclusions
 of [[#sec:pressure-2d]], only finite depth formulae are compared.
 
 **** The difference with linear wave theory formulae.
+The experiment shows that velocity potential fields produced by formula
+eqref:eq:solution-2d-full for finite depth fluid and formula
+eqref:eq:solution-2d-linear from linear wave theory are qualitatively different
+(fig. [[fig:potential-field-nonlinear]]). First, velocity potential contours have
+sinusoidal shape, which is different from oval shape described by linear wave
+theory. Second, velocity potential decays more rapidly than in linear wave
+theory as getting closer to the bottom, and the region where the majority of
+wave energy is concentrated is closer to the wave crest. Similar numerical
+experiment, in which all terms of eqref:eq:solution-2d-full that are not present
+in linear wave theory are eliminated, shows no difference (as much as machine
+precision allows) in resulting velocity potential fields.
+
+#+name: fig:potential-field-nonlinear
+#+caption: Velocity potential field of propagating wave $\zeta(x,y,t) = \cos(2\pi x - t/2)$. Field produced by formula eqref:eq:solution-2d-full (left) and linear wave theory formula (right).
+#+attr_latex: :width 0.47\textwidth
+#+begin_figure
+[[file:graphics/pressure/potential-5.eps]]
+[[file:graphics/pressure/potential-6.eps]]
+#+end_figure
+
+**** The difference with small-amplitude wave theory.
 
 *** Non-physical nature of ARMA model
 ARMA model, owing to its non-physical nature, does not have the notion of ocean
