@@ -619,7 +619,7 @@ distributed random impulses. The governing equation for 3-D ARMA process is
 where $\zeta$ --- wave elevation, $\Phi$ --- AR process coefficients, $\Theta$
 --- MA process coefficients, $\epsilon$ --- white noise with Gaussian
 distribution, $\vec N$ --- AR process order, $\vec M$ --- MA process order, and
-$\Phi_{\vec 0} \equiv 0$, $\Theta_{\vec 0} \equiv 0$. Here arrows denote
+$\Phi_{\vec{0}}\equiv{0}$, $\Theta_{\vec{0}}\equiv{0}$. Here arrows denote
 multi-component indices with a component for each dimension. In general, any
 scalar quantity can be a component (temperature, salinity, concentration of some
 substance in water etc.). Equation parameters are AR and MA process coefficients
