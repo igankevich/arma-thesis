@@ -1488,10 +1488,10 @@ saved to a file, which is then read before starting white noise generation.
 
 *** Wavy surface generation
 In ARMA model value of wavy surface elevation at a particular point depends on
-previous in space and time points, as a result the so called /ramp-up interval/,
-in which realisation does not correspond to specified ACF, forms in the
-beginning of the realisation. There are several solutions to this problem which
-depend on the simulation context.
+previous in space and time points, as a result the so called /ramp-up interval/
+(see fig. [[fig:ramp-up-interval]]), in which realisation does not correspond to
+specified ACF, forms in the beginning of the realisation. There are several
+solutions to this problem which depend on the simulation context.
 
 If realisation is used in the context of ship stability simulation without
 manoeuvring, ramp-up interval will not affect results of the simulation, because
@@ -1514,6 +1514,16 @@ end of each part. Then wavy surface is generated in each point of each part
 (including points from the added interval), the interval at the end of part $N$
 is superimposed on the ramp-up interval at the beginning of the part $N+1$, and
 values in corresponding points are added.
+
+#+name: fig:ramp-up-interval
+#+begin_src R :results output graphics :exports results :file build/ramp-up-interval.pdf
+source(file.path("R", "common.R"))
+arma.plot_ramp_up_interval()
+#+end_src
+
+#+caption: Ramp-up interval at the beginning of the $OX$ axis of the realisation.
+#+RESULTS: fig:ramp-up-interval
+[[file:build/ramp-up-interval.pdf]]
 
 *** Velocity potential normalisation formulae
 :PROPERTIES:

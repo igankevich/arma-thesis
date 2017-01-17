@@ -65,3 +65,59 @@ arma.skew_normal_2_plot <- function(x, params) {
 arma.fmt <- function(x, ndigits) {
   format(round(x, ndigits), nsmall=ndigits)
 }
+
+arma.plot_partitions <- function() {
+	library("rgl")
+	part_alpha <- 0.2
+	part_col <- "grey"
+	part_size <- 2
+	sc <- 0.8
+	off <- part_size * (1-sc)/2
+	bcol <- "grey"
+	balpha <- 1.0
+	sc2 <- 1.0 - sc
+	off2 <- part_size * sc/2
+	ccol <- "red"
+	calpha <- 1.0
+	# whole parts
+	a1 <- cube3d(color=part_col, alpha=part_alpha)
+	a2 <- cube3d(color=part_col, alpha=part_alpha)
+	a3 <- cube3d(color=part_col, alpha=part_alpha)
+	shade3d(translate3d(a1, 0*part_size, 0, 0))
+	shade3d(translate3d(a2, 1*part_size, 0, 0))
+	shade3d(translate3d(a3, 2*part_size, 0, 0))
+	# stripped parts
+	b1 <- scale3d(cube3d(color=bcol, alpha=balpha), sc, sc, sc)
+	b2 <- scale3d(cube3d(color=bcol, alpha=balpha), sc, sc, sc)
+	b3 <- scale3d(cube3d(color=bcol, alpha=balpha), sc, sc, sc)
+	shade3d(translate3d(b1, 0 + off, off, off))
+	shade3d(translate3d(b2, 2 + off, off, off))
+	shade3d(translate3d(b3, 4 + off, off, off))
+	# overlap intervals
+	c1 <- scale3d(cube3d(color=ccol, alpha=calpha), sc2, 1, 1)
+	c2 <- scale3d(cube3d(color=ccol, alpha=calpha), sc2, 1, 1)
+	c3 <- scale3d(cube3d(color=ccol, alpha=calpha), sc2, 1, 1)
+	shade3d(translate3d(c1, 0 + off2, 0, 0))
+	shade3d(translate3d(c2, 2 + off2, 0, 0))
+	shade3d(translate3d(c3, 4 + off2, 0, 0))
+}
+
+arma.plot_ramp_up_interval <- function(label="Ramp-up interval") {
+	zeta <- read.csv(file.path("build", "standing_wave", "zeta.csv"))
+	t <- round(mean(zeta$t))
+	res <- arma.wavy_plot(zeta, t, scale=FALSE)
+	library("grDevices")
+	ax <- 7
+	ay <- 7
+	my <- max(zeta$y)
+	lines(trans3d(
+		c(0,  0, ax, ax, 0),
+		c(0, my, my,  0, 0),
+		c(0,  0,  0,  0, 0),
+		pmat=res
+	), col="red", lwd=3) 
+	text(trans3d(0, my/2, max(zeta$z)*1.5, pmat=res), label, col="red", font=2) 
+	from <- trans3d(0, my/2, max(zeta$z)*1.4, pmat=res)
+	to <- trans3d(0, my/2, max(zeta$z)*0.05, pmat=res)
+	arrows(from$x, from$y, to$x, to$y, lwd=2, angle=10, length=0.1, col="red")
+}
