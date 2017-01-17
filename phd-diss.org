@@ -1596,7 +1596,7 @@ source(file.path("R", "common.R"))
 par(pty="s", mfrow=c(2, 2))
 arma.qqplot_grid(
   file.path("build", "propagating_wave"),
-  c("elevation", "heights_x", "lengths_x", "periods")
+  c("elevation", "heights_y", "lengths_y", "periods")
 )
 #+end_src
 
@@ -1610,7 +1610,7 @@ source(file.path("R", "common.R"))
 par(pty="s", mfrow=c(2, 2))
 arma.qqplot_grid(
   file.path("build", "standing_wave"),
-  c("elevation", "heights_x", "lengths_x", "periods")
+  c("elevation", "heights_y", "lengths_y", "periods")
 )
 #+end_src
 
@@ -1752,6 +1752,112 @@ work.
 - No explicit synchronisation.
 - Local communications between adjacent nodes in the hierarchy.
 *** Mapping wavy surface generation algorithm on computational model
+#+name: fig:pipeline
+#+begin_src dot :exports results :file build/pipeline.pdf
+digraph {
+
+  node [fontsize=14,margin="0.055,0"]
+  graph [nodesep="0.25",ranksep="0.25",rankdir="TB"]
+  edge [arrowsize=0.66]
+
+  # data
+  subgraph xcluster_linear {
+    label="Linear model"
+
+    start [label="",shape=circle,style=filled,fillcolor=black,width=0.23]
+    spectrum [label="S(ω,θ)",shape=box]
+    acf [label="K(i,j,k)",shape=box]
+    phi [label="Φ(i,j,k)",shape=box]
+
+    # transformations
+    fourier_transform [label="Fourier transform",shape=box,style=rounded]
+    solve_yule_walker [label="Solve Yule—Walker\nequations",shape=box,style=rounded]
+
+    subgraph cluster_nonlinear_1 {
+      label="Simulate non-linearity\l"
+      labeljust=left
+      style=filled
+      color=lightgrey
+      acf2 [label="K*(i,j,k)",shape=box]
+      transform_acf [label="Transform ACF",shape=box,style=rounded]
+    }
+  }
+
+  subgraph xcluster_linear2 {
+
+    eps_parts [label="<e1> ε₁|<e2> ε₂|<e3> …|<e4> εₙ|<e> ε(t,x,y)",shape=record]
+    end [label="",shape=doublecircle,style=filled,fillcolor=black,width=0.23]
+
+    generate_white_noise [label="<g1> g₁|<g2> g₂|<g3> …|<g4> gₙ|<gen> Generate\lwhite noise",shape=record,style=rounded]
+    generate_zeta [label="<g1> g₁|<g2> g₂|<g3> …|<g4> gₙ|<gen> Generate ocean\lwavy surface parts\l",shape=record,style=rounded]
+
+    zeta_parts [label="<g1> ζ₁|<g2> ζ₂|<g3> …|<g4> ζₙ|<gen> Non-crosslinked\lrealisation parts",shape=record]
+    overlap_add [label="<g1> ζ₁|<g2> ζ₂|<g3> …|<g4> ζₙ|<gen> Crosslink realisation\lparts\l",shape=record,style=rounded]
+
+    zeta_parts:g1->overlap_add:g1
+    zeta_parts:g2->overlap_add:g2
+    zeta_parts:g3->overlap_add:g3
+    zeta_parts:g4->overlap_add:g4
+
+    zeta_parts:g2->overlap_add:g1 [constraint=false]
+    zeta_parts:g3->overlap_add:g2 [constraint=false]
+    zeta_parts:g4->overlap_add:g3 [constraint=false]
+
+    overlap_add:g1->zeta2_parts:g1
+    overlap_add:g2->zeta2_parts:g2
+    overlap_add:g3->zeta2_parts:g3
+    overlap_add:g4->zeta2_parts:g4
+
+    zeta2_parts:g1->transform_zeta:g1->zeta3_parts:g1->write_zeta:g1->eps_end
+    zeta2_parts:g2->transform_zeta:g2->zeta3_parts:g2->write_zeta:g2->eps_end
+    zeta2_parts:g3->transform_zeta:g3->zeta3_parts:g3->write_zeta:g3->eps_end
+    zeta2_parts:g4->transform_zeta:g4->zeta3_parts:g4->write_zeta:g4->eps_end
+
+  }
+
+  subgraph part3 {
+
+    zeta2_parts [label="<g1> ζ₁|<g2> ζ₂|<g3> …|<g4> ζₙ|<gen> Wavy surface with\lGaussian distribution\l",shape=record]
+
+    subgraph cluster_nonlinear_2 {
+      label="Simulate non-linearity\r"
+      labeljust=right
+      style=filled
+      color=lightgrey
+      zeta3_parts [label="<g1> ζ₁|<g2> ζ₂|<g3> …|<g4> ζₙ|<gen> ζ(t,x,y)",shape=record]
+      transform_zeta [label="<g1> g₁|<g2> g₂|<g3> …|<g4> gₙ|<gen> Transform wavy\lsurface elevation\lprobability distribution\l",shape=record,style=rounded]
+    }
+
+    # barriers
+    eps_start [label="",shape=box,style=filled,fillcolor=black,height=0.05]
+    eps_end [label="",shape=box,style=filled,fillcolor=black,height=0.05]
+
+    write_zeta [label="<g1> g₁|<g2> g₂|<g3> …|<g4> gₙ|<gen> Write finished\lparts to a file\l",shape=record,style=rounded]
+  }
+
+  # edges
+  start->spectrum->fourier_transform->acf->transform_acf
+  transform_acf->acf2
+  acf2->solve_yule_walker
+  solve_yule_walker->phi
+  phi->eps_start [constraint=false]
+  eps_start->generate_white_noise:g1
+  eps_start->generate_white_noise:g2
+  eps_start->generate_white_noise:g3
+  eps_start->generate_white_noise:g4
+  generate_white_noise:g1->eps_parts:e1->generate_zeta:g1->zeta_parts:g1
+  generate_white_noise:g2->eps_parts:e2->generate_zeta:g2->zeta_parts:g2
+  generate_white_noise:g3->eps_parts:e3->generate_zeta:g3->zeta_parts:g3
+  generate_white_noise:g4->eps_parts:e4->generate_zeta:g4->zeta_parts:g4
+
+  eps_end->end
+}
+#+end_src
+
+#+caption: Diagram of a data processing pipeline, that implements ocean wavy surface generation via AR model.
+#+RESULTS: fig:pipeline
+[[file:build/pipeline.pdf]]
+
 ** SMP implementation
 *** Load balancing algorithm
 *** Evaluation
