@@ -121,3 +121,19 @@ arma.plot_ramp_up_interval <- function(label="Ramp-up interval") {
 	to <- trans3d(0, my/2, max(zeta$z)*0.05, pmat=res)
 	arrows(from$x, from$y, to$x, to$y, lwd=2, angle=10, length=0.1, col="red")
 }
+
+arma.plot_factory_vs_openmp <- function(...) {
+  args <- list(...)
+  perf <- read.csv(file.path("data", "performance", "factory-vs-openmp.csv"))
+  scale <- 10 ** args$power
+  x <- perf$nt * perf$nx * perf$ny / scale
+  plot.new()
+  plot.window(xlim=range(x),ylim=range(perf[c("openmp", "factory")]))
+  pts <- pretty(x)
+  axis(1, at=pts, labels=sapply(pts, function(x) {as.expression(bquote(.(x) %.% 10 ** .(args$power)))}))
+  axis(2)
+  box()
+  lines(x, perf$openmp, lty="solid")
+  lines(x, perf$factory, lty="dashed")
+  title(xlab=args$xlab, ylab=args$ylab)
+}

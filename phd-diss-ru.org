@@ -2062,10 +2062,28 @@ cite:degtyarev2011effi, поэтому эксперимент заключалс
 дисковую подсистему.
 
 #+name: fig:factory-performance
-#+caption: Сравнение производительности реализаций программы на OpenMP и на разработанной технологии.
+#+begin_src R :results output graphics :exports results :file build/factory-vs-openmp-ru.pdf
+dev.off()
+cairo_pdf("build/factory-vs-openmp-ru.pdf")
+source(file.path("R", "common.R"))
+arma.plot_factory_vs_openmp(
+  xlab="Размер реализации",
+  ylab="Время, с.",
+  power=6
+)
+#+end_src
+
+#+caption: Сравнение производительности реализаций программы на OpenMP и Factory.
+#+RESULTS: fig:factory-performance
+[[file:build/factory-vs-openmp-ru.pdf]]
 
 #+name: fig:factory-overlap
+#+begin_src R :results output graphics :exports results :file build/factory-overlap-ru.pdf
+#+end_src
+
 #+caption: Наложение параллельных вычислений на $[G_0,G_1]$ и записи данных на диск на $[W_0,W_1]$. В реализации OpenMP наложение отсутствует.
+#+RESULTS: fig:factory-overlap
+[[file:build/factory-overlap-ru.pdf]]
 
 Несмотря на то, что технология OpenMP содержит примитивы для создания
 конвейеров, соединить конвейером две распараллеленные фазы программы можно

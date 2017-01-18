@@ -1874,6 +1874,21 @@ digraph {
 *** Evaluation
 **** Performance of MPI, OpenMP, OpenCL implementations.
 **** Performance of load balancing algorithm.
+
+#+name: fig:factory-performance
+#+begin_src R :results output graphics :exports results :file build/factory-vs-openmp.pdf
+source(file.path("R", "common.R"))
+arma.plot_factory_vs_openmp(
+  xlab="Realisation size",
+  ylab="Time, s",
+  power=6
+)
+#+end_src
+
+#+caption: Performance comparison of OpenMP and Factory implementations.
+#+RESULTS: fig:factory-performance
+[[file:build/factory-vs-openmp.pdf]]
+
 ** MPP implementation
 *** Cluster node discovery algorithm
 *** Fail over algorithm
