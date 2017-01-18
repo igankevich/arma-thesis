@@ -137,3 +137,28 @@ arma.plot_factory_vs_openmp <- function(...) {
   lines(x, perf$factory, lty="dashed")
   title(xlab=args$xlab, ylab=args$ylab)
 }
+
+arma.plot_factory_vs_openmp_overlap <- function(...) {
+  args <- list(...)
+  openmp <- read.csv(file.path("data", "performance", "overlap-openmp.csv"), na.strings="")
+  factory <- read.csv(file.path("data", "performance", "overlap-factory.csv"), na.strings="")
+  openmp$t <- (openmp$t - min(openmp$t)) / args$scale
+  factory$t <- (factory$t - min(factory$t)) / args$scale
+  plot.new()
+  plot.window(xlim=range(c(factory$t, openmp$t)),ylim=range(0, 5))
+  axis(1)
+  axis(2, at=c(1, 3), labels=args$labels, las=1, hadj=1)
+  # OpenMP
+  lines(openmp$t, rep.int(3, length(openmp$t)))
+  openmp_pts <- openmp[!is.na(openmp$mark),]
+  openmp_y <- rep.int(3, length(openmp_pts$t))
+  points(openmp_pts$t, openmp_y)
+  text(openmp_pts$t, openmp_y, labels=openmp_pts$mark, pos=c(3, 3, 1, 1))
+  # Factory
+  lines(factory$t, rep.int(1, length(factory$t)))
+  factory_pts <- factory[!is.na(factory$mark),]
+  factory_y <- rep.int(1, length(factory_pts$t))
+  points(factory_pts$t, factory_y)
+  text(factory_pts$t, factory_y, labels=factory_pts$mark, pos=c(3, 1, 3, 1))
+  title(xlab=args$xlab)
+}

@@ -1889,6 +1889,23 @@ arma.plot_factory_vs_openmp(
 #+RESULTS: fig:factory-performance
 [[file:build/factory-vs-openmp.pdf]]
 
+#+name: fig:factory-overlap
+#+header: :width 9 :height 4
+#+begin_src R :results output graphics :exports results :file build/factory-vs-openmp-overlap.pdf
+source(file.path("R", "common.R"))
+par(mar=c(5, 6, 0, 1), pty="m")
+arma.plot_factory_vs_openmp_overlap(
+  xlab="Time, s",
+  labels=c(" Factory", "OpenMP"),
+  scale=10**9
+)
+#+end_src
+
+#+caption: Overlap of parallel computations on $[G_0,G_1]$ and data output to disk on $[W_0,W_1]$. In OpenMP implementation there is no overlap.
+#+RESULTS: fig:factory-overlap
+[[file:build/factory-vs-openmp-overlap.pdf]]
+
+
 ** MPP implementation
 *** Cluster node discovery algorithm
 *** Fail over algorithm
