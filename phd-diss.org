@@ -1751,6 +1751,7 @@ work.
   communication of cluster nodes limiting it to adjacent nodes.
 - No explicit synchronisation.
 - Local communications between adjacent nodes in the hierarchy.
+
 *** Mapping wavy surface generation algorithm on computational model
 #+name: fig:pipeline
 #+begin_src dot :exports results :file build/pipeline.pdf
@@ -1892,6 +1893,7 @@ digraph {
 | <<<LS>>>   | least squares                                                                              |
 | <<<PDF>>>  | probability density function                                                   |
 | <<<CDF>>>  | cumulative distribution function                                                |
+| <<<BSP>>>  | Bulk Synchronous Parallel                                                                   |
 
 #+begin_export latex
 \input{postamble}
