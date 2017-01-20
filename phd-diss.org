@@ -1833,16 +1833,16 @@ programme.
 
 Kernels implement control flow logic in theirs ~act~ and ~react~ methods and
 store the state of the current control flow branch. Both logic and state are
-implemented by a programmer. In ~act~ method some function is either
-sequentially computed or decomposed into subtasks (represented by another set of
-kernels) which are subsequently sent to a pipeline. In ~react~ method
-subordinate kernels that returned from the pipeline are processed by their
-parent. Calls to ~act~ and ~react~ methods are asynchronous and are made within
-threads spawned by a pipeline. For each kernel ~act~ is called only once, and
-for multiple kernels the calls are done in parallel to each other, whereas
-~react~ method is called once for each subordinate kernel, and all the calls are
-made in the same thread to prevent race conditions (for different parent kernels
-different threads may be used).
+implemented by a programmer. In ~act~ method some function is either directly
+computed or decomposed into nested functions (represented by a set of
+subordinate kernels) which are subsequently sent to a pipeline. In ~react~
+method subordinate kernels that returned from the pipeline are processed by
+their parent. Calls to ~act~ and ~react~ methods are asynchronous and are made
+within threads attached to a pipeline. For each kernel ~act~ is called only
+once, and for multiple kernels the calls are done in parallel to each other,
+whereas ~react~ method is called once for each subordinate kernel, and all the
+calls are made in the same thread to prevent race conditions (for different
+parent kernels different threads may be used).
 
 Pipelines implement asynchronous calls to ~act~ and ~react~, and try to make as
 many parallel calls as possible considering concurrency of the platform (no. of
