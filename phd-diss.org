@@ -1849,8 +1849,8 @@ many parallel calls as possible considering concurrency of the platform (no. of
 cores per node and no. of nodes in a cluster). A pipeline consists of a kernel
 pool, which contains all the subordinate kernels sent by their parents, and a
 thread pool that processes kernels in accordance with rules outlined in the
-previous paragraph. A separate pipeline exists for each compute device: There
-are pipelines for parallel processing, schedule-based processing (periodic and
+previous paragraph. A separate pipeline is used for each device: There are
+pipelines for parallel processing, schedule-based processing (periodic and
 delayed tasks), and a proxy pipeline for processing of kernels on other cluster
 nodes.
 
