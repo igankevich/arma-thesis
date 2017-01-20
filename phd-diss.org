@@ -1821,36 +1821,36 @@ digraph {
 [[file:build/pipeline.pdf]]
 
 *** Computational model overview
-The core provides classes and methods to simplify development of distributed
-applications and middleware. The main focus of this package is to make
-distributed application resilient to failures, i.e. make it fault tolerant and
-highly available, and do it transparently to a programmer. All classes are
-divided into two layers: the lower layer consists of classes for single node
-applications, and the upper layer consists of classes for applications that run
-on an arbitrary number of nodes. There are two kinds of tightly coupled entities
-in the package --- kernels and pipelines --- which are used together to compose
-a programme.
+The main purpose of the model is to simplify development of distributed batch
+processing applications and middleware. The main focus is to make application
+resilient to failures, i.e. make it fault tolerant and highly available, and do
+it transparently to a programmer. The implementation is divided into two layers:
+the lower layer consists of routines and classes for single node applications
+(with no network interactions), and the upper layer for applications that run on
+an arbitrary number of nodes. There are two kinds of tightly coupled entities in
+the model --- /kernels/ and /pipelines/ --- which are used together to compose a
+programme.
 
-Kernels implement control flow logic in theirs act and react methods and store
-the state of the current control flow branch. Both logic and state are
-implemented by a programmer. In act method some function is either sequentially
-computed or decomposed into subtasks (represented by another set of kernels)
-which are subsequently sent to a pipeline. In react method subordinate kernels
-that returned from the pipeline are processed by their parent. Calls to act and
-react methods are asynchronous and are made within threads spawned by a
-pipeline. For each kernel act is called only once, and for multiple kernels the
-calls are done in parallel to each other, whereas react method is called once
-for each subordinate kernel, and all the calls are made in the same thread to
-prevent race conditions (for different parent kernels different threads may be
-used).
+Kernels implement control flow logic in theirs ~act~ and ~react~ methods and
+store the state of the current control flow branch. Both logic and state are
+implemented by a programmer. In ~act~ method some function is either
+sequentially computed or decomposed into subtasks (represented by another set of
+kernels) which are subsequently sent to a pipeline. In ~react~ method
+subordinate kernels that returned from the pipeline are processed by their
+parent. Calls to ~act~ and ~react~ methods are asynchronous and are made within
+threads spawned by a pipeline. For each kernel ~act~ is called only once, and
+for multiple kernels the calls are done in parallel to each other, whereas
+~react~ method is called once for each subordinate kernel, and all the calls are
+made in the same thread to prevent race conditions (for different parent kernels
+different threads may be used).
 
-Pipelines implement asynchronous calls to act and react, and try to make as many
-parallel calls as possible considering concurrency of the platform (no. of cores
-per node and no. of nodes in a cluster). A pipeline consists of a kernel pool,
-which contains all the subordinate kernels sent by their parents, and a thread
-pool that processes kernels in accordance with rules outlined in the previous
-paragraph. A separate pipeline exists for each compute device: There are
-pipelines for parallel processing, schedule-based processing (periodic and
+Pipelines implement asynchronous calls to ~act~ and ~react~, and try to make as
+many parallel calls as possible considering concurrency of the platform (no. of
+cores per node and no. of nodes in a cluster). A pipeline consists of a kernel
+pool, which contains all the subordinate kernels sent by their parents, and a
+thread pool that processes kernels in accordance with rules outlined in the
+previous paragraph. A separate pipeline exists for each compute device: There
+are pipelines for parallel processing, schedule-based processing (periodic and
 delayed tasks), and a proxy pipeline for processing of kernels on other cluster
 nodes.
 
@@ -1858,9 +1858,9 @@ In principle, kernels and pipelines machinery reflect the one of procedures and
 call stacks, with the advantage that kernel methods are called asynchronously
 and in parallel to each other. The stack, which ordinarily stores local
 variables, is modelled by fields of a kernel. The sequence of processor
-instructions before nested procedure calls is modelled by act method, and
-sequence of processor instructions after the calls is modelled by react method.
-The procedure calls themselves are modelled by constructing and sending
+instructions before nested procedure calls is modelled by ~act~ method, and
+sequence of processor instructions after the calls is modelled by ~react~
+method. The procedure calls themselves are modelled by constructing and sending
 subordinate kernels to the pipeline. Two methods are necessary because calls are
 asynchronous and one must wait before subordinate kernels complete their work.
 Pipelines allow circumventing active wait, and call correct kernel methods by
