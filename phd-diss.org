@@ -1713,55 +1713,6 @@ work.
 
 * High-performance software implementation of ocean wave simulation
 ** Computational model
-*** Governing principles
-- There are no messages in the model, a kernel is itself a message that can
-  be sent over network to another node and directly access any kernel on the
-  local node. It is responsibility of a programmer to ensure that such kernel
-  exist.
-- A kernel is best viewed as a cooperative routine, which is submitted to
-  execution queue upon the call and is executed asynchronously by system
-  scheduler. There can be any number of calls to other subroutines inside
-  routine body. Every call submits corresponding subroutine to execution
-  queue and returns immediately. Kernels in the queue can be executed in any
-  order; this fact is used by system scheduler to exploit parallelism
-  offered by the computer by distributed kernels from the queue across
-  available cluster nodes and processor cores.
-- Asynchronous execution prevents the use of explicit synchronisation after
-  the call to subroutine is made; system scheduler returns control flow to
-  the routine each time one of its subroutine returns. Such *cooperation*
-  transforms each routine which calls subroutines into event handler, where
-  each event is a subroutine and the handler is the routine that called
-  them. In many batch processing programmes control flow enters each routine
-  which calls subroutines at least two times: the first time it occurs upon
-  the call to the routine and the second time happens when control flow
-  returns to the caller after completion of a subroutine.
-- The routine may communicate with any number of local kernels, addresses of
-  which it knows; communication with routines which are not adjacent in the
-  call stack complexifies control flow and call stack looses its tree shape.
-  It is responsibility of a programmer to ensure that communicating kernels
-  are present in memory. One way to ensure this is to perform communication
-  between subroutines which are called from the same routine. Incidentally,
-  it is the usual way of writing batch parallel programmes: each such
-  communication creates a cycle in the call stack graph, and a cycle between
-  different (possibly non-adjacent) layers of kernel hierarchy is redundant,
-  because there are other edges that can be used instead. The situation may
-  be different when the programme is interactive or event-based.
-- The other disadvantage of communication which does no occur along
-  hierarchical links is that it complexifies resiliency algorithms when
-  executed across cluster network. Since it is difficult to ensure that
-  a kernel resides in memory of a neighbour node, because a node may fail in
-  the middle of its execution. Thus, upon failure of a node all of the
-  subroutines which are called from the same routine must be restarted. This
-  encourage a programmer to construct
-   - deep hierarchies of tightly-coupled kernels (which require
-    communication on the same level of hierarchy) to reduce overhead of
-    recomputation,
-   - fat hierarchies of loosely-coupled kernels.
-  Deep hierarchy is not only requirement of technology, it helps optimise
-  communication of cluster nodes limiting it to adjacent nodes.
-- No explicit synchronisation.
-- Local communications between adjacent nodes in the hierarchy.
-
 *** Mapping wavy surface generation algorithm on computational model
 #+name: fig:pipeline
 #+begin_src dot :exports results :file build/pipeline.pdf
@@ -1869,6 +1820,98 @@ digraph {
 #+RESULTS: fig:pipeline
 [[file:build/pipeline.pdf]]
 
+*** Computational model overview
+The core provides classes and methods to simplify development of distributed
+applications and middleware. The main focus of this package is to make
+distributed application resilient to failures, i.e. make it fault tolerant and
+highly available, and do it transparently to a programmer. All classes are
+divided into two layers: the lower layer consists of classes for single node
+applications, and the upper layer consists of classes for applications that run
+on an arbitrary number of nodes. There are two kinds of tightly coupled entities
+in the package --- kernels and pipelines --- which are used together to compose
+a programme.
+
+Kernels implement control flow logic in theirs act and react methods and store
+the state of the current control flow branch. Both logic and state are
+implemented by a programmer. In act method some function is either sequentially
+computed or decomposed into subtasks (represented by another set of kernels)
+which are subsequently sent to a pipeline. In react method subordinate kernels
+that returned from the pipeline are processed by their parent. Calls to act and
+react methods are asynchronous and are made within threads spawned by a
+pipeline. For each kernel act is called only once, and for multiple kernels the
+calls are done in parallel to each other, whereas react method is called once
+for each subordinate kernel, and all the calls are made in the same thread to
+prevent race conditions (for different parent kernels different threads may be
+used).
+
+Pipelines implement asynchronous calls to act and react, and try to make as many
+parallel calls as possible considering concurrency of the platform (no. of cores
+per node and no. of nodes in a cluster). A pipeline consists of a kernel pool,
+which contains all the subordinate kernels sent by their parents, and a thread
+pool that processes kernels in accordance with rules outlined in the previous
+paragraph. A separate pipeline exists for each compute device: There are
+pipelines for parallel processing, schedule-based processing (periodic and
+delayed tasks), and a proxy pipeline for processing of kernels on other cluster
+nodes.
+
+In principle, kernels and pipelines machinery reflect the one of procedures and
+call stacks, with the advantage that kernel methods are called asynchronously
+and in parallel to each other. The stack, which ordinarily stores local
+variables, is modelled by fields of a kernel. The sequence of processor
+instructions before nested procedure calls is modelled by act method, and
+sequence of processor instructions after the calls is modelled by react method.
+The procedure calls themselves are modelled by constructing and sending
+subordinate kernels to the pipeline. Two methods are necessary because calls are
+asynchronous and one must wait before subordinate kernels complete their work.
+Pipelines allow circumventing active wait, and call correct kernel methods by
+analysing their internal state.
+
+*** Governing principles
+- There are no messages in the model, a kernel is itself a message that can be
+  sent over network to another node and directly access any kernel on the local
+  node. It is responsibility of a programmer to ensure that such kernel exist.
+- A kernel is a /cooperative routine/, which is submitted to task pool upon the
+  call and is executed asynchronously by a scheduler. There can be any number of
+  calls to other subroutines inside routine body. Every call submits
+  corresponding subroutine to task pool and returns immediately. Kernels in the
+  pool can be executed in any order; this fact is used by a scheduler to exploit
+  parallelism offered by the computer by distributing kernels from the pool
+  across available cluster nodes and processor cores.
+- Asynchronous execution prevents the use of explicit synchronisation after the
+  call to subroutine is made; system scheduler returns control flow to the
+  routine each time one of its subroutine returns. Such *cooperation* transforms
+  each routine which calls subroutines into event handler, where each event is a
+  subroutine and the handler is the routine that called them. In many batch
+  processing programmes control flow enters each routine which calls subroutines
+  at least twice: the first time it occurs upon the call to the routine and the
+  second time happens when control flow returns to the caller after completion
+  of a subroutine.
+- The routine may communicate with any number of local kernels, addresses of
+  which it knows; communication with routines which are not adjacent in the call
+  stack complexifies control flow and call stack looses its tree shape. It is
+  responsibility of a programmer to ensure that communicating kernels are
+  present in memory. One way to ensure this is to perform communication between
+  subroutines which are called from the same routine. Incidentally, it is the
+  usual way of writing batch parallel programmes: each such communication
+  creates a cycle in the call stack graph, and a cycle between different
+  (possibly non-adjacent) layers of kernel hierarchy is redundant, because there
+  are other edges that can be used instead. The situation may be different when
+  the programme is interactive or event-based.
+- The other disadvantage of communication which does not occur along
+  hierarchical links is that it complexifies resiliency algorithms when executed
+  across cluster network. Since it is difficult to ensure that a kernel resides
+  in memory of a neighbour node, because a node may fail in the middle of its
+  execution. Thus, upon failure of a node all of the subroutines which are
+  called from the same routine must be restarted. This encourages a programmer
+  to construct
+   - deep hierarchies of tightly-coupled kernels (which require communication on
+     the same level of hierarchy) to reduce overhead of recomputation,
+   - fat hierarchies of loosely-coupled kernels.
+  Deep hierarchy is not only requirement of technology, it helps optimise
+  communication of cluster nodes limiting it to adjacent nodes.
+- No explicit synchronisation.
+- Local communications between adjacent nodes in the hierarchy.
+
 ** SMP implementation
 *** Load balancing algorithm
 *** Evaluation
@@ -1904,7 +1947,6 @@ arma.plot_factory_vs_openmp_overlap(
 #+caption: Overlap of parallel computations on $[G_0,G_1]$ and data output to disk on $[W_0,W_1]$. In OpenMP implementation there is no overlap.
 #+RESULTS: fig:factory-overlap
 [[file:build/factory-vs-openmp-overlap.pdf]]
-
 
 ** MPP implementation
 *** Cluster node discovery algorithm
