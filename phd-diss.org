@@ -1856,15 +1856,14 @@ nodes.
 
 In principle, kernels and pipelines machinery reflect the one of procedures and
 call stacks, with the advantage that kernel methods are called asynchronously
-and in parallel to each other. The stack, which ordinarily stores local
-variables, is modelled by fields of a kernel. The sequence of processor
-instructions before nested procedure calls is modelled by ~act~ method, and
-sequence of processor instructions after the calls is modelled by ~react~
-method. The procedure calls themselves are modelled by constructing and sending
-subordinate kernels to the pipeline. Two methods are necessary because calls are
-asynchronous and one must wait before subordinate kernels complete their work.
-Pipelines allow circumventing active wait, and call correct kernel methods by
-analysing their internal state.
+and in parallel to each other (as much as programme logic allows). Kernel field
+is the stack, ~act~ method is a sequence of processor instructions before nested
+procedure call, and ~react~ method is a sequence of processor instructions after
+the call. Constructing and sending subordinate kernels to the pipeline is nested
+procedure call. Two methods are necessary to make calls asynchronous, and
+replace active wait for completion of subordinate kernels with passive one.
+Pipelines, in turn, allow implementing passive wait, and call correct kernel
+methods by analysing their internal state.
 
 *** Governing principles
 - There are no messages in the model, a kernel is itself a message that can be
