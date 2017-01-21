@@ -1577,8 +1577,6 @@ cite:oppenheim1989discrete,svoboda2011efficient,pavel2013algorithms. Суть м
 
 #+name: fig:ramp-up-interval
 #+begin_src R :results output graphics :exports results :file build/ramp-up-interval-ru.pdf
-dev.off()
-cairo_pdf("build/ramp-up-interval-ru.pdf")
 source(file.path("R", "common.R"))
 arma.plot_ramp_up_interval(label="Интервал разгона")
 #+end_src
@@ -2237,8 +2235,6 @@ cite:degtyarev2011effi, поэтому эксперимент заключалс
 
 #+name: fig:factory-performance
 #+begin_src R :results output graphics :exports results :file build/factory-vs-openmp-ru.pdf
-dev.off()
-cairo_pdf("build/factory-vs-openmp-ru.pdf")
 source(file.path("R", "common.R"))
 arma.plot_factory_vs_openmp(
   xlab="Размер реализации",
@@ -2254,8 +2250,6 @@ arma.plot_factory_vs_openmp(
 #+name: fig:factory-overlap
 #+header: :width 9 :height 4
 #+begin_src R :results output graphics :exports results :file build/factory-vs-openmp-overlap-ru.pdf
-dev.off()
-cairo_pdf("build/factory-vs-openmp-overlap-ru.pdf", width=9, height=4)
 source(file.path("R", "common.R"))
 par(mar=c(5, 6, 0, 1), pty="m")
 arma.plot_factory_vs_openmp_overlap(
