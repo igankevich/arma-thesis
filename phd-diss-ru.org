@@ -1430,7 +1430,7 @@ $\gamma_2$ --- эксцесс, $f$ --- ФПР, $F$ --- функция распр
 распределения при различных параметрах показано на [[fig:skew-normal-1]].
 
 #+name: fig:skew-normal-1
-#+begin_src R :results output graphics :exports results :file build/skew-normal-1.pdf
+#+begin_src R :results output graphics :exports results :file build/skew-normal-1-ru.pdf
 source(file.path("R", "common.R"))
 x <- seq(-3, 3, length.out=100)
 params <- data.frame(
@@ -1477,7 +1477,7 @@ legend(
 на [[fig:skew-normal-2]].
 
 #+name: fig:skew-normal-2
-#+begin_src R :results output graphics :exports results :file build/skew-normal-2.pdf
+#+begin_src R :results output graphics :exports results :file build/skew-normal-2-ru.pdf
 source(file.path("R", "common.R"))
 x <- seq(-3, 3, length.out=100)
 alpha <- c(0.00, 0.87, 2.25, 4.90)
@@ -1663,12 +1663,15 @@ cite:degtyarev2011modelling,degtyarev2013synoptic,boukhanovsky1997thesis
 [[acf-slices]], [[standing-wave-distributions]], [[propagating-wave-distributions]].
 
 #+name: propagating-wave-distributions
-#+begin_src R :results output graphics :exports results :file build/propagating-wave-qqplots.pdf
+#+begin_src R :results output graphics :exports results :file build/propagating-wave-qqplots-ru.pdf
 source(file.path("R", "common.R"))
 par(pty="s", mfrow=c(2, 2))
 arma.qqplot_grid(
   file.path("build", "propagating_wave"),
-  c("elevation", "heights_y", "lengths_y", "periods")
+  c("elevation", "heights_y", "lengths_y", "periods"),
+  c("подъем", "высота по Y", "длина по Y", "период"),
+  xlab="x",
+  ylab="y"
 )
 #+end_src
 
@@ -1677,22 +1680,25 @@ arma.qqplot_grid(
 [[file:build/propagating-wave-qqplots.pdf]]
 
 #+name: standing-wave-distributions
-#+begin_src R :results output graphics :exports results :file build/standing-wave-qqplots.pdf
+#+begin_src R :results output graphics :exports results :file build/standing-wave-qqplots-ru.pdf
 source(file.path("R", "common.R"))
 par(pty="s", mfrow=c(2, 2))
 arma.qqplot_grid(
   file.path("build", "standing_wave"),
-  c("elevation", "heights_y", "lengths_y", "periods")
+  c("elevation", "heights_y", "lengths_y", "periods"),
+  c("подъем", "высота по Y", "длина по Y", "период"),
+  xlab="x",
+  ylab="y"
 )
 #+end_src
 
 #+caption: Спрямленные диаграммы для стоячих волн.
 #+RESULTS: standing-wave-distributions
-[[file:build/standing-wave-qqplots.pdf]]
+[[file:build/standing-wave-qqplots-ru.pdf]]
 
 #+name: acf-slices
 #+header: :width 6 :height 9
-#+begin_src R :results output graphics :exports results :file build/acf-slices.pdf
+#+begin_src R :results output graphics :exports results :file build/acf-slices-ru.pdf
 source(file.path("R", "common.R"))
 propagating_acf <- read.csv(file.path("build", "propagating_wave", "acf.csv"))
 standing_acf <- read.csv(file.path("build", "standing_wave", "acf.csv"))
@@ -1705,7 +1711,7 @@ for (i in seq(0, 4)) {
 
 #+caption: Временные срезы АКФ для стоячих (слева) и прогрессивных (справа) волн.
 #+RESULTS: acf-slices
-[[file:build/acf-slices.pdf]]
+[[file:build/acf-slices-ru.pdf]]
 
 *** Верификация полей потенциалов скоростей
 :PROPERTIES:

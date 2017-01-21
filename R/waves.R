@@ -49,18 +49,17 @@ arma.load_wave_parameters <- function (
 	})
 }
 
-arma.qqplot <- function (param, nsamples=100) {
-	qdata <- param$qfunc(ppoints(nsamples))
+arma.qqplot <- function (param, nsamples=100, ttl, ...) {
+  qdata <- param$qfunc(ppoints(nsamples))
 	qqplot(
 		qdata,
 		param$data,
 		asp=1,
 		xlim=c(param$min, param$max),
-		ylim=c(param$min, param$max),
-		xlab="Expected",
-		ylab="Estimated"
-	)
-	title(param$filename, line=-2)
+    ylim=c(param$min, param$max),
+    ...
+  )
+  title(ttl, line=-2)
 	qqline(param$data, distribution=param$qfunc)
 }
 

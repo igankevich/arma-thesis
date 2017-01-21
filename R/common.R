@@ -1,10 +1,12 @@
 source(file.path("R", "waves.R"))
 source(file.path("R", "transform.R"))
 
-arma.qqplot_grid <- function (dir, params) {
-	wave_params <- arma.load_wave_parameters(dir, params)
+arma.qqplot_grid <- function (dir, params, titles, ...) {
+  wave_params <- arma.load_wave_parameters(dir, params)
+  i <- 1
 	for (name in names(wave_params)) {
-		arma.qqplot(wave_params[[name]])
+    arma.qqplot(wave_params[[name]], 100, titles[[i]], ...)
+    i <- i + 1
 	}
 }
 
@@ -45,6 +47,7 @@ arma.skew_normal_1_plot <- function(x, params) {
     d <- data[,i]
     lines(x, d, lty=paste(params$linetypes[[i]]))
   }
+  title(xlab="x", ylab="y")
 }
 
 
@@ -60,6 +63,7 @@ arma.skew_normal_2_plot <- function(x, params) {
     d <- data[,i]
     lines(x, d, lty=paste(params$linetypes[[i]]))
   }
+  title(xlab="x", ylab="y")
 }
 
 arma.fmt <- function(x, ndigits) {

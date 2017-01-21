@@ -1606,7 +1606,10 @@ source(file.path("R", "common.R"))
 par(pty="s", mfrow=c(2, 2))
 arma.qqplot_grid(
   file.path("build", "propagating_wave"),
-  c("elevation", "heights_y", "lengths_y", "periods")
+  c("elevation", "heights_y", "lengths_y", "periods"),
+  c("elevation", "height Y", "length Y", "period"),
+  xlab="x",
+  ylab="y"
 )
 #+end_src
 
@@ -1620,7 +1623,10 @@ source(file.path("R", "common.R"))
 par(pty="s", mfrow=c(2, 2))
 arma.qqplot_grid(
   file.path("build", "standing_wave"),
-  c("elevation", "heights_y", "lengths_y", "periods")
+  c("elevation", "heights_y", "lengths_y", "periods"),
+  c("elevation", "height Y", "length Y", "period"),
+  xlab="x",
+  ylab="y"
 )
 #+end_src
 
