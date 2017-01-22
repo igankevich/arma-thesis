@@ -1954,6 +1954,7 @@ arma.plot_factory_vs_openmp_overlap(
 [[file:build/factory-vs-openmp-overlap.pdf]]
 
 ** MPP implementation
+*** Overview of distributed system architectures
 *** Cluster node discovery algorithm
 *** Fail over algorithm
 **** Fault tolerance.
