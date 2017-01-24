@@ -2336,11 +2336,11 @@ execution time with a failure by the total execution time without the failure
 but with the number of nodes minus one. The results for this calculation are
 obtained from the same benchmark and are presented in Figure [[fig:slowdown]]. The
 difference in performance in case of master and slave node failures lies within
-5\% margin, and in case of backup node failure within 50\% margin for the number
-of node less than~6[fn::Measuring this margin for higher number of nodes does
+5% margin, and in case of backup node failure within 50% margin for the number
+of node less than 6[fn::Measuring this margin for higher number of nodes does
 not make sense since time before failure is greater than total execution time
 with these numbers of nodes, and programme's execution finishes before a failure
-occurs.]]. Increase in execution time of 50\% is more than $1/3$ of execution
+occurs.]]. Increase in execution time of 50% is more than $1/3$ of execution
 time after which a failure occurs, but backup node failure need some time to be
 discovered: they are detected only when subordinate kernel carrying the copy of
 the first kernel finishes its execution and tries to reach its parent. Instant
