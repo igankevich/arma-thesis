@@ -1956,9 +1956,490 @@ arma.plot_factory_vs_openmp_overlap(
 ** MPP implementation
 *** Overview of distributed system architectures
 *** Cluster node discovery algorithm
+**** Introduction.
 *** Fail over algorithm
+**** Introduction.
+Fault tolerance of data processing pipelines is one of the top concerns in
+development of job schedulers for big data processing, however, most schedulers
+provide fault tolerance for subordinate nodes only. These types of failures are
+routinely mitigated by restarting the failed job or its part on healthy nodes,
+and failure of a master node is often considered either improbable, or too
+complicated to handle and configure on the target platform. System
+administrators often find alternatives to application level fault tolerance:
+they isolate master node from the rest of the cluster by placing it on a
+dedicated machine, or use virtualisation technologies instead. All these
+alternatives complexify configuration and maintenance, and by decreasing
+probability of a machine failure resulting in a whole system failure, they
+increase probability of a human error.
+
+From such point of view it seems more practical to implement master node fault
+tolerance at application level, however, there is no generic implementation.
+Most implementations are too tied to a particular application to become
+universally acceptable. We believe that this happens due to people's habit to
+think of a cluster as a collection of individual machines each of which can be
+either master or slave, rather than to think of a cluster as a whole with master
+and slave roles being dynamically assigned to a particular physical machine.
+
+This evolution in thinking allows to implement middleware that manages master
+and slave roles automatically and handles node failures in a generic way. This
+software provides an API to distribute parallel tasks on the pool of available
+nodes and among them. Using this API one can write an application that runs on a
+cluster without knowing the exact number of online nodes. The middleware works
+as a cluster operating system overlay allowing to write distributed
+applications.
+
+**** Related work.
+Dynamic role assignment is an emerging trend in design of distributed systems
+cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra,
+however, it is still not used in big data job schedulers. For example, in
+popular YARN job scheduler cite:vavilapalli2013yarn, which is used by Hadoop and
+Spark big data analysis frameworks, master and slave roles are static. Failure
+of a slave node is tolerated by restarting a part of a job on a healthy node,
+and failure of a master node is tolerated by setting up standby reserved server
+cite:murthy2011architecture. Both master servers are coordinated by Zookeeper
+service which itself uses dynamic role assignment to ensure its fault-tolerance
+cite:okorafor2012zookeeper. So, the whole setup is complicated due to Hadoop
+scheduler lacking dynamic roles: if dynamic roles were available, Zookeeper
+would be redundant in this setup. Moreover, this setup does not guarantee
+continuous operation of master node because standby server needs time to recover
+current state after a failure.
+
+The same problem occurs in high-performance computing where master node of a job
+scheduler is the single point of failure. In
+cite:uhlemann2006joshua,engelmann2006symmetric the authors use replication to
+make the master node highly-available, but backup server role is assigned
+statically and cannot be delegated to a healthy worker node. This solution is
+closer to fully dynamic role assignment than high-availability solution for big
+data schedulers, because it does not involve using external service to store
+configuration which should also be highly-available, however, it is far from
+ideal solution where roles are completely decoupled from physical servers.
+
+Finally, the simplest master node high-availability is implemented in Virtual
+Router Redundancy Protocol (VRRP)
+cite:knight1998rfc2338,hinden2004virtual,nadas2010rfc5798. Although VRRP
+protocol does provide master and backup node roles, which are dynamically
+assigned to available routers, this protocol works on top of the IPv4 and IPv6
+protocols and is designed to be used by routers and reverse proxy servers. Such
+servers lack the state that needs to be restored upon a failure (i.e.~there is
+no job queue in web servers), so it is easier for them to provide
+high-availability. In Linux it is implemented in Keepalived routing daemon
+cite:cassen2002keepalived.
+
+In contrast to web servers and HPC and Big Data job schedulers, some distributed
+key-value stores and parallel file systems have symmetric architecture, where
+master and slave roles are assigned dynamically, so that any node can act as a
+master when the current master node fails
+cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra.
+This design decision simplifies management and interaction with a distributed
+system. From system administrator point of view it is much simpler to install
+the same software stack on each node than to manually configure master and slave
+nodes. Additionally, it is much easier to bootstrap new nodes into the cluster
+and decommission old ones. From user point of view, it is much simpler to
+provide web service high-availability and load-balancing when you have multiple
+backup nodes to connect to.
+
+Dynamic role assignment would be beneficial for Big Data job schedulers because
+it allows to decouple distributed services from physical nodes, which is the
+first step to build highly-available distributed service. The reason that there
+is no general solution to this problem is that there is no generic programming
+environment to write and execute distributed programmes. The aim of this work is
+to propose such an environment and to describe its internal structure.
+
+The programming model used in this work is partly based on well-known actor
+model of concurrent computation cite:agha1985actors,hewitt1973universal. Our
+model borrows the concept of actor---an object that stores data and methods to
+process it; this object can react to external events by either changing its
+state or producing more actors. We call this objects /computational kernels/.
+Their distinct feature is hierarchical dependence on parent kernel that created
+each of them, which allows to implement fault-tolerance based on simple restart
+of a failed subordinate kernel.
+
+However, using hierarchical dependence alone is not enough to develop
+high-availability of a master kernel---the first kernel in a parallel programme.
+To solve the problem the other part of our programming model is based on
+bulk-synchronous parallel model cite:valiant1990bridging. It borrows the concept
+of superstep---a sequential step of a parallel programme; at any time a
+programme executes only one superstep, which allows to implement
+high-availability of the first kernel (under assumption that it has only one
+subordinate at a time) by sending it along its subordinate to a different
+cluster node thus making a distributed copy of it. Since the first kernel has
+only one subordinate at a time, its copy is always consistent with the original
+kernel. This eliminates the need for complex distributed transactions and
+distributed consensus algorithms and guarantees protection from at most one
+master node failure per superstep.
+
+To summarise, the framework developed in this paper protects a parallel
+programme from failure of any number of subordinate nodes and from one failure
+of a master node per superstep. The paper does not answer the question of how to
+determine if a node failed, it assumes a failure when the network connection to
+a node is prematurely closed. In general, the presented research goes in line
+with further development of the virtual supercomputer concept coined and
+evaluated in cite:vsc-csit2013,vsc-iccsa2014,vsc-nova.
+
+**** Pipelining.
+To infer fault tolerance model which is suitable for big data applications we
+use bulk-synchronous parallel model cite:valiant1990bridging as the basis. This
+model assumes that a parallel programme is composed of several sequential steps
+that are internally parallel, and global synchronisation of all parallel
+processes occurs after each step. In our model all sequential steps are
+pipelined where it is possible. The evolution of the computational model is
+described as follows.
+
+Given a programme that is sequential and large enough to be decomposed into
+several sequential steps, the simplest way to make it run faster is to exploit
+data parallelism. Usually it means finding multi-dimensional arrays and loops
+that access their elements and trying to make them parallel. After transforming
+several loops the programme will still have the same number of sequential steps,
+but every step will (ideally) be internally parallel.
+
+After that the only possibility to speedup the programme is to overlap execution
+of code blocks that work with different hardware devices. The most common
+pattern is to overlap computation with network I/O or disk I/O. This approach
+makes sense because all devices operate with little synchronisation, and issuing
+commands in parallel makes the whole programme perform better. This behaviour
+can be achieved by allocating a separate task queue for each device and
+submitting tasks to these queues asynchronously with execution of the main
+thread. So, after this optimisation, the programme will be composed of several
+steps chained into the pipeline, each step is implemented as a task queue for a
+particular device.
+
+Pipelining of otherwise sequential steps is beneficial not only for code
+accessing different devices, but for code different branches of which are
+suitable for execution by multiple hardware threads of the same core, i.e.
+branches accessing different regions of memory or performing mixed arithmetic
+(floating point and integer). In other words, code branches which use different
+modules of processor are good candidates to run in parallel on a processor core
+with multiple hardware threads.
+
+Even though pipelining may not add parallelism for a programme that uses only
+one input file (or a set of input parameters), it adds parallelism when the
+programme can process multiple input files: each input generates tasks which
+travel through the whole pipeline in parallel with tasks generated by other
+inputs. With a pipeline an array of files is processed in parallel by the same
+set of resources allocated for a batch job, and possibly with greater efficiency
+for busy HPC clusters compared to executing a separate job for each input file,
+because the time that each subsequent job after the first spends in a queue is
+eliminated.
+
+Computational model with a pipeline can be seen as /bulk-asynchronous model/,
+because of the parallel nature of otherwise sequential execution steps. This
+model is the basis of the fault-tolerance model developed here.
+
+**** Hierarchy.
+Although, fault-tolerance and high-availability are different terms, in essence
+they describe the same property---an ability of a system to switch processing
+from a failed component to its live spare or backup component. In case of
+fault-tolerance it is the ability to switch from a failed slave node to a spare
+one, i.e. to repeat computation step on a healthy slave node. In case of
+high-availability it is the ability to switch from a failed master node to a
+backup node with full restoration of execution state. These are the core
+abilities that constitute distributed system's ability to /fail over/.
+
+The key feature that is missing in the current parallel programming and big data
+processing technologies is a possibility to specify hierarchical dependencies
+between parallel tasks. When one has such dependency, it is trivial to determine
+which task should be responsible for re-executing a failed task on a healthy
+node. To re-execute the root of the hierarchy, a backup root task is created and
+executed on a different node. There exists a number of engines that are capable
+of executing directed acyclic graphs of tasks in parallel
+cite:acun2014charmpp,islam2012oozie, but graphs are not good to infer
+master-slave relationship between tasks, because a node in the graph may have
+multiple parent nodes.
+
+This work is based on the results of previous research: In
+cite:gankevich2015subordination,gankevich2015iccsa we developed an algorithm
+that allows to build a tree hierarchy from strictly ordered set of cluster
+nodes. The sole purpose of this hierarchy is to make a cluster more
+fault-tolerant by introducing multiple master nodes. If a master node fails,
+then its subordinates try to connect to another node from the same or higher
+level of the hierarchy. If there is no such node, one of the subordinates
+becomes the master. In cite:gankevich2015spec we developed a framework for big
+data processing without fault tolerance, and here this framework is combined
+with fault-tolerance techniques described in this paper.
+
+Each programme that runs on top of the tree hierarchy is composed of
+computational kernels---objects that contain data and code to process it. To
+exploit parallelism a kernel may create arbitrary number of subordinate kernels
+which are automatically spread first across available processor cores, second
+across subordinate nodes in the tree hierarchy. The programme is itself a kernel
+(without a parent as it is executed by a user), which either solves the problem
+sequentially on its own or creates subordinate kernels to solve it in parallel.
+
+In contrast to HPC applications, in big data applications it is inefficient to
+run computational kernels on arbitrary chosen nodes. More practical approach is
+to bind every kernel to a file location in a parallel file system and transfer
+the kernel to that location before processing the file. That way expensive data
+transfer is eliminated, and the file is always read from a local drive. This
+approach is more deterministic compared to existing ones, e.g. MapReduce
+framework runs jobs on nodes that are ``close'' to the file location, but not
+necessarily the exact node where the file is located cite:dean2008mapreduce.
+However, this approach does not come without disadvantages: scalability of a big
+data application is limited by the strategy that was employed to distribute its
+input files across cluster nodes. The more nodes used to store input files, the
+more read performance is achieved. The advantage of our approach is that the I/O
+performance is more predictable, than one of hybrid approach with streaming
+files over the network.
+
 **** Fault tolerance.
+**** Handling single node failures.
+Basic strategy to overcome a failure of a subordinate node is to restart
+corresponding kernels on healthy node---a strategy employed in Erlang language
+to restart failed subordinate processes cite:armstrong2003thesis. To implement
+this we record every kernel that is sent to remote cluster nodes, and in an
+event of a node failure these kernels are simply rescheduled to other
+subordinate nodes with no special handling from a programmer. If there are no
+nodes to sent kernels to, they are scheduled locally. So, in contrast to
+heavy-weight checkpoint/restart machinery, tree hierarchy allows automatic and
+transparent handling of subordinate node failures without restarting parallel
+processes on every node.
+
+A possible way of handling a failure of a node where the first kernel is located
+is to replicate this kernel to a backup node, and make all updates to its state
+propagate to the backup node by means of a distributed transaction. However,
+this approach does not play well with asynchronous nature of computational
+kernels. Fortunately, the first kernel usually does not perform operations in
+parallel, it is rather sequentially launches execution steps one by one, so it
+has only one subordinate at a time. Keeping this in mind, we can simplify
+synchronisation of its state: we can send the first kernel along with its
+subordinate to the subordinate node. When the node with the first kernel fails,
+its copy receives its subordinate, and no execution time is lost. When the node
+with its copy fails, its subordinate is rescheduled on some other node, and a
+whole step of computation is lost in the worst case.
+
+Described approach works only for kernels that do not have a parent and have
+only one subordinate at a time, which means that they act as optimised
+checkpoints. The advantage is that they save results after each sequential step,
+when memory footprint of a programme is low, they save only relevant data, and
+they use memory of a subordinate node instead of stable storage.
+
 **** High availability.
+A possible way of handling a failure of a node where the first kernel is located
+(a master node) is to replicate this kernel to a backup node, and make all
+updates to its state propagate to the backup node by means of a distributed
+transaction. This approach requires synchronisation between all nodes that
+execute subordinates of the first kernel and the node with the first kernel
+itself. When a node with the first kernel goes offline, the nodes with
+subordinate kernels must know what node is the backup one. However, if the
+backup node also goes offline in the middle of execution of some subordinate
+kernel, then it is impossible for this kernel to discover the next backup node
+to return to, because this kernel has not discovered the unavailability of the
+master node yet. One can think of a consensus-based algorithm to ensure that
+subordinate kernels always know where the backup node is, but distributed
+consensus algorithms do not scale well to the large number of nodes and they are
+not reliable cite:fischer1985impossibility. So, consensus-based approach does
+not play well with asynchronous nature of computational kernels as it may
+inhibit scalability of a parallel programme.
+
+Fortunately, the first kernel usually does not perform operations in parallel,
+it is rather sequentially launches execution steps one by one, so it has only
+one subordinate at a time. Such behaviour is described by bulk-synchronous
+parallel programming model, in the framework of which a programme consists of
+sequential supersteps which are internally parallel cite:valiant1990bridging.
+Keeping this in mind, we can simplify synchronisation of its state: we can send
+the first kernel along with its subordinate to the subordinate node. When the
+node with the first kernel fails, its copy receives its subordinate, and no
+execution time is lost. When the node with its copy fails, its subordinate is
+rescheduled on some other node, and in the worst case a whole step of
+computation is lost.
+
+Described approach works only for kernels that do not have a parent and have
+only one subordinate at a time, and act similar to manually triggered
+checkpoints. The advantage is that they
+- save results after each sequential step when memory footprint of a programme
+  is low,
+- they save only relevant data,
+- and they use memory of a subordinate node instead of stable storage.
+**** Implementation.
+For efficiency reasons fault tolerance techniques described above are
+implemented in the C++ framework: From the authors' perspective C language is
+deemed low-level for distributed programmes, and Java incurs too much overhead
+and is not popular in HPC community. To use the framework without a job
+scheduler, we need to implement a daemon that maintains the state of the
+hierarchy of nodes and exposes API to interact with it. As of now, the framework
+runs in the same process as an parallel application that uses it. The framework
+is called Factory, it is now in proof-of-concept development stage.
+
+**** Evaluation.
+Factory framework is evaluated on physical cluster (Table [[tab:cluster]]) on
+the example of hydrodynamics HPC application which was developed
+in cite:autoreg-stab,autoreg2011csit,autoreg1,autoreg2. This programme
+generates wavy ocean surface using ARMA model, its output is a set of files
+representing different parts of the realisation. From a computer scientist point
+of view the application consists of a series of filters, each applying to the
+result of the previous one. Some of the filters are parallel, so the programme
+is written as a sequence of big steps and some steps are made internally
+parallel to get better performance. In the programme only the most
+compute-intensive step (the surface generation) is executed in parallel across
+all cluster nodes, and other steps are executed in parallel across all cores of
+the master node.
+
+#+name: tab:cluster
+#+caption: Test platform configuration.
+#+attr_latex: :booktabs t
+| CPU                       | Intel Xeon E5440, 2.83GHz |
+| RAM                       | 4Gb                       |
+| HDD                       | ST3250310NS, 7200rpm      |
+| No. of nodes              | 12                        |
+| No. of CPU cores per node | 8                         |
+
+The application was rewritten for the new version of the framework which
+required only slight modifications to handle failure of a node with the first
+kernel: The kernel was flagged so that the framework makes a replica and sends
+it to some subordinate node. There were no additional code changes other than
+modifying some parts to match the new API. So, the tree hierarchy of kernels is
+mostly non-intrusive model for providing fault tolerance which demands explicit
+marking of replicated kernels.
+
+In a series of experiments we benchmarked performance of the new version of the
+application in the presence of different types of failures (numbers correspond
+to the graphs in Figure [[fig:benchmark]]):
+- no failures,
+- failure of a slave node (a node where a part of wavy surface is generated),
+- failure of a master node (a node where the first kernel is run),
+- failure of a backup node (a node where a copy of the first kernel is stored).
+A tree hierarchy with fan-out value of 64 was chosen to make all cluster nodes
+connect directly to the first one. In each run the first kernel was launched on
+a different node to make mapping of kernel hierarchy to the tree hierarchy
+optimal. A victim node was made offline after a fixed amount of time after the
+programme start which is equivalent approximately to $1/3$ of the total run time
+without failures on a single node. All relevant parameters are summarised in
+Table [[tab:benchmark]] (here ``root'' and ``leaf'' refer to a node in the
+tree hierarchy). The results of these runs were compared to the run without node
+failures (Figures [[fig:benchmark]]-[[fig:slowdown]]).
+
+There is considerable difference in net performance for different types of
+failures. Graphs 2 and 3 in Figure [[fig:benchmark]] show that performance in
+case of master or slave node failure is the same. In case of master node failure
+a backup node stores a copy of the first kernel and uses this copy when it fails
+to connect to the master node. In case of slave node failure, the master node
+redistributes the load across remaining slave nodes. In both cases execution
+state is not lost and no time is spent to restore it, that is why performance is
+the same. Graph 4 in Figure [[fig:benchmark]] shows that performance in case
+of a backup node failure is much lower. It happens because master node stores
+only the current step of the computation plus some additional fixed amount of
+data, whereas a backup node not only stores the copy of this information but
+executes this step in parallel with other subordinate nodes. So, when a backup
+node fails, the master node executes the whole step once again on arbitrarily
+chosen healthy node.
+
+#+name: tab:benchmark
+#+caption: Benchmark parameters.
+#+attr_latex: :booktabs t
+| Experiment no. | Master node | Victim node | Time to offline, s |
+|              1 | root        |             |                    |
+|              2 | root        | leaf        |                 10 |
+|              3 | leaf        | leaf        |                 10 |
+|              4 | leaf        | root        |                 10 |
+
+Finally, to measure how much time is lost due to a failure we divide the total
+execution time with a failure by the total execution time without the failure
+but with the number of nodes minus one. The results for this calculation are
+obtained from the same benchmark and are presented in Figure [[fig:slowdown]]. The
+difference in performance in case of master and slave node failures lies within
+5\% margin, and in case of backup node failure within 50\% margin for the number
+of node less than~6[fn::Measuring this margin for higher number of nodes does
+not make sense since time before failure is greater than total execution time
+with these numbers of nodes, and programme's execution finishes before a failure
+occurs.]]. Increase in execution time of 50\% is more than $1/3$ of execution
+time after which a failure occurs, but backup node failure need some time to be
+discovered: they are detected only when subordinate kernel carrying the copy of
+the first kernel finishes its execution and tries to reach its parent. Instant
+detection requires abrupt stopping of the subordinate kernel which may be
+undesirable for programmes with complicated logic.
+
+#+name: fig:benchmark
+#+begin_src R
+# TODO
+#+end_src
+
+#+caption: Performance of hydrodynamics HPC application in the presence of node failures.
+#+RESULTS: fig:benchmark
+
+To summarise, the benchmark showed that /no matter a master or a slave node
+fails, the resulting performance roughly equals to the one without failures with
+the number of nodes minus one/, however, when a backup node fails performance
+penalty is much higher.
+
+#+name: fig:slowdown
+#+begin_src R
+# TODO
+#+end_src
+
+#+caption: Slowdown of the hydrodynamics HPC application in the presence of different types of node failures compared to execution without failures but with the number of nodes minus one.
+#+RESULTS: fig:slowdown
+
+**** Discussion.
+Described algorithm guarantees to handle one failure per computational step,
+more failures can be tolerated if they do not affect the master node. The system
+handles simultaneous failure of all subordinate nodes, however, if both master
+and backup nodes fail, there is no chance for an application to survive. In this
+case the state of the current computation step is lost, and the only way to
+restore it is to restart the application.
+
+Computational kernels are means of abstraction that decouple distributed
+application from physical hardware: it does not matter how many nodes are online
+for an application to run successfully. Computational kernels eliminate the need
+to allocate a physical backup node to make master node highly-available, with
+computational kernels approach any node can act as a backup one. Finally,
+computational kernels can handle subordinate node failures in a way that is
+transparent to a programmer.
+
+The disadvantage of this approach is evident: there is no way of making existing
+middleware highly-available without rewriting their source code. Although, our
+programming framework is lightweight, it is not easy to map architecture of
+existing middleware systems to it: most systems are developed keeping in mind
+static assignment of server/client roles, which is not easy to make dynamic.
+Hopefully, our approach will simplify design of future middleware systems.
+
+The benchmark from the previous section show that it is essential for a
+parallel application to have multiple sequential steps to make it resilient to
+cluster node failures. Although, the probability of a master node failure is
+lower than the probability of failure of any of the slave nodes, it does not
+justify loosing all the data when the programme run is near completion. In
+general, the more sequential steps one has in an HPC application the less is
+performance penalty in an event of master node failure, and the more parallel
+parts each step has the less is performance penalty in case of a slave node
+failure. In other words, /the more scalable an application is the more
+resilient to node failures it becomes/.
+
+In our experiments we specified manually where the programme starts its
+execution to make mapping of hierarchy of computational kernels to tree
+hierarchy of nodes optimal, however, it does not seem practical for real-world
+cluster. The framework may perform such tasks automatically, and distribute the
+load efficiently no matter whether the master node of the application is
+located in the root or leaf of the tree hierarchy: Allocating the same node for
+the first kernel of each application deteriorates fault-tolerance.
+
+Although it may not be clear from the benchmarks, Factory does not only provide
+tolerance to node failures: new nodes automatically join the cluster and
+receive their portion of the load as soon as it is possible. This is trivial
+process as it does not involve restarting failed kernels or managing their
+state, so it is not presented in this work.
+
+In theory, hierarchy-based fault-tolerance can be implemented on top of the
+message-passing library without loss of generality. Although it would be
+complicated to reuse free nodes instead of failed ones, as the number of nodes
+is often fixed in such libraries, allocating reasonably large number of nodes
+for the application would be enough to make it fault-tolerant. However,
+implementing hierarchy-based fault-tolerance ``below'' message-passing
+library does not seem beneficial, because it would require saving the state
+of a parallel application which equals to the total amount of memory it
+ccupies on each host, which would not make it more efficient than
+checkpoints.
+
+The weak point of the proposed technology is the length of the period of time
+starting from a failure of master node up to the moment when the failure is
+detected, the first kernel is restored and new subordinate kernel with the
+parent's copy is received by a subordinate node. If during this period of time
+backup node fails, execution state of application is completely lost, and there
+is no way to recover it other than fully restarting the application. The length
+of the dangerous period can be minimised but the possibility of a abrupt
+programme stop can not be fully eliminated. This result is consistent with the
+scrutiny of ``impossibility theory'', in the framework of which it is proved
+the impossibility of the distributed consensus with one faulty
+process cite:fischer1985impossibility and impossibility of reliable
+communication in the presence of node failures cite:fekete1993impossibility.
+
 * Conclusion
 * Acknowledgements
 * List of acronyms and symbols
