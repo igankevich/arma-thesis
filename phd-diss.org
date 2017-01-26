@@ -1720,6 +1720,24 @@ work.
 * High-performance software implementation of ocean wave simulation
 ** Computational model
 *** Mapping wavy surface generation algorithm on computational model
+Software implementation of ARMA model works as a computational pipeline, in
+which each joint applies some function to the output coming from the pipe of the
+previous joint. Joints are distributed across computer cluster nodes to enable
+function parallelism, and then data flowing through the joints is distributed
+across processor cores to enable data parallelism. Figure [[fig:pipeline]] shows a
+diagram of data processing pipeline in which rectangles with rounded corners
+denote joints, regular rectangles denote arrays of problem domain objects
+flowing from one joint to another, and arrows show flow direction. Some joints
+are divided into /sections/ each of which process a separate part of the array.
+If joints are connected without a /barrier/ (horizontal or vertical bar), then
+transfer of separate objects between them is done in parallel to computations,
+as they become available. Sections work in parallel on each processor core (or
+node of the cluster). There is surjective mapping between a set of processor
+cores, a set of pipeline joint sections and objects, i.e. each processor core
+may run several sections, each of which may sequentially process several
+objects, but a section can not work simultaneously on several processor cores,
+and an object can not be processed simultaneously by several sections.
+
 #+name: fig:pipeline
 #+begin_src dot :exports results :file build/pipeline.pdf
 digraph {
