@@ -1944,9 +1944,9 @@ which maximises efficiency of a programme.
   of a neighbour node, because a node may fail in the middle of its execution of
   the corresponding routine. As a result, upon failure of a routine all of its
   subroutines must be restarted. This encourages a programmer to construct
-  - deep hierarchies of tightly-coupled kernels (which communicate on the same
-    level of hierarchy) to reduce overhead of recomputation;
-  - fat hierarchies of loosely-coupled kernels, providing maximal degree of
+  - deep tree hierarchies of tightly-coupled kernels (which communicate on the
+    same level of hierarchy) to reduce overhead of recomputation;
+  - fat tree hierarchies of loosely-coupled kernels, providing maximal degree of
     parallelism.
   Deep hierarchy is not only requirement of technology, it helps optimise
   communication of large number of cluster nodes reducing it to communication of
@@ -1957,6 +1957,24 @@ routines and event handlers.
 
 ** SMP implementation
 *** Load balancing algorithm
+The simplest approach to balance the load on a multi-processor system is to
+split data into equal parts (or a task into homogeneous subtasks) and to
+distribute them evenly between processor cores and cluster nodes, however, this
+approach does not work efficiently in all cases. First, the total number of
+parts, into which input data is split, is often dictated by the problem being
+solved, rather than computer system architecture. Such load balancing may not
+efficient from the computer system point of view: the number of parts is either
+too large compared to the number of processors working in parallel, which
+increases data transfer overhead, or too small, which prevents using all
+available processor cores. Second, restrictions of problem being solved may not
+allow splitting input data into even parts which may result in load imbalance
+across processor cores. Third, there are multiple components in the system aside
+from the processor that take part in the computation (such as vector
+co-processors and storage devices), and the problem solution time depends on the
+performance of all the components involved. So, how to make load balancing
+algorithm more efficient in the presence of non-homogeneous input data parts and
+take into account all the devices involved in the computation?
+
 *** Evaluation
 **** Performance of MPI, OpenMP, OpenCL implementations.
 **** Performance of load balancing algorithm.
