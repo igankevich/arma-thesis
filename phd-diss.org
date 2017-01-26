@@ -1975,6 +1975,25 @@ performance of all the components involved. So, how to make load balancing
 algorithm more efficient in the presence of non-homogeneous input data parts and
 take into account all the devices involved in the computation?
 
+The load balancing algorithm consists of two stages. In the first stage, the
+algorithm places input data part (or a subtask) wrapped in a kernel into an
+appropriate kernel pool: there is a separate pool for each device and an
+associated thread pool. In the second stage, a kernel is retrieved from the pool
+by one of the threads and processed. Due to separate thread pools all devices
+work in parallel to each other, lowering overall system resources downtime
+compared to using all devices from a single thread.
+
+In order to take into account non-homogeneous input data parts or tasks, one may
+predict execution time of each task. Relevant study is done in
+cite:degtyarev2016balance since ARMA model implementation includes mostly
+homogeneous tasks.
+
+So, load balancing is done in two stages: in the first stage the task wrapped in
+the kernel is routed to the appropriate device and in the second stage the
+kernel is routed to one of the thread from the device thread pool.
+Non-homogeneous kernels may be handled by predicting their execution time, but
+such kernels are not present in ARMA model implementation.
+
 *** Evaluation
 **** Performance of MPI, OpenMP, OpenCL implementations.
 **** Performance of load balancing algorithm.
