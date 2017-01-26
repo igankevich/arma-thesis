@@ -1871,8 +1871,8 @@ it transparently to a programmer. The implementation is divided into two layers:
 the lower layer consists of routines and classes for single node applications
 (with no network interactions), and the upper layer for applications that run on
 an arbitrary number of nodes. There are two kinds of tightly coupled entities in
-the model --- /kernels/ and /pipelines/ --- which are used together to compose a
-programme.
+the model --- /control flow objects/ (or /kernels/) and /pipelines/ --- which
+are used together to compose a programme.
 
 Kernels implement control flow logic in theirs ~act~ and ~react~ methods and
 store the state of the current control flow branch. Both logic and state are
@@ -1909,50 +1909,51 @@ Pipelines, in turn, allow implementing passive wait, and call correct kernel
 methods by analysing their internal state.
 
 *** Governing principles
-- There are no messages in the model, a kernel is itself a message that can be
-  sent over network to another node and directly access any kernel on the local
-  node. It is responsibility of a programmer to ensure that such kernel exist.
-- A kernel is a /cooperative routine/, which is submitted to task pool upon the
+Data processing pipeline model is based on the following principles, following
+which maximises efficiency of a programme.
+- There is no notion of a message in the model, a kernel is itself a message
+  that can be sent over network to another node and directly access any kernel
+  on the local node. Only programme logic may guarantee the existence of the
+  kernel.
+- A kernel is a /cooperative routine/, which is submitted to kernel pool upon the
   call and is executed asynchronously by a scheduler. There can be any number of
   calls to other subroutines inside routine body. Every call submits
-  corresponding subroutine to task pool and returns immediately. Kernels in the
+  corresponding subroutine to kernel pool and returns immediately. Kernels in the
   pool can be executed in any order; this fact is used by a scheduler to exploit
   parallelism offered by the computer by distributing kernels from the pool
   across available cluster nodes and processor cores.
 - Asynchronous execution prevents the use of explicit synchronisation after the
   call to subroutine is made; system scheduler returns control flow to the
-  routine each time one of its subroutine returns. Such *cooperation* transforms
+  routine each time one of its subroutine returns. Such cooperation transforms
   each routine which calls subroutines into event handler, where each event is a
-  subroutine and the handler is the routine that called them. In many batch
-  processing programmes control flow enters each routine which calls subroutines
-  at least twice: the first time it occurs upon the call to the routine and the
-  second time happens when control flow returns to the caller after completion
-  of a subroutine.
+  subroutine and the handler is the routine that called them.
 - The routine may communicate with any number of local kernels, addresses of
-  which it knows; communication with routines which are not adjacent in the call
-  stack complexifies control flow and call stack looses its tree shape. It is
-  responsibility of a programmer to ensure that communicating kernels are
-  present in memory. One way to ensure this is to perform communication between
-  subroutines which are called from the same routine. Incidentally, it is the
-  usual way of writing batch parallel programmes: each such communication
-  creates a cycle in the call stack graph, and a cycle between different
-  (possibly non-adjacent) layers of kernel hierarchy is redundant, because there
-  are other edges that can be used instead. The situation may be different when
-  the programme is interactive or event-based.
-- The other disadvantage of communication which does not occur along
-  hierarchical links is that it complexifies resiliency algorithms when executed
-  across cluster network. Since it is difficult to ensure that a kernel resides
-  in memory of a neighbour node, because a node may fail in the middle of its
-  execution. Thus, upon failure of a node all of the subroutines which are
-  called from the same routine must be restarted. This encourages a programmer
-  to construct
-   - deep hierarchies of tightly-coupled kernels (which require communication on
-     the same level of hierarchy) to reduce overhead of recomputation,
-   - fat hierarchies of loosely-coupled kernels.
+  which it knows; communication with kernels which are not adjacent in the call
+  stack complexifies control flow and call stack looses its tree shape. Only
+  programme logic may guarantee presence of communicating kernels in memory. One
+  way to ensure this is to perform communication between subroutines which are
+  called from the same routine. Since such communication is possible within
+  hierarchy through parent routine, it may treated as an optimisation that
+  eliminates overhead of transferring data over intermediate node. The situation
+  is different for interactive or event-based programmes (e.g. servers and
+  programmes with graphical interface) in which this is primary type of
+  communication.
+- In addition to this, communication which does not occur along hierarchical
+  links and executed over cluster network complexify design of resiliency
+  algorithms. Since it is impossible to ensure that a kernel resides in memory
+  of a neighbour node, because a node may fail in the middle of its execution of
+  the corresponding routine. As a result, upon failure of a routine all of its
+  subroutines must be restarted. This encourages a programmer to construct
+  - deep hierarchies of tightly-coupled kernels (which communicate on the same
+    level of hierarchy) to reduce overhead of recomputation;
+  - fat hierarchies of loosely-coupled kernels, providing maximal degree of
+    parallelism.
   Deep hierarchy is not only requirement of technology, it helps optimise
-  communication of cluster nodes limiting it to adjacent nodes.
-- No explicit synchronisation.
-- Local communications between adjacent nodes in the hierarchy.
+  communication of large number of cluster nodes reducing it to communication of
+  adjacent nodes.
+
+So, control flow objects (or kernels) possess properties of both cooperative
+routines and event handlers.
 
 ** SMP implementation
 *** Load balancing algorithm
