@@ -502,7 +502,7 @@ appear in practice.
 To summarise, LH model is linear, computationally inefficient for long-time
 simulations, and difficult to use as a base for more advanced models.
 
-*** ARMA model
+*** TODO ARMA model
 In cite:spanos1982arma ARMA model is used to generate time series spectrum of
 which is compatible with Pierson---Moskowitz (PM) approximation of ocean wave
 spectrum. The authors carry out experiments for one-dimensional AR, MA and ARMA
@@ -532,6 +532,15 @@ also allows carrying out visual validation of generated wavy surface. It is the
 opportunity to visualise output of the programme that allowed to ensure that
 generated surface is compatible with real ocean surface, and is not abstract
 multi-dimensional stochastic process that is real only statistically.
+
+In cite:fusco2010short AR model is used to predict swell waves to control
+wave-energy converters (WEC) in real-time. In order to make WEC more efficient
+its internal oscillator frequency should match the one of ocean waves. The
+authors treat wave elevation as time series and compare performance of AR model,
+neural networks and cyclical models in forecasting time series future values. AR
+model gives the most accurate prediction of low-frequency swell waves for up to
+two typical wave periods. It is an example of successful application of AR
+process to ocean wave modelling.
 
 ** Pressure field determination formulae
 *** Small amplitude waves theory
