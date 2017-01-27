@@ -2026,6 +2026,19 @@ compared on the platform with the configuration listed in table
 | Disk                      | Seagate ST3250318AS              |
 | Disk speed (rpm)          | 7200                             |
 
+In the experiment load balancing algorithm showed higher performance than OpenMP
+implementation. In each application run only the size of the realisation was
+varied. The figure The more the size of the realisation is the more the gap in
+performance is (as shown in figure [[fig:factory-performance]]). High performance is
+a result of overlap of computation phase and data output phase (as shown in
+figure [[fig:factory-overlap]]). In OpenMP implementation there is no such overlap
+and data output phase begins when computation is over. In contrast to this, in
+the second implementation load balancing algorithm makes both phases end almost
+simultaneously. So, /pipelining internally parallel sequential phases is more
+efficient than their sequential execution/, and this allows balancing the load
+across different compute devices.
+
+
 #+name: fig:factory-performance
 #+begin_src R :results output graphics :exports results :file build/factory-vs-openmp.pdf
 source(file.path("R", "common.R"))
