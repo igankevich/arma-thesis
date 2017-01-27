@@ -1996,12 +1996,12 @@ such kernels are not present in ARMA model implementation.
 
 *** Evaluation
 **** Performance of MPI, OpenMP, OpenCL implementations.
-**** Performance of load balancing algorithm.
+**** Performance of load balancing method.
 Software implementation of wavy surface generation is balanced in terms of the
 load on processor cores, however, as shown by tests, has high load on storage
-device. Before testing software implementation used OpenMP for parallel
-computations and for the purpose of load balancing algorithm evaluation was
-rewritten to use POSIX threads. Performance of the two implementations was
+device. Before testing wavy surface generation was implemented using OpenMP for
+parallel computations and in order to implement load balancing algorithm was
+rewritten using POSIX threads. Performance of the two implementations was
 compared on the platform with the configuration listed in table
 [[tab:multicore-specs]].
 
@@ -2026,18 +2026,20 @@ compared on the platform with the configuration listed in table
 | Disk                      | Seagate ST3250318AS              |
 | Disk speed (rpm)          | 7200                             |
 
-In the experiment load balancing algorithm showed higher performance than OpenMP
-implementation. In each application run only the size of the realisation was
-varied. The figure The more the size of the realisation is the more the gap in
-performance is (as shown in figure [[fig:factory-performance]]). High performance is
-a result of overlap of computation phase and data output phase (as shown in
-figure [[fig:factory-overlap]]). In OpenMP implementation there is no such overlap
-and data output phase begins when computation is over. In contrast to this, in
-the second implementation load balancing algorithm makes both phases end almost
-simultaneously. So, /pipelining internally parallel sequential phases is more
-efficient than their sequential execution/, and this allows balancing the load
-across different compute devices.
+The experiment consisted of running both implementations on a multi-core machine
+varying the size of the surface; the size of CPU thread pool and I/O thread pool
+was not changed during the experiment. I/O thread pool consisted of one thread,
+and CPU thread pool size was equal the number of physical processor cores.
 
+In the experiment load balancing algorithm showed higher performance than
+implementation without it. The more the size of the generated surface is the
+more the gap in performance is (fig. [[fig:factory-performance]]) which is a result
+of overlap of computation phase and data output phase (fig.
+[[fig:factory-overlap]]). In OpenMP implementation data output phase begins only
+when computation is over, whereas load balancing algorithm makes both phases end
+almost simultaneously. So, /pipelined execution of internally parallel
+sequential phases is more efficient than their sequential execution/, and this
+allows balancing the load across different devices involved in computation.
 
 #+name: fig:factory-performance
 #+begin_src R :results output graphics :exports results :file build/factory-vs-openmp.pdf
@@ -2068,6 +2070,12 @@ arma.plot_factory_vs_openmp_overlap(
 #+caption: Overlap of parallel computations on $[G_0,G_1]$ and data output to disk on $[W_0,W_1]$. In OpenMP implementation there is no overlap.
 #+RESULTS: fig:factory-overlap
 [[file:build/factory-vs-openmp-overlap.pdf]]
+
+Proposed load balancing method for multi-core systems allows increasing
+performance of applications that read or write large volumes of data to disk,
+but may be used in other cases too. The main idea of the algorithm is to
+classify the load and find the suitable device to route the load to. So, any
+devices other than disks may be used as well.
 
 ** MPP implementation
 *** Overview of distributed system architectures
