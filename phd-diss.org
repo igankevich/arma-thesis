@@ -1997,6 +1997,34 @@ such kernels are not present in ARMA model implementation.
 *** Evaluation
 **** Performance of MPI, OpenMP, OpenCL implementations.
 **** Performance of load balancing algorithm.
+Software implementation of wavy surface generation is balanced in terms of the
+load on processor cores, however, as shown by tests, has high load on storage
+device. Before testing software implementation used OpenMP for parallel
+computations and for the purpose of load balancing algorithm evaluation was
+rewritten to use POSIX threads. Performance of the two implementations was
+compared on the platform with the configuration listed in table
+[[tab:multicore-specs]].
+
+#+name: tab:multicore-specs
+#+caption: Multi-core system configuration.
+#+attr_latex: :booktabs t
+| Component                 | Details                          |
+|---------------------------+----------------------------------|
+| Programming language      | C++11                            |
+| Threading library         | C++11 STL threads                |
+| Atomic operations library | C++11 STL atomic                 |
+| Routines to measure time  | ~clock_gettime(CLOCK_MONOTONIC)~ |
+|                           | ~/usr/bin/time -f \%e~           |
+| Compiler                  | GCC 4.8.2                        |
+| Compiler flags            | ~-std=c++11 -O2 -march=native~   |
+| Operating system          | Debian 3.2.51-1 x86_64           |
+| File system               | ext4                             |
+| Processor                 | Intel Core 2 Quad Q9650          |
+| Core frequency (GHz)      | 3.00                             |
+| No. of cores              | 4                                |
+| Amount of RAM (GB)        | 8                                |
+| Disk                      | Seagate ST3250318AS              |
+| Disk speed (rpm)          | 7200                             |
 
 #+name: fig:factory-performance
 #+begin_src R :results output graphics :exports results :file build/factory-vs-openmp.pdf
@@ -2543,6 +2571,7 @@ communication in the presence of node failures cite:fekete1993impossibility.
 | <<<OpenCL>>> | Open Computing Language                                                                    |
 | <<<OpenMP>>> | Open Multi-Processing                                                                      |
 | <<<MPI>>>    | Message Passing Interface                                                                  |
+| <<<POSIX>>>  | Portable Operating System                                                                  |
 
 #+begin_export latex
 \input{postamble}
