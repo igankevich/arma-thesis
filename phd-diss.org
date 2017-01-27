@@ -2581,6 +2581,15 @@ communication in the presence of node failures cite:fekete1993impossibility.
 
 * Conclusion
 * Acknowledgements
+The graphs in this manuscript were prepared using R language for statistical
+computing cite:rlang2016,Sarkar2008lattice. The manuscript was prepared using
+Org-mode cite:Schulte2011org2,Schulte2011org1,Dominik2010org for GNU Emacs which
+provides computing environment for reproducible research. This means that all
+graphs can be reproduced and corresponding statements verified by installing
+Emacs and cloning thesis repository[fn:repo].
+
+[fn:repo] [[[[https://github.com/igankevich/arma-thesis]]]]
+
 * List of acronyms and symbols
 
 #+attr_latex: :booktabs t :align lp{0.8\linewidth}
