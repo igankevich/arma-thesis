@@ -2612,37 +2612,36 @@ Emacs and cloning thesis repository[fn:repo].
 [fn:repo] [[[[https://github.com/igankevich/arma-thesis]]]]
 
 * List of acronyms and symbols
-
-#+attr_latex: :booktabs t :align lp{0.8\linewidth}
-| <<<MPP>>>    | Massively Parallel Processing, computers with distributed memory                           |
-| <<<SMP>>>    | Symmetric Multi-Processing, computers with shared memory                                   |
-| <<<ACF>>>    | auto-covariate function                                                                    |
-| <<<FFT>>>    | fast Fourier transform                                                                     |
-| <<<PRNG>>>   | pseudo-random number generator                                                             |
-| <<<BC>>>     | boundary condition                                                                         |
-| <<<PDE>>>    | partial differential equation                                                              |
-| <<<NIT>>>    | non-linear inertia-less transform                                                          |
-| <<<AR>>>     | auto-regressive process                                                                    |
-| <<<ARMA>>>   | auto-regressive moving-average process                                                     |
-| <<<MA>>>     | moving average process                                                                     |
-| <<<LH>>>     | Longuet---Higgins model                                                                    |
-| <<<LAMP>>>   | Large Amplitude Motion Programme, a programme that simulates ship behaviour in ocean waves |
-| <<<CLT>>>    | central limit theorem                                                                      |
-| <<<PM>>>     | Pierson---Moskowitz ocean wave spectrum approximation                                      |
-| <<<YW>>>     | Yule---Walker equations                                                                    |
-| <<<LS>>>     | least squares                                                                              |
-| <<<PDF>>>    | probability density function                                                               |
-| <<<CDF>>>    | cumulative distribution function                                                           |
-| <<<BSP>>>    | Bulk Synchronous Parallel                                                                  |
-| <<<OpenCL>>> | Open Computing Language                                                                    |
-| <<<OpenMP>>> | Open Multi-Processing                                                                      |
-| <<<MPI>>>    | Message Passing Interface                                                                  |
-| <<<POSIX>>>  | Portable Operating System                                                                  |
-| <<<FMA>>>    | Fused multiply-add                                                                         |
-| <<<DCMT>>>   | Dynamic creation of Mersenne Twisters                                                      |
-| <<<GSL>>>    | GNU Scientific Library                                                                     |
-| <<<BLAS>>>   | Basic Linear Algebra Sub-programmes                                                        |
-| <<<LAPACK>>> | Linear Algebra Package                                                                     |
+- <<<MPP>>> :: Massively Parallel Processing, computers with distributed memory.
+- <<<SMP>>> :: Symmetric Multi-Processing, computers with shared memory.
+- <<<ACF>>> :: auto-covariate function.
+- <<<FFT>>> :: fast Fourier transform.
+- <<<PRNG>>> :: pseudo-random number generator.
+- <<<BC>>> :: boundary condition.
+- <<<PDE>>> :: partial differential equation.
+- <<<NIT>>> :: non-linear inertia-less transform.
+- <<<AR>>> :: auto-regressive process.
+- <<<ARMA>>> :: auto-regressive moving-average process.
+- <<<MA>>> :: moving average process.
+- <<<LH>>> :: Longuet---Higgins model.
+- <<<LAMP>>> :: Large Amplitude Motion Programme, a programme that simulates
+                ship behaviour in ocean waves.
+- <<<CLT>>> :: central limit theorem.
+- <<<PM>>> :: Pierson---Moskowitz ocean wave spectrum approximation.
+- <<<YW>>> :: Yule---Walker equations.
+- <<<LS>>> :: least squares.
+- <<<PDF>>> :: probability density function.
+- <<<CDF>>> :: cumulative distribution function.
+- <<<BSP>>> :: Bulk Synchronous Parallel.
+- <<<OpenCL>>> :: Open Computing Language.
+- <<<OpenMP>>> :: Open Multi-Processing.
+- <<<MPI>>> :: Message Passing Interface.
+- <<<POSIX>>> :: Portable Operating System.
+- <<<FMA>>> :: Fused multiply-add.
+- <<<DCMT>>> :: Dynamic creation of Mersenne Twisters.
+- <<<GSL>>> :: GNU Scientific Library.
+- <<<BLAS>>> :: Basic Linear Algebra Sub-programmes.
+- <<<LAPACK>>> :: Linear Algebra Package.
 
 #+begin_export latex
 \input{postamble}
