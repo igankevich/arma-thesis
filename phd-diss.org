@@ -2020,6 +2020,18 @@ transcendental functions and heavy use of FFT, not to mention that high
 convergence rate and non-existence of periodicity allows using far fewer
 coefficients compared to LH model.
 
+#+name: tab:arma-libs
+#+caption: A list of mathematical libraries used in ARMA model implementation.
+#+attr_latex: :booktabs t :align lp{0.6\linewidth}
+| Library                                                | What it is used for             |
+|--------------------------------------------------------+---------------------------------|
+| DCMT cite:matsumoto1998dynamic                         | parallel PRNG                   |
+| Blitz cite:veldhuizen1997will,veldhuizen2000techniques | multidimensional arrays         |
+| GSL cite:gsl2008scientific                             | PDF, CDF, FFT computation       |
+|                                                        | checking process stationarity   |
+| LAPACK, GotoBLAS cite:goto2008high,goto2008anatomy     | finding AR coefficients         |
+| GL, GLUT cite:kilgard1996opengl                        | three-dimensional visualisation |
+
 **** Performance of load balancing algorithm.
 Software implementation of wavy surface generation is balanced in terms of the
 load on processor cores, however, as shown by tests, has high load on storage
@@ -2627,6 +2639,10 @@ Emacs and cloning thesis repository[fn:repo].
 | <<<MPI>>>    | Message Passing Interface                                                                  |
 | <<<POSIX>>>  | Portable Operating System                                                                  |
 | <<<FMA>>>    | Fused multiply-add                                                                         |
+| <<<DCMT>>>   | Dynamic creation of Mersenne Twisters                                                      |
+| <<<GSL>>>    | GNU Scientific Library                                                                     |
+| <<<BLAS>>>   | Basic Linear Algebra Sub-programmes                                                        |
+| <<<LAPACK>>> | Linear Algebra Package                                                                     |
 
 #+begin_export latex
 \input{postamble}
