@@ -2602,7 +2602,7 @@ communication in the presence of node failures cite:fekete1993impossibility.
 
 * Conclusion
 * Acknowledgements
-The graphs in this manuscript were prepared using R language for statistical
+The graphs in this work were prepared using R language for statistical
 computing cite:rlang2016,Sarkar2008lattice and Graphviz software
 cite:Gansner00anopen. The manuscript was prepared using Org-mode
 cite:Schulte2011org2,Schulte2011org1,Dominik2010org for GNU Emacs which provides
