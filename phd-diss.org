@@ -502,7 +502,7 @@ appear in practice.
 To summarise, LH model is linear, computationally inefficient for long-time
 simulations, and difficult to use as a base for more advanced models.
 
-*** TODO ARMA model
+*** ARMA model
 In cite:spanos1982arma ARMA model is used to generate time series spectrum of
 which is compatible with Pierson---Moskowitz (PM) approximation of ocean wave
 spectrum. The authors carry out experiments for one-dimensional AR, MA and ARMA
