@@ -1916,6 +1916,111 @@ replace active wait for completion of subordinate kernels with passive one.
 Pipelines, in turn, allow implementing passive wait, and call correct kernel
 methods by analysing their internal state.
 
+
+#+name: fig:subord-ppl
+#+begin_src dot :exports results :file build/subord-ppl.pdf
+graph G {
+
+  node [fontsize=14,margin="0.055,0",shape=box]
+  graph [nodesep="0.25",ranksep="0.25",rankdir="LR"]
+  edge [arrowsize=0.66]
+
+  subgraph cluster_daemon {
+    label="Daemon process"
+    style=filled
+    color=lightgrey
+
+    factory [label="Factory"]
+    parallel_ppl [label="Parallel pipeline"]
+    io_ppl [label="I/O pipeline"]
+    sched_ppl [label="Schedule-based pipeline"]
+    net_ppl [label="Network pipeline"]
+    proc_ppl [label="Process pipeline"]
+
+    upstream [label="Upstream thread pool"]
+    downstream [label="Downstream thread pool"]
+  }
+
+  factory--parallel_ppl
+  factory--io_ppl
+  factory--sched_ppl
+  factory--net_ppl
+  factory--proc_ppl
+
+  subgraph cluster_hardware {
+    label="Compute devices"
+    style=filled
+    color=lightgrey
+
+    cpu [label="CPU"]
+    core0 [label="Core 0"]
+    core1 [label="Core 1"]
+    core2 [label="Core 2"]
+    core3 [label="Core 3"]
+
+    storage [label="Storage"]
+    disk0 [label="Disk 0"]
+
+    network [label="Network"]
+    nic0 [label="NIC 0"]
+
+  }
+
+  core0--cpu
+  core1--cpu
+  core2--cpu
+  core3--cpu
+
+  disk0--storage
+  nic0--network
+
+  parallel_ppl--upstream
+  parallel_ppl--downstream
+
+  upstream--{core0,core1,core2,core3} [style="dashed"]
+  downstream--core0 [style="dashed"]
+
+  io_ppl--core0 [style="dashed"]
+  io_ppl--disk0 [style="dashed"]
+  sched_ppl--core0 [style="dashed"]
+  net_ppl--core0 [style="dashed"]
+  net_ppl--nic0 [style="dashed"]
+  proc_ppl--core0 [style="dashed"]
+
+  subgraph cluster_children {
+    style=filled
+    color=white
+
+    subgraph cluster_child0 {
+      label="Child process 0"
+      style=filled
+      color=lightgrey
+
+      app0 [label="App 0"]
+      app0_factory [label="Factory"]
+    }
+
+    subgraph cluster_child1 {
+      label="Child process 1"
+      style=filled
+      color=lightgrey
+
+      app1 [label="App 1"]
+      app1_factory [label="Factory"]
+    }
+    appN [label="..."]
+  }
+
+  proc_ppl--app0--app0_factory
+  proc_ppl--app1--app1_factory
+  proc_ppl--appN
+
+}
+#+end_src
+
+#+RESULTS: fig:subord-ppl
+[[file:build/subord-ppl.pdf]]
+
 *** Governing principles
 Data processing pipeline model is based on the following principles, following
 which maximises efficiency of a programme.
