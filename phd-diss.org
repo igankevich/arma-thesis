@@ -2273,6 +2273,64 @@ caused by measurement errors) may result in constant passing of principal role
 from one node to another, which makes the cluster unmanageable. The simplest
 such function is the position of an IP address in network IP address range.
 
+There are a few key points that distinguish this approach with respect to some
+existing proposals
+cite:brunekreef1996design,aguilera2001stable,romano2014design.
+- *Multiple hierarchy levels.* The number of principal nodes in a network depends
+  on the fan-out value. If it is lesser than the number of nodes in the network,
+  then there are multiple principle nodes in the cluster. If it is greater than
+  the number of nodes in the network, then there is only one principal node.
+  Multiple hierarchy levels allow changing hierarchy locally (when nodes fail),
+  without every change affecting all nodes.
+- *IP-address mapping.* Since node hierarchy solely depends on the nodes' IP
+  addresses, there is no election phase in the algorithm. To change the
+  principal each node sends a message to the old principal and to the new one.
+- *Completely event-based.* The messages are sent only when some node fails, so
+  there is no constant load on the network. Since the
+  algorithm allows tolerating failure of sending any message, there is no need
+  in heart-beat messages; all messages play role of heart-beats and packet send
+  time-out is adjusted instead.
+- *No manual configuration.* A node does not require any prior knowledge to find
+  the principal: it determines the network it is part of, calculates potential
+  principal IP-address and sends the message. If it fails, the process is
+  repeated for the next potential principal node. So the algorithm is suitable
+  to bootstrap a cluster without manual configuration, the only requirement is
+  to start the corresponding service on each node.
+To summarise, the advantage of the algorithm is that it
+- scales to a large number of nodes with multiple principals in the hierarchy,
+- does not constantly load the network with node state updates and heart-beat
+  packets,
+- does not require manual configuration to bootstrap a cluster.
+
+The disadvantage of the algorithm is that it requires IP-address to change
+infrequently. It is probably not suitable for cloud environments in which only
+DNS name is preserved and IP-address may change over time, but can be adapted
+for them by encoding DNS name. When IP-address changes, current connections may
+close, thus triggering "node failure". So, environments where assumption of
+one-to-one correspondence between IP-addresses and nodes does not hold, are not
+suitable for the algorithm.
+
+The other disadvantage is that the algorithm creates artificial dependence of
+node rank on IP-address: it is difficult to substitute IP-address mapping with a
+more sophisticated one (which uses current node and network load to infer node
+ranks) because measurement errors may result in unstable tree hierarchy.
+
+The algorithm is designed to balance the load on a cluster of compute nodes, its
+use in other applications is not studied here. When distributed or parallel
+application start on any of cluster nodes, the load is distributed to all
+adjacent nodes in the hierarchy (including principal node if applicable). To
+distribute the load evenly when the application is run on a subordinate node,
+each node maintains weight of each adjacent node in the hierarchy. The weight
+equals to the number of nodes in the tree "behind" the adjacent node. For
+example, if the weight of the first adjacent node is 2, then load balancing
+algorithm distributes two tasks to the first node before moving to the next one.
+
+To summarise, node discovery algorithm is
+- designed to ease load balancing on the cluster,
+- fully fault-tolerant as it does not have any state except node weight which
+  can be recomputed,
+- fully event-based and does not cause constant load on the network.
+
 *** Fail over algorithm
 **** Introduction.
 Fault tolerance of data processing pipelines is one of the top concerns in
@@ -2799,6 +2857,7 @@ repository[fn:repo], installing Emacs and exporting the document.
 - <<<GSL>>> :: GNU Scientific Library.
 - <<<BLAS>>> :: Basic Linear Algebra Sub-programmes.
 - <<<LAPACK>>> :: Linear Algebra Package.
+- <<<DNS>>> :: Dynamic name resolution.
 
 #+begin_export latex
 \input{postamble}
