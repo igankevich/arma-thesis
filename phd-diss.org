@@ -2265,6 +2265,14 @@ their subordinate. First, it checks the closest ones and then goes all the way
 to the top. If there is no top-level nodes or the node cannot connect to them,
 then the node itself becomes the principal of the hierarchy.
 
+Tree hierarchy of all hosts in a network defines strict total order on a set of
+cluster nodes. Although, technically any function can be chosen to map a node to
+a number, in practise this function should be sufficiently smooth along the time
+axis and may have infrequent jumps: high-frequency oscillations (which are often
+caused by measurement errors) may result in constant passing of principal role
+from one node to another, which makes the cluster unmanageable. The simplest
+such function is the position of an IP address in network IP address range.
+
 *** Fail over algorithm
 **** Introduction.
 Fault tolerance of data processing pipelines is one of the top concerns in
