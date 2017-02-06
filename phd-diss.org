@@ -2333,6 +2333,74 @@ To summarise, node discovery algorithm is
 - fully event-based which means it does not load the network by periodically
   sending messages.
 
+**** Building a tree hierarchy.
+Strict total order on the set $\mathcal{N}$ of cluster nodes connected to a
+network is defined as
+\begin{equation*}
+  \forall n_1 \forall n_2 \in \mathcal{N},
+  \forall f \colon \mathcal{N} \rightarrow \mathcal{R}^n
+  \Rightarrow (f(n_1) < f(n_2) \Leftrightarrow \neg (f(n_1) \geq f(n_2))),
+\end{equation*}
+where $f$ maps a node to its rank and operator $<$ defines strict total order on
+$\mathcal{R}^n$. Function $f$ defines node's sequential number, and $<$ makes
+this number unique.
+
+The simpliest function $f$ maps each node to its Internet address position in
+network IP address range. Without conversion to a tree (when only \emph{one}
+leader is allowed in the network) a node with the lowest position in this range
+becomes the principal. If IP-address of a node occupies the first position in
+the range, then there is no principal for it, and it continues to be at the top
+of the hierarchy until it fails. Although, IP address mapping is simple to
+implement, it introduces artificial dependence of the principal role on the
+address of a node. Still, it is useful for initial configuration of a cluster
+when more complex mappings are not applicable.
+
+To make discovery algorithm scale to a large number of nodes, IP address range
+is mapped to a tree hierarchy. In this hierarchy each node is uniquely
+identified by its hierarchy level \(l\), which it occupies, and offset \(o\),
+which equals to the sequential number of node on its level. Values of level and
+offset are computed from the following optimisation problem.
+\begin{align*}
+    n = \sum\limits_{i=0}^{l(n)} p^i + o(n), \quad
+    l \rightarrow \min, \quad
+    o \rightarrow \min, \quad
+    l \geq 0, \quad
+    o \geq 0
+\end{align*}
+where $n$ is the position of node's IP address in network IP address range and
+$p$ is fan-out value (the maximal number of subordinates, a node can have). The
+principal of a node with level $l$ and offset $o$ has level $l-1$ and offset
+$\lfloor{o/p}\rfloor$. The distance between any two nodes in the tree with
+network positions $i$ and $j$ is computed as
+\begin{align*}
+    & \langle
+        \text{lsub}(l(j), l(i)), \quad
+        \left| o(j) - o(i)/p \right|
+    \rangle,\\
+    & \text{lsub}(l_1, l_2) =
+    \begin{cases}
+        \infty & \quad \text{if } l_1 \geq l_2, \\
+        l_1 - l_2 & \quad \text{if } l_1 < l_2.
+    \end{cases}
+\end{align*}
+The distance is compound to account for level in the first place.
+
+To determine its principal each node ranks all nodes in the network according to
+their position $\langle{l(n),o(n)}\rangle$, and using distance formula chooses
+the node which is closest to potential principal position and has lower rank.
+That way IP addresses of offline nodes are skipped, however, for sparse networks
+(in which nodes occupy non-contiguous IP addresses) perfect tree is not
+guaranteed.
+
+In order to determine its principal a node is required to communicate to a node
+address of which it knows beforehand, so discovery algorithm scales to a large
+number of nodes. Communication with other nodes in ranked list occurs only when
+the current principal node fails. So, if address of cluster nodes occupy
+contiguous addresses network IP address range, each node connects to its
+principal only, and inefficient scan of all network by each node does not occur.
+
+**** Evaluation results.
+
 *** Fail over algorithm
 **** Introduction.
 Fault tolerance of data processing pipelines is one of the top concerns in
