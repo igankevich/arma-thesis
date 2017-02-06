@@ -2312,8 +2312,9 @@ are not suitable for the algorithm.
 
 The other disadvantage is that the algorithm creates artificial dependence of
 node rank on IP-address: it is difficult to substitute IP-address mapping with a
-more sophisticated one (which uses current node and network load to infer node
-ranks) because measurement errors may result in unstable tree hierarchy.
+more sophisticated one (e.g. a mapping which uses current node and network load
+to infer node ranks) because measurement errors may result in unstable
+hierarchy, and the algorithm cease to be fully event-based.
 
 The algorithm is designed to balance the load on a cluster of compute nodes, its
 use in other applications is not studied here. When distributed or parallel
