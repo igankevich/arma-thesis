@@ -2230,7 +2230,8 @@ classify the load and find the suitable device to route the load to. So, any
 devices other than disks may be used as well.
 
 ** MPP implementation
-*** Overview of distributed system architectures
+*** Cluster node discovery algorithm
+**** Introduction.
 Many distributed systems are built on the principle of /subordination/: there is
 principal node in each cluster which manages job queue, schedules their
 execution on subordinate nodes and monitors their state. Principal role is
@@ -2246,16 +2247,14 @@ spare reserved nodes to recover from principal node failure.
 Leader election algorithms (which sometimes referred to as /distributed
 consensus/ algorithms are special cases of wave algorithms. In
 cite:tel2000introduction Tel defines them as algorithms in which termination
-event is preceded by at least one event occurring in each parallel process. Wave
-algorithms are not defined for anonymous networks, that is they apply only to
-processes that can uniquely define themselves. However, the number of processes
-affected by the "wave" can be determined in the course of an algorithm. For a
-distributed system this means that wave algorithms work for computer clusters
-with dynamically changing number of nodes, and the algorithm is unaffected by
-some nodes going on-line and off-line.
+event is preceded by at least one event occurring in /each/ parallel process.
+Wave algorithms are not defined for anonymous networks, that is they apply only
+to processes that can uniquely define themselves. However, the number of
+processes affected by the "wave" can be determined in the course of an
+algorithm. For a distributed system this means that wave algorithms work for
+computer clusters with dynamically changing number of nodes, and the algorithm
+is unaffected by some nodes going on-line and off-line.
 
-*** Cluster node discovery algorithm
-**** Introduction.
 *** Fail over algorithm
 **** Introduction.
 Fault tolerance of data processing pipelines is one of the top concerns in
