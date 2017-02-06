@@ -1903,7 +1903,7 @@ thread pool that processes kernels in accordance with rules outlined in the
 previous paragraph. A separate pipeline is used for each device: There are
 pipelines for parallel processing, schedule-based processing (periodic and
 delayed tasks), and a proxy pipeline for processing of kernels on other cluster
-nodes.
+nodes (see figure [[fig:subord-ppl]]).
 
 In principle, kernels and pipelines machinery reflect the one of procedures and
 call stacks, with the advantage that kernel methods are called asynchronously
@@ -1915,7 +1915,6 @@ procedure call. Two methods are necessary to make calls asynchronous, and
 replace active wait for completion of subordinate kernels with passive one.
 Pipelines, in turn, allow implementing passive wait, and call correct kernel
 methods by analysing their internal state.
-
 
 #+name: fig:subord-ppl
 #+begin_src dot :exports results :file build/subord-ppl.pdf
@@ -2024,6 +2023,7 @@ graph G {
 }
 #+end_src
 
+#+caption: Mapping of parent and child process pipelines to compute devices.
 #+RESULTS: fig:subord-ppl
 [[file:build/subord-ppl.pdf]]
 

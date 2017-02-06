@@ -1979,7 +1979,7 @@ cite:malewicz2010pregel,seo2010hama. Конвейер позволяет иск�
 параграфе. Для каждого устройства используется отдельный конвейер. Существуют
 конвейеры для параллельной обработки, обработки по расписанию (периодические и
 отложенные задачи) и промежуточный конвейер для обработки управляющих объектов
-на узлах кластера.
+на узлах кластера (см. рис. [[fig:subord-ppl]]).
 
 По принципу работу механизм управляющих объектов и конвейеров напоминает
 механизм работы процедур и стеков вызовов, с тем лишь преимуществом, что методы
@@ -1993,6 +1993,115 @@ cite:malewicz2010pregel,seo2010hama. Конвейер позволяет иск�
 объектов пассивным при помощи конвейеров. Конвейеры, в свою очередь, позволяют
 реализовать пассивное ожидание и вызывают правильные методы, анализируя
 внутреннее состояние объектов.
+
+#+name: fig:subord-ppl
+#+begin_src dot :exports results :file build/subord-ppl-ru.pdf
+graph G {
+
+  node [fontsize=14,margin="0.055,0",shape=box]
+  graph [nodesep="0.25",ranksep="0.25",rankdir="LR"]
+  edge [arrowsize=0.66]
+
+  subgraph cluster_daemon {
+    label="Родительский процесс"
+    style=filled
+    color=lightgrey
+
+    factory [label="Фабрика"]
+    parallel_ppl [label="Параллельный\nконвейер"]
+    io_ppl [label="Конвейер\nввода/вывода"]
+    sched_ppl [label="Конвейер\nдля таймера"]
+    net_ppl [label="Конвейер для\nсетевых устройств"]
+    proc_ppl [label="Конвейер\nдля процессов"]
+
+    upstream [label="Пул потоков upstream"]
+    downstream [label="Пул потоков downstream"]
+  }
+
+  factory--parallel_ppl
+  factory--io_ppl
+  factory--sched_ppl
+  factory--net_ppl
+  factory--proc_ppl
+
+  subgraph cluster_hardware {
+    label="Вычислительные устройства"
+    style=filled
+    color=lightgrey
+
+    cpu [label="CPU"]
+    core0 [label="Ядро 0"]
+    core1 [label="Ядро 1"]
+    core2 [label="Ядро 2"]
+    core3 [label="Ядро 3"]
+
+    storage [label="Устройства\nхранения"]
+    disk0 [label="Диск 0"]
+
+    network [label="Сетевые\nкарты"]
+    nic0 [label="СК 0"]
+
+    timer [label="Таймер"]
+
+  }
+
+  core0--cpu
+  core1--cpu
+  core2--cpu
+  core3--cpu
+
+  disk0--storage
+  nic0--network
+
+  parallel_ppl--upstream
+  parallel_ppl--downstream
+
+  upstream--{core0,core1,core2,core3} [style="dashed"]
+  downstream--core0 [style="dashed"]
+
+  io_ppl--core0 [style="dashed"]
+  io_ppl--disk0 [style="dashed"]
+  sched_ppl--core0 [style="dashed"]
+  sched_ppl--timer [style="dashed"]
+  net_ppl--core0 [style="dashed"]
+  net_ppl--nic0 [style="dashed"]
+  proc_ppl--core0 [style="dashed"]
+
+  subgraph cluster_children {
+    style=filled
+    color=white
+
+    subgraph cluster_child0 {
+      label="Дочерний процесс 0"
+      style=filled
+      color=lightgrey
+
+      app0_factory [label="Фабрика"]
+      app0 [label="Конвейер\nдочернего процесса"]
+    }
+
+    subgraph cluster_child1 {
+      label="Дочерний процесс 1"
+      style=filled
+      color=lightgrey
+
+      app1_factory [label="Фабрика"]
+      app1 [label="Конвейер\nдочернего процесса"]
+    }
+  }
+
+  proc_ppl--app0
+  proc_ppl--app1
+
+  app0_factory--app0 [constraint=false]
+  app1_factory--app1 [constraint=false]
+
+}
+#+end_src
+
+#+caption: Отображение конвейеров родительского и дочернего процессов на вычислительные устройства.
+#+RESULTS: fig:subord-ppl
+[[file:build/subord-ppl-ru.pdf]]
 
 *** Основополагающие принципы модели
 Модель конвейера обработки данных строится по следующим принципам, следование
