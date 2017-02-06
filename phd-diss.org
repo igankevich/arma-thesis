@@ -2316,21 +2316,22 @@ more sophisticated one (e.g. a mapping which uses current node and network load
 to infer node ranks) because measurement errors may result in unstable
 hierarchy, and the algorithm cease to be fully event-based.
 
-The algorithm is designed to balance the load on a cluster of compute nodes, its
-use in other applications is not studied here. When distributed or parallel
-application start on any of cluster nodes, the load is distributed to all
-adjacent nodes in the hierarchy (including principal node if applicable). To
-distribute the load evenly when the application is run on a subordinate node,
+Node discovery algorithm is designed to balance the load on a cluster of compute
+nodes, its use in other applications is not studied here. When distributed or
+parallel programme starts on any of cluster nodes, its subtasks are distributed
+to all adjacent nodes in the hierarchy (including principal node if applicable).
+To distribute the load evenly when the application is run on a subordinate node,
 each node maintains weight of each adjacent node in the hierarchy. The weight
 equals to the number of nodes in the tree "behind" the adjacent node. For
-example, if the weight of the first adjacent node is 2, then load balancing
-algorithm distributes two tasks to the first node before moving to the next one.
+example, if the weight of the first adjacent node is 2, then round-robin load
+balancing algorithm distributes two subtasks to the first node before moving to
+the next one.
 
 To summarise, node discovery algorithm is
 - designed to ease load balancing on the cluster,
-- fully fault-tolerant as it does not have any state except node weight which
-  can be recomputed,
-- fully event-based and does not cause constant load on the network.
+- fully fault-tolerant the state of every node can be recomputed at any time,
+- fully event-based which means it does not load the network by periodically
+  sending messages.
 
 *** Fail over algorithm
 **** Introduction.
