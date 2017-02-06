@@ -2231,6 +2231,18 @@ devices other than disks may be used as well.
 
 ** MPP implementation
 *** Overview of distributed system architectures
+Many distributed systems are built on the principle of /subordination/: there is
+principal node in each cluster which manages job queue, schedules their
+execution on subordinate nodes and monitors their state. Principal role is
+assigned either /statically/ by an administrator to a particular physical node,
+or /dynamically/ by electing one of the cluster nodes as principal. In the
+former case fault tolerance is provided by reserving additional spare node which
+takes principal role when current principal fails. In the latter case fault
+tolerance is provided by electing new principal node from survived nodes.
+Despite the fact that dynamic role assignment requires specialised distributed
+algorithm, this approach becomes more and more popular as it does not require
+spare reserved nodes to recover from principal node failure.
+
 *** Cluster node discovery algorithm
 **** Introduction.
 *** Fail over algorithm
