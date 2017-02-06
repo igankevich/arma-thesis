@@ -2304,12 +2304,11 @@ To summarise, the advantage of the algorithm is that it
 - does not require manual configuration to bootstrap a cluster.
 
 The disadvantage of the algorithm is that it requires IP-address to change
-infrequently. It is probably not suitable for cloud environments in which only
-DNS name is preserved and IP-address may change over time, but can be adapted
-for them by encoding DNS name. When IP-address changes, current connections may
-close, thus triggering "node failure". So, environments where assumption of
-one-to-one correspondence between IP-addresses and nodes does not hold, are not
-suitable for the algorithm.
+infrequently. It is not suitable for cloud environments in which node DNS name
+is preserved, but IP-address may change over time. When IP-address changes,
+current connections may close, thus triggering node "failure" and rebuilding
+node hierarchy. So, environments where nodes are not identified by IP-addresses,
+are not suitable for the algorithm.
 
 The other disadvantage is that the algorithm creates artificial dependence of
 node rank on IP-address: it is difficult to substitute IP-address mapping with a
