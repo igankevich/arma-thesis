@@ -2273,23 +2273,23 @@ caused by measurement errors) may result in constant passing of principal role
 from one node to another, which makes the cluster unmanageable. The simplest
 such function is the position of an IP address in network IP address range.
 
-There are a few key points that distinguish this approach with respect to some
+The following key features distinguish this approach with respect to some
 existing proposals
 cite:brunekreef1996design,aguilera2001stable,romano2014design.
-- *Multiple hierarchy levels.* The number of principal nodes in a network depends
-  on the fan-out value. If it is lesser than the number of nodes in the network,
-  then there are multiple principle nodes in the cluster. If it is greater than
-  the number of nodes in the network, then there is only one principal node.
-  Multiple hierarchy levels allow changing hierarchy locally (when nodes fail),
-  without every change affecting all nodes.
-- *IP-address mapping.* Since node hierarchy solely depends on the nodes' IP
-  addresses, there is no election phase in the algorithm. To change the
+- *Multi-level hierarchy.* The number of principal nodes in a network depends on
+  the fan-out value. If it is lesser than the number of IP-addresses in the
+  network, then there are multiple principle nodes in the cluster. If it is
+  greater or equal to the number of IP-addresses in the network, then there is
+  only one principal node. When some node fail, multi-level hierarchy changes
+  locally, only nodes adjacent to the failed one communicate.
+- *IP-address mapping.* Since hierarchy structure solely depends on the nodes'
+  IP addresses, there is no election phase in the algorithm. To change the
   principal each node sends a message to the old principal and to the new one.
 - *Completely event-based.* The messages are sent only when some node fails, so
-  there is no constant load on the network. Since the
-  algorithm allows tolerating failure of sending any message, there is no need
-  in heart-beat messages; all messages play role of heart-beats and packet send
-  time-out is adjusted instead.
+  there is no constant load on the network. Since the algorithm allows
+  tolerating failure of sending any message, there is no need in heartbeat
+  packets indicating presence of a node in the network; instead, all messages
+  play role of heartbeats and packet send time-out is adjusted.
 - *No manual configuration.* A node does not require any prior knowledge to find
   the principal: it determines the network it is part of, calculates potential
   principal IP-address and sends the message. If it fails, the process is
@@ -2297,8 +2297,9 @@ cite:brunekreef1996design,aguilera2001stable,romano2014design.
   to bootstrap a cluster without manual configuration, the only requirement is
   to start the corresponding service on each node.
 To summarise, the advantage of the algorithm is that it
-- scales to a large number of nodes with multiple principals in the hierarchy,
-- does not constantly load the network with node state updates and heart-beat
+- scales to a large number of nodes by means of hierarchy with multiple
+  principals,
+- does not constantly load the network with node state updates and heartbeat
   packets,
 - does not require manual configuration to bootstrap a cluster.
 
