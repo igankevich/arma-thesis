@@ -1964,6 +1964,8 @@ graph G {
     network [label="Network"]
     nic0 [label="NIC 0"]
 
+    timer [label="Timer"]
+
   }
 
   core0--cpu
@@ -1983,6 +1985,7 @@ graph G {
   io_ppl--core0 [style="dashed"]
   io_ppl--disk0 [style="dashed"]
   sched_ppl--core0 [style="dashed"]
+  sched_ppl--timer [style="dashed"]
   net_ppl--core0 [style="dashed"]
   net_ppl--nic0 [style="dashed"]
   proc_ppl--core0 [style="dashed"]
@@ -1995,25 +1998,28 @@ graph G {
       label="Child process 0"
       style=filled
       color=lightgrey
+      labeljust=right
 
-      app0 [label="App 0"]
       app0_factory [label="Factory"]
+      app0 [label="Child process\rpipeline"]
     }
 
     subgraph cluster_child1 {
       label="Child process 1"
       style=filled
       color=lightgrey
+      labeljust=right
 
-      app1 [label="App 1"]
       app1_factory [label="Factory"]
+      app1 [label="Child process\rpipeline"]
     }
-    appN [label="..."]
   }
 
-  proc_ppl--app0--app0_factory
-  proc_ppl--app1--app1_factory
-  proc_ppl--appN
+  proc_ppl--app0
+  proc_ppl--app1
+
+  app0_factory--app0 [constraint=false]
+  app1_factory--app1 [constraint=false]
 
 }
 #+end_src
