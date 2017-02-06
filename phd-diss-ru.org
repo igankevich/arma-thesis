@@ -2586,16 +2586,45 @@ cite:lantz2010network,handigol2012reproducible,heller2013reproducible, где
 # TODO
 #+end_src
 
-#+caption: Зависимость времени объединения узлов в кластер в зависимости от их количества.
+#+caption: Зависимость времени объединения узлов в кластер от их количества.
 #+RESULTS: fig:bootstrap-local
 
 #+name: fig:tree-hierarchy-11
-#+begin_src R
-# TODO
+#+begin_src dot :exports results :file build/tree-hierarchy-11-ru.pdf
+digraph {
+
+  node [fontsize=14,margin="0.055,0",shape=box,style=rounded]
+  graph [nodesep="0.15",ranksep="0.20",rankdir="BT"]
+  edge [arrowsize=0.66]
+
+  m1 [label="127.0.0.1"]
+  m2 [label="127.0.0.2"]
+  m3 [label="127.0.0.3"]
+  m4 [label="127.0.0.4"]
+  m5 [label="127.0.0.5"]
+  m6 [label="127.0.0.6"]
+  m7 [label="127.0.0.7"]
+  m8 [label="127.0.0.8"]
+  m9 [label="127.0.0.9"]
+  m10 [label="127.0.0.10"]
+  m11 [label="127.0.0.11"]
+
+  m2->m1
+  m3->m1
+  m4->m2
+  m5->m2
+  m6->m3
+  m7->m3
+  m8->m4
+  m9->m4
+  m10->m5
+  m11->m5
+}
 #+end_src
 
-#+caption: Древовидная иерархия для 11 узлов.
+#+caption: Древовидная иерархия для 11 узлов для ветвления равного 2.
 #+RESULTS: fig:tree-hierarchy-11
+[[file:build/tree-hierarchy-11-ru.pdf]]
 
 *** Алгоритм восстановления после сбоев
 **** Введение.
