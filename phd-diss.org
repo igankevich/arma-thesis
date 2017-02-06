@@ -2400,6 +2400,42 @@ contiguous addresses network IP address range, each node connects to its
 principal only, and inefficient scan of all network by each node does not occur.
 
 **** Evaluation results.
+Test platform consisted of a multi-processor node, and Linux network namespaces
+were used to consolidate virtual cluster of varying number of nodes on a
+physical node. Similar approach was used in a number of works
+cite:lantz2010network,handigol2012reproducible,heller2013reproducible. The
+advantage of it is that the tests can be performed on a single machine, and
+there is no need to use physical cluster. Tests were repeated multiple times to
+reduce influences of processes running in background. Each subsequent test run
+was separated from previous one with a delay to give operating system time to
+release resources, cleanup files and flush buffers.
+
+Performance test was designed to compare subordination tree build time for two
+cases. In the first case each node performed full network scan to determine
+online nodes, choose the leader, and then sent confirmation message to it. In
+the second case each node used IP mapping to determine the leader without full
+network scan, and then sent confirmation message to it. So, this test measured
+the effect of using IP mapping, and only one leader was chosen for all nodes.
+
+Subordination tree test was designed to check that resulting trees for different
+maximal number of subordinate nodes are stable. For that purpose every change in
+a tree topology was recorded in a log file, and after 30 seconds every test run
+was forcibly stopped. The test was performed for 100-500 nodes. For this test
+additional physical nodes were used to accommodate large number of parallel
+processes (one node per 100 processes).
+
+Performance test showed that using IP mapping can speed up subordination tree
+build time by up to 200\% for 40 nodes (Fig. [[fig:discovery]]), and this
+number increases with the number of nodes. This is expected behaviour since
+overhead of sending messages to each node is omitted, and predefined mapping is
+used to find the leader. So, our approach is more efficient than full scan of a
+network. The absolute time of this test is expected to increase when executed on
+real network, and thus performance may increase.
+
+Subordination tree test showed that for each number of nodes stable state can be
+reached well before 30 seconds (Figure [[fig:bootstrap-local]]). The absolute time of
+this test may increase when executed on real network. Resulting subordination
+tree for 11 nodes is presented in Fig. [[fig:tree-hierarchy-11]].
 
 #+name: fig:bootstrap-local
 #+caption: Time to discover all nodes of the cluster in depending on number of nodes.
