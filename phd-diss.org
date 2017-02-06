@@ -2243,6 +2243,17 @@ Despite the fact that dynamic role assignment requires specialised distributed
 algorithm, this approach becomes more and more popular as it does not require
 spare reserved nodes to recover from principal node failure.
 
+Leader election algorithms (which sometimes referred to as /distributed
+consensus/ algorithms are special cases of wave algorithms. In
+cite:tel2000introduction Tel defines them as algorithms in which termination
+event is preceded by at least one event occurring in each parallel process. Wave
+algorithms are not defined for anonymous networks, that is they apply only to
+processes that can uniquely define themselves. However, the number of processes
+affected by the "wave" can be determined in the course of an algorithm. For a
+distributed system this means that wave algorithms work for computer clusters
+with dynamically changing number of nodes, and the algorithm is unaffected by
+some nodes going on-line and off-line.
+
 *** Cluster node discovery algorithm
 **** Introduction.
 *** Fail over algorithm
