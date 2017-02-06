@@ -2255,6 +2255,16 @@ algorithm. For a distributed system this means that wave algorithms work for
 computer clusters with dynamically changing number of nodes, and the algorithm
 is unaffected by some nodes going on-line and off-line.
 
+The approach in the following work does not use wave algorithms, and hence does
+not require communicating with each node of the cluster to determine a leader.
+Instead, each node enumerates all nodes in the network it is part of, and
+converts this list to a /tree hierarchy/ with a user-defined maximal fan-out
+value (maximal number of subordinate nodes). Then the node determines its
+hierarchy level and tries to communicate with nodes from higher levels to become
+their subordinate. First, it checks the closest ones and then goes all the way
+to the top. If there is no top-level nodes or the node cannot connect to them,
+then the node itself becomes the principal of the hierarchy.
+
 *** Fail over algorithm
 **** Introduction.
 Fault tolerance of data processing pipelines is one of the top concerns in
