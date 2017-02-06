@@ -2402,12 +2402,8 @@ principal only, and inefficient scan of all network by each node does not occur.
 **** Evaluation results.
 
 #+name: fig:bootstrap-local
-#+begin_src R
-# TODO
-#+end_src
-
-#+caption: Зависимость времени объединения узлов в кластер от их количества.
-#+RESULTS: fig:bootstrap-local
+#+caption: Time to discover all nodes of the cluster in depending on number of nodes.
+[[file:graphics/discovery.eps]]
 
 #+name: fig:tree-hierarchy-11
 #+begin_src dot :exports results :file build/tree-hierarchy-11.pdf
