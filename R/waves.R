@@ -11,8 +11,7 @@ arma.bits.qnorm <- function (x, param) {
 
 arma.QFUNCTIONS <- list(
 	elevation = arma.bits.qnorm,
-	white_noise = arma.bits.qnorm,
-	heights_x = function (x, param) { arma.bits.qweibull(x, param, 2.0) },
+  heights_x = function (x, param) { arma.bits.qweibull(x, param, 2.0) },
 	heights_y = function (x, param) { arma.bits.qweibull(x, param, 2.0) },
 	lengths_x = function (x, param) { arma.bits.qweibull(x, param, 2.3) },
 	lengths_y = function (x, param) { arma.bits.qweibull(x, param, 2.3) },
@@ -21,8 +20,7 @@ arma.QFUNCTIONS <- list(
 
 arma.ALL_WAVE_CHARACTERISTICS <- list(
 	"elevation",
-	"white_noise",
-	"heights_x",
+  "heights_x",
 	"heights_y",
 	"lengths_x",
 	"lengths_y",
