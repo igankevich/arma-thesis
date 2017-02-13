@@ -2671,7 +2671,6 @@ kernels are created to process it in parallel. When the processing is complete a
 parent kernel closure with its subordinate kernel as an argument is called to
 collect the resulting data from it.
 
-**** Fault tolerance.
 **** Handling single node failures.
 Basic strategy to overcome a failure of a subordinate node is to restart
 corresponding kernels on healthy node---a strategy employed in Erlang language
@@ -2740,6 +2739,7 @@ checkpoints. The advantage is that they
   is low,
 - they save only relevant data,
 - and they use memory of a subordinate node instead of stable storage.
+
 **** Evaluation.
 Factory framework is evaluated on physical cluster (Table [[tab:cluster]]) on
 the example of hydrodynamics HPC application which was developed
