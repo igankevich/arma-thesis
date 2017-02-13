@@ -2580,9 +2580,7 @@ To summarise, the framework developed in this paper protects a parallel
 programme from failure of any number of subordinate nodes and from one failure
 of a master node per superstep. The paper does not answer the question of how to
 determine if a node failed, it assumes a failure when the network connection to
-a node is prematurely closed. In general, the presented research goes in line
-with further development of the virtual supercomputer concept coined and
-evaluated in cite:vsc-csit2013,vsc-iccsa2014,vsc-nova.
+a node is prematurely closed.
 
 **** Pipelining.
 To infer fault tolerance model which is suitable for big data applications we
@@ -2757,15 +2755,13 @@ checkpoints. The advantage is that they
   is low,
 - they save only relevant data,
 - and they use memory of a subordinate node instead of stable storage.
-**** Implementation.
+**** Software implementation.
 For efficiency reasons fault tolerance techniques described above are
 implemented in the C++ framework: From the authors' perspective C language is
 deemed low-level for distributed programmes, and Java incurs too much overhead
-and is not popular in HPC community. To use the framework without a job
-scheduler, we need to implement a daemon that maintains the state of the
-hierarchy of nodes and exposes API to interact with it. As of now, the framework
-runs in the same process as an parallel application that uses it. The framework
-is called Factory, it is now in proof-of-concept development stage.
+and is not popular in HPC community. As of now, the framework runs in the same
+process as an parallel application that uses it. The framework is called
+Factory, it is now in proof-of-concept development stage.
 
 **** Evaluation.
 Factory framework is evaluated on physical cluster (Table [[tab:cluster]]) on
@@ -2992,6 +2988,7 @@ repository[fn:repo], installing Emacs and exporting the document.
 - <<<BLAS>>> :: Basic Linear Algebra Sub-programmes.
 - <<<LAPACK>>> :: Linear Algebra Package.
 - <<<DNS>>> :: Dynamic name resolution.
+- <<<HPC>>> ::  High-performance computing.
 
 #+begin_export latex
 \input{postamble}
