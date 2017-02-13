@@ -418,19 +418,19 @@ for it in general case is written as cite:kochin1966theoretical
     & \phi_t+\frac{1}{2} |\vec{\upsilon}|^2 + g\zeta=-\frac{p}{\rho}, & \text{на }z=\zeta(x,y,t),\label{eq:problem}\\
     & D\zeta = \nabla \phi \cdot \vec{n}, & \text{на }z=\zeta(x,y,t),\nonumber
 \end{align}
-where $\phi$ --- velocity potential, $\zeta$ --- elevation ($z$ coordinate) of
-wavy surface, $p$ --- wave pressure, $\rho$ --- fluid density, $\vec{\upsilon} =
-(\phi_x, \phi_y, \phi_z)$ --- velocity vector, $g$ --- acceleration of gravity,
-and $D$ --- substantial (Lagrange) derivative. The first equation is called
-continuity (Laplace) equation, the second one is the conservation of momentum
-law (the so called dynamic boundary condition); the third one is
-kinematic boundary condition for free wavy surface, which states that rate of
-change of wavy surface elevation ($D\zeta$) equals to the change of velocity
-potential derivative along the wavy surface normal ($\nabla \phi \cdot
-\vec{n}$).
+where \(\phi\) --- velocity potential, \(\zeta\) --- elevation (\(z\) coordinate)
+of wavy surface, \(p\) --- wave pressure, \(\rho\) --- fluid density,
+\(\vec{\upsilon}=(\phi_x,\phi_y,\phi_z)\) --- velocity vector, \(g\) ---
+acceleration of gravity, and \(D\) --- substantial (Lagrange) derivative. The
+first equation is called continuity (Laplace) equation, the second one is the
+conservation of momentum law (the so called dynamic boundary condition); the
+third one is kinematic boundary condition for free wavy surface, which states
+that rate of change of wavy surface elevation (\(D\zeta\)) equals to the change of
+velocity potential derivative along the wavy surface normal
+(\(\nabla\phi\cdot\vec{n}\)).
 
 Inverse problem of hydrodynamics consists in solving this system of equations
-for $\phi$. In this formulation dynamic boundary condition becomes explicit
+for \(\phi\). In this formulation dynamic boundary condition becomes explicit
 formula to determine pressure field using velocity potential derivatives
 obtained from the remaining equations. So, from mathematical point of view
 inverse problem of hydrodynamics reduces to Laplace equation with mixed boundary
@@ -451,23 +451,23 @@ comparative analysis of this model and ARMA model is done in
 cite:degtyarev2011modelling,boukhanovsky1997thesis.
 
 LH model represents ocean wavy surface as a superposition of
-sine waves with random amplitudes $c_n$ and phases $\epsilon_n$, continuously
-distributed on interval $[0,2\pi]$. Wavy surface elevation ($z$ coordinate) is
+sine waves with random amplitudes \(c_n\) and phases \(\epsilon_n\), continuously
+distributed on interval \([0,2\pi]\). Wavy surface elevation (\(z\) coordinate) is
 defined by
 #+name: eq:longuet-higgins
 \begin{equation}
     \zeta(x,y,t) = \sum\limits_n c_n \cos(u_n x + v_n y - \omega_n t + \epsilon_n).
 \end{equation}
-Here wave numbers $(u_n,v_n)$ are continuously distributed on plane $(u,v)$,
-i.e. area $du \times dv$ contains infinite quantity of wave numbers. Frequency
-is related to wave numbers via dispersion relation $\omega_n=\omega(u_n,v_n)$.
-Function $\zeta(x,y,t)$ is a three-dimensional ergodic stationary homogeneous
+Here wave numbers \((u_n,v_n)\) are continuously distributed on plane \((u,v)\),
+i.e. area \(du \times dv\) contains infinite quantity of wave numbers. Frequency
+is related to wave numbers via dispersion relation \(\omega_n=\omega(u_n,v_n)\).
+Function \(\zeta(x,y,t)\) is a three-dimensional ergodic stationary homogeneous
 Gaussian process defined by
 \begin{equation*}
     2E_\zeta(u,v)\, du\,  dv = \sum\limits_n c_n^2,
 \end{equation*}
-where $E_\zeta(u,v)$ --- two-dimensional wave energy spectral density.
-Coefficients $c_n$ are derived from wave energy spectrum $S(\omega)$ via
+where \(E_\zeta(u,v)\) --- two-dimensional wave energy spectral density.
+Coefficients \(c_n\) are derived from wave energy spectrum \(S(\omega)\) via
 \begin{equation*}
     c_n = \sqrt{ \textstyle\int\limits_{\omega_n}^{\omega_{n+1}} S(\omega) d\omega}.
 \end{equation*}
@@ -493,7 +493,7 @@ appear in practice.
 3. Finally, there are peculiarities which make LH model unsuitable base for
    building more advanced simulation models.
    - In software implementation convergence rate of ([[eq:longuet-higgins]]) may be
-     low due to randomness of phases $\epsilon_n$.
+     low due to randomness of phases \(\epsilon_n\).
    - It is difficult to generalise LH model for non-Gaussian processes as it
      involves incorporating non-linear terms in ([[eq:longuet-higgins]]) for which
      there is no known formula to determine coefficients
@@ -547,14 +547,14 @@ process to ocean wave modelling.
 In cite:stab2012,детярев1998моделирование,degtyarev1997analysis the authors
 propose a solution for inverse problem of hydrodynamics of potential flow in the
 framework of small-amplitude wave theory (under assumption that wave length is
-much larger than height: $\lambda \gg h$). In that case inverse problem is
+much larger than height: \(\lambda \gg h\)). In that case inverse problem is
 linear and reduces to Laplace equation with mixed boundary conditions, and
 equation of motion is solely used to determine pressures for calculated velocity
 potential derivatives. The assumption of small amplitudes means the slow decay
 of wind wave coherence function, i.e. small change of local wave number in time
-and space compared to the wavy surface elevation ($z$ coordinate). This
-assumption allows calculating elevation $z$ derivative as $\zeta_z=k\zeta$,
-where $k$ is wave number. In two-dimensional case the solution is written
+and space compared to the wavy surface elevation (\(z\) coordinate). This
+assumption allows calculating elevation \(z\) derivative as \(\zeta_z=k\zeta\),
+where \(k\) is wave number. In two-dimensional case the solution is written
 explicitly as
 \begin{align}
     \left.\frac{\partial\phi}{\partial x}\right|_{x,t}= &
@@ -564,7 +564,7 @@ explicitly as
     I(x)= & \int\limits_{0}^x\frac{\partial\alpha/\partial z}{1+\alpha^{2}}dx,\nonumber
 \end{align}
 
-where $\alpha$ is wave slope. In three-dimensional case solution is written in
+where \(\alpha\) is wave slope. In three-dimensional case solution is written in
 the form of elliptic partial differential equation (PDE):
 \begin{align*}
     & \frac{\partial^2 \phi}{\partial x^2} \left( 1 + \alpha_x^2 \right) +
@@ -625,10 +625,10 @@ distributed random impulses. The governing equation for 3-D ARMA process is
     ,
     \label{eq:arma-process}
 \end{equation}
-where $\zeta$ --- wave elevation, $\Phi$ --- AR process coefficients, $\Theta$
---- MA process coefficients, $\epsilon$ --- white noise with Gaussian
-distribution, $\vec N$ --- AR process order, $\vec M$ --- MA process order, and
-$\Phi_{\vec{0}}\equiv{0}$, $\Theta_{\vec{0}}\equiv{0}$. Here arrows denote
+where \(\zeta\) --- wave elevation, \(\Phi\) --- AR process coefficients, \(\Theta\)
+--- MA process coefficients, \(\epsilon\) --- white noise with Gaussian
+distribution, \(\vec N\) --- AR process order, \(\vec M\) --- MA process order, and
+\(\Phi_{\vec{0}}\equiv{0}\), \(\Theta_{\vec{0}}\equiv{0}\). Here arrows denote
 multi-component indices with a component for each dimension. In general, any
 scalar quantity can be a component (temperature, salinity, concentration of some
 substance in water etc.). Equation parameters are AR and MA process coefficients
@@ -647,9 +647,9 @@ weighted sum:
     .
     \label{eq:ar-process}
 \end{equation}
-The coefficients $\Phi$ are calculated from ACF via three-dimensional
+The coefficients \(\Phi\) are calculated from ACF via three-dimensional
 Yule---Walker equations, which are obtained after multiplying both parts of the
-previous equation by $\zeta_{\vec{i}-\vec{k}}$ and computing the expected value.
+previous equation by \(\zeta_{\vec{i}-\vec{k}}\) and computing the expected value.
 Generic form of YW equations is
 \begin{equation}
     \label{eq:yule-walker}
@@ -667,7 +667,7 @@ Generic form of YW equations is
         0, \quad \text{if } \vec{k}\neq0,
     \end{cases}
 \end{equation}
-where $\gamma$ --- ACF of process $\zeta$, $\Var{\epsilon}$ --- white noise
+where \(\gamma\) --- ACF of process \(\zeta\), \(\Var{\epsilon}\) --- white noise
 variance. Matrix form of three-dimensional YW equations, which is used in the
 present work, is
 \begin{equation*}
@@ -700,7 +700,7 @@ present work, is
         \end{array}
     \right],
 \end{equation*}
-where $\vec N = \left( p_1, p_2, p_3 \right)$ and
+where \(\vec N = \left( p_1, p_2, p_3 \right)\) and
 \begin{equation*}
     \Gamma_i =
     \left[
@@ -722,13 +722,13 @@ where $\vec N = \left( p_1, p_2, p_3 \right)$ and
     \end{array}
     \right],
 \end{equation*}
-Since $\Phi_{\vec 0}\equiv0$, the first row and column of $\Gamma$ can be
-eliminated. Matrix $\Gamma$ is block-toeplitz, positive definite and symmetric,
+Since \(\Phi_{\vec 0}\equiv0\), the first row and column of \(\Gamma\) can be
+eliminated. Matrix \(\Gamma\) is block-toeplitz, positive definite and symmetric,
 hence the system is efficiently solved by Cholesky decomposition, which is
 particularly suitable for these types of matrices.
 
 After solving this system of equations white noise variance is estimated from
-eqref:eq:yule-walker by plugging $\vec k = \vec 0$:
+eqref:eq:yule-walker by plugging \(\vec k = \vec 0\):
 \begin{equation*}
     \Var{\epsilon} =
     \Var{\zeta}
@@ -739,7 +739,7 @@ eqref:eq:yule-walker by plugging $\vec k = \vec 0$:
 \end{equation*}
 
 **** Moving average (MA) process.
-MA process is ARMA process with $\Phi\equiv0$:
+MA process is ARMA process with \(\Phi\equiv0\):
 \begin{equation}
     \zeta_{\vec i}
     =
@@ -748,7 +748,7 @@ MA process is ARMA process with $\Phi\equiv0$:
     .
     \label{eq:ma-process}
 \end{equation}
-MA coefficients $\Theta$ are defined implicitly via the following non-linear
+MA coefficients \(\Theta\) are defined implicitly via the following non-linear
 system of equations:
 \begin{equation*}
   \gamma_{\vec i} =
@@ -768,8 +768,8 @@ following formulae
     \sum\limits_{\vec j = \vec i}^{\vec M}
     \Theta_{\vec j} \Theta_{\vec j - \vec i}.
 \end{equation*}
-Here coefficients $\Theta$ are calculated from back to front: from
-$\vec{i}=\vec{M}$ to $\vec{i}=\vec{0}$. White noise variance is estimated by
+Here coefficients \(\Theta\) are calculated from back to front: from
+\(\vec{i}=\vec{M}\) to \(\vec{i}=\vec{0}\). White noise variance is estimated by
 \begin{equation*}
     \Var{\epsilon} = \frac{\gamma_{\vec 0}}{
 		1
@@ -825,12 +825,12 @@ The final problem, which is discussed in [[#sec:how-to-mix-ARMA]], is inability 
 
 In practice some statements made for AR and MA processes in cite:box1976time
 should be flipped for three-dimensional case. For example, the authors say that
-ACF of MA process cuts at $q$ and ACF of AR process decays to nought infinitely,
+ACF of MA process cuts at \(q\) and ACF of AR process decays to nought infinitely,
 but in practice making ACF of 3-dimensional MA process not decay results in it
 being non-invertible and producing realisation that does not look like real
 ocean waves, whereas doing the same for ACF of AR process results in stationary
 process and adequate realisation. Also, the authors say that one
-should allocate the first $q$ points of ACF to MA process (as it often needed to
+should allocate the first \(q\) points of ACF to MA process (as it often needed to
 describe the peaks in ACF) and leave the rest points to AR process, but in
 practice in case of ACF of a propagating wave AR process is stationary only for
 the first time slice of the ACF, and the rest is left to MA process.
@@ -853,12 +853,12 @@ transforming initial ACF. In order to alleviate this, ACF must be preliminary
 transformed as shown in cite:boukhanovsky1997thesis.
 
 **** Wavy surface transformation.
-Explicit formula $z=f(y)$ that transforms wavy surface to desired
-one-dimensional distribution $F(z)$ is the solution of non-linear transcendental
-equation $F(z)=\Phi(y)$, where $\Phi(y)$ --- one-dimensional Gaussian
+Explicit formula \(z=f(y)\) that transforms wavy surface to desired
+one-dimensional distribution \(F(z)\) is the solution of non-linear transcendental
+equation \(F(z)=\Phi(y)\), where \(\Phi(y)\) --- one-dimensional Gaussian
 distribution. Since distribution of wave elevation is often given by some
 approximation based on field data, this equation is solved numerically with
-respect to $z_k$ in each grid point $y_k|_{k=0}^N$ of generated wavy surface. In
+respect to \(z_k\) in each grid point \(y_k|_{k=0}^N\) of generated wavy surface. In
 this case equation is rewritten as
 \begin{equation}
     \label{eq:distribution-transformation}
@@ -872,7 +872,7 @@ Since, distribution functions are monotonic, the simplest interval halving
 (bisection) numerical method is used to solve this equation.
 
 **** Preliminary ACF transformation.
-In order to transform ACF $\gamma_z$ of the process, it should be expanded in
+In order to transform ACF \(\gamma_z\) of the process, it should be expanded in
 series of Hermite polynomials (Gram---Charlier series)
 \begin{equation*}
     \gamma_z \left( \vec u \right)
@@ -886,9 +886,9 @@ where
   \int\limits_{0}^\infty
     f(y) H_m(y) \exp\left[ -\frac{y^2}{2} \right],
 \end{equation*}
-$H_m$ --- Hermite polynomial, and $f(y)$ --- solution to equation
+\(H_m\) --- Hermite polynomial, and \(f(y)\) --- solution to equation
 eqref:eq:distribution-transformation. Plugging polynomial approximation
-$f(y)\approx\sum\limits_{i}d_{i}y^i$ and analytic formulae for Hermite
+\(f(y)\approx\sum\limits_{i}d_{i}y^i\) and analytic formulae for Hermite
 polynomial yields
 \begin{equation*}
     \frac{1}{\sqrt{2\pi}}
@@ -900,16 +900,16 @@ polynomial yields
         0       & \text{if }k\text{ is odd},
     \end{cases}
 \end{equation*}
-which simplifies the former equation. Optimal number of coefficients $C_m$ is
+which simplifies the former equation. Optimal number of coefficients \(C_m\) is
 determined by computing them sequentially and stopping when variances of both
-fields become equal with desired accuracy $\epsilon$:
+fields become equal with desired accuracy \(\epsilon\):
 \begin{equation*}
     \left| \Var{z} - \sum\limits_{k=0}^m
     \frac{C_k^2}{k!} \right| \leq \epsilon.
 \end{equation*}
 
 In cite:boukhanovsky1997thesis the author suggests using polynomial
-approximation $f(y)$ also for wavy surface transformation, however, in practice
+approximation \(f(y)\) also for wavy surface transformation, however, in practice
 ocean surface realisation often contains points, where z-coordinate is beyond
 the limits of the approximation, which makes solution wrong. In these points it
 is more efficient to solve equation eqref:eq:distribution-transformation by
@@ -930,7 +930,7 @@ is studied in different domains instead. At the same time, computing discrete
 Fourier transforms on the computer is possible for any discretely defined
 function and efficient when using FFT algorithms. These algorithms use symmetry
 of complex exponentials to decrease asymptotic complexity from
-$\mathcal{O}(n^2)$ to $\mathcal{O}(n\log_{2}n)$. So, even if general solution
+\(\mathcal{O}(n^2)\) to \(\mathcal{O}(n\log_{2}n)\). So, even if general solution
 contains Fourier transforms of unknown functions, they still can be computed
 numerically, and FFT family of algorithms makes this approach efficient.
 
@@ -941,7 +941,7 @@ comparable to that of FFT. For example, stationary elliptic PDE transforms to
 implicit numerical scheme which is solved by iterative method on each step of
 which a tridiagonal of five-diagonal system of algebraic equations is solved by
 Thomas algorithm. Asymptotic complexity of this approach is
-$\mathcal{O}({n}{m})$, where $n$ --- number of wavy surface grid points, $m$ ---
+\(\mathcal{O}({n}{m})\), where \(n\) --- number of wavy surface grid points, \(m\) ---
 number of iterations. Despite their wide spread, iterative algorithms are
 inefficient on parallel computer architectures; in particular, their mapping to
 co-processors may involve copying data in and out of the co-processor in each
@@ -972,7 +972,7 @@ sides of the equation yields
     -4 \pi^2 \left( u^2 + v^2 \right)
     \FourierY{\phi(x,z)}{u,v} = 0,
 \end{equation*}
-hence $v = \pm i u$. Hereinafter we use the following symmetric form of Fourier
+hence \(v = \pm i u\). Hereinafter we use the following symmetric form of Fourier
 transform:
 \begin{equation*}
     \FourierY{f(x,y)}{u,v} =
@@ -982,14 +982,14 @@ transform:
     dx dy.
 \end{equation*}
 We seek solution in the form of inverse Fourier transform
-$\phi(x,z)=\InverseFourierY{E(u,v)}{x,z}$. Plugging[fn::$v={-i}{u}$ is not
+\(\phi(x,z)=\InverseFourierY{E(u,v)}{x,z}\). Plugging[fn::\(v={-i}{u}\) is not
 applicable because velocity potential must go to nought when depth goes to
-infinity.] $v={i}{u}$ into the formula yields
+infinity.] \(v={i}{u}\) into the formula yields
 \begin{equation}
     \label{eq:guessed-sol-2d}
     \phi(x,z) = \InverseFourierY{e^{2\pi u z}E(u)}{x}.
 \end{equation}
-In order to make substitution $z=\zeta(x,t)$ not interfere with Fourier
+In order to make substitution \(z=\zeta(x,t)\) not interfere with Fourier
 transforms, we rewrite eqref:eq:guessed-sol-2d as a convolution:
 \begin{equation*}
     \phi(x,z)
@@ -998,9 +998,9 @@ transforms, we rewrite eqref:eq:guessed-sol-2d as a convolution:
     \ast
     \InverseFourierY{E(u)}{x},
 \end{equation*}
-where $\Fun{z}$ --- a function, form of which is defined in section
+where \(\Fun{z}\) --- a function, form of which is defined in section
 [[#sec:compute-delta]] and which satisfies equation
-$\FourierY{\Fun{z}}{u}=e^{2\pi{u}{z}}$. Plugging formula $\phi$ into the boundary
+\(\FourierY{\Fun{z}}{u}=e^{2\pi{u}{z}}\). Plugging formula \(\phi\) into the boundary
 condition yields
 \begin{equation*}
     \zeta_t
@@ -1012,8 +1012,8 @@ condition yields
         \InverseFourierY{2\pi u E(u)}{x}
     \right],
 \end{equation*}
-where $f(x)={\zeta_x}/{\sqrt{1+\zeta_x^2}}-\zeta_x$. Applying Fourier transform
-to both sides of this equation yields formula for coefficients $E$:
+where \(f(x)={\zeta_x}/{\sqrt{1+\zeta_x^2}}-\zeta_x\). Applying Fourier transform
+to both sides of this equation yields formula for coefficients \(E\):
 \begin{equation*}
     E(u) =
     \frac{1}{2\pi u}
@@ -1023,8 +1023,8 @@ to both sides of this equation yields formula for coefficients $E$:
     \FourierY{\Fun{z}}{u}
     }
 \end{equation*}
-Finally, substituting $z$ for $\zeta(x,t)$ and plugging resulting equation into
-eqref:eq:guessed-sol-2d yields formula for $\phi(x,z)$:
+Finally, substituting \(z\) for \(\zeta(x,t)\) and plugging resulting equation into
+eqref:eq:guessed-sol-2d yields formula for \(\phi(x,z)\):
 \begin{equation}
     \label{eq:solution-2d}
     \boxed{
@@ -1041,18 +1041,18 @@ eqref:eq:guessed-sol-2d yields formula for $\phi(x,z)$:
     }
 \end{equation}
 
-Multiplier $e^{2\pi{u}{z}}/(2\pi{u})$ makes graph of a function to which Fourier
-transform of which is applied asymmetric with respect to $OY$ axis. This makes
+Multiplier \(e^{2\pi{u}{z}}/(2\pi{u})\) makes graph of a function to which Fourier
+transform of which is applied asymmetric with respect to \(OY\) axis. This makes
 it difficult to apply FFT which expects periodic function with nought on both
 ends of the interval. Using numerical integration instead of FFT is not faster
 than solving the initial system of equations with numerical schemes. This
 problem is alleviated by using formula eqref:eq:solution-2d-full for finite
-depth fluid with wittingly large depth $h$. This formula is derived in the
+depth fluid with wittingly large depth \(h\). This formula is derived in the
 following section.
 
 **** Formula for finite depth fluid.
-On the sea bottom vertical fluid velocity component equals nought: $\phi_z=0$ on
-$z=-h$, where $h$ --- water depth. In this case equation $v=-{i}{u}$, which came
+On the sea bottom vertical fluid velocity component equals nought: \(\phi_z=0\) on
+\(z=-h\), where \(h\) --- water depth. In this case equation \(v=-{i}{u}\), which came
 from Laplace equation, can not be neglected, hence the solution is sought in the
 following form:
 \begin{equation}
@@ -1064,26 +1064,26 @@ following form:
     }{x}.
     \label{eq:guessed-sol-2d-full}
 \end{equation}
-Plugging $\phi$ into the boundary condition on the sea bottom yields
+Plugging \(\phi\) into the boundary condition on the sea bottom yields
 \begin{equation*}
     C_1 e^{-2\pi u h} - C_2 e^{2\pi u h} = 0,
 \end{equation*}
-hence $C_1=\frac{1}{2}C{e}^{2\pi{u}{h}}$ and
-$C_2=-\frac{1}{2}C{e}^{-2\pi{u}{h}}$. Constant $C$ may take arbitrary value
-here, because after plugging it becomes part of unknown coefficients $E(u)$.
-Plugging formulae for $C_1$ and $C_2$ into eqref:eq:guessed-sol-2d-full yields
+hence \(C_1=\frac{1}{2}C{e}^{2\pi{u}{h}}\) and
+\(C_2=-\frac{1}{2}C{e}^{-2\pi{u}{h}}\). Constant \(C\) may take arbitrary value
+here, because after plugging it becomes part of unknown coefficients \(E(u)\).
+Plugging formulae for \(C_1\) and \(C_2\) into eqref:eq:guessed-sol-2d-full yields
 \begin{equation*}
     \phi(x,z) = \InverseFourierY{ \Sinh{2\pi u (z+h)} E(u) }{x}.
 \end{equation*}
-Plugging $\phi$ into the boundary condition on the free surface yields
+Plugging \(\phi\) into the boundary condition on the free surface yields
 \begin{equation*}
     \zeta_t = f(x) \InverseFourierY{ 2\pi i u \Sinh{2\pi u (z+h)} E(u) }{x}
             - \InverseFourierY{ 2\pi u \SinhX{2\pi u (z+h)} E(u) }{x}.
 \end{equation*}
-Here $\sinh$ and $\cosh$ give similar results near free surface, and since this
+Here \(\sinh\) and \(\cosh\) give similar results near free surface, and since this
 is the main area of interest in practical applications, we assume that
-$\Sinh{2\pi{u}(z+h)}\approx\SinhX{2\pi{u}(z+h)}$. Performing analogous to the
-previous section transformations yields final formula for $\phi(x,z)$:
+\(\Sinh{2\pi{u}(z+h)}\approx\SinhX{2\pi{u}(z+h)}\). Performing analogous to the
+previous section transformations yields final formula for \(\phi(x,z)\):
 \begin{equation}
 \boxed{
     \phi(x,z,t)
@@ -1099,12 +1099,12 @@ previous section transformations yields final formula for $\phi(x,z)$:
 }
     \label{eq:solution-2d-full}
 \end{equation}
-where $\FunSecond{z}$ --- a function, form of which is defined in section
+where \(\FunSecond{z}\) --- a function, form of which is defined in section
 [[#sec:compute-delta]] and which satisfies equation
-$\FourierY{\FunSecond{z}}{u}=\Sinh{2\pi{u}{z}}$.
+\(\FourierY{\FunSecond{z}}{u}=\Sinh{2\pi{u}{z}}\).
 
 **** Reducing to the formulae from linear wave theory.
-Check the validity of derived formulae by substituting $\zeta(x,t)$ with known
+Check the validity of derived formulae by substituting \(\zeta(x,t)\) with known
 analytic formula for plain waves. Symbolic computation of Fourier transforms in
 this section were performed in Mathematica cite:mathematica10. In the framework
 of linear wave theory assume that waves have small amplitude compared to their
@@ -1124,14 +1124,14 @@ solution to which is written as
     }{x}
     .
 \end{equation*}
-Propagating wave profile is defined as $\zeta(x,t)=A\cos(2\pi(kx-t))$. Plugging
+Propagating wave profile is defined as \(\zeta(x,t)=A\cos(2\pi(kx-t))\). Plugging
 this formula into eqref:eq:solution-2d yields
-$\phi(x,z,t)=-\frac{A}{k}\sin(2\pi(kx-t))\Sinh{2\pi{k}{z}}$. In order to reduce
+\(\phi(x,z,t)=-\frac{A}{k}\sin(2\pi(kx-t))\Sinh{2\pi{k}{z}}\). In order to reduce
 it to the formula from linear wave theory, rewrite hyperbolic sine in
-exponential form, discard the term containing $e^{-2\pi{k}{z}}$ as contradicting
-condition $\phi\underset{z\rightarrow-\infty}{\longrightarrow}0$. Taking real
+exponential form, discard the term containing \(e^{-2\pi{k}{z}}\) as contradicting
+condition \(\phi\underset{z\rightarrow-\infty}{\longrightarrow}0\). Taking real
 part of the resulting formula yields
-$\phi(x,z,t)=\frac{A}{k}e^{2\pi{k}{z}}\sin(2\pi(kx-t))$, which corresponds to
+\(\phi(x,z,t)=\frac{A}{k}e^{2\pi{k}{z}}\sin(2\pi(kx-t))\), which corresponds to
 the known formula from linear wave theory. Similarly, under small-amplitude
 waves assumption the formula for finite depth fluid eqref:eq:solution-2d-full is
 reduced to
@@ -1143,7 +1143,7 @@ reduced to
         \FourierY{\zeta_t}{u}
     }{x}.
 \end{equation*}
-Substituting $\zeta(x,t)$ with propagating plain wave profile formula yields
+Substituting \(\zeta(x,t)\) with propagating plain wave profile formula yields
 \begin{equation}
     \label{eq:solution-2d-linear}
     \phi(x,z,t)=\frac{A}{k}
@@ -1155,19 +1155,19 @@ which corresponds to the formula from linear wave theory for finite depth fluid.
 Different forms of Laplace equation solutions, in which decaying exponent is
 written with either "+" or "-" signs, may cause incompatibilities between
 formulae from linear wave theory and formulae derived in this work, where
-$\sinh$ is used instead of $\cosh$. Equality
-$\frac{\Sinh{2\pi{k}(z+h)}}{\Sinh{2\pi{k}{h}}}\approx\frac{\sinh(2\pi{k}(z+h))}{\sinh(2\pi{k}{h})}$
+\(\sinh\) is used instead of \(\cosh\). Equality
+\(\frac{\Sinh{2\pi{k}(z+h)}}{\Sinh{2\pi{k}{h}}}\approx\frac{\sinh(2\pi{k}(z+h))}{\sinh(2\pi{k}{h})}\)
 becomes strict on the free surface, and difference between left-hand and
 right-hand sides increases when approaching sea bottom (for sufficiently large
 depth difference near free surface is negligible). So, for sufficiently large
-depth any function ($\cosh$ or $\sinh$) may be used for velocity potential
+depth any function (\(\cosh\) or \(\sinh\)) may be used for velocity potential
 computation near free surface.
 
 Reducing eqref:eq:solution-2d и eqref:eq:solution-2d-full to the known formulae
 from linear wave theory shows, that formula for infinite depth
 eqref:eq:solution-2d is not suitable to compute velocity potentials with Fourier
 method, because it does not have symmetry, which is required for Fourier
-transform. However, formula for finite depth can be used instead by setting $h$
+transform. However, formula for finite depth can be used instead by setting \(h\)
 to some characteristic water depth. For standing wave reducing to linear wave
 theory formulae is made under the same assumptions.
 
@@ -1188,9 +1188,9 @@ of Laplace equation yields
     -4 \pi^2 \left( u^2 + v^2 + w^2 \right)
     \FourierY{\phi(x,y,z)}{u,v,w} = 0,
 \end{equation*}
-hence $w=\pm{i}\sqrt{u^2+v^2}$. We seek solution in the form of inverse Fourier
-transform $\phi(x,y,z)=\InverseFourierY{E(u,v,w)}{x,y,z}$. Plugging
-$w=i\sqrt{u^2+v^2}$ into the formula yields
+hence \(w=\pm{i}\sqrt{u^2+v^2}\). We seek solution in the form of inverse Fourier
+transform \(\phi(x,y,z)=\InverseFourierY{E(u,v,w)}{x,y,z}\). Plugging
+\(w=i\sqrt{u^2+v^2}\) into the formula yields
 \begin{equation*}
     \phi(x,y,z) = \InverseFourierY{
         \left(
@@ -1200,7 +1200,7 @@ $w=i\sqrt{u^2+v^2}$ into the formula yields
         E(u,v)
     }{x,y}.
 \end{equation*}
-Plugging $\phi$ into the boundary condition on the sea bottom (analogous to
+Plugging \(\phi\) into the boundary condition on the sea bottom (analogous to
 two-dimensional case) yields
 \begin{equation}
     \label{eq:guessed-sol-3d}
@@ -1208,7 +1208,7 @@ two-dimensional case) yields
         \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)
     }{x,y}.
 \end{equation}
-Plugging $\phi$ into the boundary condition on the free surface yields
+Plugging \(\phi\) into the boundary condition on the free surface yields
 \begin{equation*}
     \arraycolsep=1.4pt
     \begin{array}{rl}
@@ -1217,10 +1217,10 @@ Plugging $\phi$ into the boundary condition on the free surface yields
         - & \InverseFourierY{2 \pi \sqrt{u^2+v^2} \SinhX{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y}
     \end{array}
 \end{equation*}
-where $f_1(x,y)={\zeta_x}/{\sqrt{1+\zeta_x^2}}-\zeta_x$ and
-$f_2(x,y)={\zeta_y}/{\sqrt{\vphantom{\zeta_x^2}\smash[b]{1+\zeta_y^2}}}-\zeta_y$.
+where \(f_1(x,y)={\zeta_x}/{\sqrt{1+\zeta_x^2}}-\zeta_x\) and
+\(f_2(x,y)={\zeta_y}/{\sqrt{\vphantom{\zeta_x^2}\smash[b]{1+\zeta_y^2}}}-\zeta_y\).
 Applying Fourier transform to both sides of the equation yields formula for
-coefficients $E$:
+coefficients \(E\):
 \begin{equation*}
     \arraycolsep=1.4pt
     \begin{array}{rl}
@@ -1230,21 +1230,21 @@ coefficients $E$:
         - & 2 \pi \sqrt{u^2+v^2} \SinhX{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)
     \end{array}
 \end{equation*}
-Final solution is obtained after plugging $E(u,v)$ into eqref:eq:guessed-sol-3d.
+Final solution is obtained after plugging \(E(u,v)\) into eqref:eq:guessed-sol-3d.
 
 * Numerical methods and experimental results
 ** The shape of ACF for different types of waves
 *** Two methods to find ocean waves ACF
 **** Analytic method of finding the ACF.
 The straightforward way to find ACF for a given ocean wave profile is to apply
-Wiener---Khinchin theorem. According to this theorem the autocorrelation $K$ of
-a function $\zeta$ is given by the Fourier transform of the absolute square of
+Wiener---Khinchin theorem. According to this theorem the autocorrelation \(K\) of
+a function \(\zeta\) is given by the Fourier transform of the absolute square of
 the function:
 \begin{equation}
   K(t) = \Fourier{\left| \zeta(t) \right|^2}.
   \label{eq:wiener-khinchin}
 \end{equation}
-When $\zeta$ is replaced with actual wave profile, this formula gives you
+When \(\zeta\) is replaced with actual wave profile, this formula gives you
 analytic formula for the corresponding ACF.
 
 For three-dimensional wave profile (2D in space and 1D in time) analytic formula
@@ -1275,8 +1275,8 @@ For three-dimensional plain standing wave the profile is given by
   \label{eq:standing-wave}
 \end{equation}
 Find ACF via analytic method. Multiplying the formula by a decaying exponent
-(because Fourier transform is defined for a function $f$ that
-$f\underset{x\rightarrow\pm\infty}{\longrightarrow}0$) yields
+(because Fourier transform is defined for a function \(f\) that
+\(f\underset{x\rightarrow\pm\infty}{\longrightarrow}0\)) yields
 \begin{equation}
   \zeta(t, x, y) =
   A
@@ -1297,7 +1297,7 @@ approximation:
 \end{equation}
 So, after applying Wiener---Khinchin theorem we get initial formula but with
 cosines instead of sines. This difference is important because the value of ACF
-at $(0,0,0)$ equals to the ARMA process variance, and if one used sines the
+at \((0,0,0)\) equals to the ARMA process variance, and if one used sines the
 value would be wrong.
 
 If one tries to replicate the same formula via empirical method, the usual way
@@ -1327,7 +1327,7 @@ standing wave).
 *** Comparison of studied methods
 To summarise, the analytic method of finding ocean wave's ACF reduces to the
 following steps.
-- Make wave profile decay when approaching $\pm\infty$ by multiplying it by
+- Make wave profile decay when approaching \(\pm\infty\) by multiplying it by
   a decaying exponent.
 - Apply Fourier transform to the absolute square of the resulting equation using
   symbolic computation programme.
@@ -1338,7 +1338,7 @@ waves their decaying profiles resemble the corresponding ACFs with the exception
 that the ACF's maximum should be moved to the origin to preserve simulated
 process variance. Empirical method of finding ACF reduces to the following
 steps.
-- Make wave profile decay when approaching $\pm\infty$ by multiplying it by
+- Make wave profile decay when approaching \(\pm\infty\) by multiplying it by
   a decaying exponent.
 - Move maximum value of the resulting function to the origin by using
   trigonometric identities to shift the phase.
@@ -1376,11 +1376,11 @@ of PDF expands in Gram---Charlier series:
         +1
     \right],
 \end{align}
-where $\phi(z)=\frac{1}{2}\mathrm{erf}(z/\sqrt{2})$, $\gamma_1$ --- skewness,
-$\gamma_2$ --- kurtosis, $f$ --- PDF, $F$ --- cumulative distribution function
+where \(\phi(z)=\frac{1}{2}\mathrm{erf}(z/\sqrt{2})\), \(\gamma_1\) --- skewness,
+\(\gamma_2\) --- kurtosis, \(f\) --- PDF, \(F\) --- cumulative distribution function
 (CDF). According to cite:рожков1990вероятностные for ocean waves skewness is
-selected from interval $0.1\leq\gamma_1\leq{0.52}]$ and kurtosis from interval
-$0.1\leq\gamma_2\leq{0.7}$. Family of probability density functions for
+selected from interval \(0.1\leq\gamma_1\leq{0.52}]\) and kurtosis from interval
+\(0.1\leq\gamma_2\leq{0.7}\). Family of probability density functions for
 different parameters is shown in [[fig:skew-normal-1]].
 
 #+name: fig:skew-normal-1
@@ -1409,7 +1409,7 @@ legend(
 )
 #+end_src
 
-#+caption: Probability density function eqref:eq:skew-normal-1 of ocean wavy surface elevation for different values of skewness $\gamma_1$ and kurtosis $\gamma_2$.
+#+caption: Probability density function eqref:eq:skew-normal-1 of ocean wavy surface elevation for different values of skewness \(\gamma_1\) and kurtosis \(\gamma_2\).
 #+RESULTS: fig:skew-normal-1
 [[file:build/skew-normal-1.pdf]]
 
@@ -1423,11 +1423,11 @@ elevation by skew-normal distribution:
     f(z; \alpha) & = \frac{e^{-\frac{z^2}{2}}}{\sqrt{2 \pi }}
    \mathrm{erfc}\left[-\frac{\alpha z}{\sqrt{2}}\right],
 \end{align}
-where $T$ --- Owen \(T\)-function cite:owen1956tables. Using this formula it is
+where \(T\) --- Owen \(T\)-function cite:owen1956tables. Using this formula it is
 impossible to specify skewness and kurtosis separately --- both values are
-adjusted via $\alpha$ parameter. The only advantage of the formula is its
+adjusted via \(\alpha\) parameter. The only advantage of the formula is its
 relative computational simplicity: this function is available in some programmes
-and mathematical libraries. Its graph for different values of $\alpha$ is shown
+and mathematical libraries. Its graph for different values of \(\alpha\) is shown
 in [[fig:skew-normal-2]].
 
 #+name: fig:skew-normal-2
@@ -1460,7 +1460,7 @@ legend(
 )
 #+end_src
 
-#+caption: Probability density function eqref:eq:skew-normal-2 of ocean wavy surface for different values of skewness coefficient $\alpha$.
+#+caption: Probability density function eqref:eq:skew-normal-2 of ocean wavy surface for different values of skewness coefficient \(\alpha\).
 #+RESULTS: fig:skew-normal-2
 [[file:build/skew-normal-2.pdf]]
 
@@ -1470,17 +1470,17 @@ distribution may be solved either in every point of generated wavy surface,
 which gives the most accurate results, or in every fixed grid point
 interpolating result via least-squares (LS) polynomial. In the second case
 precision is lower. For example, interpolating 12^th order polynomial on a fixed
-grid of 500 points on interval $-5\sigma_z\leq{z}\leq{5}\sigma_z$ gives error of
-$\approx{0.43}\cdot10^{-3}$. Increasing polynomial order leads to either numeric
+grid of 500 points on interval \(-5\sigma_z\leq{z}\leq{5}\sigma_z\) gives error of
+\(\approx{0.43}\cdot10^{-3}\). Increasing polynomial order leads to either numeric
 overflows during LS interpolation, or more coefficient close to nought;
 increasing the size of the grid has insignificant effect on the result. In the
 majority of cases three Gram---Charlier series coefficients is enough to
-transform ACF; relative error without interpolation is $10^{-5}$.
+transform ACF; relative error without interpolation is \(10^{-5}\).
 
 *** White noise generation
 In order to eliminate periodicity from generated wavy surface, it is imperative
 to use PRNG with sufficiently large period to generate white noise. Parallel
-Mersenne Twister cite:matsumoto1998mersenne with a period of $2^{19937}-1$ is
+Mersenne Twister cite:matsumoto1998mersenne with a period of \(2^{19937}-1\) is
 used as a generator in this work. It allows producing aperiodic ocean wavy
 surface realisations in any practical usage scenarios.
 
@@ -1520,8 +1520,8 @@ cite:oppenheim1989discrete,svoboda2011efficient,pavel2013algorithms (a popular
 method in signal processing) is used. The essence of the method is to add
 another interval, size of which is equal to the ramp-up interval size, to the
 end of each part. Then wavy surface is generated in each point of each part
-(including points from the added interval), the interval at the end of part $N$
-is superimposed on the ramp-up interval at the beginning of the part $N+1$, and
+(including points from the added interval), the interval at the end of part \(N\)
+is superimposed on the ramp-up interval at the beginning of the part \(N+1\), and
 values in corresponding points are added.
 
 #+name: fig:ramp-up-interval
@@ -1530,7 +1530,7 @@ source(file.path("R", "common.R"))
 arma.plot_ramp_up_interval()
 #+end_src
 
-#+caption: Ramp-up interval at the beginning of the $OX$ axis of the realisation.
+#+caption: Ramp-up interval at the beginning of the \(OX\) axis of the realisation.
 #+RESULTS: fig:ramp-up-interval
 [[file:build/ramp-up-interval.pdf]]
 
@@ -1541,8 +1541,8 @@ arma.plot_ramp_up_interval()
 
 In solutions eqref:eq:solution-2d and eqref:eq:solution-2d-full to
 two-dimensional pressure determination problem there are functions
-$\Fun{z}=\InverseFourierY{e^{2\pi{u}{z}}}{x}$ and
-$\FunSecond{z}=\InverseFourierY{\Sinh{2\pi{u}{z}}}{x}$ which has multiple
+\(\Fun{z}=\InverseFourierY{e^{2\pi{u}{z}}}{x}\) and
+\(\FunSecond{z}=\InverseFourierY{\Sinh{2\pi{u}{z}}}{x}\) which has multiple
 analytic representations and are difficult to compute. Each function is a
 Fourier transform of linear combination of exponents which reduces to poorly
 defined Dirac delta function of a complex argument (see [[tab:delta-functions]]).
@@ -1551,19 +1551,19 @@ multiplication of Dirac delta functions of real and imaginary part, however,
 this approach does not work here, because applying inverse Fourier transform to
 this representation does not produce exponent, which severely warp resulting
 velocity field. In order to get unique analytic definition normalisation factor
-$1/\Sinh{2\pi{u}{h}}$ (which is also included in formula for $E(u)$) may be
+\(1/\Sinh{2\pi{u}{h}}\) (which is also included in formula for \(E(u)\)) may be
 used. Despite the fact that normalisation allows obtaining adequate velocity
 potential field, numerical experiments show that there is little difference
 between this field and the one produced by formulae from linear wave theory, in
-which terms with $\zeta$ are omitted.
+which terms with \(\zeta\) are omitted.
 
 #+name: tab:delta-functions
-#+caption: Formulae for computing $\Fun{z}$ and $\FunSecond{z}$ from [[#sec:pressure-2d]], that use normalisation to eliminate uncertainty from definition of Dirac delta function of complex argument.
+#+caption: Formulae for computing \(\Fun{z}\) and \(\FunSecond{z}\) from [[#sec:pressure-2d]], that use normalisation to eliminate uncertainty from definition of Dirac delta function of complex argument.
 #+attr_latex: :booktabs t
-| Function        | Without normalisation                                      | Normalised                                                                                                                           |
-|-----------------+------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------|
-| $\Fun{z}$       | $\delta (x+i z)$                                           | $\frac{1}{2 h}\mathrm{sech}\left(\frac{\pi  (x-i (h+z))}{2 h}\right)$                                                                |
-| $\FunSecond{z}$ | $\frac{1}{2}\left[\delta (x-i z) + \delta (x+i z) \right]$ | $\frac{1}{4 h}\left[\text{sech}\left(\frac{\pi  (x-i (h+z))}{2 h}\right)+\text{sech}\left(\frac{\pi  (x+i(h+z))}{2 h}\right)\right]$ |
+| Function          | Without normalisation                                        | Normalised                                                                                                                             |
+|-------------------+--------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------|
+| \(\Fun{z}\)       | \(\delta (x+i z)\)                                           | \(\frac{1}{2 h}\mathrm{sech}\left(\frac{\pi  (x-i (h+z))}{2 h}\right)\)                                                                |
+| \(\FunSecond{z}\) | \(\frac{1}{2}\left[\delta (x-i z) + \delta (x+i z) \right]\) | \(\frac{1}{4 h}\left[\text{sech}\left(\frac{\pi  (x-i (h+z))}{2 h}\right)+\text{sech}\left(\frac{\pi  (x+i(h+z))}{2 h}\right)\right]\) |
 
 ** ARMA model verification
 :PROPERTIES:
@@ -1585,7 +1585,7 @@ characteristics (listed in table [[tab:weibull-shape]]) have Weibull distributio
 and wavy surface elevation has Gaussian distribution. In order to verify that
 distributions corresponding to generated realisation are correct,
 quantile-quantile plots are used (plots where analytic quantile values are used
-for $OX$ axis and estimated quantile values for $OY$ axis). If the estimated
+for \(OX\) axis and estimated quantile values for \(OY\) axis). If the estimated
 distribution matches analytic then the graph has the form of the straight line.
 Tails of the graph may diverge from the straight line, because they can not be
 reliably estimated from the finite-size realisation. Different methods of
@@ -1596,7 +1596,7 @@ they may (and often) overlap.
 #+name: tab:weibull-shape
 #+caption: Values of Weibull shape parameter for different wave characteristics.
 #+attr_latex: :booktabs t
-| Characteristic       | Weibull shape ($k$) |
+| Characteristic       | Weibull shape (\(k\)) |
 |----------------------+---------------------|
 | Wave height          |                   2 |
 | Wave length          |                 2.3 |
@@ -1687,7 +1687,7 @@ in the framework of linear wave theory are eliminated, shows no difference (as
 much as machine precision allows) in resulting velocity potential fields.
 
 #+name: fig:potential-field-nonlinear
-#+caption: Velocity potential field of propagating wave $\zeta(x,y,t) = \cos(2\pi x - t/2)$. Field produced by formula eqref:eq:solution-2d-full (left) and linear wave theory formula (right).
+#+caption: Velocity potential field of propagating wave \(\zeta(x,y,t) = \cos(2\pi x - t/2)\). Field produced by formula eqref:eq:solution-2d-full (left) and linear wave theory formula (right).
 #+attr_latex: :width 0.47\textwidth
 #+begin_figure
 [[file:graphics/pressure/potential-5.eps]]
@@ -1708,7 +1708,7 @@ velocity field is produced only by formula eqref:eq:solution-2d-full (fig.
 satisfactory results without restriction on wave amplitudes.
 
 #+name: fig:velocity-field-2d
-#+caption: Comparison of velocity field on the ocean wavy surface obtained by generic formula ($u_1$) and formula for small-amplitude waves ($u_2$). Velocity field for realisations containing small-amplitude (left) and large-amplitude (right) waves.
+#+caption: Comparison of velocity field on the ocean wavy surface obtained by generic formula (\(u_1\)) and formula for small-amplitude waves (\(u_2\)). Velocity field for realisations containing small-amplitude (left) and large-amplitude (right) waves.
 #+begin_figure
 [[file:build/low-amp-nocolor.eps]]
 [[file:build/high-amp-nocolor.eps]]
@@ -2256,7 +2256,7 @@ arma.plot_factory_vs_openmp_overlap(
 )
 #+end_src
 
-#+caption: Overlap of parallel computations on $[G_0,G_1]$ and data output to disk on $[W_0,W_1]$. In OpenMP implementation there is no overlap.
+#+caption: Overlap of parallel computations on \([G_0,G_1]\) and data output to disk on \([W_0,W_1]\). In OpenMP implementation there is no overlap.
 #+RESULTS: fig:factory-overlap
 [[file:build/factory-vs-openmp-overlap.pdf]]
 
@@ -2374,18 +2374,18 @@ To summarise, node discovery algorithm is
   sending messages.
 
 **** Building a tree hierarchy.
-Strict total order on the set $\mathcal{N}$ of cluster nodes connected to a
+Strict total order on the set \(\mathcal{N}\) of cluster nodes connected to a
 network is defined as
 \begin{equation*}
   \forall n_1 \forall n_2 \in \mathcal{N},
   \forall f \colon \mathcal{N} \rightarrow \mathcal{R}^n
   \Rightarrow (f(n_1) < f(n_2) \Leftrightarrow \neg (f(n_1) \geq f(n_2))),
 \end{equation*}
-where $f$ maps a node to its rank and operator $<$ defines strict total order on
-$\mathcal{R}^n$. Function $f$ defines node's sequential number, and $<$ makes
+where \(f\) maps a node to its rank and operator \(<\) defines strict total order on
+\(\mathcal{R}^n\). Function \(f\) defines node's sequential number, and \(<\) makes
 this number unique.
 
-The simpliest function $f$ maps each node to its Internet address position in
+The simpliest function \(f\) maps each node to its Internet address position in
 network IP address range. Without conversion to a tree (when only \emph{one}
 leader is allowed in the network) a node with the lowest position in this range
 becomes the principal. If IP-address of a node occupies the first position in
@@ -2407,11 +2407,11 @@ offset are computed from the following optimisation problem.
     l \geq 0, \quad
     o \geq 0
 \end{align*}
-where $n$ is the position of node's IP address in network IP address range and
-$p$ is fan-out value (the maximal number of subordinates, a node can have). The
-principal of a node with level $l$ and offset $o$ has level $l-1$ and offset
-$\lfloor{o/p}\rfloor$. The distance between any two nodes in the tree with
-network positions $i$ and $j$ is computed as
+where \(n\) is the position of node's IP address in network IP address range and
+\(p\) is fan-out value (the maximal number of subordinates, a node can have). The
+principal of a node with level \(l\) and offset \(o\) has level \(l-1\) and offset
+\(\lfloor{o/p}\rfloor\). The distance between any two nodes in the tree with
+network positions \(i\) and \(j\) is computed as
 \begin{align*}
     & \langle
         \text{lsub}(l(j), l(i)), \quad
@@ -2426,7 +2426,7 @@ network positions $i$ and $j$ is computed as
 The distance is compound to account for level in the first place.
 
 To determine its principal each node ranks all nodes in the network according to
-their position $\langle{l(n),o(n)}\rangle$, and using distance formula chooses
+their position \(\langle{l(n),o(n)}\rangle\), and using distance formula chooses
 the node which is closest to potential principal position and has lower rank.
 That way IP addresses of offline nodes are skipped, however, for sparse networks
 (in which nodes occupy non-contiguous IP addresses) perfect tree is not
@@ -2641,14 +2641,14 @@ cite:dean2008mapreduce,vavilapalli2013yarn --- a user submitting a job does not
 specify the number of hosts to run its job on, and actual hosts are the hosts
 where input files are located.
 
-From mathematical point of view kernel $K$ can be described as a vector-valued
+From mathematical point of view kernel \(K\) can be described as a vector-valued
 functional which recursively maps a kernel to \(n\)-component vector of kernels:
 \begin{equation*}
     K(f): \mathbb{K} \rightarrow \mathbb{K}^n
     \qquad
     \mathbb{K}^n = \left\{ f: \mathbb{K} \rightarrow \mathbb{K}^n \right\}.
 \end{equation*}
-Special kernel $\mathbb{O}: \mathbb{K} \rightarrow \mathbb{K}^0$ is used to stop
+Special kernel \(\mathbb{O}: \mathbb{K} \rightarrow \mathbb{K}^0\) is used to stop
 the recursion and is passed as an argument to the main kernel. An argument to a
 kernel is interpreted as follows.
 - If a kernel is a newly created kernel, then its argument is its parent kernel.
@@ -2755,7 +2755,7 @@ A tree hierarchy with fan-out value of 64 was chosen to make all cluster nodes
 connect directly to the first one. In each run the first kernel was launched on
 a different node to make mapping of kernel hierarchy to the tree hierarchy
 optimal. A victim node was made offline after a fixed amount of time after the
-programme start which is equivalent approximately to $1/3$ of the total run time
+programme start which is equivalent approximately to \(1/3\) of the total run time
 without failures on a single node. All relevant parameters are summarised in
 Table [[tab:benchmark]] (here ``root'' and ``leaf'' refer to a node in the
 tree hierarchy). The results of these runs were compared to the run without node
@@ -2794,7 +2794,7 @@ difference in performance in case of master and slave node failures lies within
 of node less than 6[fn::Measuring this margin for higher number of nodes does
 not make sense since time before failure is greater than total execution time
 with these numbers of nodes, and programme's execution finishes before a failure
-occurs.]]. Increase in execution time of 50% is more than $1/3$ of execution
+occurs.]]. Increase in execution time of 50% is more than \(1/3\) of execution
 time after which a failure occurs, but backup node failure need some time to be
 discovered: they are detected only when subordinate kernel carrying the copy of
 the first kernel finishes its execution and tries to reach its parent. Instant
