@@ -1898,6 +1898,17 @@ framework runs in the same process as an parallel application that uses it. The
 framework is called Factory, it is now in proof-of-concept development stage.
 
 *** Computational model overview
+The key feature that is missing in the current parallel programming technologies
+is a possibility to specify hierarchical dependencies between parallel tasks.
+When one has such dependency, it is trivial to determine which task should be
+responsible for re-executing a failed task on one of the survived nodes. To
+re-execute the task on the top of the hierarchy, a backup task is created and
+executed on a different node. There exists a number of systems that are capable
+of executing directed acyclic graphs of tasks in parallel
+cite:acun2014charmpp,islam2012oozie, but graphs are not suitable to infer
+principal-subordinate relationship between tasks, because a node in the graph
+may have multiple parent nodes.
+
 The main purpose of the model is to simplify development of distributed batch
 processing applications and middleware. The main focus is to make application
 resilient to failures, i.e. make it fault tolerant and highly available, and do
@@ -2490,7 +2501,6 @@ digraph {
 #+RESULTS: fig:tree-hierarchy-11
 [[file:build/tree-hierarchy-11.pdf]]
 
-
 *** Fail over algorithm
 **** Introduction.
 Fault tolerance of data processing pipelines is one of the top concerns in
@@ -2608,38 +2618,7 @@ of a master node per superstep. The paper does not answer the question of how to
 determine if a node failed, it assumes a failure when the network connection to
 a node is prematurely closed.
 
-**** Hierarchy.
-Although, fault-tolerance and high-availability are different terms, in essence
-they describe the same property---an ability of a system to switch processing
-from a failed component to its live spare or backup component. In case of
-fault-tolerance it is the ability to switch from a failed slave node to a spare
-one, i.e. to repeat computation step on a healthy slave node. In case of
-high-availability it is the ability to switch from a failed master node to a
-backup node with full restoration of execution state. These are the core
-abilities that constitute distributed system's ability to /fail over/.
-
-The key feature that is missing in the current parallel programming and big data
-processing technologies is a possibility to specify hierarchical dependencies
-between parallel tasks. When one has such dependency, it is trivial to determine
-which task should be responsible for re-executing a failed task on a healthy
-node. To re-execute the root of the hierarchy, a backup root task is created and
-executed on a different node. There exists a number of engines that are capable
-of executing directed acyclic graphs of tasks in parallel
-cite:acun2014charmpp,islam2012oozie, but graphs are not good to infer
-master-slave relationship between tasks, because a node in the graph may have
-multiple parent nodes.
-
-This work is based on the results of previous research: In
-cite:gankevich2015subordination,gankevich2015iccsa we developed an algorithm
-that allows to build a tree hierarchy from strictly ordered set of cluster
-nodes. The sole purpose of this hierarchy is to make a cluster more
-fault-tolerant by introducing multiple master nodes. If a master node fails,
-then its subordinates try to connect to another node from the same or higher
-level of the hierarchy. If there is no such node, one of the subordinates
-becomes the master. In cite:gankevich2015spec we developed a framework for big
-data processing without fault tolerance, and here this framework is combined
-with fault-tolerance techniques described in this paper.
-
+**** Hierarchy of control flow objects
 Each programme that runs on top of the tree hierarchy is composed of
 computational kernels---objects that contain data and code to process it. To
 exploit parallelism a kernel may create arbitrary number of subordinate kernels
@@ -2648,20 +2627,47 @@ across subordinate nodes in the tree hierarchy. The programme is itself a kernel
 (without a parent as it is executed by a user), which either solves the problem
 sequentially on its own or creates subordinate kernels to solve it in parallel.
 
-In contrast to HPC applications, in big data applications it is inefficient to
-run computational kernels on arbitrary chosen nodes. More practical approach is
-to bind every kernel to a file location in a parallel file system and transfer
-the kernel to that location before processing the file. That way expensive data
-transfer is eliminated, and the file is always read from a local drive. This
-approach is more deterministic compared to existing ones, e.g. MapReduce
-framework runs jobs on nodes that are ``close'' to the file location, but not
-necessarily the exact node where the file is located cite:dean2008mapreduce.
-However, this approach does not come without disadvantages: scalability of a big
-data application is limited by the strategy that was employed to distribute its
-input files across cluster nodes. The more nodes used to store input files, the
-more read performance is achieved. The advantage of our approach is that the I/O
-performance is more predictable, than one of hybrid approach with streaming
-files over the network.
+Unlike main function in programmes based on message passing library, the first
+computational kernel is initially run only on one node, and remote nodes are
+used only when the local queue is overflown by kernels. This design choice
+allows to have arbitrary number of nodes throughout execution of a programme,
+and take more nodes for highly parallel parts of the code. Somewhat similar
+choice was made in the design of MapReduce framework
+cite:dean2008mapreduce,vavilapalli2013yarn --- a user submitting a job does not
+specify the number of hosts to run its job on, and effective hosts are the hosts
+where input files are located.
+
+From mathematical point of view kernel $K$ can be described as a vector-valued
+functional which recursively maps a kernel to $n$-component vector of kernels:
+\begin{equation*}
+    K(f): \mathbb{K} \rightarrow \mathbb{K}^n
+    \qquad
+    \mathbb{K}^n = \left\{ f: \mathbb{K} \rightarrow \mathbb{K}^n \right\}.
+\end{equation*}
+Dummy kernel $\mathbb{O}: \mathbb{K} \rightarrow \mathbb{K}^0$, which stops
+recursion, is used to call the first kernel and finish execution of the
+programme. An argument to each kernel is interpreted using the following rules.
+\begin{enumerate}
+    \item If a kernel is a new kernel, then its argument is its parent kernel.
+    \item If a kernel is a parent of the kernel that produced it or some other
+      existing kernel, then the argument is the kernel that produced it.
+\end{enumerate}
+
+Engine that executes kernels is implemented as a simple loop. It starts with
+calling the first kernel with a dummy kernel as an argument, then calls each
+kernel that was produced by this call and so forth. The loop finishes when a
+dummy kernel is returned as a result of the call.
+
+Since kernel call may return multiple kernels they are executed in parallel.
+Parallel execution quickly produces a pool of kernels which permit execution in
+an unspecified order. Several threads concurrently retrieve kernels from the
+pool and may "spill" the remaining kernels to neighbouring cluster nodes.
+
+Kernels are implemented as closures --- function objects containing all their
+arguments, a reference to parent kernel and user-supplied data. The data is
+either processed upon kernel call, or subordinate kernels are created to process
+it in parallel. When the processing is complete a parent kernel closure with its
+subordinate kernel as an argument is called to collect data from it.
 
 **** Fault tolerance.
 **** Handling single node failures.
