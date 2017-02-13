@@ -1,0 +1,21 @@
+%\centering%
+\begin{tikzpicture}[remember picture,x=3.5cm,y=-3.5cm]%
+    \node[Node] (A1) at (0,0) {A};
+    \node[Node] (B1) at (1,0) {B};
+    \node[Node] (C1) at (0,1) {C};
+    \node[Node] (D1) at (1,1) {D};
+    
+    \node[Switch] (S1) at (.5,.5) {};
+    
+    \path[PhysicalLink] (A1) edge (S1);
+    \path[PhysicalLink] (B1) edge (S1);
+    \path[PhysicalLink] (C1) edge (S1);
+    \path[PhysicalLink] (D1) edge (S1);
+    
+    \path[NetworkLink] (A1) edge (B1);
+    \path[NetworkLink] (A1) edge (C1);
+    \path[NetworkLink] (A1) edge (D1);
+    \path[NetworkLink] (B1) edge (C1);
+    \path[NetworkLink] (B1) edge (D1);
+    \path[NetworkLink] (C1) edge (D1);
+\end{tikzpicture}%

@@ -1,0 +1,39 @@
+%\usepackage{tikz}
+\usetikzlibrary{shapes}
+
+% corporate colors
+\definecolor{spbuTerracotta}{cmyk}{.08,.91,.92,.33}
+\definecolor{spbuGray}{cmyk}{.21,.11,.09,.22}
+
+\definecolor{spbuWhite1}{RGB}{245,246,245}
+\definecolor{spbuWhite2}{RGB}{230,231,230}
+\definecolor{spbuWhite3}{RGB}{217,218,217}
+
+\definecolor{spbuWhiteRed2}{RGB}{255,231,230}
+\definecolor{spbuWhiteRed3}{RGB}{255,160,160}
+\definecolor{spbuRed}{RGB}{200,40,40}
+
+\definecolor{spbuDarkGray}{HTML}{404040}
+\definecolor{spbuDarkGray2}{HTML}{5F7177}
+
+\definecolor{spbuGreen}{RGB}{40,160,40}
+\definecolor{spbuBlue}{RGB}{40,40,160}
+
+% physical layer
+\tikzset{Node/.style={rectangle,draw=spbuDarkGray,line width=3pt}}
+\tikzset{Switch/.style={circle,draw=gray,fill=gray,line width=6pt,solid}}
+\tikzset{PhysicalLink/.style={draw=gray,line width=6pt,solid}}
+\tikzset{NetworkLink/.style={draw=black,line width=3pt,dashed}}
+
+% logical layer
+\tikzset{Daemon/.style={ellipse,draw=spbuBlue,line width=3pt,solid,scale=0.65}}
+\tikzset{DaemonLink/.style={draw=spbuBlue,line width=3pt,solid}}
+
+% application layer
+\tikzset{Process/.style={ellipse,draw=spbuGreen,line width=3pt,solid}}
+\tikzset{ProcessEdge/.style={draw=spbuGreen,line width=3pt,solid}}
+
+\tikzset{Task/.style={Process,anchor=center,draw=spbuGreen}}
+\tikzset{TaskEdge/.style={ProcessEdge,draw=spbuGreen,solid,->}}
+\tikzset{Label/.style={label distance=0.1cm,text=spbuTerracotta}}
+\tikzset{TaskLabel/.style={label distance=0.1cm,text=spbuGreen}}

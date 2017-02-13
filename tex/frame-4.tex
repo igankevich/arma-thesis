@@ -1,0 +1,10 @@
+\input{tex/frame-3}
+\begin{tikzpicture}[remember picture,overlay]
+	\node[Task,label={[TaskLabel]180:\textbf{S\textsubscript{\color{spbuGreen}1}}}] (Sub1) at (A1.center) {\phantom{A}};
+	\node[Task,label={[TaskLabel]180:\textbf{S\textsubscript{\color{spbuGreen}2}}}] (Sub2) at (C1.center) {\phantom{A}};
+	\node[Task,label={[TaskLabel]0:\textbf{S\textsubscript{\color{spbuGreen}3}}}] (Sub3) at (D1.center) {\phantom{A}};
+    %\node[Task,label={[TaskLabel]0:Task1}] (Task1) at (B1.center) {\phantom{A}};
+    \path[TaskEdge] (Task1) edge[bend left] (Sub1);
+    \path[TaskEdge] (Task1) edge (Sub2);
+    \path[TaskEdge] (Task1) edge (Sub3);
+\end{tikzpicture}%

@@ -2386,7 +2386,7 @@ where \(f\) maps a node to its rank and operator \(<\) defines strict total orde
 this number unique.
 
 The simpliest function \(f\) maps each node to its Internet address position in
-network IP address range. Without conversion to a tree (when only \emph{one}
+network IP address range. Without conversion to a tree (when only /one/
 leader is allowed in the network) a node with the lowest position in this range
 becomes the principal. If IP-address of a node occupies the first position in
 the range, then there is no principal for it, and it continues to be at the top
@@ -2712,6 +2712,58 @@ checkpoint mechanism. The advantage of this approach is that it
 This simple approach allows tolerating at most one failure of /any/ cluster node
 per computational step or arbitrary number of subordinate nodes at any time
 during programme execution.
+
+An example of fail over algorithm follows.
+1. Initial state. Initially, computer cluster does not need to be configured
+   except setting up local network. The algorithm assumes full connectivity of
+   cluster nodes, and works best with tree topologies in which several network
+   switches connect all cluster nodes.
+2. Node hierarchy. When the cluster is bootstrapped, each node starts a
+   /daemon/ process, whose responsibility is to establish hierarchy of such
+   processes superimposed on the topology of cluster nodes. Hierarchical links
+   are solely defined by the position of node's IP address in the local network
+   IP address range eliminating the need for complex distributed consensus
+   algorithm. A node may act as a subordinate or a master simultaneously thus
+   multiple hierarchy layers may be created. The hierarchy is changed only when
+   a new node joins or leaves the cluster, and is reused by every application
+   running on top of it. In an event of node failure its role is reassigned to
+   another node, and tasks that were executing on this node are restarted on
+   healthy ones.
+3. Launch master kernel. HPC application is decomposed into computational
+   kernels with hierarchical dependence. The first, or /master/ kernel, is
+   started on the leaf node. Master kernel may have only one subordinate at a
+   time, and /backup/ copy of the master kernel is sent along with the
+   subordinate kernel \(T_1\) to the root node. \(T_1\) represents one
+   sequential step of a programme (a superstep in Bulk Synchronous Parallel
+   model). There can be any number of sequential steps in a programme, and when
+   node \(B\) fails, the current step is restarted from the beginning.
+4. Launch subordinate kernels. Kernels \(S_1\), \(S_2\), \(S_3\) are launched on
+   the leaf nodes. When node \(B\), \(C\) or \(D\) fails, corresponding master
+   kernel restarts failed subordinates (\(T_1\) restarts \(S_1\), master kernel
+   restarts \(T_1\) etc.). When node \(A\) fails, master kernel is recovered
+   from backup.
+
+#+name: fig:fail-over-example
+#+header: :headers '("\\input{preamble}")
+#+begin_src latex :file build/fail-over-example.pdf :exports results :results raw
+\input{tex/preamble}
+\newcommand*{\spbuInsertFigure}[1]{%
+%\flushright%
+\vspace{2\baselineskip}%
+\begin{minipage}{0.5\textwidth}%
+    \Large%
+    \input{#1}%
+\end{minipage}%
+}%
+\noindent%
+\spbuInsertFigure{tex/cluster-0}~\spbuInsertFigure{tex/frame-0}
+\spbuInsertFigure{tex/frame-3}~\spbuInsertFigure{tex/frame-4}
+\spbuInsertFigure{tex/legend}
+#+end_src
+
+#+caption: An example of fail over algorithm in action.
+#+RESULTS: fig:fail-over-example
+[[file:build/fail-over-example.pdf]]
 
 **** Evaluation.
 Factory framework is evaluated on physical cluster (Table [[tab:cluster]]) on

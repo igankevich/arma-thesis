@@ -2821,6 +2821,31 @@ cite:armstrong2003thesis. Для того что реализовать этот
 кластера за один шаг вычислений или произвольного количества подчинненых узлов в
 любой момент работы программы.
 
+TODO translate
+
+#+name: fig:fail-over-example
+#+header: :headers '("\\input{preamble}\\setdefaultlanguage{russian}")
+#+begin_src latex :file build/fail-over-example-ru.pdf :exports results :results raw
+\input{tex/preamble}
+\newcommand*{\spbuInsertFigure}[1]{%
+%\flushright%
+\vspace{2\baselineskip}%
+\begin{minipage}{0.5\textwidth}%
+    \Large%
+    \input{#1}%
+\end{minipage}%
+}%
+\noindent%
+\spbuInsertFigure{tex/cluster-0}~\spbuInsertFigure{tex/frame-0}
+\spbuInsertFigure{tex/frame-3}~\spbuInsertFigure{tex/frame-4}
+\spbuInsertFigure{tex/legend-ru}
+#+end_src
+
+#+caption: Пример работы алгоритма восстановления после сбоев.
+#+RESULTS: fig:fail-over-example
+[[file:build/fail-over-example-ru.pdf]]
+
+
 **** Результаты тестирования.
 Методы отказоустойчивости были протестированы на физическом кластере
 (см. [[tab:cluster]]) на примере программы, генерирующей взволнованную

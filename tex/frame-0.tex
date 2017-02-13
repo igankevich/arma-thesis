@@ -1,0 +1,15 @@
+\input{tex/cluster-0}
+\begin{tikzpicture}[remember picture,overlay]
+
+    \node[Daemon] (Ax) at (A1) {\phantom{A}};
+    \node[Daemon] (Bx) at (B1) {\phantom{B}};
+    \node[Daemon] (Cx) at (C1) {\phantom{C}};
+    \node[Daemon] (Dx) at (D1) {\phantom{D}};
+    
+    \path[DaemonLink] (Ax) edge (Bx);
+    %\path[thick] (A1) edge (C1);
+    %\path[thick] (A1) edge (D1);
+    \path[DaemonLink] (Bx) edge (Cx);
+    \path[DaemonLink] (Bx) edge (Dx);
+    %\path[thick] (C1) edge (D1);
+\end{tikzpicture}
