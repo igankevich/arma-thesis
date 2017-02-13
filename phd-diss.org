@@ -1423,7 +1423,7 @@ elevation by skew-normal distribution:
     f(z; \alpha) & = \frac{e^{-\frac{z^2}{2}}}{\sqrt{2 \pi }}
    \mathrm{erfc}\left[-\frac{\alpha z}{\sqrt{2}}\right],
 \end{align}
-where $T$ --- Owen $T$-function cite:owen1956tables. Using this formula it is
+where $T$ --- Owen \(T\)-function cite:owen1956tables. Using this formula it is
 impossible to specify skewness and kurtosis separately --- both values are
 adjusted via $\alpha$ parameter. The only advantage of the formula is its
 relative computational simplicity: this function is available in some programmes
@@ -2268,6 +2268,9 @@ devices other than disks may be used as well.
 
 ** MPP implementation
 *** Cluster node discovery algorithm
+:PROPERTIES:
+:CUSTOM_ID: sec:node-discovery
+:END:
 **** Introduction.
 Many distributed systems are built on the principle of /subordination/: there is
 principal node in each cluster which manages job queue, schedules their
@@ -2619,55 +2622,54 @@ determine if a node failed, it assumes a failure when the network connection to
 a node is prematurely closed.
 
 **** Hierarchy of control flow objects
-Each programme that runs on top of the tree hierarchy is composed of
-computational kernels---objects that contain data and code to process it. To
-exploit parallelism a kernel may create arbitrary number of subordinate kernels
-which are automatically spread first across available processor cores, second
-across subordinate nodes in the tree hierarchy. The programme is itself a kernel
-(without a parent as it is executed by a user), which either solves the problem
-sequentially on its own or creates subordinate kernels to solve it in parallel.
+For load balancing purposes cluster nodes are combined into tree hierarchy (see
+section [[#sec:node-discovery]]), and the load is distributed between direct
+neighbours: when one runs the kernel on the subordinate node, the principal node
+also receive some of its subordinate kernels. This makes the system symmetrical
+and easy to maintain: each node have the same set of software that allows
+replacing one node with another in case of failure of the former. Similar
+architectural solution used in key-value stores
+cite:anderson2010couchdb,lakshman2010cassandra to provide fault tolerance, but
+author does not know any task schedulers that use this approach.
 
-Unlike main function in programmes based on message passing library, the first
-computational kernel is initially run only on one node, and remote nodes are
-used only when the local queue is overflown by kernels. This design choice
-allows to have arbitrary number of nodes throughout execution of a programme,
-and take more nodes for highly parallel parts of the code. Somewhat similar
-choice was made in the design of MapReduce framework
+Unlike ~main~ function in programmes based on message passing library, the first
+(the main) kernel is initially run only on one node, and remote nodes are used
+on-demand. This design choice allows having arbitrary number of nodes throughout
+execution of a programme, and use more nodes for highly parallel parts of the
+code. Similar choice is made in the design of big data frameworks
 cite:dean2008mapreduce,vavilapalli2013yarn --- a user submitting a job does not
-specify the number of hosts to run its job on, and effective hosts are the hosts
+specify the number of hosts to run its job on, and actual hosts are the hosts
 where input files are located.
 
 From mathematical point of view kernel $K$ can be described as a vector-valued
-functional which recursively maps a kernel to $n$-component vector of kernels:
+functional which recursively maps a kernel to \(n\)-component vector of kernels:
 \begin{equation*}
     K(f): \mathbb{K} \rightarrow \mathbb{K}^n
     \qquad
     \mathbb{K}^n = \left\{ f: \mathbb{K} \rightarrow \mathbb{K}^n \right\}.
 \end{equation*}
-Dummy kernel $\mathbb{O}: \mathbb{K} \rightarrow \mathbb{K}^0$, which stops
-recursion, is used to call the first kernel and finish execution of the
-programme. An argument to each kernel is interpreted using the following rules.
-\begin{enumerate}
-    \item If a kernel is a new kernel, then its argument is its parent kernel.
-    \item If a kernel is a parent of the kernel that produced it or some other
-      existing kernel, then the argument is the kernel that produced it.
-\end{enumerate}
+Special kernel $\mathbb{O}: \mathbb{K} \rightarrow \mathbb{K}^0$ is used to stop
+the recursion and is passed as an argument to the main kernel. An argument to a
+kernel is interpreted as follows.
+- If a kernel is a newly created kernel, then its argument is its parent kernel.
+- In other cases the argument is an arbitrary kernel (often a child of the
+  current kernel).
 
-Engine that executes kernels is implemented as a simple loop. It starts with
-calling the first kernel with a dummy kernel as an argument, then calls each
-kernel that was produced by this call and so forth. The loop finishes when a
-dummy kernel is returned as a result of the call.
+Kernels are processed in a loop which starts with executing the main kernel,
+then inside the main kernel other kernels are created and executed
+asynchronously. The loop continues until some kernel returns \(\mathbb{O}\).
+Since kernel may return multiple kernels they are executed in parallel, which
+quickly fills kernel pool. Since kernels from the pool may be executed in
+unspecified order, several concurrent threads retrieve kernels from the pool and
+may send the remaining kernels to neighbouring cluster nodes if the pool
+overflows.
 
-Since kernel call may return multiple kernels they are executed in parallel.
-Parallel execution quickly produces a pool of kernels which permit execution in
-an unspecified order. Several threads concurrently retrieve kernels from the
-pool and may "spill" the remaining kernels to neighbouring cluster nodes.
-
-Kernels are implemented as closures --- function objects containing all their
-arguments, a reference to parent kernel and user-supplied data. The data is
-either processed upon kernel call, or subordinate kernels are created to process
-it in parallel. When the processing is complete a parent kernel closure with its
-subordinate kernel as an argument is called to collect data from it.
+Kernels are implemented as closures (functors in C++) --- function objects
+containing all their arguments, a reference to parent kernel and application
+domain data. The data is either processed upon kernel call, or subordinate
+kernels are created to process it in parallel. When the processing is complete a
+parent kernel closure with its subordinate kernel as an argument is called to
+collect the resulting data from it.
 
 **** Fault tolerance.
 **** Handling single node failures.
