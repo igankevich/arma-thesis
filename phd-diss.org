@@ -298,8 +298,8 @@ can be summarised as the following.
    guaranteed.
 
 These difficulties became a starting point in search for a new model which is
-not based on linear wave theory. Autoregressive moving average (ARMA) process
-studies were found to have all the required mathematical apparatus.
+not based on linear wave theory. ARMA process studies were found to have all the
+required mathematical apparatus.
 1. ARMA process takes auto-covariate function (ACF) as an input parameter, and
    this function can be directly obtained from wave energy or
    frequency-directional spectrum (which is the input for Longuet---Higgins
