@@ -2825,12 +2825,12 @@ both cases the state of the main kernel is not lost and no time is spent to
 restore it, which explains similar performance.
 
 Graph\nbsp{}4 in fig.\nbsp{}[[fig:benchmark]] shows that performance in case of a
-backup node failure is much lower. It happens because master node stores only
-the current step of the computation plus some additional fixed amount of data,
-whereas a backup node not only stores the copy of this information but executes
-this step in parallel with other subordinate nodes. So, when a backup node
-fails, the master node executes the whole step once again on arbitrarily chosen
-healthy node.
+backup node failure is much lower than in other cases. It happens because
+principal node stores only the state of the current step of the computation plus
+some additional fixed amount of data, whereas a backup node not only stores the
+copy of this data, but executes the step in parallel with other subordinate
+nodes. So, when a backup node fails, the principal node executes the whole step
+once again on arbitrarily chosen survived node.
 
 #+name: tab:benchmark
 #+caption: Benchmark parameters for experiments with fail over algorithm.
