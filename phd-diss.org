@@ -1344,6 +1344,9 @@ steps.
   trigonometric identities to shift the phase.
 
 ** Additional formulae, methods and algorithms for ARMA model
+:PROPERTIES:
+:CUSTOM_ID: sec:arma-algorithms
+:END:
 *** Wave elevation distribution approximation
 One of the parameters of ocean wavy surface generator is probability density
 function (PDF) of the surface elevation. This distribution is given by either
@@ -2765,19 +2768,16 @@ An example of fail over algorithm follows.
 #+RESULTS: fig:fail-over-example
 [[file:build/fail-over-example.pdf]]
 
-**** Evaluation.
-Factory framework is evaluated on physical cluster (Table [[tab:cluster]]) on
-the example of hydrodynamics HPC application which was developed
-in cite:autoreg-stab,autoreg2011csit,autoreg1,autoreg2. This programme
-generates wavy ocean surface using ARMA model, its output is a set of files
-representing different parts of the realisation. From a computer scientist point
-of view the application consists of a series of filters, each applying to the
-result of the previous one. Some of the filters are parallel, so the programme
-is written as a sequence of big steps and some steps are made internally
-parallel to get better performance. In the programme only the most
-compute-intensive step (the surface generation) is executed in parallel across
-all cluster nodes, and other steps are executed in parallel across all cores of
-the master node.
+**** Evaluation results.
+Factory framework is evaluated on physical cluster (Table [[tab:cluster]]) on the
+example of HPC application, that generates ocean wavy surface, which is
+described in detail in section [[#sec:arma-algorithms]]. The application consists of
+a series of filters, each of which is applied to the result of the previous one.
+Some of the filters are computed in parallel, so the programme is written as a
+sequence of steps, some if which are made internally parallel to get better
+performance. In the programme only the most compute-intensive step (the surface
+generation) is executed in parallel across all cluster nodes, and other steps
+are executed in parallel across all cores of the master node.
 
 #+name: tab:cluster
 #+caption: Test platform configuration.
