@@ -2810,27 +2810,30 @@ time after the programme start which is equivalent approximately to \(1/3\) of
 the total run time without failures on a single node. The application
 immediately recognised node as offline, because the corresponding connection was
 closed; in real-world scenario, however, the failure is detected after a
-configurable time-out. All relevant parameters are summarised in Table
+configurable time-out. All relevant parameters are summarised in table
 [[tab:benchmark]]. The results of these runs were compared to the run without node
 failures (fig.\nbsp{}[[fig:benchmark]] and\nbsp{}[[fig:slowdown]]).
 
-There is considerable difference in net performance for different types of
-failures. Graphs 2 and 3 in Figure [[fig:benchmark]] show that performance in
-case of master or slave node failure is the same. In case of master node failure
-a backup node stores a copy of the first kernel and uses this copy when it fails
-to connect to the master node. In case of slave node failure, the master node
-redistributes the load across remaining slave nodes. In both cases execution
-state is not lost and no time is spent to restore it, that is why performance is
-the same. Graph 4 in Figure [[fig:benchmark]] shows that performance in case
-of a backup node failure is much lower. It happens because master node stores
-only the current step of the computation plus some additional fixed amount of
-data, whereas a backup node not only stores the copy of this information but
-executes this step in parallel with other subordinate nodes. So, when a backup
-node fails, the master node executes the whole step once again on arbitrarily
-chosen healthy node.
+There is considerable difference in overall application performance for
+different types of failures. Graphs\nbsp{}2 and\nbsp{}3 in
+fig.\nbsp{}[[fig:benchmark]] show that performance in case of principal and
+subordinate node failure is the same. In case of principal node failure a backup
+node stores a copy of the main kernel and uses this copy when it detects failure
+of the principal node. In case of subordinate node failure, the principal node
+redistributes the non-returning kernels between remaining subordinate nodes. In
+both cases the state of the main kernel is not lost and no time is spent to
+restore it, which explains similar performance.
+
+Graph\nbsp{}4 in fig.\nbsp{}[[fig:benchmark]] shows that performance in case of a
+backup node failure is much lower. It happens because master node stores only
+the current step of the computation plus some additional fixed amount of data,
+whereas a backup node not only stores the copy of this information but executes
+this step in parallel with other subordinate nodes. So, when a backup node
+fails, the master node executes the whole step once again on arbitrarily chosen
+healthy node.
 
 #+name: tab:benchmark
-#+caption: Benchmark parameters.
+#+caption: Benchmark parameters for experiments with fail over algorithm.
 #+attr_latex: :booktabs t
 | Experiment no. | Time to offline, s |
 |              1 |                    |
