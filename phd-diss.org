@@ -2841,21 +2841,21 @@ once again on arbitrarily chosen survived node.
 |              3 |                 10 |
 |              4 |                 10 |
 
-Finally, to measure how much time is lost due to a failure we divide the total
-execution time with a failure by the total execution time without the failure
-but with the number of nodes minus one. The results for this calculation are
-obtained from the same benchmark and are presented in Figure [[fig:slowdown]]. The
-difference in performance in case of master and slave node failures lies within
-5% margin, and in case of backup node failure within 50% margin for the number
-of node less than 6[fn::Measuring this margin for higher number of nodes does
-not make sense since time before failure is greater than total execution time
-with these numbers of nodes, and programme's execution finishes before a failure
+To measure how much time is lost due to a node failure the total execution time
+with a failure was divided by the total execution time without the failure but
+with the number of nodes minus one. This relation is obtained from the same
+benchmark and presented in fig.\nbsp{}[[fig:slowdown]]. The difference in
+performance in case of principal and subordinate node failures lies within 5%
+margin, and in case of backup node failure within 50% margin for the number of
+node less than 6[fn::Measuring this margin for higher number of nodes does not
+make sense since time before failure is greater than total execution time with
+these numbers of nodes, and programme's execution finishes before a failure
 occurs.]]. Increase in execution time of 50% is more than \(1/3\) of execution
-time after which a failure occurs, but backup node failure need some time to be
-discovered: they are detected only when subordinate kernel carrying the copy of
-the first kernel finishes its execution and tries to reach its parent. Instant
+time after which a failure occurs, but backup node failure needs some time to be
+discovered: it is detected only when subordinate kernel carrying the copy of the
+main kernel finishes its execution and tries to reach its parent. Instant
 detection requires abrupt stopping of the subordinate kernel which may be
-undesirable for programmes with complicated logic.
+inapplicable for programmes with complicated logic.
 
 #+name: fig:benchmark
 #+begin_src R
@@ -2865,10 +2865,10 @@ undesirable for programmes with complicated logic.
 #+caption: Performance of hydrodynamics HPC application in the presence of node failures.
 #+RESULTS: fig:benchmark
 
-To summarise, the benchmark showed that /no matter a master or a slave node
-fails, the resulting performance roughly equals to the one without failures with
-the number of nodes minus one/, however, when a backup node fails performance
-penalty is much higher.
+The results of the benchmark allows concluding that /no matter a principal or a
+subordinate node fails, the overall performance of a parallel programme roughly
+equals to the one without failures with the number of nodes minus one/, however,
+when a backup node fails performance penalty is much higher.
 
 #+name: fig:slowdown
 #+begin_src R
