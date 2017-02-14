@@ -1,6 +1,6 @@
 #+TITLE: High-performance ocean wave simulation model for studying marine object behaviour
 #+AUTHOR: Ivan Gankevich
-#+DATE: St. Petersburg, 2016
+#+DATE: St. Petersburg, 2017
 #+LANGUAGE: en
 #+LATEX_CLASS: gost
 #+LATEX_CLASS_OPTIONS: [hidelinks,fontsize=14pt,paper=a4,pagesize,DIV=calc]

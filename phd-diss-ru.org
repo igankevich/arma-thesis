@@ -1,6 +1,6 @@
 #+TITLE: Высокопроизводительная модель морского волнения для программ динамики морских объектов
 #+AUTHOR: Иван Ганкевич
-#+DATE: Санкт-Петербург, 2016
+#+DATE: Санкт-Петербург, 2017
 #+LANGUAGE: ru
 #+LATEX_CLASS: gost
 #+LATEX_CLASS_OPTIONS: [hidelinks,fontsize=14pt,paper=a4,pagesize,DIV=calc]
