@@ -2788,13 +2788,13 @@ are executed in parallel across all cores of the master node.
 | No. of nodes              | 12                        |
 | No. of CPU cores per node | 8                         |
 
-The application was rewritten for the new version of the framework which
-required only slight modifications to handle failure of a node with the first
-kernel: The kernel was flagged so that the framework makes a replica and sends
-it to some subordinate node. There were no additional code changes other than
-modifying some parts to match the new API. So, the tree hierarchy of kernels is
-mostly non-intrusive model for providing fault tolerance which demands explicit
-marking of replicated kernels.
+The application was rewritten for the fault-tolerant version of the framework
+which required only slight modifications to handle failure of a node with the
+main kernel. The kernel was marked so that the framework makes a replica and
+sends it to some subordinate node along with its subordinate kernel. Other code
+changes involved modifying some parts to match the new API. So, providing fault
+tolerance by means of kernel hierarchy is mostly transparent to the programmer
+which only demands explicit marking of replicated kernels.
 
 In a series of experiments we benchmarked performance of the new version of the
 application in the presence of different types of failures (numbers correspond
