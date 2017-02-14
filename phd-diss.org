@@ -2796,22 +2796,23 @@ changes involved modifying some parts to match the new API. So, providing fault
 tolerance by means of kernel hierarchy is mostly transparent to the programmer
 which only demands explicit marking of replicated kernels.
 
-In a series of experiments we benchmarked performance of the new version of the
-application in the presence of different types of failures (numbers correspond
-to the graphs in Figure [[fig:benchmark]]):
-- no failures,
-- failure of a slave node (a node where a part of wavy surface is generated),
-- failure of a master node (a node where the first kernel is run),
-- failure of a backup node (a node where a copy of the first kernel is stored).
-A tree hierarchy with fan-out value of 64 was chosen to make all cluster nodes
-connect directly to the first one. In each run the first kernel was launched on
-a different node to make mapping of kernel hierarchy to the tree hierarchy
-optimal. A victim node was made offline after a fixed amount of time after the
-programme start which is equivalent approximately to \(1/3\) of the total run time
-without failures on a single node. All relevant parameters are summarised in
-Table [[tab:benchmark]] (here ``root'' and ``leaf'' refer to a node in the
-tree hierarchy). The results of these runs were compared to the run without node
-failures (Figures [[fig:benchmark]]-[[fig:slowdown]]).
+In a series of experiments performance of the new version of the application in
+the presence of different types of failures was benchmarked (numbers correspond
+to the graphs in fig.\nbsp{}[[fig:benchmark]]):
+1. no failures,
+2. failure of a slave node (a node where a part of wavy surface is generated),
+3. failure of a master node (a node where the first kernel is run),
+4. failure of a backup node (a node where a copy of the first kernel is stored).
+A tree hierarchy with fan-out value of 64 was chosen to make all subordinate
+cluster nodes connect directly to the one having the first IP-address in the
+network IP address range. A victim node was made offline after a fixed amount of
+time after the programme start which is equivalent approximately to \(1/3\) of
+the total run time without failures on a single node. The application
+immediately recognised node as offline, because the corresponding connection was
+closed; in real-world scenario, however, the failure is detected after a
+configurable time-out. All relevant parameters are summarised in Table
+[[tab:benchmark]]. The results of these runs were compared to the run without node
+failures (fig.\nbsp{}[[fig:benchmark]] and\nbsp{}[[fig:slowdown]]).
 
 There is considerable difference in net performance for different types of
 failures. Graphs 2 and 3 in Figure [[fig:benchmark]] show that performance in
@@ -2831,11 +2832,11 @@ chosen healthy node.
 #+name: tab:benchmark
 #+caption: Benchmark parameters.
 #+attr_latex: :booktabs t
-| Experiment no. | Master node | Victim node | Time to offline, s |
-|              1 | root        |             |                    |
-|              2 | root        | leaf        |                 10 |
-|              3 | leaf        | leaf        |                 10 |
-|              4 | leaf        | root        |                 10 |
+| Experiment no. | Time to offline, s |
+|              1 |                    |
+|              2 |                 10 |
+|              3 |                 10 |
+|              4 |                 10 |
 
 Finally, to measure how much time is lost due to a failure we divide the total
 execution time with a failure by the total execution time without the failure
