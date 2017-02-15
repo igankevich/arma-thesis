@@ -260,11 +260,10 @@ Software programmes, which simulates vessel behaviour in sea waves, are widely
 used to model ship motion, estimate impact of external forces on floating
 platform or other marine object, and estimate capsize probability under given
 weather conditions; however, to model ocean waves most of the simulation codes
-use linear wave theory
-cite:shin2003nonlinear,van2007forensic,kat2001prediction,van2002development, in
+use linear wave theory\nbsp{}cite:shin2003nonlinear,van2007forensic,kat2001prediction,van2002development, in
 the framework of which it is difficult to reproduce certain peculiarities of
 wind wave climate. Among them are transition between normal and storm weather,
-and sea composed of multiple wave systems --- both wind waves and swell ---
+and sea composed of multiple wave systems\nbsp{}--- both wind waves and swell\nbsp{}---
 heading from multiple directions. Another shortcoming of linear wave theory is
 an assumption, that wave amplitude is small compared to wave length. This makes
 calculations imprecise when modelling ship motion in irregular waves, for which
@@ -308,7 +307,7 @@ required mathematical apparatus.
    and can be generated as steep as it is possible with real ocean wave ACF.
 3. Period of the realisation equals the period of PRNG, so generation time grows
    linearly with the realisation size.
-4. White noise --- the only probabilistic term in ARMA process --- has
+4. White noise\nbsp{}--- the only probabilistic term in ARMA process\nbsp{}--- has
    Gaussian distribution; so, convergence rate is not probabilistic.
 
 **** Goals and objectives.
@@ -368,8 +367,7 @@ software.
 
 **** Methodology and research methods.
 Software implementation of ARMA model and pressure field formula was created
-incrementally: a prototype written in high-level engineering language
-cite:mathematica10,octave2015 was rewritten in lower level language (C++).
+incrementally: a prototype written in high-level engineering language\nbsp{}cite:mathematica10,octave2015 was rewritten in lower level language (C++).
 Implementation of the same algorithm and formulae in languages of varying
 levels (which involves usage of different abstractions and language primitives)
 allows correcting errors, which would left unnoticed otherwise. Wavy surface,
@@ -393,7 +391,7 @@ Mathematica language, where resulting formulae are verified by built-in
 graphical means.
 
 ARMA model and pressure field formula were incorporated into Large Amplitude
-Motion Programme (LAMP) --- an ship motion simulation software programme ---
+Motion Programme (LAMP)\nbsp{}--- an ship motion simulation software programme\nbsp{}---
 where they were compared to previously used LH model. Preliminary numerical
 experiments showed higher computational efficiency of ARMA model.
 
@@ -412,16 +410,16 @@ wave theory.
 **** Pressure field formula.
 The problem of finding pressure field under wavy sea surface represents inverse
 problem of hydrodynamics for incompressible inviscid fluid. System of equations
-for it in general case is written as cite:kochin1966theoretical
+for it in general case is written as\nbsp{}cite:kochin1966theoretical
 \begin{align}
     & \nabla^2\phi = 0,\nonumber\\
     & \phi_t+\frac{1}{2} |\vec{\upsilon}|^2 + g\zeta=-\frac{p}{\rho}, & \text{на }z=\zeta(x,y,t),\label{eq:problem}\\
     & D\zeta = \nabla \phi \cdot \vec{n}, & \text{на }z=\zeta(x,y,t),\nonumber
 \end{align}
-where \(\phi\) --- velocity potential, \(\zeta\) --- elevation (\(z\) coordinate)
-of wavy surface, \(p\) --- wave pressure, \(\rho\) --- fluid density,
-\(\vec{\upsilon}=(\phi_x,\phi_y,\phi_z)\) --- velocity vector, \(g\) ---
-acceleration of gravity, and \(D\) --- substantial (Lagrange) derivative. The
+where \(\phi\)\nbsp{}--- velocity potential, \(\zeta\)\nbsp{}--- elevation (\(z\) coordinate)
+of wavy surface, \(p\)\nbsp{}--- wave pressure, \(\rho\)\nbsp{}--- fluid density,
+\(\vec{\upsilon}=(\phi_x,\phi_y,\phi_z)\)\nbsp{}--- velocity vector, \(g\)\nbsp{}---
+acceleration of gravity, and \(D\)\nbsp{}--- substantial (Lagrange) derivative. The
 first equation is called continuity (Laplace) equation, the second one is the
 conservation of momentum law (the so called dynamic boundary condition); the
 third one is kinematic boundary condition for free wavy surface, which states
@@ -434,7 +432,7 @@ for \(\phi\). In this formulation dynamic boundary condition becomes explicit
 formula to determine pressure field using velocity potential derivatives
 obtained from the remaining equations. So, from mathematical point of view
 inverse problem of hydrodynamics reduces to Laplace equation with mixed boundary
-condition --- Robin problem.
+condition\nbsp{}--- Robin problem.
 
 * Related work
 ** Ocean wave models analysis
@@ -446,9 +444,8 @@ generation, instead of wavy surface generation.
 
 *** Longuet---Higgins model
 The simplest model, formula of which is derived in the framework of linear wave
-theory, is Longuet---Higgins (LH) model cite:longuet1957statistical. In-depth
-comparative analysis of this model and ARMA model is done in
-cite:degtyarev2011modelling,boukhanovsky1997thesis.
+theory, is Longuet---Higgins (LH) model\nbsp{}cite:longuet1957statistical. In-depth
+comparative analysis of this model and ARMA model is done in\nbsp{}cite:degtyarev2011modelling,boukhanovsky1997thesis.
 
 LH model represents ocean wavy surface as a superposition of
 sine waves with random amplitudes \(c_n\) and phases \(\epsilon_n\), continuously
@@ -466,7 +463,7 @@ Gaussian process defined by
 \begin{equation*}
     2E_\zeta(u,v)\, du\,  dv = \sum\limits_n c_n^2,
 \end{equation*}
-where \(E_\zeta(u,v)\) --- two-dimensional wave energy spectral density.
+where \(E_\zeta(u,v)\)\nbsp{}--- two-dimensional wave energy spectral density.
 Coefficients \(c_n\) are derived from wave energy spectrum \(S(\omega)\) via
 \begin{equation*}
     c_n = \sqrt{ \textstyle\int\limits_{\omega_n}^{\omega_{n+1}} S(\omega) d\omega}.
@@ -481,8 +478,8 @@ appear in practice.
    amplitudes and phases has normal distribution, no matter what spectrum is
    used as the model input. Using lower number of coefficients may solve the
    problem, but also make realisation period smaller. So, using LH model to
-   simulate waves with non-Gaussian distribution of elevation --- a distribution
-   which real ocean waves have cite:huang1980experimental,рожков1996теория ---
+   simulate waves with non-Gaussian distribution of elevation\nbsp{}--- a distribution
+   which real ocean waves have\nbsp{}cite:huang1980experimental,рожков1996теория\nbsp{}---
    is impractical.
 2. From computational point of view, the deficiency of the model is non-linear
    increase of wavy surface generation time with the increase of realisation
@@ -496,21 +493,20 @@ appear in practice.
      low due to randomness of phases \(\epsilon_n\).
    - It is difficult to generalise LH model for non-Gaussian processes as it
      involves incorporating non-linear terms in ([[eq:longuet-higgins]]) for which
-     there is no known formula to determine coefficients
-     cite:рожков1990вероятностные.
+     there is no known formula to determine coefficients\nbsp{}cite:рожков1990вероятностные.
 
 To summarise, LH model is linear, computationally inefficient for long-time
 simulations, and difficult to use as a base for more advanced models.
 
 *** ARMA model
-In cite:spanos1982arma ARMA model is used to generate time series spectrum of
+In\nbsp{}cite:spanos1982arma ARMA model is used to generate time series spectrum of
 which is compatible with Pierson---Moskowitz (PM) approximation of ocean wave
 spectrum. The authors carry out experiments for one-dimensional AR, MA and ARMA
 models. They mention excellent agreement between target and initial spectra and
 higher performance of ARMA model compared to models based on summing large
 number of harmonic components with random phases. The also mention that in order
 to reach agreement between target and initial spectrum MA model require lesser
-number of coefficients than AR model. In cite:spanos1996efficient the authors
+number of coefficients than AR model. In\nbsp{}cite:spanos1996efficient the authors
 generalise ARMA model coefficients determination formulae for multi-variate
 (vector) case.
 
@@ -533,7 +529,7 @@ opportunity to visualise output of the programme that allowed to ensure that
 generated surface is compatible with real ocean surface, and is not abstract
 multi-dimensional stochastic process that is real only statistically.
 
-In cite:fusco2010short AR model is used to predict swell waves to control
+In\nbsp{}cite:fusco2010short AR model is used to predict swell waves to control
 wave-energy converters (WEC) in real-time. In order to make WEC more efficient
 its internal oscillator frequency should match the one of ocean waves. The
 authors treat wave elevation as time series and compare performance of AR model,
@@ -544,7 +540,7 @@ process to ocean wave modelling.
 
 ** Pressure field determination formulae
 *** Small amplitude waves theory
-In cite:stab2012,детярев1998моделирование,degtyarev1997analysis the authors
+In\nbsp{}cite:stab2012,детярев1998моделирование,degtyarev1997analysis the authors
 propose a solution for inverse problem of hydrodynamics of potential flow in the
 framework of small-amplitude wave theory (under assumption that wave length is
 much larger than height: \(\lambda \gg h\)). In that case inverse problem is
@@ -625,9 +621,8 @@ distributed random impulses. The governing equation for 3-D ARMA process is
     ,
     \label{eq:arma-process}
 \end{equation}
-where \(\zeta\) --- wave elevation, \(\Phi\) --- AR process coefficients, \(\Theta\)
---- MA process coefficients, \(\epsilon\) --- white noise with Gaussian
-distribution, \(\vec N\) --- AR process order, \(\vec M\) --- MA process order, and
+where \(\zeta\)\nbsp{}--- wave elevation, \(\Phi\)\nbsp{}--- AR process coefficients, \(\Theta\)\nbsp{}--- MA process coefficients, \(\epsilon\)\nbsp{}--- white noise with Gaussian
+distribution, \(\vec N\)\nbsp{}--- AR process order, \(\vec M\)\nbsp{}--- MA process order, and
 \(\Phi_{\vec{0}}\equiv{0}\), \(\Theta_{\vec{0}}\equiv{0}\). Here arrows denote
 multi-component indices with a component for each dimension. In general, any
 scalar quantity can be a component (temperature, salinity, concentration of some
@@ -667,7 +662,7 @@ Generic form of YW equations is
         0, \quad \text{if } \vec{k}\neq0,
     \end{cases}
 \end{equation}
-where \(\gamma\) --- ACF of process \(\zeta\), \(\Var{\epsilon}\) --- white noise
+where \(\gamma\)\nbsp{}--- ACF of process \(\zeta\), \(\Var{\epsilon}\)\nbsp{}--- white noise
 variance. Matrix form of three-dimensional YW equations, which is used in the
 present work, is
 \begin{equation*}
@@ -778,7 +773,7 @@ Here coefficients \(\Theta\) are calculated from back to front: from
     \Theta_{\vec j}^2
     }.
 \end{equation*}
-Authors of cite:box1976time suggest using Newton---Raphson method to solve this
+Authors of\nbsp{}cite:box1976time suggest using Newton---Raphson method to solve this
 equation with higher precision, however, this method does not work in three
 dimensions. Using slower method does not have dramatic effect on the overall
 programme performance, because the number of coefficients is small and most of
@@ -793,7 +788,7 @@ Generally speaking, ARMA process is obtained by plugging MA generated wavy
 surface as random impulse to AR process, however, in order to get the process
 with desired ACF one should re-compute AR coefficients before plugging. There
 are several approaches to "mix" AR and MA processes.
-- The approach proposed in cite:box1976time which involves dividing ACF into MA
+- The approach proposed in\nbsp{}cite:box1976time which involves dividing ACF into MA
   and AR part along each dimension is not applicable here, because in three
   dimensions such division is not possible: there always be parts of the ACF
   that are not taken into account by AR and MA process.
@@ -817,13 +812,13 @@ use AR process for standing waves and MA process for progressive waves.
 
 The other problem is inability to automatically determine optimal number of
 coefficients for three-dimensional AR and MA processes. For one-dimensional
-processes this can be achieved via iterative methods cite:box1976time, but they
+processes this can be achieved via iterative methods\nbsp{}cite:box1976time, but they
 diverge in three-dimensional case.
 
 The final problem, which is discussed in [[#sec:how-to-mix-ARMA]], is inability to
 "mix" AR and MA process in three dimensions.
 
-In practice some statements made for AR and MA processes in cite:box1976time
+In practice some statements made for AR and MA processes in\nbsp{}cite:box1976time
 should be flipped for three-dimensional case. For example, the authors say that
 ACF of MA process cuts at \(q\) and ACF of AR process decays to nought infinitely,
 but in practice making ACF of 3-dimensional MA process not decay results in it
@@ -844,18 +839,17 @@ future research.
 ** Modelling non-linearity of ocean waves
 ARMA model allows modelling asymmetry of wave elevation distribution, i.e.
 generate ocean waves, distribution of z-coordinate of which has non-nought
-kurtosis and asymmetry. Such distribution is inherent to real ocean waves
-cite:longuet1963nonlinear.
+kurtosis and asymmetry. Such distribution is inherent to real ocean waves\nbsp{}cite:longuet1963nonlinear.
 
 Wave asymmetry is modelled by non-linear inertia-less transform (NIT) of
 stochastic process, however, transforming resulting wavy surface means
 transforming initial ACF. In order to alleviate this, ACF must be preliminary
-transformed as shown in cite:boukhanovsky1997thesis.
+transformed as shown in\nbsp{}cite:boukhanovsky1997thesis.
 
 **** Wavy surface transformation.
 Explicit formula \(z=f(y)\) that transforms wavy surface to desired
 one-dimensional distribution \(F(z)\) is the solution of non-linear transcendental
-equation \(F(z)=\Phi(y)\), where \(\Phi(y)\) --- one-dimensional Gaussian
+equation \(F(z)=\Phi(y)\), where \(\Phi(y)\)\nbsp{}--- one-dimensional Gaussian
 distribution. Since distribution of wave elevation is often given by some
 approximation based on field data, this equation is solved numerically with
 respect to \(z_k\) in each grid point \(y_k|_{k=0}^N\) of generated wavy surface. In
@@ -886,7 +880,7 @@ where
   \int\limits_{0}^\infty
     f(y) H_m(y) \exp\left[ -\frac{y^2}{2} \right],
 \end{equation*}
-\(H_m\) --- Hermite polynomial, and \(f(y)\) --- solution to equation
+\(H_m\)\nbsp{}--- Hermite polynomial, and \(f(y)\)\nbsp{}--- solution to equation
 eqref:eq:distribution-transformation. Plugging polynomial approximation
 \(f(y)\approx\sum\limits_{i}d_{i}y^i\) and analytic formulae for Hermite
 polynomial yields
@@ -908,7 +902,7 @@ fields become equal with desired accuracy \(\epsilon\):
     \frac{C_k^2}{k!} \right| \leq \epsilon.
 \end{equation*}
 
-In cite:boukhanovsky1997thesis the author suggests using polynomial
+In\nbsp{}cite:boukhanovsky1997thesis the author suggests using polynomial
 approximation \(f(y)\) also for wavy surface transformation, however, in practice
 ocean surface realisation often contains points, where z-coordinate is beyond
 the limits of the approximation, which makes solution wrong. In these points it
@@ -941,7 +935,7 @@ comparable to that of FFT. For example, stationary elliptic PDE transforms to
 implicit numerical scheme which is solved by iterative method on each step of
 which a tridiagonal of five-diagonal system of algebraic equations is solved by
 Thomas algorithm. Asymptotic complexity of this approach is
-\(\mathcal{O}({n}{m})\), where \(n\) --- number of wavy surface grid points, \(m\) ---
+\(\mathcal{O}({n}{m})\), where \(n\)\nbsp{}--- number of wavy surface grid points, \(m\)\nbsp{}---
 number of iterations. Despite their wide spread, iterative algorithms are
 inefficient on parallel computer architectures; in particular, their mapping to
 co-processors may involve copying data in and out of the co-processor in each
@@ -998,7 +992,7 @@ transforms, we rewrite eqref:eq:guessed-sol-2d as a convolution:
     \ast
     \InverseFourierY{E(u)}{x},
 \end{equation*}
-where \(\Fun{z}\) --- a function, form of which is defined in section
+where \(\Fun{z}\)\nbsp{}--- a function, form of which is defined in section
 [[#sec:compute-delta]] and which satisfies equation
 \(\FourierY{\Fun{z}}{u}=e^{2\pi{u}{z}}\). Plugging formula \(\phi\) into the boundary
 condition yields
@@ -1052,7 +1046,7 @@ following section.
 
 **** Formula for finite depth fluid.
 On the sea bottom vertical fluid velocity component equals nought: \(\phi_z=0\) on
-\(z=-h\), where \(h\) --- water depth. In this case equation \(v=-{i}{u}\), which came
+\(z=-h\), where \(h\)\nbsp{}--- water depth. In this case equation \(v=-{i}{u}\), which came
 from Laplace equation, can not be neglected, hence the solution is sought in the
 following form:
 \begin{equation}
@@ -1099,14 +1093,14 @@ previous section transformations yields final formula for \(\phi(x,z)\):
 }
     \label{eq:solution-2d-full}
 \end{equation}
-where \(\FunSecond{z}\) --- a function, form of which is defined in section
+where \(\FunSecond{z}\)\nbsp{}--- a function, form of which is defined in section
 [[#sec:compute-delta]] and which satisfies equation
 \(\FourierY{\FunSecond{z}}{u}=\Sinh{2\pi{u}{z}}\).
 
 **** Reducing to the formulae from linear wave theory.
 Check the validity of derived formulae by substituting \(\zeta(x,t)\) with known
 analytic formula for plain waves. Symbolic computation of Fourier transforms in
-this section were performed in Mathematica cite:mathematica10. In the framework
+this section were performed in Mathematica\nbsp{}cite:mathematica10. In the framework
 of linear wave theory assume that waves have small amplitude compared to their
 lengths, which allows us simplifying initial system of equations
 eqref:eq:problem-2d to
@@ -1251,13 +1245,13 @@ For three-dimensional wave profile (2D in space and 1D in time) analytic formula
 is a polynomial of high order and is best obtained via symbolic computation
 programme. Then for practical usage it can be approximated by superposition of
 exponentially decaying cosines (which is how ACF of a stationary ARMA process
-looks like cite:box1976time).
+looks like\nbsp{}cite:box1976time).
 
 **** Empirical method of finding the ACF.
 However, for three-dimensional case there exists simpler empirical method which
 does not require sophisticated software to determine shape of the ACF. It is
 known that ACF represented by exponentially decaying cosines satisfies first
-order Stokes' equations for gravity waves cite:boccotti1983wind. So, if the
+order Stokes' equations for gravity waves\nbsp{}cite:boccotti1983wind. So, if the
 shape of the wave profile is the only concern in the simulation, then one can
 simply multiply it by a decaying exponent to get appropriate ACF. This ACF does
 not reflect other wave profile parameters, such as wave height and period, but
@@ -1353,9 +1347,9 @@ function (PDF) of the surface elevation. This distribution is given by either
 polynomial approximation of /in situ/ data or analytic formula.
 
 **** Gram---Charlier series expansion.
-In cite:huang1980experimental the authors experimentally show, that PDF of sea
+In\nbsp{}cite:huang1980experimental the authors experimentally show, that PDF of sea
 surface elevation is distinguished from normal distribution by non-nought
-kurtosis and skewness. In cite:рожков1996теория the authors show, that this type
+kurtosis and skewness. In\nbsp{}cite:рожков1996теория the authors show, that this type
 of PDF expands in Gram---Charlier series:
 \begin{align}
     \label{eq:skew-normal-1}
@@ -1379,12 +1373,12 @@ of PDF expands in Gram---Charlier series:
         +1
     \right],
 \end{align}
-where \(\phi(z)=\frac{1}{2}\mathrm{erf}(z/\sqrt{2})\), \(\gamma_1\) --- skewness,
-\(\gamma_2\) --- kurtosis, \(f\) --- PDF, \(F\) --- cumulative distribution function
-(CDF). According to cite:рожков1990вероятностные for ocean waves skewness is
+where \(\phi(z)=\frac{1}{2}\mathrm{erf}(z/\sqrt{2})\), \(\gamma_1\)\nbsp{}--- skewness,
+\(\gamma_2\)\nbsp{}--- kurtosis, \(f\)\nbsp{}--- PDF, \(F\)\nbsp{}--- cumulative distribution function
+(CDF). According to\nbsp{}cite:рожков1990вероятностные for ocean waves skewness is
 selected from interval \(0.1\leq\gamma_1\leq{0.52}]\) and kurtosis from interval
 \(0.1\leq\gamma_2\leq{0.7}\). Family of probability density functions for
-different parameters is shown in [[fig:skew-normal-1]].
+different parameters is shown in fig.\nbsp{}[[fig:skew-normal-1]].
 
 #+name: fig:skew-normal-1
 #+begin_src R :results output graphics :exports results :file build/skew-normal-1.pdf
@@ -1426,12 +1420,12 @@ elevation by skew-normal distribution:
     f(z; \alpha) & = \frac{e^{-\frac{z^2}{2}}}{\sqrt{2 \pi }}
    \mathrm{erfc}\left[-\frac{\alpha z}{\sqrt{2}}\right],
 \end{align}
-where \(T\) --- Owen \(T\)-function cite:owen1956tables. Using this formula it is
-impossible to specify skewness and kurtosis separately --- both values are
+where \(T\)\nbsp{}--- Owen \(T\)-function\nbsp{}cite:owen1956tables. Using this formula it is
+impossible to specify skewness and kurtosis separately\nbsp{}--- both values are
 adjusted via \(\alpha\) parameter. The only advantage of the formula is its
 relative computational simplicity: this function is available in some programmes
 and mathematical libraries. Its graph for different values of \(\alpha\) is shown
-in [[fig:skew-normal-2]].
+in fig.\nbsp{}[[fig:skew-normal-2]].
 
 #+name: fig:skew-normal-2
 #+begin_src R :results output graphics :exports results :file build/skew-normal-2.pdf
@@ -1483,14 +1477,13 @@ transform ACF; relative error without interpolation is \(10^{-5}\).
 *** White noise generation
 In order to eliminate periodicity from generated wavy surface, it is imperative
 to use PRNG with sufficiently large period to generate white noise. Parallel
-Mersenne Twister cite:matsumoto1998mersenne with a period of \(2^{19937}-1\) is
+Mersenne Twister\nbsp{}cite:matsumoto1998mersenne with a period of \(2^{19937}-1\) is
 used as a generator in this work. It allows producing aperiodic ocean wavy
 surface realisations in any practical usage scenarios.
 
 There is no guarantee that multiple Mersenne Twisters executed in parallel
 threads with distinct initial states produce uncorrelated pseudo-random number
-sequences, however, algorithm of dynamic creation of Mersenne Twisters
-cite:matsumoto1998dynamic may be used to provide such guarantee. The essence of
+sequences, however, algorithm of dynamic creation of Mersenne Twisters\nbsp{}cite:matsumoto1998dynamic may be used to provide such guarantee. The essence of
 the algorithm is to find matrices of initial generator states, that give
 maximally uncorrelated pseudo-random number sequences when Mersenne Twisters are
 executed in parallel with these initial states. Since finding such initial
@@ -1501,7 +1494,7 @@ saved to a file, which is then read before starting white noise generation.
 *** Wavy surface generation
 In ARMA model value of wavy surface elevation at a particular point depends on
 previous in space and time points, as a result the so called /ramp-up interval/
-(see fig. [[fig:ramp-up-interval]]), in which realisation does not correspond to
+(see fig.\nbsp{}[[fig:ramp-up-interval]]), in which realisation does not correspond to
 specified ACF, forms in the beginning of the realisation. There are several
 solutions to this problem which depend on the simulation context.
 
@@ -1518,8 +1511,7 @@ LH model and generate the rest of the realisation with ARMA model.
 Algorithm of wavy surface generation is data-parallel: realisation is divided
 into equal parts each of which is generated independently, however, in the
 beginning of each realisation there is ramp-up interval. To eliminate it
-/overlap-add/ method
-cite:oppenheim1989discrete,svoboda2011efficient,pavel2013algorithms (a popular
+/overlap-add/ method\nbsp{}cite:oppenheim1989discrete,svoboda2011efficient,pavel2013algorithms (a popular
 method in signal processing) is used. The essence of the method is to add
 another interval, size of which is equal to the ramp-up interval size, to the
 end of each part. Then wavy surface is generated in each point of each part
@@ -1573,7 +1565,7 @@ which terms with \(\zeta\) are omitted.
 :CUSTOM_ID: sec:verification
 :END:
 
-In cite:degtyarev2011modelling,degtyarev2013synoptic,boukhanovsky1997thesis AR
+In\nbsp{}cite:degtyarev2011modelling,degtyarev2013synoptic,boukhanovsky1997thesis AR
 model the following items are verified experimentally:
 - probability distributions of different wave characteristics (wave heights,
   lengths, crests, periods, slopes, three-dimensionality),
@@ -1583,7 +1575,7 @@ In this work both AR and MA model are verified by comparing probability
 distributions of different wave characteristics.
 
 *** Verification of wavy surface integral characteristics
-In cite:рожков1990вероятностные the authors show that several ocean wave
+In\nbsp{}cite:рожков1990вероятностные the authors show that several ocean wave
 characteristics (listed in table [[tab:weibull-shape]]) have Weibull distribution,
 and wavy surface elevation has Gaussian distribution. In order to verify that
 distributions corresponding to generated realisation are correct,
@@ -1680,7 +1672,7 @@ of [[#sec:pressure-2d]], only finite depth formulae are compared.
 The experiment shows that velocity potential fields produced by formula
 eqref:eq:solution-2d-full for finite depth fluid and formula
 eqref:eq:solution-2d-linear from linear wave theory are qualitatively different
-(fig. [[fig:potential-field-nonlinear]]). First, velocity potential contours have
+(fig.\nbsp{}[[fig:potential-field-nonlinear]]). First, velocity potential contours have
 sinusoidal shape, which is different from oval shape described by linear wave
 theory. Second, velocity potential decays more rapidly than in linear wave
 theory as getting closer to the bottom, and the region where the majority of
@@ -1706,8 +1698,7 @@ Integration in formula eqref:eq:solution-2d-full is done over wave numbers range
 extracted from the generated wavy surface. For small-amplitude waves both
 formulae show comparable results (the difference in the velocity is attributed
 to stochastic nature of AR model), whereas for large-amplitude waves stable
-velocity field is produced only by formula eqref:eq:solution-2d-full (fig.
-[[fig:velocity-field-2d]]). So, generic formula eqref:eq:solution-2d-full gives
+velocity field is produced only by formula eqref:eq:solution-2d-full (fig.\nbsp{}[[fig:velocity-field-2d]]). So, generic formula eqref:eq:solution-2d-full gives
 satisfactory results without restriction on wave amplitudes.
 
 #+name: fig:velocity-field-2d
@@ -1735,7 +1726,7 @@ Software implementation of ARMA model works as a computational pipeline, in
 which each joint applies some function to the output coming from the pipe of the
 previous joint. Joints are distributed across computer cluster nodes to enable
 function parallelism, and then data flowing through the joints is distributed
-across processor cores to enable data parallelism. Figure [[fig:pipeline]] shows a
+across processor cores to enable data parallelism. Figure\nbsp{}[[fig:pipeline]] shows a
 diagram of data processing pipeline in which rectangles with rounded corners
 denote joints, regular rectangles denote arrays of problem domain objects
 flowing from one joint to another, and arrows show flow direction. Some joints
@@ -1856,8 +1847,7 @@ digraph {
 [[file:build/pipeline.pdf]]
 
 Object pipeline may be seen as an improvement of BSP (Bulk Synchronous Parallel)
-model cite:valiant1990bridging, which is used in graph processing
-cite:malewicz2010pregel,seo2010hama. Pipeline eliminates global synchronisation
+model\nbsp{}cite:valiant1990bridging, which is used in graph processing\nbsp{}cite:malewicz2010pregel,seo2010hama. Pipeline eliminates global synchronisation
 (where it is possible) after each sequential computation step by doing data
 transfer between joints in parallel to computations, whereas in BSP model global
 synchronisation occurs after each step.
@@ -1907,8 +1897,7 @@ When one has such dependency, it is trivial to determine which task should be
 responsible for re-executing a failed task on one of the survived nodes. To
 re-execute the task on the top of the hierarchy, a backup task is created and
 executed on a different node. There exists a number of systems that are capable
-of executing directed acyclic graphs of tasks in parallel
-cite:acun2014charmpp,islam2012oozie, but graphs are not suitable to infer
+of executing directed acyclic graphs of tasks in parallel\nbsp{}cite:acun2014charmpp,islam2012oozie, but graphs are not suitable to infer
 principal-subordinate relationship between tasks, because a node in the graph
 may have multiple parent nodes.
 
@@ -1919,7 +1908,7 @@ it transparently to a programmer. The implementation is divided into two layers:
 the lower layer consists of routines and classes for single node applications
 (with no network interactions), and the upper layer for applications that run on
 an arbitrary number of nodes. There are two kinds of tightly coupled entities in
-the model --- /control flow objects/ (or /kernels/) and /pipelines/ --- which
+the model\nbsp{}--- /control flow objects/ (or /kernels/) and /pipelines/\nbsp{}--- which
 are used together to compose a programme.
 
 Kernels implement control flow logic in theirs ~act~ and ~react~ methods and
@@ -1943,7 +1932,7 @@ thread pool that processes kernels in accordance with rules outlined in the
 previous paragraph. A separate pipeline is used for each device: There are
 pipelines for parallel processing, schedule-based processing (periodic and
 delayed tasks), and a proxy pipeline for processing of kernels on other cluster
-nodes (see figure [[fig:subord-ppl]]).
+nodes (see fig.\nbsp{}[[fig:subord-ppl]]).
 
 In principle, kernels and pipelines machinery reflect the one of procedures and
 call stacks, with the advantage that kernel methods are called asynchronously
@@ -2143,8 +2132,7 @@ work in parallel to each other, lowering overall system resources downtime
 compared to using all devices from a single thread.
 
 In order to take into account non-homogeneous input data parts or tasks, one may
-predict execution time of each task. Relevant study is done in
-cite:degtyarev2016balance since ARMA model implementation includes mostly
+predict execution time of each task. Relevant study is done in\nbsp{}cite:degtyarev2016balance since ARMA model implementation includes mostly
 homogeneous tasks.
 
 So, load balancing is done in two stages: in the first stage the task wrapped in
@@ -2181,12 +2169,12 @@ efficient one.
 #+attr_latex: :booktabs t :align lp{0.6\linewidth}
 | Library                                                | What it is used for             |
 |--------------------------------------------------------+---------------------------------|
-| DCMT cite:matsumoto1998dynamic                         | parallel PRNG                   |
-| Blitz cite:veldhuizen1997will,veldhuizen2000techniques | multidimensional arrays         |
-| GSL cite:gsl2008scientific                             | PDF, CDF, FFT computation       |
+| DCMT\nbsp{}cite:matsumoto1998dynamic                         | parallel PRNG                   |
+| Blitz\nbsp{}cite:veldhuizen1997will,veldhuizen2000techniques | multidimensional arrays         |
+| GSL\nbsp{}cite:gsl2008scientific                             | PDF, CDF, FFT computation       |
 |                                                        | checking process stationarity   |
-| LAPACK, GotoBLAS cite:goto2008high,goto2008anatomy     | finding AR coefficients         |
-| GL, GLUT cite:kilgard1996opengl                        | three-dimensional visualisation |
+| LAPACK, GotoBLAS\nbsp{}cite:goto2008high,goto2008anatomy     | finding AR coefficients         |
+| GL, GLUT\nbsp{}cite:kilgard1996opengl                        | three-dimensional visualisation |
 
 **** Performance of load balancing algorithm.
 Software implementation of wavy surface generation is balanced in terms of the
@@ -2225,9 +2213,8 @@ and CPU thread pool size was equal the number of physical processor cores.
 
 In the experiment load balancing algorithm showed higher performance than
 implementation without it. The more the size of the generated surface is the
-more the gap in performance is (fig. [[fig:factory-performance]]) which is a result
-of overlap of computation phase and data output phase (fig.
-[[fig:factory-overlap]]). In OpenMP implementation data output phase begins only
+more the gap in performance is (fig.\nbsp{}[[fig:factory-performance]]) which is a result
+of overlap of computation phase and data output phase (fig.\nbsp{}[[fig:factory-overlap]]). In OpenMP implementation data output phase begins only
 when computation is over, whereas load balancing algorithm makes both phases end
 almost simultaneously. So, /pipelined execution of internally parallel
 sequential phases is more efficient than their sequential execution/, and this
@@ -2288,8 +2275,7 @@ algorithm, this approach becomes more and more popular as it does not require
 spare reserved nodes to recover from principal node failure.
 
 Leader election algorithms (which sometimes referred to as /distributed
-consensus/ algorithms are special cases of wave algorithms. In
-cite:tel2000introduction Tel defines them as algorithms in which termination
+consensus/ algorithms are special cases of wave algorithms. In\nbsp{}cite:tel2000introduction Tel defines them as algorithms in which termination
 event is preceded by at least one event occurring in /each/ parallel process.
 Wave algorithms are not defined for anonymous networks, that is they apply only
 to processes that can uniquely define themselves. However, the number of
@@ -2317,8 +2303,7 @@ from one node to another, which makes the cluster unmanageable. The simplest
 such function is the position of an IP address in network IP address range.
 
 The following key features distinguish this approach with respect to some
-existing proposals
-cite:brunekreef1996design,aguilera2001stable,romano2014design.
+existing proposals\nbsp{}cite:brunekreef1996design,aguilera2001stable,romano2014design.
 - *Multi-level hierarchy.* The number of principal nodes in a network depends on
   the fan-out value. If it is lesser than the number of IP-addresses in the
   network, then there are multiple principle nodes in the cluster. If it is
@@ -2445,8 +2430,7 @@ principal only, and inefficient scan of all network by each node does not occur.
 **** Evaluation results.
 Test platform consisted of several multi-core nodes, on top of which virtual
 clusters with varying number of nodes were deployed using Linux network
-namespaces. Similar approach is used in
-cite:lantz2010network,handigol2012reproducible,heller2013reproducible where the
+namespaces. Similar approach is used in\nbsp{}cite:lantz2010network,handigol2012reproducible,heller2013reproducible where the
 authors reproduce various real-world experiments using virtual clusters and
 compare results to physical ones. The advantage of it is that the tests can be
 performed on a large virtual cluster using relatively small number of physical
@@ -2462,9 +2446,9 @@ running more than 100 virtual nodes on one physical node simultaneously warp the
 results, thus additional physical nodes, each of which run 100 virtual nodes,
 were used for the experiment. The experiment showed that discovery of 100--400
 nodes each other takes 1.5 seconds on average, and the value increases only
-slightly with increase in the number of nodes (see fig. [[fig:bootstrap-local]]). An
-example of tree hierarchy for 11 nodes with fan-out 2 is shown in fig.
-[[fig:tree-hierarchy-11]].
+slightly with increase in the number of nodes (see
+fig.\nbsp{}[[fig:bootstrap-local]]). An example of tree hierarchy for 11 nodes with
+fan-out 2 is shown in fig.\nbsp{}[[fig:tree-hierarchy-11]].
 
 #+name: fig:bootstrap-local
 #+caption: Time to discover all nodes of the cluster in depending on number of nodes.
@@ -2540,16 +2524,15 @@ as a cluster operating system overlay allowing to write distributed
 applications.
 
 **** Related work.
-Dynamic role assignment is an emerging trend in design of distributed systems
-cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra,
+Dynamic role assignment is an emerging trend in design of distributed systems\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra,
 however, it is still not used in big data and HPC job schedulers. For example,
-in popular YARN job scheduler cite:vavilapalli2013yarn, which is used by Hadoop
+in popular YARN job scheduler\nbsp{}cite:vavilapalli2013yarn, which is used by Hadoop
 and Spark big data analysis frameworks, principal and subordinate roles are
 static. Failure of a subordinate node is tolerated by restarting a part of a job
 on a healthy node, and failure of a principal node is tolerated by setting up
-standby reserved server cite:murthy2011architecture. Both principal servers are
+standby reserved server\nbsp{}cite:murthy2011architecture. Both principal servers are
 coordinated by Zookeeper service which itself uses dynamic role assignment to
-ensure its fault-tolerance cite:okorafor2012zookeeper. So, the whole setup is
+ensure its fault-tolerance\nbsp{}cite:okorafor2012zookeeper. So, the whole setup is
 complicated due to Hadoop scheduler lacking dynamic roles: if dynamic roles were
 available, Zookeeper would be redundant in this setup. Moreover, this setup does
 not guarantee continuous operation of principal node because standby server
@@ -2567,8 +2550,7 @@ it is far from ideal solution where roles are completely decoupled from physical
 servers.
 
 Finally, the simplest principal node high availability is implemented in Virtual
-Router Redundancy Protocol (VRRP)
-cite:knight1998rfc2338,hinden2004virtual,nadas2010rfc5798. Although VRRP
+Router Redundancy Protocol (VRRP)\nbsp{}cite:knight1998rfc2338,hinden2004virtual,nadas2010rfc5798. Although VRRP
 protocol does provide principal and backup node roles, which are dynamically
 assigned to available routers, this protocol works on top of the IPv4 and IPv6
 protocols and is designed to be used by routers and reverse proxy servers. Such
@@ -2580,8 +2562,7 @@ daemon\nbsp{}cite:cassen2002keepalived.
 In contrast to web servers and HPC and big data job schedulers, some distributed
 key-value stores and parallel file systems have symmetric architecture, where
 principal and subordinate roles are assigned dynamically, so that any node can act as a
-principal when the current principal node fails
-cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra.
+principal when the current principal node fails\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra.
 This design decision simplifies management and interaction with a distributed
 system. From system administrator point of view it is much simpler to install
 the same software stack on each node than to manually configure principal and subordinate
@@ -2610,18 +2591,17 @@ neighbours: when one runs the kernel on the subordinate node, the principal node
 also receive some of its subordinate kernels. This makes the system symmetrical
 and easy to maintain: each node have the same set of software that allows
 replacing one node with another in case of failure of the former. Similar
-architectural solution used in key-value stores
-cite:anderson2010couchdb,lakshman2010cassandra to provide fault tolerance, but
+architectural solution used in key-value stores\nbsp{}cite:anderson2010couchdb,lakshman2010cassandra to provide fault tolerance, but
 author does not know any task schedulers that use this approach.
 
 Unlike ~main~ function in programmes based on message passing library, the first
 (the main) kernel is initially run only on one node, and remote nodes are used
 on-demand. This design choice allows having arbitrary number of nodes throughout
 execution of a programme, and use more nodes for highly parallel parts of the
-code. Similar choice is made in the design of big data frameworks
-cite:dean2008mapreduce,vavilapalli2013yarn --- a user submitting a job does not
-specify the number of hosts to run its job on, and actual hosts are the hosts
-where input files are located.
+code. Similar choice is made in the design of big data
+frameworks\nbsp{}cite:dean2008mapreduce,vavilapalli2013yarn\nbsp{}--- a user
+submitting a job does not specify the number of hosts to run its job on, and
+actual hosts are the hosts where input files are located.
 
 From mathematical point of view kernel \(K\) can be described as a vector-valued
 functional which recursively maps a kernel to \(n\)-component vector of kernels:
@@ -2646,7 +2626,7 @@ unspecified order, several concurrent threads retrieve kernels from the pool and
 may send the remaining kernels to neighbouring cluster nodes if the pool
 overflows.
 
-Kernels are implemented as closures (functors in C++) --- function objects
+Kernels are implemented as closures (functors in C++)\nbsp{}--- function objects
 containing all their arguments, a reference to parent kernel and application
 domain data. The data is either processed upon kernel call, or subordinate
 kernels are created to process it in parallel. When the processing is complete a
@@ -2655,8 +2635,8 @@ collect the resulting data from it.
 
 **** Handling nodes failures.
 Basic strategy to overcome a failure of a subordinate node is to restart
-corresponding kernels on a healthy node --- a strategy employed by Erlang
-language to restart failed subordinate processes cite:armstrong2003thesis. In
+corresponding kernels on a healthy node\nbsp{}--- a strategy employed by Erlang
+language to restart failed subordinate processes\nbsp{}cite:armstrong2003thesis. In
 order to implement this method in the framework of kernel hierarchy, sender node
 saves every kernel that is sent to remote cluster nodes, and in an event of a
 failure of any number of nodes, where kernels were sent, their copies are
@@ -2923,12 +2903,12 @@ failures\nbsp{}cite:fekete1993impossibility.
 * Conclusion
 * Acknowledgements
 The graphs in this work were prepared using R language for statistical
-computing cite:rlang2016,Sarkar2008lattice and Graphviz software
-cite:Gansner00anopen. The manuscript was prepared using Org-mode
-cite:Schulte2011org2,Schulte2011org1,Dominik2010org for GNU Emacs which provides
-computing environment for reproducible research. This means that all graphs can
-be reproduced and corresponding statements verified by cloning thesis
-repository[fn:repo], installing Emacs and exporting the document.
+computing\nbsp{}cite:rlang2016,Sarkar2008lattice and Graphviz
+software\nbsp{}cite:Gansner00anopen. The manuscript was prepared using
+Org-mode\nbsp{}cite:Schulte2011org2,Schulte2011org1,Dominik2010org for GNU Emacs
+which provides computing environment for reproducible research. This means that
+all graphs can be reproduced and corresponding statements verified by cloning
+thesis repository[fn:repo], installing Emacs and exporting the document.
 
 [fn:repo] [[https://github.com/igankevich/arma-thesis]]
 
