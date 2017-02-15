@@ -2915,15 +2915,16 @@ programmes. This is trivial process as it does not involve restarting failed
 kernels or copying their state, so it has not been studied experimentally in
 this work.
 
-Theoretically, hierarchy-based fault-tolerance can be implemented on top of the
-message-passing library without loss of generality. Although it would be
-complicated to reuse free nodes instead of failed ones, as the number of nodes
-is often fixed in such libraries, allocating reasonably large number of nodes
-for the application would be enough to make it fault-tolerant. However,
-implementing hierarchy-based fault-tolerance "below" message-passing library
-does not seem beneficial, because it would require saving the state of a
-parallel application which equals to the total amount of memory it occupies on
-each host, which would not make it more efficient than checkpoints.
+Theoretically, fault tolerance based on a hierarchy of nodes and kernels can be
+implemented on top of the message-passing library without loss of generality.
+Although it would be complicated to reuse free nodes instead of failed ones in
+the framework of this library, as the number of nodes is often fixed in such
+libraries, allocating reasonably large number of nodes for the programme would
+be enough to make it fault-tolerant. At the same time, implementing
+hierarchy-based fault tolerance inside message-passing library itself is not
+practical, because it would require saving the state of a parallel programme
+which equals to the total amount of memory it occupies on each cluster node,
+which in turn would not make it more efficient than checkpoints.
 
 The weak point of the proposed technology is the length of the period of time
 starting from a failure of principal node up to the moment when the failure is
