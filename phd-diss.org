@@ -2926,16 +2926,16 @@ practical, because it would require saving the state of a parallel programme
 which equals to the total amount of memory it occupies on each cluster node,
 which in turn would not make it more efficient than checkpoints.
 
-The weak point of the proposed technology is the length of the period of time
-starting from a failure of principal node up to the moment when the failure is
-detected, the first kernel is restored and new subordinate kernel with the
-parent's copy is received by a subordinate node. If during this period of time
-backup node fails, execution state of application is completely lost, and there
-is no way to recover it other than fully restarting the application. The length
-of the dangerous period can be minimised but the possibility of a abrupt
-programme stop can not be fully eliminated. This result is consistent with the
-scrutiny of "impossibility theory", in the framework of which it is proved the
-impossibility of the distributed consensus with one faulty
+The weak point of the proposed algorithm is the period of time starting from a
+failure of principal node up to the moment when the failure is detected, the
+main kernel is restored and new subordinate kernel with the parent's copy is
+received by a subordinate node. If at any time during this period backup node
+fails, execution state of a programme is completely lost, and there is no way to
+recover it other than restarting the programme from the beginning. The duration
+of the dangerous period can be minimised, but the probability of an abrupt
+programme termination can not be fully eliminated. This result is consistent
+with the scrutiny of /impossibility theory/, in the framework of which it is
+proved the impossibility of the distributed consensus with one faulty
 process\nbsp{}cite:fischer1985impossibility and impossibility of reliable
 communication in the presence of node
 failures\nbsp{}cite:fekete1993impossibility.
