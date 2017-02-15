@@ -2912,6 +2912,12 @@ thesis repository[fn:repo], installing Emacs and exporting the document.
 
 [fn:repo] [[https://github.com/igankevich/arma-thesis]]
 
+The research was carried out using computational resources of Resource Centre
+"Computational Centre of Saint Petersburg State University" (\mbox{T-EDGE96}
+\mbox{HPC-0011828-001}) within frameworks of grants of Russian Foundation for
+Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
+\mbox{16-07-01113}).
+
 * List of acronyms and symbols
 - <<<MPP>>> :: Massively Parallel Processing, computers with distributed memory.
 - <<<SMP>>> :: Symmetric Multi-Processing, computers with shared memory.
