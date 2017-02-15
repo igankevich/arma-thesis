@@ -2878,21 +2878,21 @@ when a backup node fails performance penalty is much higher.
 #+caption: Slowdown of the hydrodynamics HPC application in the presence of different types of node failures compared to execution without failures but with the number of nodes minus one.
 #+RESULTS: fig:slowdown
 
-**** Discussion.
-Described algorithm guarantees to handle one failure per computational step,
-more failures can be tolerated if they do not affect the master node. The system
-handles simultaneous failure of all subordinate nodes, however, if both master
-and backup nodes fail, there is no chance for an application to survive. In this
-case the state of the current computation step is lost, and the only way to
-restore it is to restart the application.
+**** Discussion of test results.
+Fail over algorithm guarantees to handle one failure per sequential programme
+step, more failures can be tolerated if they do not affect the principal node.
+The algorithm handles simultaneous failure of all subordinate nodes, however, if
+both principal and backup nodes fail, there is no chance for a programme to
+continue the work. In this case the state of the current computation step is
+lost, and the only way to restore it is to restart the application from the
+beginning.
 
-Computational kernels are means of abstraction that decouple distributed
-application from physical hardware: it does not matter how many nodes are online
-for an application to run successfully. Computational kernels eliminate the need
-to allocate a physical backup node to make master node highly-available, with
-computational kernels approach any node can act as a backup one. Finally,
-computational kernels can handle subordinate node failures in a way that is
-transparent to a programmer.
+Kernels are means of abstraction that decouple distributed application from
+physical hardware: it does not matter how many nodes are online for an
+application to run successfully. Kernels eliminate the need to allocate a
+physical backup node to make principal node highly-available, with kernel
+hierarchy approach any node can act as a backup one. Finally, kernels can handle
+subordinate node failures in a way that is transparent to a programmer.
 
 The disadvantage of this approach is evident: there is no way of making existing
 middleware highly-available without rewriting their source code. Although, our
@@ -2901,24 +2901,16 @@ existing middleware systems to it: most systems are developed keeping in mind
 static assignment of server/client roles, which is not easy to make dynamic.
 Hopefully, our approach will simplify design of future middleware systems.
 
-The benchmark from the previous section show that it is essential for a
+The benchmark from the previous section shows that it is essential for a
 parallel application to have multiple sequential steps to make it resilient to
-cluster node failures. Although, the probability of a master node failure is
-lower than the probability of failure of any of the slave nodes, it does not
-justify loosing all the data when the programme run is near completion. In
+cluster node failures. Although, the probability of a principal node failure is
+lower than the probability of a failure of any of the subordinate nodes, it does
+not justify loosing all the data when the programme run is near completion. In
 general, the more sequential steps one has in an HPC application the less is
-performance penalty in an event of master node failure, and the more parallel
-parts each step has the less is performance penalty in case of a slave node
-failure. In other words, /the more scalable an application is the more
+performance penalty in an event of principal node failure, and the more parallel
+parts each step has the less is performance penalty in case of a subordinate
+node failure. In other words, /the more scalable an application is the more
 resilient to node failures it becomes/.
-
-In our experiments we specified manually where the programme starts its
-execution to make mapping of hierarchy of computational kernels to tree
-hierarchy of nodes optimal, however, it does not seem practical for real-world
-cluster. The framework may perform such tasks automatically, and distribute the
-load efficiently no matter whether the master node of the application is
-located in the root or leaf of the tree hierarchy: Allocating the same node for
-the first kernel of each application deteriorates fault-tolerance.
 
 Although it may not be clear from the benchmarks, Factory does not only provide
 tolerance to node failures: new nodes automatically join the cluster and
@@ -2931,41 +2923,24 @@ message-passing library without loss of generality. Although it would be
 complicated to reuse free nodes instead of failed ones, as the number of nodes
 is often fixed in such libraries, allocating reasonably large number of nodes
 for the application would be enough to make it fault-tolerant. However,
-implementing hierarchy-based fault-tolerance ``below'' message-passing
-library does not seem beneficial, because it would require saving the state
-of a parallel application which equals to the total amount of memory it
-ccupies on each host, which would not make it more efficient than
-checkpoints.
+implementing hierarchy-based fault-tolerance "below" message-passing library
+does not seem beneficial, because it would require saving the state of a
+parallel application which equals to the total amount of memory it occupies on
+each host, which would not make it more efficient than checkpoints.
 
 The weak point of the proposed technology is the length of the period of time
-starting from a failure of master node up to the moment when the failure is
+starting from a failure of principal node up to the moment when the failure is
 detected, the first kernel is restored and new subordinate kernel with the
 parent's copy is received by a subordinate node. If during this period of time
 backup node fails, execution state of application is completely lost, and there
 is no way to recover it other than fully restarting the application. The length
 of the dangerous period can be minimised but the possibility of a abrupt
 programme stop can not be fully eliminated. This result is consistent with the
-scrutiny of ``impossibility theory'', in the framework of which it is proved
-the impossibility of the distributed consensus with one faulty
-process cite:fischer1985impossibility and impossibility of reliable
-communication in the presence of node failures cite:fekete1993impossibility.
-
-A possible way of handling a failure of a node where the first kernel is located
-(a master node) is to replicate this kernel to a backup node, and make all
-updates to its state propagate to the backup node by means of a distributed
-transaction. This approach requires synchronisation between all nodes that
-execute subordinates of the first kernel and the node with the first kernel
-itself. When a node with the first kernel goes offline, the nodes with
-subordinate kernels must know what node is the backup one. However, if the
-backup node also goes offline in the middle of execution of some subordinate
-kernel, then it is impossible for this kernel to discover the next backup node
-to return to, because this kernel has not discovered the unavailability of the
-master node yet. One can think of a consensus-based algorithm to ensure that
-subordinate kernels always know where the backup node is, but distributed
-consensus algorithms do not scale well to the large number of nodes and they are
-not reliable cite:fischer1985impossibility. So, consensus-based approach does
-not play well with asynchronous nature of computational kernels as it may
-inhibit scalability of a parallel programme.
+scrutiny of "impossibility theory", in the framework of which it is proved the
+impossibility of the distributed consensus with one faulty
+process\nbsp{}cite:fischer1985impossibility and impossibility of reliable
+communication in the presence of node
+failures\nbsp{}cite:fekete1993impossibility.
 
 * Conclusion
 * Acknowledgements
