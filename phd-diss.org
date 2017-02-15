@@ -2896,23 +2896,17 @@ can act as a backup one. Finally, kernels allow handling failures in a way that
 is transparent to a programmer, deriving the order of actions from the internal
 state of a kernel.
 
-The disadvantage of this approach is evident: there is no way of making existing
-middleware highly-available without rewriting their source code. Although, our
-programming framework is lightweight, it is not easy to map architecture of
-existing middleware systems to it: most systems are developed keeping in mind
-static assignment of server/client roles, which is not easy to make dynamic.
-Hopefully, our approach will simplify design of future middleware systems.
-
-The benchmark from the previous section shows that it is essential for a
-parallel application to have multiple sequential steps to make it resilient to
-cluster node failures. Although, the probability of a principal node failure is
+The experiments show that it is essential for a parallel programme to have
+multiple sequential steps to make it resilient to cluster node failures,
+otherwise failure of a backup node in fact triggers recovery of the initial
+state of the programme. Although, the probability of a principal node failure is
 lower than the probability of a failure of any of the subordinate nodes, it does
-not justify loosing all the data when the programme run is near completion. In
-general, the more sequential steps one has in an HPC application the less is
-performance penalty in an event of principal node failure, and the more parallel
-parts each step has the less is performance penalty in case of a subordinate
-node failure. In other words, /the more scalable an application is the more
-resilient to node failures it becomes/.
+not justify loosing all the data when the long programme run is near completion.
+In general, the more sequential steps one has in a parallel programme the less
+time is lost in an event of a backup node failure, and the more parallel parts
+each sequential step has the less time is lost in case of a principal or
+subordinate node failure. In other words, /the more scalable a programme is the
+more resilient to cluster node failures it becomes/.
 
 Although it may not be clear from the benchmarks, Factory does not only provide
 tolerance to node failures: new nodes automatically join the cluster and
