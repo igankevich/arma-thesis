@@ -489,14 +489,16 @@ appear in practice.
    simulations.
 3. Finally, there are peculiarities which make LH model unsuitable base for
    building more advanced simulation models.
-   - In software implementation convergence rate of ([[eq:longuet-higgins]]) may be
-     low due to randomness of phases \(\epsilon_n\).
+   - In software implementation convergence rate of eq.\nbsp{}[[eq:longuet-higgins]]
+     may be low due to randomness of phases \(\epsilon_n\).
    - It is difficult to generalise LH model for non-Gaussian processes as it
-     involves incorporating non-linear terms in ([[eq:longuet-higgins]]) for which
-     there is no known formula to determine coefficients\nbsp{}cite:рожков1990вероятностные.
+     involves incorporating non-linear terms in eq.\nbsp{}[[eq:longuet-higgins]] for
+     which there is no known formula to determine
+     coefficients\nbsp{}cite:рожков1990вероятностные.
 
-To summarise, LH model is linear, computationally inefficient for long-time
-simulations, and difficult to use as a base for more advanced models.
+To summarise, LH model is applicable to generating ocean wavy surface in the
+framework of linear wave theory, inefficient for long-time simulations, and
+difficult to use as a base for more advanced models.
 
 *** ARMA model
 In\nbsp{}cite:spanos1982arma ARMA model is used to generate time series spectrum of
