@@ -1540,7 +1540,7 @@ two-dimensional pressure determination problem there are functions
 \(\FunSecond{z}=\InverseFourierY{\Sinh{2\pi{u}{z}}}{x}\) which has multiple
 analytic representations and are difficult to compute. Each function is a
 Fourier transform of linear combination of exponents which reduces to poorly
-defined Dirac delta function of a complex argument (see [[tab:delta-functions]]).
+defined Dirac delta function of a complex argument (see table\nbsp{}[[tab:delta-functions]]).
 The usual way of handling this type of functions is to write them as
 multiplication of Dirac delta functions of real and imaginary part, however,
 this approach does not work here, because applying inverse Fourier transform to
@@ -1576,7 +1576,7 @@ distributions of different wave characteristics.
 
 *** Verification of wavy surface integral characteristics
 In\nbsp{}cite:рожков1990вероятностные the authors show that several ocean wave
-characteristics (listed in table [[tab:weibull-shape]]) have Weibull distribution,
+characteristics (listed in table\nbsp{}[[tab:weibull-shape]]) have Weibull distribution,
 and wavy surface elevation has Gaussian distribution. In order to verify that
 distributions corresponding to generated realisation are correct,
 quantile-quantile plots are used (plots where analytic quantile values are used
@@ -2160,7 +2160,7 @@ convergence rate and non-existence of periodicity allows using far fewer
 coefficients compared to LH model.
 
 ARMA implementation uses several libraries of reusable mathematical functions
-and numerical algorithms (listed in [[tab:arma-libs]]), and was implemented using
+and numerical algorithms (listed in table\nbsp{}[[tab:arma-libs]]), and was implemented using
 several parallel programming technologies (MPI, OpenMP, OpenCL) to find the most
 efficient one.
 
@@ -2182,8 +2182,7 @@ load on processor cores, however, as shown by tests, has high load on storage
 device. Before testing wavy surface generation was implemented using OpenMP for
 parallel computations and in order to implement load balancing algorithm was
 rewritten using POSIX threads. Performance of the two implementations was
-compared on the platform with the configuration listed in table
-[[tab:multicore-specs]].
+compared on the platform with the configuration listed in table\nbsp{}[[tab:multicore-specs]].
 
 #+name: tab:multicore-specs
 #+caption: Multi-core system configuration.
@@ -2728,7 +2727,7 @@ An example of fail over algorithm follows.
 [[file:build/fail-over-example.pdf]]
 
 **** Evaluation results.
-Factory framework is evaluated on physical cluster (Table [[tab:cluster]]) on the
+Factory framework is evaluated on physical cluster (table\nbsp{}[[tab:cluster]]) on the
 example of HPC application, that generates ocean wavy surface, which is
 described in detail in section [[#sec:arma-algorithms]]. The application consists of
 a series of filters, each of which is applied to the result of the previous one.
@@ -2770,8 +2769,7 @@ time after the programme start which is equivalent approximately to \(1/3\) of
 the total run time without failures on a single node. The application
 immediately recognised node as offline, because the corresponding connection was
 closed; in real-world scenario, however, the failure is detected after a
-configurable time-out. All relevant parameters are summarised in table
-[[tab:benchmark]]. The results of these runs were compared to the run without node
+configurable time-out. All relevant parameters are summarised in table\nbsp{}[[tab:benchmark]]. The results of these runs were compared to the run without node
 failures (fig.\nbsp{}[[fig:benchmark]] and\nbsp{}[[fig:slowdown]]).
 
 There is considerable difference in overall application performance for
