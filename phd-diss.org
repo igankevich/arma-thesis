@@ -2509,80 +2509,82 @@ digraph {
 
 *** Fail over algorithm
 **** Introduction.
-Fault tolerance of data processing pipelines is one of the top concerns in
-development of job schedulers for big data processing, however, most schedulers
-provide fault tolerance for subordinate nodes only. These types of failures are
-routinely mitigated by restarting the failed job or its part on healthy nodes,
-and failure of a master node is often considered either improbable, or too
-complicated to handle and configure on the target platform. System
-administrators often find alternatives to application level fault tolerance:
-they isolate master node from the rest of the cluster by placing it on a
-dedicated machine, or use virtualisation technologies instead. All these
+Fault tolerance of a parallel programme is one of the top concerns in
+development of big data and HPC job schedulers, however, most schedulers provide
+fault tolerance for subordinate nodes only. These types of failures are
+routinely mitigated by restarting the failed job (from a checkpoint) or its part
+on healthy nodes, and failure of a principal node is often considered either
+improbable, or too complicated to handle and configure on the target platform.
+System administrators often find alternatives to application level fault
+tolerance: they isolate principal node from the rest of the cluster by placing
+it on a dedicated machine, or use virtualisation technologies instead. All these
 alternatives complexify configuration and maintenance, and by decreasing
 probability of a machine failure resulting in a whole system failure, they
 increase probability of a human error.
 
-From such point of view it seems more practical to implement master node fault
-tolerance at application level, however, there is no generic implementation.
-Most implementations are too tied to a particular application to become
-universally acceptable. We believe that this happens due to people's habit to
-think of a cluster as a collection of individual machines each of which can be
-either master or slave, rather than to think of a cluster as a whole with master
-and slave roles being dynamically assigned to a particular physical machine.
+From such point of view it seems more practical to implement principal node
+fault tolerance at application level, however, there is no generic
+implementation. Most implementations are too tied to a particular application to
+become universally acceptable. We believe that this happens due to people's
+habit to think of a cluster as a collection of individual machines each of which
+can be either principal or subordinate, rather than to think of a cluster as a
+whole with principal and subordinate roles being dynamically assigned to a
+particular physical machine.
 
-This evolution in thinking allows to implement middleware that manages master
-and slave roles automatically and handles node failures in a generic way. This
-software provides an API to distribute parallel tasks on the pool of available
-nodes and among them. Using this API one can write an application that runs on a
-cluster without knowing the exact number of online nodes. The middleware works
+This evolution in thinking allows to implement middleware that manages principal
+and subordinate roles automatically and handles node failures in a generic way.
+This software provides an API to distribute kernels on the pool of available
+nodes and between them. Using this API one can write an application that runs on
+a cluster without knowing the exact number of online nodes. The middleware works
 as a cluster operating system overlay allowing to write distributed
 applications.
 
 **** Related work.
 Dynamic role assignment is an emerging trend in design of distributed systems
 cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra,
-however, it is still not used in big data job schedulers. For example, in
-popular YARN job scheduler cite:vavilapalli2013yarn, which is used by Hadoop and
-Spark big data analysis frameworks, master and slave roles are static. Failure
-of a slave node is tolerated by restarting a part of a job on a healthy node,
-and failure of a master node is tolerated by setting up standby reserved server
-cite:murthy2011architecture. Both master servers are coordinated by Zookeeper
-service which itself uses dynamic role assignment to ensure its fault-tolerance
-cite:okorafor2012zookeeper. So, the whole setup is complicated due to Hadoop
-scheduler lacking dynamic roles: if dynamic roles were available, Zookeeper
-would be redundant in this setup. Moreover, this setup does not guarantee
-continuous operation of master node because standby server needs time to recover
-current state after a failure.
+however, it is still not used in big data and HPC job schedulers. For example,
+in popular YARN job scheduler cite:vavilapalli2013yarn, which is used by Hadoop
+and Spark big data analysis frameworks, principal and subordinate roles are
+static. Failure of a subordinate node is tolerated by restarting a part of a job
+on a healthy node, and failure of a principal node is tolerated by setting up
+standby reserved server cite:murthy2011architecture. Both principal servers are
+coordinated by Zookeeper service which itself uses dynamic role assignment to
+ensure its fault-tolerance cite:okorafor2012zookeeper. So, the whole setup is
+complicated due to Hadoop scheduler lacking dynamic roles: if dynamic roles were
+available, Zookeeper would be redundant in this setup. Moreover, this setup does
+not guarantee continuous operation of principal node because standby server
+needs time to recover current state after a failure.
 
-The same problem occurs in high-performance computing where master node of a job
-scheduler is the single point of failure. In
-cite:uhlemann2006joshua,engelmann2006symmetric the authors use replication to
-make the master node highly-available, but backup server role is assigned
-statically and cannot be delegated to a healthy worker node. This solution is
-closer to fully dynamic role assignment than high-availability solution for big
-data schedulers, because it does not involve using external service to store
-configuration which should also be highly-available, however, it is far from
-ideal solution where roles are completely decoupled from physical servers.
+The same problem occurs in high-performance computing where principal node of a job
+scheduler is the single point of failure.
+In\nbsp{}cite:uhlemann2006joshua,engelmann2006symmetric the authors use
+replication to make the principal node highly available, but backup server role is
+assigned statically and cannot be delegated to a healthy worker node. This
+solution is closer to fully dynamic role assignment than high availability
+solution for big data schedulers, because it does not involve using external
+service to store configuration which should also be highly-available, however,
+it is far from ideal solution where roles are completely decoupled from physical
+servers.
 
-Finally, the simplest master node high-availability is implemented in Virtual
+Finally, the simplest principal node high availability is implemented in Virtual
 Router Redundancy Protocol (VRRP)
 cite:knight1998rfc2338,hinden2004virtual,nadas2010rfc5798. Although VRRP
-protocol does provide master and backup node roles, which are dynamically
+protocol does provide principal and backup node roles, which are dynamically
 assigned to available routers, this protocol works on top of the IPv4 and IPv6
 protocols and is designed to be used by routers and reverse proxy servers. Such
-servers lack the state that needs to be restored upon a failure (i.e.~there is
-no job queue in web servers), so it is easier for them to provide
-high-availability. In Linux it is implemented in Keepalived routing daemon
-cite:cassen2002keepalived.
+servers lack the state that needs to be restored upon a failure
+(i.e.\nbsp{}there is no job queue in web servers), so it is easier for them to
+provide high-availability. In Linux it is implemented in Keepalived routing
+daemon\nbsp{}cite:cassen2002keepalived.
 
-In contrast to web servers and HPC and Big Data job schedulers, some distributed
+In contrast to web servers and HPC and big data job schedulers, some distributed
 key-value stores and parallel file systems have symmetric architecture, where
-master and slave roles are assigned dynamically, so that any node can act as a
-master when the current master node fails
+principal and subordinate roles are assigned dynamically, so that any node can act as a
+principal when the current principal node fails
 cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra.
 This design decision simplifies management and interaction with a distributed
 system. From system administrator point of view it is much simpler to install
-the same software stack on each node than to manually configure master and slave
+the same software stack on each node than to manually configure principal and subordinate
 nodes. Additionally, it is much easier to bootstrap new nodes into the cluster
 and decommission old ones. From user point of view, it is much simpler to
 provide web service high-availability and load-balancing when you have multiple
@@ -2595,32 +2597,9 @@ is no general solution to this problem is that there is no generic programming
 environment to write and execute distributed programmes. The aim of this work is
 to propose such an environment and to describe its internal structure.
 
-The programming model used in this work is partly based on well-known actor
-model of concurrent computation cite:agha1985actors,hewitt1973universal. Our
-model borrows the concept of actor---an object that stores data and methods to
-process it; this object can react to external events by either changing its
-state or producing more actors. We call this objects /computational kernels/.
-Their distinct feature is hierarchical dependence on parent kernel that created
-each of them, which allows to implement fault-tolerance based on simple restart
-of a failed subordinate kernel.
-
-However, using hierarchical dependence alone is not enough to develop
-high-availability of a master kernel---the first kernel in a parallel programme.
-To solve the problem the other part of our programming model is based on
-bulk-synchronous parallel model cite:valiant1990bridging. It borrows the concept
-of superstep---a sequential step of a parallel programme; at any time a
-programme executes only one superstep, which allows to implement
-high-availability of the first kernel (under assumption that it has only one
-subordinate at a time) by sending it along its subordinate to a different
-cluster node thus making a distributed copy of it. Since the first kernel has
-only one subordinate at a time, its copy is always consistent with the original
-kernel. This eliminates the need for complex distributed transactions and
-distributed consensus algorithms and guarantees protection from at most one
-master node failure per superstep.
-
 To summarise, the framework developed in this paper protects a parallel
 programme from failure of any number of subordinate nodes and from one failure
-of a master node per superstep. The paper does not answer the question of how to
+of a principal node per superstep. The paper does not answer the question of how to
 determine if a node failed, it assumes a failure when the network connection to
 a node is prematurely closed.
 
@@ -2726,16 +2705,16 @@ An example of fail over algorithm follows.
    processes superimposed on the topology of cluster nodes. Hierarchical links
    are solely defined by the position of node's IP address in the local network
    IP address range eliminating the need for complex distributed consensus
-   algorithm. A node may act as a subordinate or a master simultaneously thus
+   algorithm. A node may act as a subordinate or a principal simultaneously thus
    multiple hierarchy layers may be created. The hierarchy is changed only when
    a new node joins or leaves the cluster, and is reused by every application
    running on top of it. In an event of node failure its role is reassigned to
    another node, and tasks that were executing on this node are restarted on
    healthy ones.
-3. Launch master kernel. HPC application is decomposed into computational
-   kernels with hierarchical dependence. The first, or /master/ kernel, is
-   started on the leaf node. Master kernel may have only one subordinate at a
-   time, and /backup/ copy of the master kernel is sent along with the
+3. Launch main kernel. HPC application is decomposed into computational
+   kernels with hierarchical dependence. The first, or /main/ kernel, is
+   started on the leaf node. Main kernel may have only one subordinate at a
+   time, and /backup/ copy of the main kernel is sent along with the
    subordinate kernel \(T_1\) to the root node. \(T_1\) represents one
    sequential step of a programme (a superstep in Bulk Synchronous Parallel
    model). There can be any number of sequential steps in a programme, and when
@@ -2777,7 +2756,7 @@ Some of the filters are computed in parallel, so the programme is written as a
 sequence of steps, some if which are made internally parallel to get better
 performance. In the programme only the most compute-intensive step (the surface
 generation) is executed in parallel across all cluster nodes, and other steps
-are executed in parallel across all cores of the master node.
+are executed in parallel across all cores of the principal node.
 
 #+name: tab:cluster
 #+caption: Test platform configuration.
@@ -2800,9 +2779,10 @@ In a series of experiments performance of the new version of the application in
 the presence of different types of failures was benchmarked (numbers correspond
 to the graphs in fig.\nbsp{}[[fig:benchmark]]):
 1. no failures,
-2. failure of a slave node (a node where a part of wavy surface is generated),
-3. failure of a master node (a node where the first kernel is run),
-4. failure of a backup node (a node where a copy of the first kernel is stored).
+2. failure of a subordinate node (a node where a part of wavy surface is
+   generated),
+3. failure of a principal node (a node where the main kernel is run),
+4. failure of a backup node (a node where a copy of the main kernel is stored).
 A tree hierarchy with fan-out value of 64 was chosen to make all subordinate
 cluster nodes connect directly to the one having the first IP-address in the
 network IP address range. A victim node was made offline after a fixed amount of
@@ -2985,6 +2965,8 @@ repository[fn:repo], installing Emacs and exporting the document.
 - <<<LAPACK>>> :: Linear Algebra Package.
 - <<<DNS>>> :: Dynamic name resolution.
 - <<<HPC>>> ::  High-performance computing.
+- Master/slave node ::
+- Principal/subordinate kernel ::
 
 #+begin_export latex
 \input{postamble}
