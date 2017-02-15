@@ -2908,13 +2908,14 @@ each sequential step has the less time is lost in case of a principal or
 subordinate node failure. In other words, /the more scalable a programme is the
 more resilient to cluster node failures it becomes/.
 
-Although it may not be clear from the benchmarks, Factory does not only provide
-tolerance to node failures: new nodes automatically join the cluster and
-receive their portion of the load as soon as it is possible. This is trivial
-process as it does not involve restarting failed kernels or managing their
-state, so it is not presented in this work.
+Although it is not shown in the experiments, Factory does not only provide
+tolerance to cluster node failures, but allows for new nodes to automatically
+join the cluster and receive their portion of kernels from the already running
+programmes. This is trivial process as it does not involve restarting failed
+kernels or copying their state, so it has not been studied experimentally in
+this work.
 
-In theory, hierarchy-based fault-tolerance can be implemented on top of the
+Theoretically, hierarchy-based fault-tolerance can be implemented on top of the
 message-passing library without loss of generality. Although it would be
 complicated to reuse free nodes instead of failed ones, as the number of nodes
 is often fixed in such libraries, allocating reasonably large number of nodes
