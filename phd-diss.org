@@ -2888,11 +2888,13 @@ lost, and the only way to restore it is to restart the application from the
 beginning.
 
 Kernels are means of abstraction that decouple distributed application from
-physical hardware: it does not matter how many nodes are online for an
-application to run successfully. Kernels eliminate the need to allocate a
-physical backup node to make principal node highly-available, with kernel
-hierarchy approach any node can act as a backup one. Finally, kernels can handle
-subordinate node failures in a way that is transparent to a programmer.
+physical hardware: it does not matter how many cluster nodes are currently
+available for a programme to run without interruption. Kernels eliminate the
+need to allocate a physical backup node to tolerate principal node failures: in
+the framework of kernel hierarchy any physical node (except the principal one)
+can act as a backup one. Finally, kernels allow handling failures in a way that
+is transparent to a programmer, deriving the order of actions from the internal
+state of a kernel.
 
 The disadvantage of this approach is evident: there is no way of making existing
 middleware highly-available without rewriting their source code. Although, our
