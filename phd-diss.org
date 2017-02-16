@@ -2493,36 +2493,36 @@ digraph {
 [[file:build/tree-hierarchy-11.pdf]]
 
 *** Fail over algorithm
-**** Introduction.
-Fault tolerance of a parallel programme is one of the top concerns in
-development of big data and HPC job schedulers, however, most schedulers provide
+**** Dynamic role distribution.
+Fault tolerance of a parallel programme is one of the problems which should by
+solved by big data and HPC job schedulers, however, most schedulers provide
 fault tolerance for subordinate nodes only. These types of failures are
-routinely mitigated by restarting the failed job (from a checkpoint) or its part
-on healthy nodes, and failure of a principal node is often considered either
-improbable, or too complicated to handle and configure on the target platform.
-System administrators often find alternatives to application level fault
-tolerance: they isolate principal node from the rest of the cluster by placing
-it on a dedicated machine, or use virtualisation technologies instead. All these
-alternatives complexify configuration and maintenance, and by decreasing
-probability of a machine failure resulting in a whole system failure, they
-increase probability of a human error.
+routinely handled by restarting the affected job (from a checkpoint) or its part
+on the remaining nodes, and failure of a principal node is often considered
+either improbable, or too complicated to handle and configure on the target
+platform. System administrators often find alternatives to application level
+fault tolerance: they isolate principal process of the scheduler from the rest
+of the cluster nodes by placing it on a dedicated machine, or use virtualisation
+technologies instead. All these alternatives complexify configuration and
+maintenance, and by decreasing probability of a machine failure resulting in a
+whole system failure, they increase probability of a human error.
 
 From such point of view it seems more practical to implement principal node
-fault tolerance at application level, however, there is no generic
-implementation. Most implementations are too tied to a particular application to
-become universally acceptable. We believe that this happens due to people's
+fault tolerance at application level, but there is no proven generic solution.
+Most implementations are too tied to a particular application to become
+universally applicable. The author believes that this happens due to people's
 habit to think of a cluster as a collection of individual machines each of which
 can be either principal or subordinate, rather than to think of a cluster as a
-whole with principal and subordinate roles being dynamically assigned to a
-particular physical machine.
+whole with principal and subordinate roles being dynamically distributed between
+processes running on different nodes.
 
-This evolution in thinking allows to implement middleware that manages principal
-and subordinate roles automatically and handles node failures in a generic way.
-This software provides an API to distribute kernels on the pool of available
-nodes and between them. Using this API one can write an application that runs on
-a cluster without knowing the exact number of online nodes. The middleware works
-as a cluster operating system overlay allowing to write distributed
-applications.
+Realisation of the fact that a cluster is also a computer allows to implement
+middleware that distributes principal and subordinate roles automatically and
+handles node failures in a generic way. This software provides an API to
+distribute kernels between currently available nodes. Using this API one can
+write a programme that runs on a cluster without knowing the exact number of
+working nodes. The middleware works as a cluster operating system in user space,
+allowing to write and execute distributed applications transparently.
 
 **** Related work.
 Dynamic role assignment is an emerging trend in design of distributed systems\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra,
