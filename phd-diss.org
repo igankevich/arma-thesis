@@ -2524,6 +2524,7 @@ write a programme that runs on a cluster without knowing the exact number of
 working nodes. The middleware works as a cluster operating system in user space,
 allowing to write and execute distributed applications transparently.
 
+**** Checkpoints.
 **** Related work.
 Dynamic role assignment is an emerging trend in design of distributed systems\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra,
 however, it is still not used in big data and HPC job schedulers. For example,
