@@ -2525,6 +2525,17 @@ working nodes. The middleware works as a cluster operating system in user space,
 allowing to write and execute distributed applications transparently.
 
 **** Checkpoints.
+Node failures in a distributed system are divided into two types: failure of a
+subordinate node and failure of a principal node. In order for a job running on
+the cluster to survive subordinate node failure, job scheduler periodically
+creates checkpoints and writes them to a stable storage. In order to create the
+checkpoint, the scheduler temporarily suspends all parallel processes of the
+job, copies all memory pages and all internal operating system kernel structures
+allocated for these processes to disk, and resumes execution of the job. In
+order to survive principal node failure, job scheduler server process continuously
+copies its internal state to a backup node, which becomes the principal after
+the failure.
+
 **** Related work.
 Dynamic role assignment is an emerging trend in design of distributed systems\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra,
 however, it is still not used in big data and HPC job schedulers. For example,
