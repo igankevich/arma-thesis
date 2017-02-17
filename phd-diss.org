@@ -2553,6 +2553,14 @@ number to be constant. So, there is no reliable way to provide fault tolerance
 in message passing library other than restarting all parallel processes from a
 checkpoint.
 
+There is, however, a possibility to continue execution of a job on lesser number
+of nodes than it was initially requested by implementing fault tolerance on
+application level. In this case principal and subordinate roles are dynamically
+distributed between job scheduler daemons running on each cluster node, forming
+a tree hierarchy of cluster nodes, and parallel programme consists of kernels
+which use node hierarchy to dynamically distribute the load and use their own
+hierarchy to restart kernels upon node failure.
+
 **** Related work.
 Dynamic role assignment is an emerging trend in design of distributed systems\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra,
 however, it is still not used in big data and HPC job schedulers. For example,
