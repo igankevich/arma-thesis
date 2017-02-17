@@ -2561,26 +2561,27 @@ write a programme that runs on a cluster without knowing the exact number of
 working nodes. The middleware works as a cluster operating system in user space,
 allowing to write and execute distributed applications transparently.
 
-**** Related work.
-Dynamic role assignment is an emerging trend in design of distributed systems\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra,
+**** Symmetric architecture.
+Dynamic distribution of roles between cluster nodes is an emerging trend in
+design of parallel file systems and key-value
+stores\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra,
 however, it is still not used in big data and HPC job schedulers. For example,
-in popular YARN job scheduler\nbsp{}cite:vavilapalli2013yarn, which is used by Hadoop
-and Spark big data analysis frameworks, principal and subordinate roles are
-static. Failure of a subordinate node is tolerated by restarting a part of a job
-on a healthy node, and failure of a principal node is tolerated by setting up
-standby reserved server\nbsp{}cite:murthy2011architecture. Both principal servers are
-coordinated by Zookeeper service which itself uses dynamic role assignment to
-ensure its fault-tolerance\nbsp{}cite:okorafor2012zookeeper. So, the whole setup is
-complicated due to Hadoop scheduler lacking dynamic roles: if dynamic roles were
-available, Zookeeper would be redundant in this setup. Moreover, this setup does
-not guarantee continuous operation of principal node because standby server
-needs time to recover current state after a failure.
+in YARN big data job scheduler\nbsp{}cite:vavilapalli2013yarn principal and
+subordinate roles are static. Failure of a subordinate node is tolerated by
+restarting a part of a job, that worked on it, on one of the surviving nodes,
+and failure of a principal node is tolerated by setting up an additional standby
+principal node\nbsp{}cite:murthy2011architecture. Both principal nodes are
+coordinated by Zookeeper service which uses dynamic role assignment to ensure
+its own fault-tolerance\nbsp{}cite:okorafor2012zookeeper. So, the lack of
+dynamic role distribution in YARN scheduler complicates the whole cluster
+configuration: if dynamic roles were available, Zookeeper would be redundant in
+this configuration.
 
-The same problem occurs in high-performance computing where principal node of a job
-scheduler is the single point of failure.
+The same problem occurs in high-performance computing where principal node of a
+job scheduler is the single point of failure.
 In\nbsp{}cite:uhlemann2006joshua,engelmann2006symmetric the authors use
-replication to make the principal node highly available, but backup server role is
-assigned statically and cannot be delegated to a healthy worker node. This
+replication to make the principal node highly available, but backup server role
+is assigned statically and cannot be delegated to a healthy worker node. This
 solution is closer to fully dynamic role assignment than high availability
 solution for big data schedulers, because it does not involve using external
 service to store configuration which should also be highly-available, however,
@@ -2588,26 +2589,28 @@ it is far from ideal solution where roles are completely decoupled from physical
 servers.
 
 Finally, the simplest principal node high availability is implemented in Virtual
-Router Redundancy Protocol (VRRP)\nbsp{}cite:knight1998rfc2338,hinden2004virtual,nadas2010rfc5798. Although VRRP
-protocol does provide principal and backup node roles, which are dynamically
-assigned to available routers, this protocol works on top of the IPv4 and IPv6
-protocols and is designed to be used by routers and reverse proxy servers. Such
-servers lack the state that needs to be restored upon a failure
+Router Redundancy Protocol
+(VRRP)\nbsp{}cite:knight1998rfc2338,hinden2004virtual,nadas2010rfc5798. Although
+VRRP protocol does provide principal and backup node roles, which are
+dynamically assigned to available routers, this protocol works on top of the
+IPv4 and IPv6 protocols and is designed to be used by routers and reverse proxy
+servers. Such servers lack the state that needs to be restored upon a failure
 (i.e.\nbsp{}there is no job queue in web servers), so it is easier for them to
 provide high-availability. In Linux it is implemented in Keepalived routing
 daemon\nbsp{}cite:cassen2002keepalived.
 
 In contrast to web servers and HPC and big data job schedulers, some distributed
 key-value stores and parallel file systems have symmetric architecture, where
-principal and subordinate roles are assigned dynamically, so that any node can act as a
-principal when the current principal node fails\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra.
+principal and subordinate roles are assigned dynamically, so that any node can
+act as a principal when the current principal node
+fails\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra.
 This design decision simplifies management and interaction with a distributed
 system. From system administrator point of view it is much simpler to install
-the same software stack on each node than to manually configure principal and subordinate
-nodes. Additionally, it is much easier to bootstrap new nodes into the cluster
-and decommission old ones. From user point of view, it is much simpler to
-provide web service high-availability and load-balancing when you have multiple
-backup nodes to connect to.
+the same software stack on each node than to manually configure principal and
+subordinate nodes. Additionally, it is much easier to bootstrap new nodes into
+the cluster and decommission old ones. From user point of view, it is much
+simpler to provide web service high-availability and load-balancing when you
+have multiple backup nodes to connect to.
 
 Dynamic role assignment would be beneficial for Big Data job schedulers because
 it allows to decouple distributed services from physical nodes, which is the
