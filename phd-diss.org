@@ -2562,21 +2562,22 @@ working nodes. The middleware works as a cluster operating system in user space,
 allowing to write and execute distributed applications transparently.
 
 **** Symmetric architecture.
-Homogeneous software stack on each cluster node together with dynamic
-distribution of roles between nodes is a symmetric architecture, which prevails
-in the design of parallel file systems and distributed key-value
-stores\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra,
-however, it is still not used in big data and HPC job schedulers. For example,
-in YARN big data job scheduler\nbsp{}cite:vavilapalli2013yarn principal and
-subordinate roles are static. Failure of a subordinate node is tolerated by
-restarting a part of a job, that worked on it, on one of the surviving nodes,
-and failure of a principal node is tolerated by setting up standby principal
-node\nbsp{}cite:murthy2011architecture. Both principal nodes are coordinated by
-Zookeeper service which uses dynamic role assignment to ensure its own
-fault-tolerance\nbsp{}cite:okorafor2012zookeeper. So, the lack of dynamic role
-distribution in YARN scheduler complicates the whole cluster configuration: if
-dynamic roles were available, Zookeeper would be redundant in this
-configuration.
+Many distributed key-value stores and parallel file systems have symmetric
+architecture, in which principal and subordinate roles are dynamically
+distributed, so that any node can act as a principal when the current principal
+node
+fails\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra.
+however, this architecture is still not used in big data and HPC job schedulers.
+For example, in YARN big data job scheduler\nbsp{}cite:vavilapalli2013yarn
+principal and subordinate roles are static. Failure of a subordinate node is
+tolerated by restarting a part of a job, that worked on it, on one of the
+surviving nodes, and failure of a principal node is tolerated by setting up
+standby principal node\nbsp{}cite:murthy2011architecture. Both principal nodes
+are coordinated by Zookeeper service which uses dynamic role assignment to
+ensure its own fault-tolerance\nbsp{}cite:okorafor2012zookeeper. So, the lack of
+dynamic role distribution in YARN scheduler complicates the whole cluster
+configuration: if dynamic roles were available, Zookeeper would be redundant in
+this configuration.
 
 The same problem occurs in HPC job schedulers where principal node (where the
 main job scheduler process is run) is the single point of failure.
@@ -2596,31 +2597,14 @@ the state (a job queue) that needs to be restored upon node failure, so it is
 easier for them to provide high availability. In can be implemented even without
 routers using Keepalived daemon\nbsp{}cite:cassen2002keepalived instead.
 
-In contrast to web servers and HPC and big data job schedulers, some distributed
-key-value stores and parallel file systems have symmetric architecture, where
-principal and subordinate roles are assigned dynamically, so that any node can
-act as a principal when the current principal node
-fails\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra.
-This design decision simplifies management and interaction with a distributed
-system. From system administrator point of view it is much simpler to install
-the same software stack on each node than to manually configure principal and
-subordinate nodes. Additionally, it is much easier to bootstrap new nodes into
-the cluster and decommission old ones. From user point of view, it is much
-simpler to provide web service high-availability and load-balancing when you
-have multiple backup nodes to connect to.
-
-Dynamic role assignment would be beneficial for Big Data job schedulers because
-it allows to decouple distributed services from physical nodes, which is the
-first step to build highly-available distributed service. The reason that there
-is no general solution to this problem is that there is no generic programming
-environment to write and execute distributed programmes. The aim of this work is
-to propose such an environment and to describe its internal structure.
-
-To summarise, the framework developed in this paper protects a parallel
-programme from failure of any number of subordinate nodes and from one failure
-of a principal node per superstep. The paper does not answer the question of how to
-determine if a node failed, it assumes a failure when the network connection to
-a node is prematurely closed.
+Symmetric architecture is beneficial for job schedulers because it
+allows to
+- make physical nodes interchangeable,
+- implement dynamic distribution of principal and subordinate roles, and
+- implement automatic recovery after failure of any node.
+The following sections will describe the components that are required to write
+parallel programme and job scheduler, that can tolerate failure of cluster
+nodes.
 
 **** Hierarchy of control flow objects
 For load balancing purposes cluster nodes are combined into tree hierarchy (see
