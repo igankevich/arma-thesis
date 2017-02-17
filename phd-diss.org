@@ -2536,6 +2536,23 @@ order to survive principal node failure, job scheduler server process continuous
 copies its internal state to a backup node, which becomes the principal after
 the failure.
 
+There are many works dedicated to improving performance of
+checkpoints\nbsp{}cite:egwutuoha2013survey, and alternative approaches do not
+receive much attention. Usually HPC applications use message passing for
+parallel processes communication and store their state in global memory space,
+hence there is no way one can restart a failed process from its current state
+without writing the whole memory image to disk. Usually the total number of
+processes is fixed by the job scheduler, and all parallel processes restart upon
+a failure. There is ongoing effort to make it possible to restart only the
+failed process\nbsp{}cite:meyer2012radic by restoring them from a checkpoint on
+the surviving nodes, but this may lead to overload if there are other processes
+on these nodes. Theoretically, process restart is not needed, if the job can
+proceed on the surviving nodes, however, message passing library does not allow
+to change the number of processes at runtime, and most programmes assume this
+number to be constant. So, there is no reliable way to provide fault tolerance
+in message passing library other than restarting all parallel processes from a
+checkpoint.
+
 **** Related work.
 Dynamic role assignment is an emerging trend in design of distributed systems\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra,
 however, it is still not used in big data and HPC job schedulers. For example,
