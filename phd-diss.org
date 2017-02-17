@@ -2587,16 +2587,14 @@ to symmetric architecture, because it does not involve external service to
 provide high availability, but far from ideal where backup node is dynamically
 chosen.
 
-Finally, the simplest principal node high availability is implemented in Virtual
-Router Redundancy Protocol
-(VRRP)\nbsp{}cite:knight1998rfc2338,hinden2004virtual,nadas2010rfc5798. Although
-VRRP protocol does provide principal and backup node roles, which are
-dynamically assigned to available routers, this protocol works on top of the
-IPv4 and IPv6 protocols and is designed to be used by routers and reverse proxy
-servers. Such servers lack the state that needs to be restored upon a failure
-(i.e.\nbsp{}there is no job queue in web servers), so it is easier for them to
-provide high-availability. In Linux it is implemented in Keepalived routing
-daemon\nbsp{}cite:cassen2002keepalived.
+Finally, the simplest principal node high availability is implemented in VRRP
+protocol (Virtual Router Redundancy
+Protocol)\nbsp{}cite:knight1998rfc2338,hinden2004virtual,nadas2010rfc5798.
+Although VRRP protocol does provide dynamic role distribution, but is designed
+to be used by routers and reverse proxy servers behind them. Such servers lack
+the state (a job queue) that needs to be restored upon node failure, so it is
+easier for them to provide high availability. In can be implemented even without
+routers using Keepalived daemon\nbsp{}cite:cassen2002keepalived instead.
 
 In contrast to web servers and HPC and big data job schedulers, some distributed
 key-value stores and parallel file systems have symmetric architecture, where
