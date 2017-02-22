@@ -468,8 +468,10 @@ Motion Programme (LAMP), программе для моделирования к
 
 *** Модель Лонге---Хиггинса
 Наиболее простой моделью, формула которой выводится в рамках линейной теории
-волн, является модель Лонге---Хиггинса (ЛХ)\nbsp{}cite:longuet1957statistical.
-Подробный сравнительный анализ этой модели и модели АРСС проведен в работах\nbsp{}cite:degtyarev2011modelling,boukhanovsky1997thesis.
+волн (см.\nbsp{}разд.\nbsp{}[[#longuet-higgins-derivation]]), является модель
+Лонге---Хиггинса (ЛХ)\nbsp{}cite:longuet1957statistical. Подробный сравнительный
+анализ этой модели и модели АРСС проведен в
+работах\nbsp{}cite:degtyarev2011modelling,boukhanovsky1997thesis.
 
 Модель ЛХ представляет взволнованную морскую поверхность в виде суперпозиции
 элементарных гармонических волн случайных амплитуд \(c_n\) и фаз \(\epsilon_n\),
@@ -3192,4 +3194,29 @@ bibliographystyle:ugost2008
 bibliography:bib/refs.bib
 
 * Приложение
-** TODO Вывод формулы модели Лонге---Хиггинса
+** Вывод формулы модели Лонге---Хиггинса
+:PROPERTIES:
+:CUSTOM_ID: longuet-higgins-derivation
+:END:
+
+Двухмерная система уравнений\nbsp{}eqref:eq:problem в рамках линейной теории
+волн записывается как
+\begin{align*}
+    & \phi_{xx} + \phi_{zz} = 0,\\
+    & \zeta(x,t) = -\frac{1}{g} \phi_t, & \text{на }z=\zeta(x,t),
+\end{align*}
+где \(\frac{p}{\rho}\) включено в \(\phi_t\). Решение уравнения Лапласа ищется в
+виде ряда Фурье cite:kochin1966theoretical:
+\begin{equation*}
+    \phi(x,z,t) = \int\limits_{0}^{\infty} e^{k z}
+    \left[ A(k, t) \cos(k x) + B(k, t) \sin(k x) \right] dk.
+\end{equation*}
+Подставляя его в граничное условие, получаем
+\begin{align*}
+    \zeta(x,t) &= -\frac{1}{g} \int\limits_{0}^{\infty}
+    \left[ A_t(k, t) \cos(k x) + B_t(k, t) \sin(k x) \right] dk \\
+    &= -\frac{1}{g} \int\limits_{0}^{\infty} C_t(k, t) \cos(kx + \eps(k, t)).
+\end{align*}
+Здесь \(\eps\)\nbsp{}--- белый шум, а \(C_t\) включает в себя значение \(dk\).
+Подставляя бесконечную сумму вместо интеграла, получаем двухмерную форму
+ур.\nbsp{}[[eq:longuet-higgins]].

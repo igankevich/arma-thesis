@@ -444,8 +444,10 @@ generation, instead of wavy surface generation.
 
 *** Longuet---Higgins model
 The simplest model, formula of which is derived in the framework of linear wave
-theory, is Longuet---Higgins (LH) model\nbsp{}cite:longuet1957statistical. In-depth
-comparative analysis of this model and ARMA model is done in\nbsp{}cite:degtyarev2011modelling,boukhanovsky1997thesis.
+theory (see\nbsp{}section\nbsp{}[[#longuet-higgins-derivation]]), is
+Longuet---Higgins (LH) model\nbsp{}cite:longuet1957statistical. In-depth
+comparative analysis of this model and ARMA model is done
+in\nbsp{}cite:degtyarev2011modelling,boukhanovsky1997thesis.
 
 LH model represents ocean wavy surface as a superposition of
 sine waves with random amplitudes \(c_n\) and phases \(\epsilon_n\), continuously
@@ -1910,8 +1912,8 @@ it transparently to a programmer. The implementation is divided into two layers:
 the lower layer consists of routines and classes for single node applications
 (with no network interactions), and the upper layer for applications that run on
 an arbitrary number of nodes. There are two kinds of tightly coupled entities in
-the model\nbsp{}--- /control flow objects/ (or /kernels/) and /pipelines/\nbsp{}--- which
-are used together to compose a programme.
+the model\nbsp{}--- /control flow objects/ (or /kernels/) and
+/pipelines/\nbsp{}--- which are used together to compose a programme.
 
 Kernels implement control flow logic in theirs ~act~ and ~react~ methods and
 store the state of the current control flow branch. Both logic and state are
@@ -2983,3 +2985,28 @@ bibliographystyle:ugost2008
 bibliography:bib/refs.bib
 
 * Appendix
+** Longuet---Higgins model formula derivation
+:PROPERTIES:
+:CUSTOM_ID: longuet-higgins-derivation
+:END:
+
+In the framework of linear wave theory two-dimensional system of
+equations\nbsp{}eqref:eq:problem is written as
+\begin{align*}
+    & \phi_{xx} + \phi_{zz} = 0,\\
+    & \zeta(x,t) = -\frac{1}{g} \phi_t, & \text{на }z=\zeta(x,t),
+\end{align*}
+where \(\frac{p}{\rho}\) includes \(\phi_t\). The solution to the Laplace
+equation is sought in a form of Fourier series cite:kochin1966theoretical:
+\begin{equation*}
+    \phi(x,z,t) = \int\limits_{0}^{\infty} e^{k z}
+    \left[ A(k, t) \cos(k x) + B(k, t) \sin(k x) \right] dk.
+\end{equation*}
+Plugging it in the boundary condition yields
+\begin{align*}
+    \zeta(x,t) &= -\frac{1}{g} \int\limits_{0}^{\infty}
+    \left[ A_t(k, t) \cos(k x) + B_t(k, t) \sin(k x) \right] dk \\
+    &= -\frac{1}{g} \int\limits_{0}^{\infty} C_t(k, t) \cos(kx + \eps(k, t)).
+\end{align*}
+Here \(\eps\) is white noise and \(C_t\) includes \(dk\). Substituting integral
+with infinite sum yields two-dimensional form of eq.\nbsp{}[[eq:longuet-higgins]].
