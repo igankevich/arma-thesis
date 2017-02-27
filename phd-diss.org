@@ -2723,37 +2723,30 @@ An example of fail over algorithm follows (fig.\nbsp{}[[fig-fail-over-example]])
    except setting up local network. The algorithm assumes full connectivity of
    cluster nodes, and works best with tree topologies in which several network
    switches connect all cluster nodes.
-2. Node hierarchy. When the cluster is bootstrapped, each node starts a
-   /daemon/ process, whose responsibility is to establish hierarchy of such
-   processes superimposed on the topology of cluster nodes. Hierarchical links
-   are solely defined by the position of node's IP address in the local network
-   IP address range eliminating the need for complex distributed consensus
-   algorithm. A node may act as a subordinate or a principal simultaneously thus
-   multiple hierarchy layers may be created. The hierarchy is changed only when
-   a new node joins or leaves the cluster, and is reused by every application
-   running on top of it. In an event of node failure its role is reassigned to
-   another node, and tasks that were executing on this node are restarted on
-   healthy ones.
-3. Launch main kernel. HPC application is decomposed into computational
-   kernels with hierarchical dependence. The first, or /main/ kernel, is
-   started on the leaf node. Main kernel may have only one subordinate at a
-   time, and /backup/ copy of the main kernel is sent along with the
-   subordinate kernel \(T_1\) to the root node. \(T_1\) represents one
-   sequential step of a programme (a superstep in Bulk Synchronous Parallel
-   model). There can be any number of sequential steps in a programme, and when
-   node \(B\) fails, the current step is restarted from the beginning.
+2. Build node hierarchy. When the cluster is bootstrapped, daemon processes
+   start on all cluster nodes and collectively build hierarchy of such processes
+   superimposed on the topology of cluster network. Position of a daemon process
+   in the hierarchy is defined by the position of its node IP address in the
+   network IP address range. To establish hierarchical link each process
+   connects to its assumed principal process. The hierarchy is changed only when
+   a new node joins the cluster or a node fails.
+3. Launch main kernel. The first kernel launches on one of the subordinate nodes
+   (node \(B\)). Main kernel may have only one subordinate at a time, and backup
+   copy of the main kernel is sent along with the subordinate kernel \(T_1\) to
+   the principal node \(A\). \(T_1\) represents one sequential step of a
+   programme. There can be any number of sequential steps in a programme, and
+   when node \(A\) fails, the current step is restarted from the beginning.
 4. Launch subordinate kernels. Kernels \(S_1\), \(S_2\), \(S_3\) are launched on
-   the leaf nodes. When node \(B\), \(C\) or \(D\) fails, corresponding master
-   kernel restarts failed subordinates (\(T_1\) restarts \(S_1\), master kernel
-   restarts \(T_1\) etc.). When node \(A\) fails, master kernel is recovered
-   from backup.
+   subordinate cluster nodes. When node \(B\), \(C\) or \(D\) fails,
+   corresponding main kernel restarts failed subordinates (\(T_1\) restarts
+   \(S_1\), master kernel restarts \(T_1\) etc.). When node \(B\) fails, master
+   kernel is recovered from backup.
 
 #+name: fig-fail-over-example
 #+header: :headers '("\\input{preamble}")
 #+begin_src latex :file build/fail-over-example.pdf :exports results :results raw
 \input{tex/preamble}
 \newcommand*{\spbuInsertFigure}[1]{%
-%\flushright%
 \vspace{2\baselineskip}%
 \begin{minipage}{0.5\textwidth}%
     \Large%
@@ -2768,6 +2761,7 @@ An example of fail over algorithm follows (fig.\nbsp{}[[fig-fail-over-example]])
 
 #+caption: An example of fail over algorithm in action.
 #+label: fig-fail-over-example
+#+attr_latex: :width \textwidth
 #+RESULTS: fig-fail-over-example
 [[file:build/fail-over-example.pdf]]
 
@@ -2802,11 +2796,11 @@ which only demands explicit marking of replicated kernels.
 In a series of experiments performance of the new version of the application in
 the presence of different types of failures was benchmarked (numbers correspond
 to the graphs in fig.\nbsp{}[[fig-benchmark]]):
-1. no failures,
-2. failure of a subordinate node (a node where a part of wavy surface is
+1) no failures,
+2) failure of a subordinate node (a node where a part of wavy surface is
    generated),
-3. failure of a principal node (a node where the main kernel is run),
-4. failure of a backup node (a node where a copy of the main kernel is stored).
+3) failure of a principal node (a node where the main kernel is run),
+4) failure of a backup node (a node where a copy of the main kernel is stored).
 A tree hierarchy with fan-out value of 64 was chosen to make all subordinate
 cluster nodes connect directly to the one having the first IP-address in the
 network IP address range. A victim node was made offline after a fixed amount of
