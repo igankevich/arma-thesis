@@ -2754,8 +2754,8 @@ An example of fail over algorithm follows (fig.\nbsp{}[[fig-fail-over-example]])
 \end{minipage}%
 }%
 \noindent%
-\spbuInsertFigure{tex/cluster-0}~\spbuInsertFigure{tex/frame-0}
-\spbuInsertFigure{tex/frame-3}~\spbuInsertFigure{tex/frame-4}
+\spbuInsertFigure{tex/cluster-0}~\spbuInsertFigure{tex/frame-0}\newline
+\spbuInsertFigure{tex/frame-3}~\spbuInsertFigure{tex/frame-4}\newline
 \spbuInsertFigure{tex/legend}
 #+end_src
 

@@ -2942,7 +2942,7 @@ Keepalived\nbsp{}cite:cassen2002keepalived.
 }%
 \noindent%
 \spbuInsertFigure{tex/cluster-0}~\spbuInsertFigure{tex/frame-0}\newline
-\spbuInsertFigure{tex/frame-3}~\spbuInsertFigure{tex/frame-4}\newline
+\spbuInsertFigure{tex/frame-3-ru}~\spbuInsertFigure{tex/frame-4-ru}\newline
 \spbuInsertFigure{tex/legend-ru}
 #+end_src
 

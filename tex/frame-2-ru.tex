@@ -1,0 +1,5 @@
+\input{tex/frame-1-ru}
+\begin{tikzpicture}[remember picture,overlay]
+	\node[Task,label={[TaskLabel]90:\textbf{Резервный}}] (MasterCopy) at (B1.center) {\phantom{A}};
+    \path[TaskEdge] (Master) edge (MasterCopy);
+\end{tikzpicture}%
