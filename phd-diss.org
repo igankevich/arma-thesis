@@ -2941,25 +2941,27 @@ communication in the presence of node
 failures\nbsp{}cite:fekete1993impossibility.
 ** Comparison of the proposed approach to the current approaches
 Current state-of-the-art approach to developing and running parallel programmes
-on the cluster is the use of message passing library (MPI) and job scheduler, and,
-although, this approach is highly efficient in terms of parallel execution, it
-is not flexible enough to accommodate dynamic load balancing and automatic
-fault-tolerance. Programmes written with MPI typically assume
+on the cluster is the use of MPI message passing library and job scheduler, and
+despite the fact that this approach is highly efficient in terms of parallel
+computing, it is not flexible enough to accommodate dynamic load balancing and
+automatic fault-tolerance. Programmes written with MPI typically assume
 - equal load on each processor,
-- non-interruptible and reliable execution of the batch job,
+- non-interruptible and reliable execution of batch jobs, and
 - constant number of parallel processes/threads throughout the execution which
   is equal to the total number of processors.
-The first is not true for ocean wave simulation programme because AR model
-requires dynamic load balancing between compute devices to compute each part of
-the surface only when all dependent parts are computed. The last point is also
-false because for the sake of efficiency each part is written to a file
-asynchronously by a separate thread. The second point is not very important for
-the programme itself, but is generally not true for very large computer clusters
-in which node failures occur regularly. So, the idea of the proposed approach is
-to give parallel programmes more flexibility:
+The first assumption does not hold for ocean wave simulation programme because
+AR model requires dynamic load balancing between processors to generate each
+part of the surface only when all dependent parts has already been generated.
+The last assumption also does not hold, because for the sake of efficiency each
+part is written to a file asynchronously by a separate thread. The remaining
+assumption is not related to the programme itself, but to the job scheduler, and
+does not generally hold for very large computer clusters in which node failures
+occur regularly, and job scheduler slowly restores the failed job from the
+checkpoint severely hindering its performance. So, the idea of the proposed
+approach is to give parallel programmes more flexibility:
 - provide dynamic load balancing via pipelined execution of sequential,
   internally parallel programme steps,
-- restart only affected processes upon node failure, and
+- restart only processes that were affected by node failure, and
 - execute the programme on as many compute nodes as are available in the
   cluster.
 In this section advantages and disadvantages of this approach are discussed.
@@ -2968,51 +2970,64 @@ In comparison to portable batch systems (PBS) the proposed approach uses
 lightweight control flow objects instead of heavy-weight parallel jobs to
 distribute the load on cluster nodes. First, this allows to have node object
 queues instead of several cluster-wide job queues. The granularity of control
-flow objects is much higher than the jobs, and, although, their execution time
-cannot be reliably predicted (as is execution time of batch jobs), objects from
-multiple parallel programmes can be dynamically distributed between the same set
-of cluster nodes, thus making the load more even. The disadvantage is that this
-requires more RAM to execute many programmes on the same set of nodes, and
-execution of each programme may be longer because of the shared node queues.
-Second, the proposed approach dynamic distribution of principal and subordinate
-node roles instead of static assignment to the particular physical nodes. So, by
-introducing execution of multiple parallel programmes on the same set of cluster
-node, the proposed approach may increase throughput of the cluster, but decrease
-performance of parallel programmes taken separately.
+flow objects is much higher than the batch jobs, and despite the fact that their
+execution time cannot be reliably predicted (as is execution time of batch
+jobs), objects from multiple parallel programmes can be dynamically distributed
+between the same set of cluster nodes, thus making the load more even. The
+disadvantage is that this requires more RAM to execute many programmes on the
+same set of nodes, and execution of each programme may be longer because of the
+shared control flow object queues. Second, the proposed approach uses dynamic
+distribution of principal and subordinate roles between cluster nodes instead of
+their static assignment to the particular physical nodes. This makes nodes
+interchangeable, which is required to provide fault tolerance. So, simultaneous
+execution of multiple parallel programmes on the same set of nodes may increase
+throughput of the cluster, but may also decrease their performance taken
+separately, and dynamic role distribution is the base on which resilience to
+failures builds.
 
 In comparison to MPI the proposed approach uses lightweight control flow objects
-instead of heavy-weight processes to decompose the programme into parallel
+instead of heavy-weight processes to decompose the programme into individual
 entities. First, this allows to determine the number of entities computed in
-parallel by the problem being solved, not the computer. A programme is
-encourages to create as many objects as needed, guided by the algorithm
-structure or restrictions on minimal size of data structures. In ocean wave
-simulation programme the minimal size of each wavy surface part depends on the
-number of coefficients along each dimension and at the same time the number of
-parts should be larger than the number of processors to make the load on each
-processor more even. Considering these limits the optimal part size is
-determined at runtime and is often not equal to the number of parallel
-processes. The disadvantage is that the more control flow objects there are in
-the programme, the more shared structures are copied to the same node with
-subordinate objects; this problem is solved by introducing another layer of
-hierarchy, which in turn adds another layer of complexity to the programme.
-Second, hierarchy of control flow objects together with hierarchy of nodes
-allows for automatic restart of failed objects on surviving nodes in an event of
-hardware failures. It is possible because the state of the programme execution
-is stored in each object and not in global variables like in MPI programme. By
-duplicating the state to a subordinate node, the system recomputes only failed
-objects instead of the whole programme. So, by introducing control flow objects
-instead of processes, the proposed approach may increase performance of a
-parallel programme via dynamic load balancing, but inhibit its scalability for a
-large number of nodes due to duplication of execution state.
+parallel by the problem being solved, not the computer or cluster architecture.
+A programmer is encouraged to create as many objects as needed, guided by the
+algorithm or restrictions on the size of data structures from the problem
+domain. In ocean wave simulation programme the minimal size of each wavy surface
+part depends on the number of coefficients along each dimension, and at the same
+time the number of parts should be larger than the number of processors to make
+the load on each processor more even. Considering these limits the optimal part
+size is determined at runtime, and, in general, is not equal the number of
+parallel processes. The disadvantage is that the more control flow objects there
+are in the programme, the more shared data structures are copied to the same
+node with subordinate objects; this problem is solved by introducing another
+intermediate layer of objects, which in turn adds more complexity to the
+programme. Second, hierarchy of control flow objects together with hierarchy of
+nodes allows for automatic recomputation of failed objects on surviving nodes in
+an event of hardware failures. It is possible because the state of the programme
+execution is stored in each object and not in global variables like in MPI
+programmes. By duplicating the state to a subordinate nodes, the system
+recomputes only objects from affected processes instead of the whole programme.
+So, transition from processes to control flow objects may increase performance
+of a parallel programme via dynamic load balancing, but inhibit its scalability
+for a large number of nodes due to duplication of execution state.
 
-To summarise, the control flow object approach to writing and running parallel
-programmes on the cluster makes parallel programmes more flexible: it balances
-the decrease in the performance due to shared object queues with the increase
-due to dynamic load balancing, but requires more memory to achieve this due to
-using the same set of nodes to simultaneously execute all parallel programmes.
-There is no cluster-wide job queue, and the cluster acts as a unified computer
-system which makes best effort to execute distributed programmes without
-interruption.
+It may seem as if three building blocks of the proposed approach\nbsp{}---
+control flow objects, pipelines and hierarchies\nbsp{}--- are orthogonal, but,
+in fact the complement each other. Without control flow objects carrying
+programme state it is impossible to recompute failed subordinate objects and
+provide fault tolerance. Without node hierarchy it is impossible to distribute
+the load between cluster nodes, because all nodes are equal without the
+hierarchy. Without pipelines for each device it is impossible to execute control
+flow objects asynchronously and implement dynamic load balancing. These three
+entities form a closed system with nothing to add and nothing to
+remove\nbsp{}--- a solid foundation for any distributed programme.
+
+To summarise, one can say that the control flow objects make parallel programmes
+more flexible: they balance the decrease in the performance due to shared object
+queues with the increase due to dynamic load balancing. Requiring more RAM, they
+allow to simultaneously run multiple parallel programmes on all cluster nodes
+without idling in the job queue, and transform the cluster into a unified
+computer system which makes best effort to execute distributed applications
+without interruption.
 
 * Conclusion
 * Acknowledgements
