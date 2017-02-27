@@ -13,6 +13,7 @@
 #+LATEX_HEADER_EXTRA: \newcites{published}{Publications on the subject of thesis}
 #+OPTIONS: todo:nil title:nil ':t H:5
 #+STARTUP: indent
+#+PROPERTY: header-args:R :results graphics :exports results
 
 * Config                                                           :noexport:
 ** Produce data for Q-Q and ACF plots
@@ -321,7 +322,7 @@ was still much work to be done to make it useful in practice.
    surface elevation).
 3. Then, derive formulae to determine pressure field under wavy surface.
    Usually, such formulae are derived for a particular model by substituting
-   wave profile into the eq. eqref:eq:problem, however, ARMA process does not
+   wave profile into the eq. eqref:eq-problem, however, ARMA process does not
    provide explicit wave profile formula, so this problem had to be solved for
    general wavy surface (which is not defined by an analytic formula),
    without linearisation of boundaries and assumption of small-amplitude waves.
@@ -413,7 +414,7 @@ problem of hydrodynamics for incompressible inviscid fluid. System of equations
 for it in general case is written as\nbsp{}cite:kochin1966theoretical
 \begin{align}
     & \nabla^2\phi = 0,\nonumber\\
-    & \phi_t+\frac{1}{2} |\vec{\upsilon}|^2 + g\zeta=-\frac{p}{\rho}, & \text{на }z=\zeta(x,y,t),\label{eq:problem}\\
+    & \phi_t+\frac{1}{2} |\vec{\upsilon}|^2 + g\zeta=-\frac{p}{\rho}, & \text{на }z=\zeta(x,y,t),\label{eq-problem}\\
     & D\zeta = \nabla \phi \cdot \vec{n}, & \text{на }z=\zeta(x,y,t),\nonumber
 \end{align}
 where \(\phi\)\nbsp{}--- velocity potential, \(\zeta\)\nbsp{}--- elevation (\(z\) coordinate)
@@ -453,7 +454,7 @@ LH model represents ocean wavy surface as a superposition of
 sine waves with random amplitudes \(c_n\) and phases \(\epsilon_n\), continuously
 distributed on interval \([0,2\pi]\). Wavy surface elevation (\(z\) coordinate) is
 defined by
-#+name: eq:longuet-higgins
+#+name: eq-longuet-higgins
 \begin{equation}
     \zeta(x,y,t) = \sum\limits_n c_n \cos(u_n x + v_n y - \omega_n t + \epsilon_n).
 \end{equation}
@@ -491,10 +492,10 @@ appear in practice.
    simulations.
 3. Finally, there are peculiarities which make LH model unsuitable base for
    building more advanced simulation models.
-   - In software implementation convergence rate of eq.\nbsp{}[[eq:longuet-higgins]]
+   - In software implementation convergence rate of eq.\nbsp{}[[eq-longuet-higgins]]
      may be low due to randomness of phases \(\epsilon_n\).
    - It is difficult to generalise LH model for non-Gaussian processes as it
-     involves incorporating non-linear terms in eq.\nbsp{}[[eq:longuet-higgins]] for
+     involves incorporating non-linear terms in eq.\nbsp{}[[eq-longuet-higgins]] for
      which there is no known formula to determine
      coefficients\nbsp{}cite:рожков1990вероятностные.
 
@@ -560,7 +561,7 @@ explicitly as
     \left.\frac{\partial\phi}{\partial x}\right|_{x,t}= &
         -\frac{1}{\sqrt{1+\alpha^{2}}}e^{-I(x)}
             \int\limits_{0}^x\frac{\partial\dot{\zeta}/\partial
-                z+\alpha\dot{\alpha}}{\sqrt{1+\alpha^{2}}}e^{I(x)}dx,\label{eq:old-sol-2d}\\
+                z+\alpha\dot{\alpha}}{\sqrt{1+\alpha^{2}}}e^{I(x)}dx,\label{eq-old-sol-2d}\\
     I(x)= & \int\limits_{0}^x\frac{\partial\alpha/\partial z}{1+\alpha^{2}}dx,\nonumber
 \end{align}
 
@@ -586,7 +587,7 @@ the form of elliptic partial differential equation (PDE):
 The authors suggest transforming this equation to finite differences and solve
 it numerically.
 
-As will be shown in [[#sec:compare-formulae]] that eqref:eq:old-sol-2d diverges when
+As will be shown in [[#sec:compare-formulae]] that eqref:eq-old-sol-2d diverges when
 attempted to calculate velocity field for large-amplitude waves, and this is the
 reason that it can not be used together with ARMA model, that generates
 arbitrary-amplitude waves.
@@ -623,7 +624,7 @@ distributed random impulses. The governing equation for 3-D ARMA process is
     \sum\limits_{\vec j = \vec 0}^{\vec M}
     \Theta_{\vec j} \epsilon_{\vec i - \vec j}
     ,
-    \label{eq:arma-process}
+    \label{eq-arma-process}
 \end{equation}
 where \(\zeta\)\nbsp{}--- wave elevation, \(\Phi\)\nbsp{}--- AR process coefficients, \(\Theta\)\nbsp{}--- MA process coefficients, \(\epsilon\)\nbsp{}--- white noise with Gaussian
 distribution, \(\vec N\)\nbsp{}--- AR process order, \(\vec M\)\nbsp{}--- MA process order, and
@@ -644,14 +645,14 @@ weighted sum:
     +
     \epsilon_{i,j,k}
     .
-    \label{eq:ar-process}
+    \label{eq-ar-process}
 \end{equation}
 The coefficients \(\Phi\) are calculated from ACF via three-dimensional
 Yule---Walker equations, which are obtained after multiplying both parts of the
 previous equation by \(\zeta_{\vec{i}-\vec{k}}\) and computing the expected value.
 Generic form of YW equations is
 \begin{equation}
-    \label{eq:yule-walker}
+    \label{eq-yule-walker}
     \gamma_{\vec k}
     =
     \sum\limits_{\vec j = \vec 0}^{\vec N}
@@ -727,7 +728,7 @@ hence the system is efficiently solved by Cholesky decomposition, which is
 particularly suitable for these types of matrices.
 
 After solving this system of equations white noise variance is estimated from
-eqref:eq:yule-walker by plugging \(\vec k = \vec 0\):
+eqref:eq-yule-walker by plugging \(\vec k = \vec 0\):
 \begin{equation*}
     \Var{\epsilon} =
     \Var{\zeta}
@@ -745,7 +746,7 @@ MA process is ARMA process with \(\Phi\equiv0\):
     \sum\limits_{\vec j = \vec 0}^{\vec M}
     \Theta_{\vec j} \epsilon_{\vec i - \vec j}
     .
-    \label{eq:ma-process}
+    \label{eq-ma-process}
 \end{equation}
 MA coefficients \(\Theta\) are defined implicitly via the following non-linear
 system of equations:
@@ -859,7 +860,7 @@ approximation based on field data, this equation is solved numerically with
 respect to \(z_k\) in each grid point \(y_k|_{k=0}^N\) of generated wavy surface. In
 this case equation is rewritten as
 \begin{equation}
-    \label{eq:distribution-transformation}
+    \label{eq-distribution-transformation}
     F(z_k)
     =
     \frac{1}{\sqrt{2\pi}}
@@ -885,7 +886,7 @@ where
     f(y) H_m(y) \exp\left[ -\frac{y^2}{2} \right],
 \end{equation*}
 \(H_m\)\nbsp{}--- Hermite polynomial, and \(f(y)\)\nbsp{}--- solution to equation
-eqref:eq:distribution-transformation. Plugging polynomial approximation
+eqref:eq-distribution-transformation. Plugging polynomial approximation
 \(f(y)\approx\sum\limits_{i}d_{i}y^i\) and analytic formulae for Hermite
 polynomial yields
 \begin{equation*}
@@ -910,7 +911,7 @@ In\nbsp{}cite:boukhanovsky1997thesis the author suggests using polynomial
 approximation \(f(y)\) also for wavy surface transformation, however, in practice
 ocean surface realisation often contains points, where z-coordinate is beyond
 the limits of the approximation, which makes solution wrong. In these points it
-is more efficient to solve equation eqref:eq:distribution-transformation by
+is more efficient to solve equation eqref:eq-distribution-transformation by
 bisection method. Using the same approximation in Gram---Charlier series does
 not lead to such errors.
 
@@ -960,7 +961,7 @@ determining pressures under wavy ocean surface.
 **** Formula for infinite depth fluid.
 Two-dimensional Laplace equation with Robin boundary condition is written as
 \begin{align}
-    \label{eq:problem-2d}
+    \label{eq-problem-2d}
     & \phi_{xx}+\phi_{zz}=0,\\
     & \zeta_t + \zeta_x\phi_x = \frac{\zeta_x}{\sqrt{1 + \zeta_x^2}} \phi_x - \phi_z, & \text{на }z=\zeta(x,t).\nonumber
 \end{align}
@@ -984,11 +985,11 @@ We seek solution in the form of inverse Fourier transform
 applicable because velocity potential must go to nought when depth goes to
 infinity.] \(v={i}{u}\) into the formula yields
 \begin{equation}
-    \label{eq:guessed-sol-2d}
+    \label{eq-guessed-sol-2d}
     \phi(x,z) = \InverseFourierY{e^{2\pi u z}E(u)}{x}.
 \end{equation}
 In order to make substitution \(z=\zeta(x,t)\) not interfere with Fourier
-transforms, we rewrite eqref:eq:guessed-sol-2d as a convolution:
+transforms, we rewrite eqref:eq-guessed-sol-2d as a convolution:
 \begin{equation*}
     \phi(x,z)
     =
@@ -1022,9 +1023,9 @@ to both sides of this equation yields formula for coefficients \(E\):
     }
 \end{equation*}
 Finally, substituting \(z\) for \(\zeta(x,t)\) and plugging resulting equation into
-eqref:eq:guessed-sol-2d yields formula for \(\phi(x,z)\):
+eqref:eq-guessed-sol-2d yields formula for \(\phi(x,z)\):
 \begin{equation}
-    \label{eq:solution-2d}
+    \label{eq-solution-2d}
     \boxed{
         \phi(x,z)
         =
@@ -1044,7 +1045,7 @@ transform of which is applied asymmetric with respect to \(OY\) axis. This makes
 it difficult to apply FFT which expects periodic function with nought on both
 ends of the interval. Using numerical integration instead of FFT is not faster
 than solving the initial system of equations with numerical schemes. This
-problem is alleviated by using formula eqref:eq:solution-2d-full for finite
+problem is alleviated by using formula eqref:eq-solution-2d-full for finite
 depth fluid with wittingly large depth \(h\). This formula is derived in the
 following section.
 
@@ -1060,7 +1061,7 @@ following form:
         \left( C_1 e^{2\pi u z} + C_2 e^{-2\pi u z} \right)
         E(u)
     }{x}.
-    \label{eq:guessed-sol-2d-full}
+    \label{eq-guessed-sol-2d-full}
 \end{equation}
 Plugging \(\phi\) into the boundary condition on the sea bottom yields
 \begin{equation*}
@@ -1069,7 +1070,7 @@ Plugging \(\phi\) into the boundary condition on the sea bottom yields
 hence \(C_1=\frac{1}{2}C{e}^{2\pi{u}{h}}\) and
 \(C_2=-\frac{1}{2}C{e}^{-2\pi{u}{h}}\). Constant \(C\) may take arbitrary value
 here, because after plugging it becomes part of unknown coefficients \(E(u)\).
-Plugging formulae for \(C_1\) and \(C_2\) into eqref:eq:guessed-sol-2d-full yields
+Plugging formulae for \(C_1\) and \(C_2\) into eqref:eq-guessed-sol-2d-full yields
 \begin{equation*}
     \phi(x,z) = \InverseFourierY{ \Sinh{2\pi u (z+h)} E(u) }{x}.
 \end{equation*}
@@ -1095,7 +1096,7 @@ previous section transformations yields final formula for \(\phi(x,z)\):
         }
     }{x},
 }
-    \label{eq:solution-2d-full}
+    \label{eq-solution-2d-full}
 \end{equation}
 where \(\FunSecond{z}\)\nbsp{}--- a function, form of which is defined in section
 [[#sec:compute-delta]] and which satisfies equation
@@ -1107,7 +1108,7 @@ analytic formula for plain waves. Symbolic computation of Fourier transforms in
 this section were performed in Mathematica\nbsp{}cite:mathematica10. In the framework
 of linear wave theory assume that waves have small amplitude compared to their
 lengths, which allows us to simplify initial system of equations
-eqref:eq:problem-2d to
+eqref:eq-problem-2d to
 \begin{align*}
     & \phi_{xx}+\phi_{zz}=0,\\
     & \zeta_t = -\phi_z & \text{на }z=\zeta(x,t),
@@ -1123,7 +1124,7 @@ solution to which is written as
     .
 \end{equation*}
 Propagating wave profile is defined as \(\zeta(x,t)=A\cos(2\pi(kx-t))\). Plugging
-this formula into eqref:eq:solution-2d yields
+this formula into eqref:eq-solution-2d yields
 \(\phi(x,z,t)=-\frac{A}{k}\sin(2\pi(kx-t))\Sinh{2\pi{k}{z}}\). In order to reduce
 it to the formula from linear wave theory, rewrite hyperbolic sine in
 exponential form, discard the term containing \(e^{-2\pi{k}{z}}\) as contradicting
@@ -1131,7 +1132,7 @@ condition \(\phi\underset{z\rightarrow-\infty}{\longrightarrow}0\). Taking real
 part of the resulting formula yields
 \(\phi(x,z,t)=\frac{A}{k}e^{2\pi{k}{z}}\sin(2\pi(kx-t))\), which corresponds to
 the known formula from linear wave theory. Similarly, under small-amplitude
-waves assumption the formula for finite depth fluid eqref:eq:solution-2d-full is
+waves assumption the formula for finite depth fluid eqref:eq-solution-2d-full is
 reduced to
 \begin{equation*}
     \phi(x,z,t)
@@ -1143,7 +1144,7 @@ reduced to
 \end{equation*}
 Substituting \(\zeta(x,t)\) with propagating plain wave profile formula yields
 \begin{equation}
-    \label{eq:solution-2d-linear}
+    \label{eq-solution-2d-linear}
     \phi(x,z,t)=\frac{A}{k}
     \frac{\Sinh{2 \pi k (z+h)}}{ \Sinh{2 \pi k h} }
     \sin(2 \pi (k x-t)),
@@ -1161,18 +1162,18 @@ depth difference near free surface is negligible). So, for sufficiently large
 depth any function (\(\cosh\) or \(\sinh\)) may be used for velocity potential
 computation near free surface.
 
-Reducing eqref:eq:solution-2d и eqref:eq:solution-2d-full to the known formulae
+Reducing eqref:eq-solution-2d и eqref:eq-solution-2d-full to the known formulae
 from linear wave theory shows, that formula for infinite depth
-eqref:eq:solution-2d is not suitable to compute velocity potentials with Fourier
+eqref:eq-solution-2d is not suitable to compute velocity potentials with Fourier
 method, because it does not have symmetry, which is required for Fourier
 transform. However, formula for finite depth can be used instead by setting \(h\)
 to some characteristic water depth. For standing wave reducing to linear wave
 theory formulae is made under the same assumptions.
 
 *** Three-dimensional velocity field
-Three-dimensional version of eqref:eq:problem is written as
+Three-dimensional version of eqref:eq-problem is written as
 \begin{align}
-    \label{eq:problem-3d}
+    \label{eq-problem-3d}
     & \phi_xx + \phi_yy + \phi_zz = 0,\\
     & \zeta_t + \zeta_x\phi_x + \zeta_y\phi_y
     =
@@ -1201,7 +1202,7 @@ transform \(\phi(x,y,z)=\InverseFourierY{E(u,v,w)}{x,y,z}\). Plugging
 Plugging \(\phi\) into the boundary condition on the sea bottom (analogous to
 two-dimensional case) yields
 \begin{equation}
-    \label{eq:guessed-sol-3d}
+    \label{eq-guessed-sol-3d}
     \phi(x,y,z) = \InverseFourierY{
         \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)
     }{x,y}.
@@ -1228,7 +1229,7 @@ coefficients \(E\):
         - & 2 \pi \sqrt{u^2+v^2} \SinhX{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)
     \end{array}
 \end{equation*}
-Final solution is obtained after plugging \(E(u,v)\) into eqref:eq:guessed-sol-3d.
+Final solution is obtained after plugging \(E(u,v)\) into eqref:eq-guessed-sol-3d.
 
 * Numerical methods and experimental results
 ** The shape of ACF for different types of waves
@@ -1240,7 +1241,7 @@ a function \(\zeta\) is given by the Fourier transform of the absolute square of
 the function:
 \begin{equation}
   K(t) = \Fourier{\left| \zeta(t) \right|^2}.
-  \label{eq:wiener-khinchin}
+  \label{eq-wiener-khinchin}
 \end{equation}
 When \(\zeta\) is replaced with actual wave profile, this formula gives you
 analytic formula for the corresponding ACF.
@@ -1270,7 +1271,7 @@ to test ARMA model.
 For three-dimensional plain standing wave the profile is given by
 \begin{equation}
   \zeta(t, x, y) = A \sin (k_x x + k_y y) \sin (\sigma t).
-  \label{eq:standing-wave}
+  \label{eq-standing-wave}
 \end{equation}
 Find ACF via analytic method. Multiplying the formula by a decaying exponent
 (because Fourier transform is defined for a function \(f\) that
@@ -1280,7 +1281,7 @@ Find ACF via analytic method. Multiplying the formula by a decaying exponent
   A
   \exp\left[-\alpha (|t|+|x|+|y|) \right]
   \sin (k_x x + k_y y) \sin (\sigma t).
-  \label{eq:decaying-standing-wave}
+  \label{eq-decaying-standing-wave}
 \end{equation}
 Then, apply 3D Fourier transform to both sides of the equation via symbolic
 computation programme, fit the resulting polynomial to the following
@@ -1291,7 +1292,7 @@ approximation:
   \exp\left[-\alpha (|t|+|x|+|y|) \right]
   \cos \beta t
   \cos \left[ \beta x + \beta y \right].
-  \label{eq:standing-wave-acf}
+  \label{eq-standing-wave-acf}
 \end{equation}
 So, after applying Wiener---Khinchin theorem we get initial formula but with
 cosines instead of sines. This difference is important because the value of ACF
@@ -1299,7 +1300,7 @@ at \((0,0,0)\) equals to the ARMA process variance, and if one used sines the
 value would be wrong.
 
 If one tries to replicate the same formula via empirical method, the usual way
-is to adapt eqref:eq:decaying-standing-wave to match eqref:eq:standing-wave-acf.
+is to adapt eqref:eq-decaying-standing-wave to match eqref:eq-standing-wave-acf.
 This can be done either by changing the phase of the sine, or by substituting
 sine with cosine to move the maximum of the function to the origin of
 coordinates.
@@ -1308,7 +1309,7 @@ coordinates.
 Three-dimensional profile of plain propagating wave is given by
 \begin{equation}
   \zeta(t, x, y) = A \cos (\sigma t + k_x x + k_y y).
-  \label{eq:propagating-wave}
+  \label{eq-propagating-wave}
 \end{equation}
 For the analytic method repeating steps from the previous two paragraphs yields
 \begin{equation}
@@ -1316,7 +1317,7 @@ For the analytic method repeating steps from the previous two paragraphs yields
   \gamma
   \exp\left[-\alpha (|t|+|x|+|y|) \right]
   \cos\left[\beta (t+x+y) \right].
-  \label{eq:propagating-wave-acf}
+  \label{eq-propagating-wave-acf}
 \end{equation}
 For the empirical method the wave profile is simply multiplied by a decaying
 exponent without need to adapt the maximum value of ACF (as it is required for
@@ -1356,7 +1357,7 @@ surface elevation is distinguished from normal distribution by non-nought
 kurtosis and skewness. In\nbsp{}cite:рожков1996теория the authors show, that this type
 of PDF expands in Gram---Charlier series:
 \begin{align}
-    \label{eq:skew-normal-1}
+    \label{eq-skew-normal-1}
     F(z; \gamma_1, \gamma_2) & = \phi(z)
         - \gamma_1 \frac{\phi'''(z)}{3!}
         + \gamma_2 \frac{\phi''''(z)}{4!} \nonumber \\
@@ -1385,7 +1386,7 @@ selected from interval \(0.1\leq\gamma_1\leq{0.52}]\) and kurtosis from interval
 different parameters is shown in fig.\nbsp{}[[fig-skew-normal-1]].
 
 #+NAME: fig-skew-normal-1
-#+begin_src R :results output graphics :exports results :file build/skew-normal-1.pdf
+#+begin_src R :file build/skew-normal-1.pdf
 source(file.path("R", "common.R"))
 x <- seq(-3, 3, length.out=100)
 params <- data.frame(
@@ -1410,7 +1411,7 @@ legend(
 )
 #+end_src
 
-#+caption: Probability density function eqref:eq:skew-normal-1 of ocean wavy surface elevation for different values of skewness \(\gamma_1\) and kurtosis \(\gamma_2\).
+#+caption: Probability density function eqref:eq-skew-normal-1 of ocean wavy surface elevation for different values of skewness \(\gamma_1\) and kurtosis \(\gamma_2\).
 #+label: fig-skew-normal-1
 #+RESULTS: fig-skew-normal-1
 [[file:build/skew-normal-1.pdf]]
@@ -1419,7 +1420,7 @@ legend(
 Alternative approach is to approximate distribution of ocean wavy surface
 elevation by skew-normal distribution:
 \begin{align}
-    \label{eq:skew-normal-2}
+    \label{eq-skew-normal-2}
     F(z; \alpha) & = \frac{1}{2}
    \mathrm{erfc}\left[-\frac{z}{\sqrt{2}}\right]-2 T(z,\alpha ), \nonumber \\
     f(z; \alpha) & = \frac{e^{-\frac{z^2}{2}}}{\sqrt{2 \pi }}
@@ -1430,10 +1431,10 @@ impossible to specify skewness and kurtosis separately\nbsp{}--- both values are
 adjusted via \(\alpha\) parameter. The only advantage of the formula is its
 relative computational simplicity: this function is available in some programmes
 and mathematical libraries. Its graph for different values of \(\alpha\) is shown
-in fig.\nbsp{}[[fig:skew-normal-2]].
+in fig.\nbsp{}[[fig-skew-normal-2]].
 
-#+name: fig:skew-normal-2
-#+begin_src R :results output graphics :exports results :file build/skew-normal-2.pdf
+#+name: fig-skew-normal-2
+#+begin_src R :file build/skew-normal-2.pdf
 source(file.path("R", "common.R"))
 x <- seq(-3, 3, length.out=100)
 alpha <- c(0.00, 0.87, 2.25, 4.90)
@@ -1462,13 +1463,13 @@ legend(
 )
 #+end_src
 
-#+caption: Probability density function eqref:eq:skew-normal-2 of ocean wavy surface for different values of skewness coefficient \(\alpha\).
-#+label: fig:skew-normal-2
-#+RESULTS: fig:skew-normal-2
+#+caption: Probability density function eqref:eq-skew-normal-2 of ocean wavy surface for different values of skewness coefficient \(\alpha\).
+#+label: fig-skew-normal-2
+#+RESULTS: fig-skew-normal-2
 [[file:build/skew-normal-2.pdf]]
 
 **** Evaluation.
-Equation eqref:eq:distribution-transformation with selected wave elevation
+Equation eqref:eq-distribution-transformation with selected wave elevation
 distribution may be solved either in every point of generated wavy surface,
 which gives the most accurate results, or in every fixed grid point
 interpolating result via least-squares (LS) polynomial. In the second case
@@ -1500,7 +1501,7 @@ saved to a file, which is then read before starting white noise generation.
 *** Wavy surface generation
 In ARMA model value of wavy surface elevation at a particular point depends on
 previous in space and time points, as a result the so called /ramp-up interval/
-(see fig.\nbsp{}[[fig:ramp-up-interval]]), in which realisation does not correspond to
+(see fig.\nbsp{}[[fig-ramp-up-interval]]), in which realisation does not correspond to
 specified ACF, forms in the beginning of the realisation. There are several
 solutions to this problem which depend on the simulation context.
 
@@ -1525,15 +1526,15 @@ end of each part. Then wavy surface is generated in each point of each part
 is superimposed on the ramp-up interval at the beginning of the part \(N+1\), and
 values in corresponding points are added.
 
-#+name: fig:ramp-up-interval
-#+begin_src R :results output graphics :exports results :file build/ramp-up-interval.pdf
+#+name: fig-ramp-up-interval
+#+begin_src R :file build/ramp-up-interval.pdf
 source(file.path("R", "common.R"))
 arma.plot_ramp_up_interval()
 #+end_src
 
 #+caption: Ramp-up interval at the beginning of the \(OX\) axis of the realisation.
-#+label: fig:ramp-up-interval
-#+RESULTS: fig:ramp-up-interval
+#+label: fig-ramp-up-interval
+#+RESULTS: fig-ramp-up-interval
 [[file:build/ramp-up-interval.pdf]]
 
 *** Velocity potential normalisation formulae
@@ -1541,13 +1542,13 @@ arma.plot_ramp_up_interval()
 :CUSTOM_ID: sec:compute-delta
 :END:
 
-In solutions eqref:eq:solution-2d and eqref:eq:solution-2d-full to
+In solutions eqref:eq-solution-2d and eqref:eq-solution-2d-full to
 two-dimensional pressure determination problem there are functions
 \(\Fun{z}=\InverseFourierY{e^{2\pi{u}{z}}}{x}\) and
 \(\FunSecond{z}=\InverseFourierY{\Sinh{2\pi{u}{z}}}{x}\) which has multiple
 analytic representations and are difficult to compute. Each function is a
 Fourier transform of linear combination of exponents which reduces to poorly
-defined Dirac delta function of a complex argument (see table\nbsp{}[[tab:delta-functions]]).
+defined Dirac delta function of a complex argument (see table\nbsp{}[[tab-delta-functions]]).
 The usual way of handling this type of functions is to write them as
 multiplication of Dirac delta functions of real and imaginary part, however,
 this approach does not work here, because applying inverse Fourier transform to
@@ -1559,7 +1560,7 @@ potential field, numerical experiments show that there is little difference
 between this field and the one produced by formulae from linear wave theory, in
 which terms with \(\zeta\) are omitted.
 
-#+name: tab:delta-functions
+#+name: tab-delta-functions
 #+caption: Formulae for computing \(\Fun{z}\) and \(\FunSecond{z}\) from [[#sec:pressure-2d]], that use normalisation to eliminate uncertainty from definition of Dirac delta function of complex argument.
 #+attr_latex: :booktabs t
 | Function          | Without normalisation                                        | Normalised                                                                                                                             |
@@ -1583,7 +1584,7 @@ distributions of different wave characteristics.
 
 *** Verification of wavy surface integral characteristics
 In\nbsp{}cite:рожков1990вероятностные the authors show that several ocean wave
-characteristics (listed in table\nbsp{}[[tab:weibull-shape]]) have Weibull distribution,
+characteristics (listed in table\nbsp{}[[tab-weibull-shape]]) have Weibull distribution,
 and wavy surface elevation has Gaussian distribution. In order to verify that
 distributions corresponding to generated realisation are correct,
 quantile-quantile plots are used (plots where analytic quantile values are used
@@ -1595,7 +1596,7 @@ extracting waves from realisation produce variations in quantile function tails,
 it is probably impractical to extract every possible wave from realisation since
 they may (and often) overlap.
 
-#+name: tab:weibull-shape
+#+name: tab-weibull-shape
 #+caption: Values of Weibull shape parameter for different wave characteristics.
 #+attr_latex: :booktabs t
 | Characteristic       | Weibull shape (\(k\)) |
@@ -1613,7 +1614,7 @@ in
 fig.\nbsp{}[[propagating-wave-distributions]],\nbsp{}[[standing-wave-distributions]],\nbsp{}[[acf-slices]].
 
 #+name: propagating-wave-distributions
-#+begin_src R :results output graphics :exports results :file build/propagating-wave-qqplots.pdf
+#+begin_src R :file build/propagating-wave-qqplots.pdf
 source(file.path("R", "common.R"))
 par(pty="s", mfrow=c(2, 2))
 arma.qqplot_grid(
@@ -1631,7 +1632,7 @@ arma.qqplot_grid(
 [[file:build/propagating-wave-qqplots.pdf]]
 
 #+name: standing-wave-distributions
-#+begin_src R :results output graphics :exports results :file build/standing-wave-qqplots.pdf
+#+begin_src R :file build/standing-wave-qqplots.pdf
 source(file.path("R", "common.R"))
 par(pty="s", mfrow=c(2, 2))
 arma.qqplot_grid(
@@ -1650,7 +1651,7 @@ arma.qqplot_grid(
 
 #+name: acf-slices
 #+header: :width 6 :height 9
-#+begin_src R :results output graphics :exports results :file build/acf-slices.pdf
+#+begin_src R :file build/acf-slices.pdf
 source(file.path("R", "common.R"))
 propagating_acf <- read.csv(file.path("build", "propagating_wave", "acf.csv"))
 standing_acf <- read.csv(file.path("build", "standing_wave", "acf.csv"))
@@ -1672,8 +1673,8 @@ for (i in seq(0, 4)) {
 :CUSTOM_ID: sec:compare-formulae
 :END:
 
-Comparing obtained generic formulae eqref:eq:solution-2d and
-eqref:eq:solution-2d-full to the known formulae from linear wave theory allows
+Comparing obtained generic formulae eqref:eq-solution-2d and
+eqref:eq-solution-2d-full to the known formulae from linear wave theory allows
 to see the difference between velocity fields for both large and small amplitude
 waves. In general analytic formula for velocity potential in not known, even for
 plain waves, so comparison is done numerically. Taking into account conclusions
@@ -1681,19 +1682,19 @@ of [[#sec:pressure-2d]], only finite depth formulae are compared.
 
 **** The difference with linear wave theory formulae.
 The experiment shows that velocity potential fields produced by formula
-eqref:eq:solution-2d-full for finite depth fluid and formula
-eqref:eq:solution-2d-linear from linear wave theory are qualitatively different
-(fig.\nbsp{}[[fig:potential-field-nonlinear]]). First, velocity potential contours have
+eqref:eq-solution-2d-full for finite depth fluid and formula
+eqref:eq-solution-2d-linear from linear wave theory are qualitatively different
+(fig.\nbsp{}[[fig-potential-field-nonlinear]]). First, velocity potential contours have
 sinusoidal shape, which is different from oval shape described by linear wave
 theory. Second, velocity potential decays more rapidly than in linear wave
 theory as getting closer to the bottom, and the region where the majority of
 wave energy is concentrated is closer to the wave crest. Similar numerical
-experiment, in which all terms of eqref:eq:solution-2d-full that are neglected
+experiment, in which all terms of eqref:eq-solution-2d-full that are neglected
 in the framework of linear wave theory are eliminated, shows no difference (as
 much as machine precision allows) in resulting velocity potential fields.
 
-#+name: fig:potential-field-nonlinear
-#+caption: Velocity potential field of propagating wave \(\zeta(x,y,t) = \cos(2\pi x - t/2)\). Field produced by formula eqref:eq:solution-2d-full (top) and linear wave theory formula (bottom).
+#+name: fig-potential-field-nonlinear
+#+caption: Velocity potential field of propagating wave \(\zeta(x,y,t) = \cos(2\pi x - t/2)\). Field produced by formula eqref:eq-solution-2d-full (top) and linear wave theory formula (bottom).
 #+begin_figure
 #+attr_latex: :width 0.47\textwidth
 [[file:graphics/pressure/potential-5.eps]]
@@ -1703,17 +1704,17 @@ much as machine precision allows) in resulting velocity potential fields.
 
 **** The difference with small-amplitude wave theory.
 The experiment shows that velocity fields produced by formula
-eqref:eq:solution-2d-full and eqref:eq:old-sol-2d correspond to each other for
+eqref:eq-solution-2d-full and eqref:eq-old-sol-2d correspond to each other for
 small-amplitude waves. Two ocean wavy surface realisations are made by AR model:
 one contains small-amplitude waves, other contains large-amplitude waves.
-Integration in formula eqref:eq:solution-2d-full is done over wave numbers range
+Integration in formula eqref:eq-solution-2d-full is done over wave numbers range
 extracted from the generated wavy surface. For small-amplitude waves both
 formulae show comparable results (the difference in the velocity is attributed
 to stochastic nature of AR model), whereas for large-amplitude waves stable
-velocity field is produced only by formula eqref:eq:solution-2d-full (fig.\nbsp{}[[fig:velocity-field-2d]]). So, generic formula eqref:eq:solution-2d-full gives
+velocity field is produced only by formula eqref:eq-solution-2d-full (fig.\nbsp{}[[fig-velocity-field-2d]]). So, generic formula eqref:eq-solution-2d-full gives
 satisfactory results without restriction on wave amplitudes.
 
-#+name: fig:velocity-field-2d
+#+name: fig-velocity-field-2d
 #+caption: Comparison of velocity field on the ocean wavy surface obtained by generic formula (\(u_1\)) and formula for small-amplitude waves (\(u_2\)). Velocity field for realisations containing small-amplitude (top) and large-amplitude (bottom) waves.
 #+begin_figure
 [[file:build/low-amp-nocolor.eps]]
@@ -1738,7 +1739,7 @@ Software implementation of ARMA model works as a computational pipeline, in
 which each joint applies some function to the output coming from the pipe of the
 previous joint. Joints are distributed across computer cluster nodes to enable
 function parallelism, and then data flowing through the joints is distributed
-across processor cores to enable data parallelism. Figure\nbsp{}[[fig:pipeline]] shows a
+across processor cores to enable data parallelism. Figure\nbsp{}[[fig-pipeline]] shows a
 diagram of data processing pipeline in which rectangles with rounded corners
 denote joints, regular rectangles denote arrays of problem domain objects
 flowing from one joint to another, and arrows show flow direction. Some joints
@@ -1752,7 +1753,7 @@ may run several sections, each of which may sequentially process several
 objects, but a section can not work simultaneously on several processor cores,
 and an object can not be processed simultaneously by several sections.
 
-#+name: fig:pipeline
+#+name: fig-pipeline
 #+begin_src dot :exports results :file build/pipeline.pdf
 digraph {
 
@@ -1855,8 +1856,8 @@ digraph {
 #+end_src
 
 #+caption: Diagram of data processing pipeline, that implements ocean wavy surface generation via AR model.
-#+label: fig:pipeline
-#+RESULTS: fig:pipeline
+#+label: fig-pipeline
+#+RESULTS: fig-pipeline
 [[file:build/pipeline.pdf]]
 
 Object pipeline may be seen as an improvement of BSP (Bulk Synchronous Parallel)
@@ -1945,7 +1946,7 @@ thread pool that processes kernels in accordance with rules outlined in the
 previous paragraph. A separate pipeline is used for each device: There are
 pipelines for parallel processing, schedule-based processing (periodic and
 delayed tasks), and a proxy pipeline for processing of kernels on other cluster
-nodes (see fig.\nbsp{}[[fig:subord-ppl]]).
+nodes (see fig.\nbsp{}[[fig-subord-ppl]]).
 
 In principle, kernels and pipelines machinery reflect the one of procedures and
 call stacks, with the advantage that kernel methods are called asynchronously
@@ -1958,7 +1959,7 @@ replace active wait for completion of subordinate kernels with passive one.
 Pipelines, in turn, allow to implement passive wait, and call correct kernel
 methods by analysing their internal state.
 
-#+name: fig:subord-ppl
+#+name: fig-subord-ppl
 #+begin_src dot :exports results :file build/subord-ppl.pdf
 graph G {
 
@@ -2067,8 +2068,8 @@ graph G {
 
 #+caption: Mapping of parent and child process pipelines to compute devices. Solid lines denote aggregation, dashed lines denote mapping between logical and physical entities.
 #+attr_latex: :width \textwidth
-#+label: fig:subord-ppl
-#+RESULTS: fig:subord-ppl
+#+label: fig-subord-ppl
+#+RESULTS: fig-subord-ppl
 [[file:build/subord-ppl.pdf]]
 
 *** Governing principles
@@ -2175,11 +2176,11 @@ convergence rate and non-existence of periodicity allows to use far fewer
 coefficients compared to LH model.
 
 ARMA implementation uses several libraries of reusable mathematical functions
-and numerical algorithms (listed in table\nbsp{}[[tab:arma-libs]]), and was implemented using
+and numerical algorithms (listed in table\nbsp{}[[tab-arma-libs]]), and was implemented using
 several parallel programming technologies (MPI, OpenMP, OpenCL) to find the most
 efficient one.
 
-#+name: tab:arma-libs
+#+name: tab-arma-libs
 #+caption: A list of mathematical libraries used in ARMA model implementation.
 #+attr_latex: :booktabs t :align lp{0.6\linewidth}
 | Library                                                | What it is used for             |
@@ -2197,9 +2198,9 @@ load on processor cores, however, as shown by tests, has high load on storage
 device. Before testing wavy surface generation was implemented using OpenMP for
 parallel computations and in order to implement load balancing algorithm was
 rewritten using POSIX threads. Performance of the two implementations was
-compared on the platform with the configuration listed in table\nbsp{}[[tab:multicore-specs]].
+compared on the platform with the configuration listed in table\nbsp{}[[tab-multicore-specs]].
 
-#+name: tab:multicore-specs
+#+name: tab-multicore-specs
 #+caption: Multi-core system configuration.
 #+attr_latex: :booktabs t
 | Component                 | Details                          |
@@ -2227,18 +2228,18 @@ and CPU thread pool size was equal the number of physical processor cores.
 
 In the experiment load balancing algorithm showed higher performance than
 implementation without it. The more the size of the generated surface is the
-more the gap in performance is (fig.\nbsp{}[[fig:factory-performance]]) which is a
+more the gap in performance is (fig.\nbsp{}[[fig-factory-performance]]) which is a
 result of overlap of computation phase and data output phase
-(fig.\nbsp{}[[fig:factory-overlap]]). In OpenMP implementation data output phase
+(fig.\nbsp{}[[fig-factory-overlap]]). In OpenMP implementation data output phase
 begins only when computation is over, whereas load balancing algorithm makes
 both phases end almost simultaneously. So, /pipelined execution of internally
 parallel sequential phases is more efficient than their sequential execution/,
 and this allows to balance the load across different devices involved in
 computation.
 
-#+name: fig:factory-performance
+#+name: fig-factory-performance
 #+header: :width 5 :height 4
-#+begin_src R :results output graphics :exports results :file build/factory-vs-openmp.pdf
+#+begin_src R :file build/factory-vs-openmp.pdf
 source(file.path("R", "common.R"))
 arma.plot_factory_vs_openmp(
   xlab="Realisation size",
@@ -2248,13 +2249,13 @@ arma.plot_factory_vs_openmp(
 #+end_src
 
 #+caption: Performance comparison of OpenMP and Factory implementations.
-#+label: fig:factory-performance
-#+RESULTS: fig:factory-performance
+#+label: fig-factory-performance
+#+RESULTS: fig-factory-performance
 [[file:build/factory-vs-openmp.pdf]]
 
-#+name: fig:factory-overlap
+#+name: fig-factory-overlap
 #+header: :width 7 :height 4
-#+begin_src R :results output graphics :exports results :file build/factory-vs-openmp-overlap.pdf
+#+begin_src R :file build/factory-vs-openmp-overlap.pdf
 source(file.path("R", "common.R"))
 par(mar=c(5, 6, 0, 1), pty="m")
 arma.plot_factory_vs_openmp_overlap(
@@ -2265,8 +2266,8 @@ arma.plot_factory_vs_openmp_overlap(
 #+end_src
 
 #+caption: Overlap of parallel computations on \([G_0,G_1]\) and data output to disk on \([W_0,W_1]\). In OpenMP implementation there is no overlap.
-#+label: fig:factory-overlap
-#+RESULTS: fig:factory-overlap
+#+label: fig-factory-overlap
+#+RESULTS: fig-factory-overlap
 [[file:build/factory-vs-openmp-overlap.pdf]]
 
 Proposed load balancing method for multi-core systems allows to increase
@@ -2466,14 +2467,14 @@ results, thus additional physical nodes, each of which run 100 virtual nodes,
 were used for the experiment. The experiment showed that discovery of 100--400
 nodes each other takes 1.5 seconds on average, and the value increases only
 slightly with increase in the number of nodes (see
-fig.\nbsp{}[[fig:bootstrap-local]]). An example of tree hierarchy for 11 nodes with
-fan-out 2 is shown in fig.\nbsp{}[[fig:tree-hierarchy-11]].
+fig.\nbsp{}[[fig-bootstrap-local]]). An example of tree hierarchy for 11 nodes with
+fan-out 2 is shown in fig.\nbsp{}[[fig-tree-hierarchy-11]].
 
-#+name: fig:bootstrap-local
+#+name: fig-bootstrap-local
 #+caption: Time to discover all nodes of the cluster in depending on number of nodes.
 [[file:graphics/discovery.eps]]
 
-#+name: fig:tree-hierarchy-11
+#+name: fig-tree-hierarchy-11
 #+begin_src dot :exports results :file build/tree-hierarchy-11.pdf
 digraph {
 
@@ -2507,8 +2508,8 @@ digraph {
 #+end_src
 
 #+caption: Tree hierarchy for 11 nodes with fan-out equals 2.
-#+label: fig:tree-hierarchy-11
-#+RESULTS: fig:tree-hierarchy-11
+#+label: fig-tree-hierarchy-11
+#+RESULTS: fig-tree-hierarchy-11
 [[file:build/tree-hierarchy-11.pdf]]
 
 *** Fail over algorithm
@@ -2717,7 +2718,7 @@ This simple approach allows to tolerate at most one failure of /any/ cluster nod
 per computational step or arbitrary number of subordinate nodes at any time
 during programme execution.
 
-An example of fail over algorithm follows (fig.\nbsp{}[[fig:fail-over-example]]).
+An example of fail over algorithm follows (fig.\nbsp{}[[fig-fail-over-example]]).
 1. Initial state. Initially, computer cluster does not need to be configured
    except setting up local network. The algorithm assumes full connectivity of
    cluster nodes, and works best with tree topologies in which several network
@@ -2747,7 +2748,7 @@ An example of fail over algorithm follows (fig.\nbsp{}[[fig:fail-over-example]])
    restarts \(T_1\) etc.). When node \(A\) fails, master kernel is recovered
    from backup.
 
-#+name: fig:fail-over-example
+#+name: fig-fail-over-example
 #+header: :headers '("\\input{preamble}")
 #+begin_src latex :file build/fail-over-example.pdf :exports results :results raw
 \input{tex/preamble}
@@ -2766,12 +2767,12 @@ An example of fail over algorithm follows (fig.\nbsp{}[[fig:fail-over-example]])
 #+end_src
 
 #+caption: An example of fail over algorithm in action.
-#+label: fig:fail-over-example
-#+RESULTS: fig:fail-over-example
+#+label: fig-fail-over-example
+#+RESULTS: fig-fail-over-example
 [[file:build/fail-over-example.pdf]]
 
 **** Evaluation results.
-Factory framework is evaluated on physical cluster (table\nbsp{}[[tab:cluster]]) on the
+Factory framework is evaluated on physical cluster (table\nbsp{}[[tab-cluster]]) on the
 example of HPC application, that generates ocean wavy surface, which is
 described in detail in section [[#sec:arma-algorithms]]. The application consists of
 a series of filters, each of which is applied to the result of the previous one.
@@ -2781,7 +2782,7 @@ performance. In the programme only the most compute-intensive step (the surface
 generation) is executed in parallel across all cluster nodes, and other steps
 are executed in parallel across all cores of the principal node.
 
-#+name: tab:cluster
+#+name: tab-cluster
 #+caption: Test platform configuration.
 #+attr_latex: :booktabs t
 | CPU                       | Intel Xeon E5440, 2.83GHz |
@@ -2800,7 +2801,7 @@ which only demands explicit marking of replicated kernels.
 
 In a series of experiments performance of the new version of the application in
 the presence of different types of failures was benchmarked (numbers correspond
-to the graphs in fig.\nbsp{}[[fig:benchmark]]):
+to the graphs in fig.\nbsp{}[[fig-benchmark]]):
 1. no failures,
 2. failure of a subordinate node (a node where a part of wavy surface is
    generated),
@@ -2813,12 +2814,12 @@ time after the programme start which is equivalent approximately to \(1/3\) of
 the total run time without failures on a single node. The application
 immediately recognised node as offline, because the corresponding connection was
 closed; in real-world scenario, however, the failure is detected after a
-configurable time-out. All relevant parameters are summarised in table\nbsp{}[[tab:benchmark]]. The results of these runs were compared to the run without node
-failures (fig.\nbsp{}[[fig:benchmark]] and\nbsp{}[[fig:slowdown]]).
+configurable time-out. All relevant parameters are summarised in table\nbsp{}[[tab-benchmark]]. The results of these runs were compared to the run without node
+failures (fig.\nbsp{}[[fig-benchmark]] and\nbsp{}[[fig-slowdown]]).
 
 There is considerable difference in overall application performance for
 different types of failures. Graphs\nbsp{}2 and\nbsp{}3 in
-fig.\nbsp{}[[fig:benchmark]] show that performance in case of principal and
+fig.\nbsp{}[[fig-benchmark]] show that performance in case of principal and
 subordinate node failure is the same. In case of principal node failure a backup
 node stores a copy of the main kernel and uses this copy when it detects failure
 of the principal node. In case of subordinate node failure, the principal node
@@ -2826,7 +2827,7 @@ redistributes the non-returning kernels between remaining subordinate nodes. In
 both cases the state of the main kernel is not lost and no time is spent to
 restore it, which explains similar performance.
 
-Graph\nbsp{}4 in fig.\nbsp{}[[fig:benchmark]] shows that performance in case of a
+Graph\nbsp{}4 in fig.\nbsp{}[[fig-benchmark]] shows that performance in case of a
 backup node failure is much lower than in other cases. It happens because
 principal node stores only the state of the current step of the computation plus
 some additional fixed amount of data, whereas a backup node not only stores the
@@ -2834,7 +2835,7 @@ copy of this data, but executes the step in parallel with other subordinate
 nodes. So, when a backup node fails, the principal node executes the whole step
 once again on arbitrarily chosen survived node.
 
-#+name: tab:benchmark
+#+name: tab-benchmark
 #+caption: Benchmark parameters for experiments with fail over algorithm.
 #+attr_latex: :booktabs t
 | Experiment no. | Time to offline, s |
@@ -2846,7 +2847,7 @@ once again on arbitrarily chosen survived node.
 To measure how much time is lost due to a node failure the total execution time
 with a failure was divided by the total execution time without the failure but
 with the number of nodes minus one. This relation is obtained from the same
-benchmark and presented in fig.\nbsp{}[[fig:slowdown]]. The difference in
+benchmark and presented in fig.\nbsp{}[[fig-slowdown]]. The difference in
 performance in case of principal and subordinate node failures lies within 5%
 margin, and in case of backup node failure within 50% margin for the number of
 node less than 6[fn::Measuring this margin for higher number of nodes does not
@@ -2859,28 +2860,28 @@ main kernel finishes its execution and tries to reach its parent. Instant
 detection requires abrupt stopping of the subordinate kernel which may be
 inapplicable for programmes with complicated logic.
 
-#+name: fig:benchmark
-#+begin_src R
+#+name: fig-benchmark
+#+begin_src R :file build/benchmark-xxx.pdf
 # TODO
 #+end_src
 
 #+caption: Performance of hydrodynamics HPC application in the presence of node failures.
-#+label: fig:benchmark
-#+RESULTS: fig:benchmark
+#+label: fig-benchmark
+#+RESULTS: fig-benchmark
 
 The results of the benchmark allows to conclude that no matter a principal or a
 subordinate node fails, the overall performance of a parallel programme roughly
 equals to the one without failures with the number of nodes minus one, however,
 when a backup node fails performance penalty is much higher.
 
-#+name: fig:slowdown
-#+begin_src R
+#+name: fig-slowdown
+#+begin_src R :file build/slowdown-xxx.pdf
 # TODO
 #+end_src
 
 #+caption: Slowdown of the hydrodynamics HPC application in the presence of different types of node failures compared to execution without failures but with the number of nodes minus one.
-#+label: fig:slowdown
-#+RESULTS: fig:slowdown
+#+label: fig-slowdown
+#+RESULTS: fig-slowdown
 
 **** Discussion of test results.
 Fail over algorithm guarantees to handle one failure per sequential programme
@@ -3012,7 +3013,7 @@ bibliography:bib/refs.bib
 :END:
 
 In the framework of linear wave theory two-dimensional system of
-equations\nbsp{}eqref:eq:problem is written as
+equations\nbsp{}eqref:eq-problem is written as
 \begin{align*}
     & \phi_{xx} + \phi_{zz} = 0,\\
     & \zeta(x,t) = -\frac{1}{g} \phi_t, & \text{на }z=\zeta(x,t),
@@ -3030,4 +3031,4 @@ Plugging it in the boundary condition yields
     &= -\frac{1}{g} \int\limits_{0}^{\infty} C_t(k, t) \cos(kx + \eps(k, t)).
 \end{align*}
 Here \(\eps\) is white noise and \(C_t\) includes \(dk\). Substituting integral
-with infinite sum yields two-dimensional form of eq.\nbsp{}[[eq:longuet-higgins]].
+with infinite sum yields two-dimensional form of eq.\nbsp{}[[eq-longuet-higgins]].
