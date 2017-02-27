@@ -1888,7 +1888,7 @@ basis of the fault-tolerance model which will be described later.
 
 **** Software implementation.
 For efficiency reasons object pipeline and fault tolerance techniques (which
-will be described later) are implemented in the C++ framework: From the authors'
+will be described later) are implemented in the C++ framework: From the author's
 perspective C language is deemed low-level for distributed programmes, and Java
 incurs too much overhead and is not popular in HPC community. As of now, the
 framework runs in the same process as an parallel application that uses it. The
@@ -1912,7 +1912,7 @@ it transparently to a programmer. The implementation is divided into two layers:
 the lower layer consists of routines and classes for single node applications
 (with no network interactions), and the upper layer for applications that run on
 an arbitrary number of nodes. There are two kinds of tightly coupled entities in
-the model\nbsp{}--- /control flow objects/ (or /kernels/) and
+the model\nbsp{}--- /control flow objects/ (or /kernels/ for short) and
 /pipelines/\nbsp{}--- which are used together to compose a programme.
 
 Kernels implement control flow logic in theirs ~act~ and ~react~ methods and
@@ -2216,12 +2216,14 @@ and CPU thread pool size was equal the number of physical processor cores.
 
 In the experiment load balancing algorithm showed higher performance than
 implementation without it. The more the size of the generated surface is the
-more the gap in performance is (fig.\nbsp{}[[fig:factory-performance]]) which is a result
-of overlap of computation phase and data output phase (fig.\nbsp{}[[fig:factory-overlap]]). In OpenMP implementation data output phase begins only
-when computation is over, whereas load balancing algorithm makes both phases end
-almost simultaneously. So, /pipelined execution of internally parallel
-sequential phases is more efficient than their sequential execution/, and this
-allows to balance the load across different devices involved in computation.
+more the gap in performance is (fig.\nbsp{}[[fig:factory-performance]]) which is a
+result of overlap of computation phase and data output phase
+(fig.\nbsp{}[[fig:factory-overlap]]). In OpenMP implementation data output phase
+begins only when computation is over, whereas load balancing algorithm makes
+both phases end almost simultaneously. So, /pipelined execution of internally
+parallel sequential phases is more efficient than their sequential execution/,
+and this allows to balance the load across different devices involved in
+computation.
 
 #+name: fig:factory-performance
 #+begin_src R :results output graphics :exports results :file build/factory-vs-openmp.pdf
@@ -2849,9 +2851,9 @@ inapplicable for programmes with complicated logic.
 #+caption: Performance of hydrodynamics HPC application in the presence of node failures.
 #+RESULTS: fig:benchmark
 
-The results of the benchmark allows to conclude that /no matter a principal or a
+The results of the benchmark allows to conclude that no matter a principal or a
 subordinate node fails, the overall performance of a parallel programme roughly
-equals to the one without failures with the number of nodes minus one/, however,
+equals to the one without failures with the number of nodes minus one, however,
 when a backup node fails performance penalty is much higher.
 
 #+name: fig:slowdown
@@ -2889,8 +2891,8 @@ not justify loosing all the data when the long programme run is near completion.
 In general, the more sequential steps one has in a parallel programme the less
 time is lost in an event of a backup node failure, and the more parallel parts
 each sequential step has the less time is lost in case of a principal or
-subordinate node failure. In other words, /the more scalable a programme is the
-more resilient to cluster node failures it becomes/.
+subordinate node failure. In other words, the more scalable a programme is the
+more resilient to cluster node failures it becomes.
 
 Although it is not shown in the experiments, Factory does not only provide
 tolerance to cluster node failures, but allows for new nodes to automatically
