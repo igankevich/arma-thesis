@@ -481,9 +481,10 @@ appear in practice.
    amplitudes and phases has normal distribution, no matter what spectrum is
    used as the model input. Using lower number of coefficients may solve the
    problem, but also make realisation period smaller. So, using LH model to
-   simulate waves with non-Gaussian distribution of elevation\nbsp{}--- a distribution
-   which real ocean waves have\nbsp{}cite:huang1980experimental,рожков1996теория\nbsp{}---
-   is impractical.
+   simulate waves with non-Gaussian distribution of elevation\nbsp{}--- a
+   distribution which real ocean waves
+   have\nbsp{}cite:huang1980experimental,рожков1996теория \nbsp{}--- is
+   impractical.
 2. From computational point of view, the deficiency of the model is non-linear
    increase of wavy surface generation time with the increase of realisation
    size. The larger the size of the realisation, the higher number of
@@ -2641,7 +2642,7 @@ Unlike ~main~ function in programmes based on message passing library, the first
 on-demand. This design choice allows to have arbitrary number of nodes throughout
 execution of a programme, and use more nodes for highly parallel parts of the
 code. Similar choice is made in the design of big data
-frameworks\nbsp{}cite:dean2008mapreduce,vavilapalli2013yarn\nbsp{}--- a user
+frameworks\nbsp{}cite:dean2008mapreduce,vavilapalli2013yarn \nbsp{}--- a user
 submitting a job does not specify the number of hosts to run its job on, and
 actual hosts are the hosts where input files are located.
 
@@ -3023,13 +3024,13 @@ which provides computing environment for reproducible research. This means that
 all graphs can be reproduced and corresponding statements verified by cloning
 thesis repository[fn:repo], installing Emacs and exporting the document.
 
-[fn:repo] [[https://github.com/igankevich/arma-thesis]]
-
 The research was carried out using computational resources of Resource Centre
 "Computational Centre of Saint Petersburg State University" (\mbox{T-EDGE96}
 \mbox{HPC-0011828-001}) within frameworks of grants of Russian Foundation for
 Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
 \mbox{16-07-01113}).
+
+[fn:repo] [[https://github.com/igankevich/arma-thesis]]
 
 * List of acronyms and symbols
 - <<<MPP>>> :: Massively Parallel Processing, computers with distributed memory.
@@ -3096,7 +3097,8 @@ Plugging it in the boundary condition yields
 \begin{align*}
     \zeta(x,t) &= -\frac{1}{g} \int\limits_{0}^{\infty}
     \left[ A_t(k, t) \cos(k x) + B_t(k, t) \sin(k x) \right] dk \\
-    &= -\frac{1}{g} \int\limits_{0}^{\infty} C_t(k, t) \cos(kx + \eps(k, t)).
+    &= -\frac{1}{g} \int\limits_{0}^{\infty} C_t(k, t) \cos(kx + \epsilon(k, t)).
 \end{align*}
-Here \(\eps\) is white noise and \(C_t\) includes \(dk\). Substituting integral
-with infinite sum yields two-dimensional form of eq.\nbsp{}[[eq-longuet-higgins]].
+Here \(\epsilon\) is white noise and \(C_t\) includes \(dk\). Substituting
+integral with infinite sum yields two-dimensional form of
+eq.\nbsp{}[[eq-longuet-higgins]].
