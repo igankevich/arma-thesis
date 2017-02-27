@@ -1,4 +1,4 @@
-\begin{tikzpicture}[x=2.3cm,y=-1.0cm,framed]
+\begin{tikzpicture}[x=2.3cm,y=-2.0cm,framed]
         
     \node[Node] at (0,0) {\phantom{A}};
     \node[anchor=west] (X2) at (0.4,0) {\strut узел кластера};
@@ -12,10 +12,10 @@
     \node[Daemon,scale=0.6] at (0,3) {\phantom{A}};
     \node[anchor=west] (X2) at (0.4,3) {\strut процесс-сервис};
     \draw[DaemonLink] (3.8,3) -- (4.2,3);
-    \node[anchor=west] (X2) at (4.4,3) {\strut связь узлов иерархии};
+    \node[anchor=west,text width=5cm] (X2) at (4.4,3) {\strut иерархическая связь между узлами};
     
     \node[Process,scale=0.6] (X3) at (0,4) {\phantom{A}};
     \node[baseline=(X3.base),anchor=west] at (0.4,4) {\strut управляющий объект};
     \draw[ProcessEdge] (3.8,4) -- (4.2,4);
-    \node[anchor=west] (X2) at (4.4,4) {\strut связь управляющих объектов};
+    \node[anchor=west,text width=5cm] (X2) at (4.4,4) {\strut иерархическая связь между управляющими объектами};
 \end{tikzpicture}
