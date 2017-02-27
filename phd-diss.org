@@ -1382,9 +1382,9 @@ where \(\phi(z)=\frac{1}{2}\mathrm{erf}(z/\sqrt{2})\), \(\gamma_1\)\nbsp{}--- sk
 (CDF). According to\nbsp{}cite:рожков1990вероятностные for ocean waves skewness is
 selected from interval \(0.1\leq\gamma_1\leq{0.52}]\) and kurtosis from interval
 \(0.1\leq\gamma_2\leq{0.7}\). Family of probability density functions for
-different parameters is shown in fig.\nbsp{}[[fig:skew-normal-1]].
+different parameters is shown in fig.\nbsp{}[[fig-skew-normal-1]].
 
-#+name: fig:skew-normal-1
+#+NAME: fig-skew-normal-1
 #+begin_src R :results output graphics :exports results :file build/skew-normal-1.pdf
 source(file.path("R", "common.R"))
 x <- seq(-3, 3, length.out=100)
@@ -1411,7 +1411,8 @@ legend(
 #+end_src
 
 #+caption: Probability density function eqref:eq:skew-normal-1 of ocean wavy surface elevation for different values of skewness \(\gamma_1\) and kurtosis \(\gamma_2\).
-#+RESULTS: fig:skew-normal-1
+#+label: fig-skew-normal-1
+#+RESULTS: fig-skew-normal-1
 [[file:build/skew-normal-1.pdf]]
 
 **** Skew-normal distribution.
@@ -1462,6 +1463,7 @@ legend(
 #+end_src
 
 #+caption: Probability density function eqref:eq:skew-normal-2 of ocean wavy surface for different values of skewness coefficient \(\alpha\).
+#+label: fig:skew-normal-2
 #+RESULTS: fig:skew-normal-2
 [[file:build/skew-normal-2.pdf]]
 
@@ -1530,6 +1532,7 @@ arma.plot_ramp_up_interval()
 #+end_src
 
 #+caption: Ramp-up interval at the beginning of the \(OX\) axis of the realisation.
+#+label: fig:ramp-up-interval
 #+RESULTS: fig:ramp-up-interval
 [[file:build/ramp-up-interval.pdf]]
 
@@ -1606,7 +1609,8 @@ they may (and often) overlap.
 
 Verification was performed for standing and propagating waves. The corresponding
 ACFs and quantile-quantile plots of wave characteristics distributions are shown
-in fig. [[acf-slices]], [[standing-wave-distributions]], [[propagating-wave-distributions]].
+in
+fig.\nbsp{}[[propagating-wave-distributions]],\nbsp{}[[standing-wave-distributions]],\nbsp{}[[acf-slices]].
 
 #+name: propagating-wave-distributions
 #+begin_src R :results output graphics :exports results :file build/propagating-wave-qqplots.pdf
@@ -1622,6 +1626,7 @@ arma.qqplot_grid(
 #+end_src
 
 #+caption: Quantile-quantile plots for propagating waves.
+#+label: propagating-wave-distributions
 #+RESULTS: propagating-wave-distributions
 [[file:build/propagating-wave-qqplots.pdf]]
 
@@ -1639,6 +1644,7 @@ arma.qqplot_grid(
 #+end_src
 
 #+caption: Quantile-quantile plots for standing waves.
+#+label: standing-wave-distributions
 #+RESULTS: standing-wave-distributions
 [[file:build/standing-wave-qqplots.pdf]]
 
@@ -1656,6 +1662,7 @@ for (i in seq(0, 4)) {
 #+end_src
 
 #+caption: Time slices of ACF for standing (left column) and propagating waves (right column).
+#+label: acf-slices
 #+RESULTS: acf-slices
 [[file:build/acf-slices.pdf]]
 
@@ -1686,10 +1693,11 @@ in the framework of linear wave theory are eliminated, shows no difference (as
 much as machine precision allows) in resulting velocity potential fields.
 
 #+name: fig:potential-field-nonlinear
-#+caption: Velocity potential field of propagating wave \(\zeta(x,y,t) = \cos(2\pi x - t/2)\). Field produced by formula eqref:eq:solution-2d-full (left) and linear wave theory formula (right).
-#+attr_latex: :width 0.47\textwidth
+#+caption: Velocity potential field of propagating wave \(\zeta(x,y,t) = \cos(2\pi x - t/2)\). Field produced by formula eqref:eq:solution-2d-full (top) and linear wave theory formula (bottom).
 #+begin_figure
+#+attr_latex: :width 0.47\textwidth
 [[file:graphics/pressure/potential-5.eps]]
+#+attr_latex: :width 0.47\textwidth
 [[file:graphics/pressure/potential-6.eps]]
 #+end_figure
 
@@ -1706,7 +1714,7 @@ velocity field is produced only by formula eqref:eq:solution-2d-full (fig.\nbsp{
 satisfactory results without restriction on wave amplitudes.
 
 #+name: fig:velocity-field-2d
-#+caption: Comparison of velocity field on the ocean wavy surface obtained by generic formula (\(u_1\)) and formula for small-amplitude waves (\(u_2\)). Velocity field for realisations containing small-amplitude (left) and large-amplitude (right) waves.
+#+caption: Comparison of velocity field on the ocean wavy surface obtained by generic formula (\(u_1\)) and formula for small-amplitude waves (\(u_2\)). Velocity field for realisations containing small-amplitude (top) and large-amplitude (bottom) waves.
 #+begin_figure
 [[file:build/low-amp-nocolor.eps]]
 [[file:build/high-amp-nocolor.eps]]
@@ -1847,6 +1855,7 @@ digraph {
 #+end_src
 
 #+caption: Diagram of data processing pipeline, that implements ocean wavy surface generation via AR model.
+#+label: fig:pipeline
 #+RESULTS: fig:pipeline
 [[file:build/pipeline.pdf]]
 
@@ -1953,7 +1962,7 @@ methods by analysing their internal state.
 #+begin_src dot :exports results :file build/subord-ppl.pdf
 graph G {
 
-  node [fontsize=14,margin="0.055,0",shape=box]
+  node [fontname="Old Standard",fontsize=14,margin="0.055,0",shape=box]
   graph [nodesep="0.25",ranksep="0.25",rankdir="LR"]
   edge [arrowsize=0.66]
 
@@ -1963,14 +1972,14 @@ graph G {
     color=lightgrey
 
     factory [label="Factory"]
-    parallel_ppl [label="Parallel pipeline"]
-    io_ppl [label="I/O pipeline"]
-    sched_ppl [label="Schedule-based pipeline"]
-    net_ppl [label="Network pipeline"]
-    proc_ppl [label="Process pipeline"]
+    parallel_ppl [label="Parallel\npipeline"]
+    io_ppl [label="I/O\npipeline"]
+    sched_ppl [label="Schedule-based\npipeline"]
+    net_ppl [label="Network\npipeline"]
+    proc_ppl [label="Process\npipeline"]
 
-    upstream [label="Upstream thread pool"]
-    downstream [label="Downstream thread pool"]
+    upstream [label="Upstream\nthread pool"]
+    downstream [label="Downstream\nthread pool"]
   }
 
   factory--parallel_ppl
@@ -2036,27 +2045,29 @@ graph G {
       app0 [label="Child process\rpipeline"]
     }
 
-    subgraph cluster_child1 {
-      label="Child process 1"
-      style=filled
-      color=lightgrey
-      labeljust=right
-
-      app1_factory [label="Factory"]
-      app1 [label="Child process\rpipeline"]
-    }
+#    subgraph cluster_child1 {
+#      label="Child process 1"
+#      style=filled
+#      color=lightgrey
+#      labeljust=right
+#
+#      app1_factory [label="Factory"]
+#      app1 [label="Child process\rpipeline"]
+#    }
   }
 
   proc_ppl--app0
-  proc_ppl--app1
+#  proc_ppl--app1
 
   app0_factory--app0 [constraint=false]
-  app1_factory--app1 [constraint=false]
+#  app1_factory--app1 [constraint=false]
 
 }
 #+end_src
 
-#+caption: Mapping of parent and child process pipelines to compute devices.
+#+caption: Mapping of parent and child process pipelines to compute devices. Solid lines denote aggregation, dashed lines denote mapping between logical and physical entities.
+#+attr_latex: :width \textwidth
+#+label: fig:subord-ppl
 #+RESULTS: fig:subord-ppl
 [[file:build/subord-ppl.pdf]]
 
@@ -2226,6 +2237,7 @@ and this allows to balance the load across different devices involved in
 computation.
 
 #+name: fig:factory-performance
+#+header: :width 5 :height 4
 #+begin_src R :results output graphics :exports results :file build/factory-vs-openmp.pdf
 source(file.path("R", "common.R"))
 arma.plot_factory_vs_openmp(
@@ -2236,11 +2248,12 @@ arma.plot_factory_vs_openmp(
 #+end_src
 
 #+caption: Performance comparison of OpenMP and Factory implementations.
+#+label: fig:factory-performance
 #+RESULTS: fig:factory-performance
 [[file:build/factory-vs-openmp.pdf]]
 
 #+name: fig:factory-overlap
-#+header: :width 9 :height 4
+#+header: :width 7 :height 4
 #+begin_src R :results output graphics :exports results :file build/factory-vs-openmp-overlap.pdf
 source(file.path("R", "common.R"))
 par(mar=c(5, 6, 0, 1), pty="m")
@@ -2252,6 +2265,7 @@ arma.plot_factory_vs_openmp_overlap(
 #+end_src
 
 #+caption: Overlap of parallel computations on \([G_0,G_1]\) and data output to disk on \([W_0,W_1]\). In OpenMP implementation there is no overlap.
+#+label: fig:factory-overlap
 #+RESULTS: fig:factory-overlap
 [[file:build/factory-vs-openmp-overlap.pdf]]
 
@@ -2463,7 +2477,7 @@ fan-out 2 is shown in fig.\nbsp{}[[fig:tree-hierarchy-11]].
 #+begin_src dot :exports results :file build/tree-hierarchy-11.pdf
 digraph {
 
-  node [fontsize=14,margin="0.055,0",shape=box,style=rounded]
+  node [fontname="Old Standard",fontsize=14,margin="0.055,0",shape=box,style=rounded]
   graph [nodesep="0.15",ranksep="0.20",rankdir="BT"]
   edge [arrowsize=0.66]
 
@@ -2493,6 +2507,7 @@ digraph {
 #+end_src
 
 #+caption: Tree hierarchy for 11 nodes with fan-out equals 2.
+#+label: fig:tree-hierarchy-11
 #+RESULTS: fig:tree-hierarchy-11
 [[file:build/tree-hierarchy-11.pdf]]
 
@@ -2702,7 +2717,7 @@ This simple approach allows to tolerate at most one failure of /any/ cluster nod
 per computational step or arbitrary number of subordinate nodes at any time
 during programme execution.
 
-An example of fail over algorithm follows.
+An example of fail over algorithm follows (fig.\nbsp{}[[fig:fail-over-example]]).
 1. Initial state. Initially, computer cluster does not need to be configured
    except setting up local network. The algorithm assumes full connectivity of
    cluster nodes, and works best with tree topologies in which several network
@@ -2751,6 +2766,7 @@ An example of fail over algorithm follows.
 #+end_src
 
 #+caption: An example of fail over algorithm in action.
+#+label: fig:fail-over-example
 #+RESULTS: fig:fail-over-example
 [[file:build/fail-over-example.pdf]]
 
@@ -2849,6 +2865,7 @@ inapplicable for programmes with complicated logic.
 #+end_src
 
 #+caption: Performance of hydrodynamics HPC application in the presence of node failures.
+#+label: fig:benchmark
 #+RESULTS: fig:benchmark
 
 The results of the benchmark allows to conclude that no matter a principal or a
@@ -2862,6 +2879,7 @@ when a backup node fails performance penalty is much higher.
 #+end_src
 
 #+caption: Slowdown of the hydrodynamics HPC application in the presence of different types of node failures compared to execution without failures but with the number of nodes minus one.
+#+label: fig:slowdown
 #+RESULTS: fig:slowdown
 
 **** Discussion of test results.

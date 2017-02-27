@@ -1465,6 +1465,7 @@ legend(
 #+end_src
 
 #+caption: Вид плотности распределения eqref:eq:skew-normal-1 аппликат взволнованной морской поверхности при различных значениях асимметрии \(\gamma_1\) и эксцесса \(\gamma_2\).
+#+label: fig:skew-normal-1
 #+RESULTS: fig:skew-normal-1
 [[file:build/skew-normal-1.pdf]]
 
@@ -1516,6 +1517,7 @@ legend(
 #+end_src
 
 #+caption: Вид плотности распределения eqref:eq:skew-normal-2 волновых аппликат при различных значениях коэффициента асимметрии \(\alpha\).
+#+label: fig:skew-normal-2
 #+RESULTS: fig:skew-normal-2
 [[file:build/skew-normal-2.pdf]]
 
@@ -1590,6 +1592,7 @@ arma.plot_ramp_up_interval(label="Интервал разгона")
 #+end_src
 
 #+caption: Интевал разгона в начале оси \(OX\) реализации.
+#+label: fig:ramp-up-interval
 #+RESULTS: fig:ramp-up-interval
 [[file:build/ramp-up-interval-ru.pdf]]
 
@@ -1683,6 +1686,7 @@ arma.qqplot_grid(
 #+end_src
 
 #+caption: Спрямленные диаграммы для прогрессивных волн.
+#+label: propagating-wave-distributions
 #+RESULTS: propagating-wave-distributions
 [[file:build/propagating-wave-qqplots.pdf]]
 
@@ -1700,6 +1704,7 @@ arma.qqplot_grid(
 #+end_src
 
 #+caption: Спрямленные диаграммы для стоячих волн.
+#+label: standing-wave-distributions
 #+RESULTS: standing-wave-distributions
 [[file:build/standing-wave-qqplots-ru.pdf]]
 
@@ -1717,6 +1722,7 @@ for (i in seq(0, 4)) {
 #+end_src
 
 #+caption: Временные срезы АКФ для стоячих (слева) и прогрессивных (справа) волн.
+#+label: acf-slices
 #+RESULTS: acf-slices
 [[file:build/acf-slices-ru.pdf]]
 
@@ -1747,10 +1753,11 @@ eqref:eq:solution-2d-linear линейной теории, качественн�
 позволяет сделать машинная точность).
 
 #+name: fig:potential-field-nonlinear
-#+caption: Поле потенциала скорости прогрессивной волны \(\zeta(x,y,t) = \cos(2\pi x - t/2)\). Поле, полученное по формуле eqref:eq:solution-2d-full (слева) и по формуле линейной теории волн (справа).
-#+attr_latex: :width 0.47\textwidth
+#+caption: Поле потенциала скорости прогрессивной волны \(\zeta(x,y,t) = \cos(2\pi x - t/2)\). Поле, полученное по формуле eqref:eq:solution-2d-full (сверху) и по формуле линейной теории волн (снизу).
 #+begin_figure
+#+attr_latex: :width 0.47\textwidth
 [[file:graphics/pressure/potential-5.eps]]
+#+attr_latex: :width 0.47\textwidth
 [[file:graphics/pressure/potential-6.eps]]
 #+end_figure
 
@@ -1769,7 +1776,7 @@ eqref:eq:old-sol-2d, сопоставимы для волн малых ампл�
 волн.
 
 #+name: fig:velocity-field-2d
-#+caption: Сравнение полей скоростей на поверхности моря, полученных по общей формуле (\(u_1\)) и формуле для волн малой амплитуды (\(u_2\)). Поле скоростей для поверхности волн малой амплитуды (слева) и большой амплитуды (справа).
+#+caption: Сравнение полей скоростей на поверхности моря, полученных по общей формуле (\(u_1\)) и формуле для волн малой амплитуды (\(u_2\)). Поле скоростей для поверхности волн малой амплитуды (сверху) и большой амплитуды (снизу).
 #+begin_figure
 [[file:build/low-amp-nocolor.eps]]
 [[file:build/high-amp-nocolor.eps]]
@@ -1914,6 +1921,7 @@ digraph {
 #+end_src
 
 #+caption: Схема конвейера обработки данных, реализующего генерацию взволнованной морской поверхности по АР модели.
+#+label: fig:pipeline
 #+RESULTS: fig:pipeline
 [[file:build/pipeline-ru.pdf]]
 
@@ -2031,7 +2039,7 @@ digraph {
 #+begin_src dot :exports results :file build/subord-ppl-ru.pdf
 graph G {
 
-  node [fontsize=14,margin="0.055,0",shape=box]
+  node [fontname="Old Standard",fontsize=14,margin="0.055,0",shape=box]
   graph [nodesep="0.25",ranksep="0.25",rankdir="LR"]
   edge [arrowsize=0.66]
 
@@ -2047,8 +2055,8 @@ graph G {
     net_ppl [label="Конвейер для\nсетевых устройств"]
     proc_ppl [label="Конвейер\nдля процессов"]
 
-    upstream [label="Пул потоков upstream"]
-    downstream [label="Пул потоков downstream"]
+    upstream [label="Пул потоков\nupstream"]
+    downstream [label="Пул потоков\ndownstream"]
   }
 
   factory--parallel_ppl
@@ -2110,29 +2118,31 @@ graph G {
       color=lightgrey
 
       app0_factory [label="Фабрика"]
-      app0 [label="Конвейер\nдочернего процесса"]
+      app0 [label="Конвейер\nдочернего\nпроцесса"]
     }
 
-    subgraph cluster_child1 {
-      label="Дочерний процесс 1"
-      style=filled
-      color=lightgrey
-
-      app1_factory [label="Фабрика"]
-      app1 [label="Конвейер\nдочернего процесса"]
-    }
+#    subgraph cluster_child1 {
+#      label="Дочерний процесс 1"
+#      style=filled
+#      color=lightgrey
+#
+#      app1_factory [label="Фабрика"]
+#      app1 [label="Конвейер\nдочернего процесса"]
+#    }
   }
 
   proc_ppl--app0
-  proc_ppl--app1
+#  proc_ppl--app1
 
   app0_factory--app0 [constraint=false]
-  app1_factory--app1 [constraint=false]
+#  app1_factory--app1 [constraint=false]
 
 }
 #+end_src
 
-#+caption: Отображение конвейеров родительского и дочернего процессов на вычислительные устройства.
+#+caption: Отображение конвейеров родительского и дочернего процессов на вычислительные устройства. Сплошные линии обозначают агрегацию, пунктирные линии обозначают отображение между логическими и физическими сущностями.
+#+attr_latex: :width \textwidth
+#+label: fig:subord-ppl
 #+RESULTS: fig:subord-ppl
 [[file:build/subord-ppl-ru.pdf]]
 
@@ -2371,6 +2381,7 @@ GotoBLAS и основанная на ней LAPACK, для непрерывно
 различные устройства, задействованные в вычислениях.
 
 #+name: fig:factory-performance
+#+header: :width 5 :height 4
 #+begin_src R :results output graphics :exports results :file build/factory-vs-openmp-ru.pdf
 source(file.path("R", "common.R"))
 arma.plot_factory_vs_openmp(
@@ -2381,11 +2392,12 @@ arma.plot_factory_vs_openmp(
 #+end_src
 
 #+caption: Сравнение производительности реализаций программы на OpenMP и Factory.
+#+label: fig:factory-performance
 #+RESULTS: fig:factory-performance
 [[file:build/factory-vs-openmp-ru.pdf]]
 
 #+name: fig:factory-overlap
-#+header: :width 9 :height 4
+#+header: :width 7 :height 4
 #+begin_src R :results output graphics :exports results :file build/factory-vs-openmp-overlap-ru.pdf
 source(file.path("R", "common.R"))
 par(mar=c(5, 6, 0, 1), pty="m")
@@ -2397,6 +2409,7 @@ arma.plot_factory_vs_openmp_overlap(
 #+end_src
 
 #+caption: Наложение параллельных вычислений на \([G_0,G_1]\) и записи данных на диск на \([W_0,W_1]\). В реализации OpenMP наложение отсутствует.
+#+label: fig:factory-overlap
 #+RESULTS: fig:factory-overlap
 [[file:build/factory-vs-openmp-overlap-ru.pdf]]
 
@@ -2657,6 +2670,7 @@ digraph {
 #+end_src
 
 #+caption: Древовидная иерархия для 11 узлов для ветвления равного 2.
+#+label: fig:tree-hierarchy-11
 #+RESULTS: fig:tree-hierarchy-11
 [[file:build/tree-hierarchy-11-ru.pdf]]
 
@@ -2906,6 +2920,7 @@ TODO translate
 #+end_src
 
 #+caption: Пример работы алгоритма восстановления после сбоев.
+#+label: fig:fail-over-example
 #+RESULTS: fig:fail-over-example
 [[file:build/fail-over-example-ru.pdf]]
 
@@ -3012,6 +3027,7 @@ TODO translate
 #+end_src
 
 #+caption: Производительность программы генерации взволнованной морской поверхности при различных типах сбоев узлов.
+#+label: fig:benchmark
 #+RESULTS: fig:benchmark
 
 Результаты экспериментов позволяют сделать вывод о том, что не важно, вышел ли
@@ -3026,6 +3042,7 @@ TODO translate
 #+end_src
 
 #+caption: Замедление программы генерации взволнованной морской поверхности при различных типах сбоев по сравнению с запуском без сбоев но с уменьшенным на единицу количеством узлов.
+#+label: fig:slowdown
 #+RESULTS: fig:slowdown
 
 **** Обсуждение результатов тестирования.
