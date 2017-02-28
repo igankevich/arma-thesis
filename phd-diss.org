@@ -785,7 +785,37 @@ dimensions. Using slower method does not have dramatic effect on the overall
 programme performance, because the number of coefficients is small and most of
 the time is spent generating wavy surface.
 
-**** TODO Stationarity and invertibility of AR and MA processes
+**** Stationarity and invertibility of AR and MA processes
+In order for modelled wavy surface to represent physical phenomena, the
+corresponding process must be stationary and invertible. If the process is
+invertible, then there is a reasonable connection of current events with the
+events in the past, and if the process is stationary, the modelled physical
+signal amplitude does not increase infinitely in time and space.
+
+AR process is always invertible, and for stationarity it is necessary for roots
+of characteristic equation
+\begin{equation*}
+1 - \Phi_{0,0,1} z - \Phi_{0,0,2} z^2
+- \cdots
+- \Phi_{\vec N} z^{N_0 N_1 N_2} = 0,
+\end{equation*}
+to lie \emph{outside} the unit circle. Here \(\vec{N}\) is AR process order
+and \(\Phi\) are coefficients.
+
+MA process is always stationary, and for invertibility it is necessary for roots
+of characteristic equation
+\begin{equation*}
+1 - \Theta_{0,0,1} z - \Theta_{0,0,2} z^2
+- \cdots
+- \Theta_{\vec M} z^{M_0 M_1 M_2} = 0,
+\end{equation*}
+to lie \emph{outside} the unit circle. Here \(\vec{M}\) is
+three-dimensional MA process order and \(\Theta\) are coefficients.
+
+Stationarity and invertibility properties are the main criteria in selection of
+the process to model different wave profiles, which are discussed in
+section\nbsp{}[[#sec-process-selection]].
+
 **** Mixed autoregressive moving average (ARMA) process.
 :PROPERTIES:
 :CUSTOM_ID: sec:how-to-mix-ARMA
@@ -807,6 +837,10 @@ there is no such formula for the second approach. So, the best solution for now
 is to simply use AR and MA process exclusively.
 
 *** Process selection criteria for different wave profiles
+:PROPERTIES:
+:CUSTOM_ID: sec-process-selection
+:END:
+
 One problem of ARMA model application to ocean wave generation is that for
 different types of wave profiles different processes /must/ be used: standing
 waves are modelled by AR process, and propagating waves by MA process. This
