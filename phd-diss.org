@@ -3091,6 +3091,22 @@ computer system which makes best effort to execute distributed applications
 without interruption.
 
 * Conclusion
+**** Research results.
+In the sutdy of matheamtical apparatus for ocean wave simulations which goes
+beyond linear wave theory the following main results were achieved.
+- ARMA model was applied to simulation of ocean waves of arbitrary amplitudes.
+  Integral characteristics of generated wavy surface were verified by comparing
+  to the ones of a real ocean surface.
+- Analytic formula for determining wave pressures was applied to compute
+  velocity potentials under generated surface. The resulting velocity potential
+  field was verified by comparing it to the one given by fromuale from linear
+  wave theory for small-amplitude waves. For large amplitude waves the new
+  formula gives a resonably different field. Analytic formula is computationally
+  efficient because all the integrals are written as Fourier transforms, for
+  which there are high-performance implentations.
+
+**** Further research directions.
+* Summary
 * Acknowledgements
 The graphs in this work were prepared using R language for statistical
 computing\nbsp{}cite:rlang2016,Sarkar2008lattice and Graphviz
