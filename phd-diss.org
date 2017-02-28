@@ -6,6 +6,7 @@
 # org-export-latex-tables-hline "\\midrule"
 # org-export-latex-tables-tstart "\\toprule"
 # org-export-latex-tables-tend "\\bottomrule"
+# eval: (add-to-list 'org-latex-classes '("gost" "\\documentclass{gost} [DEFAULT-PACKAGES] [PACKAGES] [EXTRA]" ("\\section{%s}" . "\\section*{%s}") ("\\subsection{%s}" . "\\subsection*{%s}") ("\\subsubsection{%s}" . "\\subsubsection*{%s}") ("\\paragraph{%s}" . "\\paragraph*{%s}") ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 # End:
 
 #+TITLE: High-performance ocean wave simulation model for studying marine object behaviour
@@ -13,7 +14,7 @@
 #+DATE: St. Petersburg, 2017
 #+LANGUAGE: en
 #+LATEX_CLASS: gost
-#+LATEX_CLASS_OPTIONS: [hidelinks,fontsize=14pt,paper=a4,pagesize,DIV=calc]
+#+LATEX_CLASS_OPTIONS: [hidelinks,fontsize=14pt,paper=a4,pagesize,DIV=calc,noenddot]
 #+LATEX_HEADER_EXTRA: \input{preamble}
 #+LATEX_HEADER_EXTRA: \organization{Saint Petersburg State University}
 #+LATEX_HEADER_EXTRA: \manuscript{}
