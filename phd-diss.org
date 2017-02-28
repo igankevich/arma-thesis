@@ -1716,12 +1716,18 @@ plain waves, so comparison is done numerically. Taking into account conclusions
 of [[#sec:pressure-2d]], only finite depth formulae are compared.
 
 **** The difference with linear wave theory formulae.
-The experiment shows that velocity potential fields produced by formula
+In order to obtain velocity potential fields, ocean wavy surface was generated
+by AR model with varying wave amplitude. In numerical implementation wave
+numbers in Fourier transforms were chosen on the interval from \(0\) to the
+maximal wave number determined numerically from the obtained wavy surface.
+Experiments were conducted for waves of both small and large amplitudes.
+
+The experiment showed that velocity potential fields produced by formula
 eqref:eq-solution-2d-full for finite depth fluid and formula
 eqref:eq-solution-2d-linear from linear wave theory are qualitatively different
-(fig.\nbsp{}[[fig-potential-field-nonlinear]]). First, velocity potential contours have
-sinusoidal shape, which is different from oval shape described by linear wave
-theory. Second, velocity potential decays more rapidly than in linear wave
+(fig.\nbsp{}[[fig-potential-field-nonlinear]]). First, velocity potential contours
+have sinusoidal shape, which is different from oval shape described by linear
+wave theory. Second, velocity potential decays more rapidly than in linear wave
 theory as getting closer to the bottom, and the region where the majority of
 wave energy is concentrated is closer to the wave crest. Similar numerical
 experiment, in which all terms of eqref:eq-solution-2d-full that are neglected
@@ -1738,16 +1744,19 @@ much as machine precision allows) in resulting velocity potential fields.
 #+end_figure
 
 **** The difference with small-amplitude wave theory.
-The experiment shows that velocity fields produced by formula
+The experiment, in which velocity fields produced numerically by different
+formulae were compared, shows that velocity fields produced by formula
 eqref:eq-solution-2d-full and eqref:eq-old-sol-2d correspond to each other for
-small-amplitude waves. Two ocean wavy surface realisations are made by AR model:
-one contains small-amplitude waves, other contains large-amplitude waves.
-Integration in formula eqref:eq-solution-2d-full is done over wave numbers range
-extracted from the generated wavy surface. For small-amplitude waves both
-formulae show comparable results (the difference in the velocity is attributed
-to stochastic nature of AR model), whereas for large-amplitude waves stable
-velocity field is produced only by formula eqref:eq-solution-2d-full (fig.\nbsp{}[[fig-velocity-field-2d]]). So, generic formula eqref:eq-solution-2d-full gives
-satisfactory results without restriction on wave amplitudes.
+small-amplitude waves. Two ocean wavy surface realisations were made by AR
+model: one containing small-amplitude waves, other containing large-amplitude
+waves. Integration in formula eqref:eq-solution-2d-full was done over wave
+numbers range extracted from the generated wavy surface. For small-amplitude
+waves both formulae showed comparable results (the difference in the velocity is
+attributed to the stochastic nature of AR model), whereas for large-amplitude
+waves stable velocity field was produced only by formula
+eqref:eq-solution-2d-full (fig.\nbsp{}[[fig-velocity-field-2d]]). So, generic
+formula eqref:eq-solution-2d-full gives satisfactory results without restriction
+on wave amplitudes.
 
 #+name: fig-velocity-field-2d
 #+caption: Comparison of velocity field on the ocean wavy surface obtained by generic formula (\(u_1\)) and formula for small-amplitude waves (\(u_2\)). Velocity field for realisations containing small-amplitude (top) and large-amplitude (bottom) waves.
