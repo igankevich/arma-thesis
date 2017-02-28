@@ -3112,6 +3112,21 @@ the developed model and pressure determination formula into existing application
 software packages.
 
 * Summary
+Research results allow to conclude that a problem of determining pressures under
+sea surface can be solved analytically without assumptions of linear and
+small-amplitude wave theories. This solution coupled with ARMA ocean wave
+simulation model, capable of generating waves of arbitrary amplitudes, can be
+used to determine the impact of wave oscillations on the dynamic marine object
+in a sea way, and give more precise results than analogous solution for
+small-amplitude waves.
+
+Results of the numerical experiments allow to conclude that wavy surface
+generation as well as pressure computation can be efficiently implemented via
+fast Fourier transforms, and long simulation session can be conducted.
+
+The developed mathematical apparatus and its numerical implementation can become
+a base of virtual testbed for marine objects dynamics studies.
+
 * Acknowledgements
 The graphs in this work were prepared using R language for statistical
 computing\nbsp{}cite:rlang2016,Sarkar2008lattice and Graphviz
