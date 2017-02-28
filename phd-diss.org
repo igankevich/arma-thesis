@@ -454,7 +454,7 @@ formula. As will be shown in section [[#linearisation]], such formula may simpli
 pressure computation by effectively reducing the task to pressure field
 generation, instead of wavy surface generation.
 
-*** Longuet---Higgins model
+**** Longuet---Higgins model.
 The simplest model, formula of which is derived in the framework of linear wave
 theory (see\nbsp{}section\nbsp{}[[#longuet-higgins-derivation]]), is
 Longuet---Higgins (LH) model\nbsp{}cite:longuet1957statistical. In-depth
@@ -483,7 +483,7 @@ Coefficients \(c_n\) are derived from wave energy spectrum \(S(\omega)\) via
     c_n = \sqrt{ \textstyle\int\limits_{\omega_n}^{\omega_{n+1}} S(\omega) d\omega}.
 \end{equation*}
 
-*** Disadvantages of Longuet-Higgins model
+**** Disadvantages of Longuet-Higgins model.
 Although LH model is simple and easy to understand, there are shortcomings that
 appear in practice.
 
@@ -515,7 +515,7 @@ To summarise, LH model is applicable to generating ocean wavy surface in the
 framework of linear wave theory, inefficient for long-time simulations, and
 difficult to use as a base for more advanced models.
 
-*** ARMA model
+**** ARMA model
 In\nbsp{}cite:spanos1982arma ARMA model is used to generate time series spectrum of
 which is compatible with Pierson---Moskowitz (PM) approximation of ocean wave
 spectrum. The authors carry out experiments for one-dimensional AR, MA and ARMA
@@ -556,7 +556,7 @@ two typical wave periods. It is an example of successful application of AR
 process to ocean wave modelling.
 
 ** Pressure field determination formulae
-*** Small amplitude waves theory
+**** Small amplitude waves theory.
 In\nbsp{}cite:stab2012,детярев1998моделирование,degtyarev1997analysis the authors
 propose a solution for inverse problem of hydrodynamics of potential flow in the
 framework of small-amplitude wave theory (under assumption that wave length is
@@ -604,7 +604,7 @@ attempted to calculate velocity field for large-amplitude waves, and this is the
 reason that it can not be used together with ARMA model, that generates
 arbitrary-amplitude waves.
 
-*** Linearisation of boundary condition
+**** Linearisation of boundary condition.
 :PROPERTIES:
 :CUSTOM_ID: linearisation
 :END:
@@ -621,7 +621,6 @@ are plugged to dynamic boundary condition to obtain pressures.
 
 * ARMA model for ocean wave simulation
 ** Governing equations for 3-dimensional ARMA process
-*** Three possible processes
 ARMA ocean simulation model defines ocean wavy surface as three-dimensional (two
 dimensions in space and one in time) autoregressive moving average process:
 every surface point is represented as a weighted sum of previous in time and
@@ -638,13 +637,15 @@ distributed random impulses. The governing equation for 3-D ARMA process is
     ,
     \label{eq-arma-process}
 \end{equation}
-where \(\zeta\)\nbsp{}--- wave elevation, \(\Phi\)\nbsp{}--- AR process coefficients, \(\Theta\)\nbsp{}--- MA process coefficients, \(\epsilon\)\nbsp{}--- white noise with Gaussian
-distribution, \(\vec N\)\nbsp{}--- AR process order, \(\vec M\)\nbsp{}--- MA process order, and
-\(\Phi_{\vec{0}}\equiv{0}\), \(\Theta_{\vec{0}}\equiv{0}\). Here arrows denote
-multi-component indices with a component for each dimension. In general, any
-scalar quantity can be a component (temperature, salinity, concentration of some
-substance in water etc.). Equation parameters are AR and MA process coefficients
-and order.
+where \(\zeta\)\nbsp{}--- wave elevation, \(\Phi\)\nbsp{}--- AR process
+coefficients, \(\Theta\)\nbsp{}--- MA process coefficients,
+\(\epsilon\)\nbsp{}--- white noise with Gaussian distribution,
+\(\vec{N}\)\nbsp{}--- AR process order, \(\vec{M}\)\nbsp{}--- MA process order,
+and \(\Phi_{\vec{0}}\equiv{0}\), \(\Theta_{\vec{0}}\equiv{0}\). Here arrows
+denote multi-component indices with a component for each dimension. In general,
+any scalar quantity can be a component (temperature, salinity, concentration of
+some substance in water etc.). Equation parameters are AR and MA process
+coefficients and order.
 
 **** Autoregressive (AR) process.
 AR process is ARMA process with only one random impulse instead of theirs
@@ -847,7 +848,7 @@ For the first approach there is a formula to re-compute ACF for AR process, but
 there is no such formula for the second approach. So, the best solution for now
 is to simply use AR and MA process exclusively.
 
-*** Process selection criteria for different wave profiles
+**** Process selection criteria for different wave profiles.
 :PROPERTIES:
 :CUSTOM_ID: sec-process-selection
 :END:
@@ -1279,7 +1280,6 @@ Final solution is obtained after plugging \(E(u,v)\) into eqref:eq-guessed-sol-3
 
 * Numerical methods and experimental results
 ** The shape of ACF for different types of waves
-*** Two methods to find ocean waves ACF
 **** Analytic method of finding the ACF.
 The straightforward way to find ACF for a given ocean wave profile is to apply
 Wiener---Khinchin theorem. According to this theorem the autocorrelation \(K\) of
@@ -1312,8 +1312,7 @@ resulting function as ACF. So, this empirical method is imprecise but offers
 simpler alternative to Wiener---Khinchin theorem approach; it is mainly useful
 to test ARMA model.
 
-*** Examples of ACFs for various types of wave profiles
-**** Standing wave.
+**** Standing wave ACF.
 For three-dimensional plain standing wave the profile is given by
 \begin{equation}
   \zeta(t, x, y) = A \sin (k_x x + k_y y) \sin (\sigma t).
@@ -1351,7 +1350,7 @@ This can be done either by changing the phase of the sine, or by substituting
 sine with cosine to move the maximum of the function to the origin of
 coordinates.
 
-**** Propagating wave.
+**** Propagating wave ACF.
 Three-dimensional profile of plain propagating wave is given by
 \begin{equation}
   \zeta(t, x, y) = A \cos (\sigma t + k_x x + k_y y).
@@ -1369,7 +1368,7 @@ For the empirical method the wave profile is simply multiplied by a decaying
 exponent without need to adapt the maximum value of ACF (as it is required for
 standing wave).
 
-*** Comparison of studied methods
+**** Comparison of studied methods.
 To summarise, the analytic method of finding ocean wave's ACF reduces to the
 following steps.
 - Make wave profile decay when approaching \(\pm\infty\) by multiplying it by
@@ -1527,7 +1526,7 @@ increasing the size of the grid has insignificant effect on the result. In the
 majority of cases three Gram---Charlier series coefficients is enough to
 transform ACF; relative error without interpolation is \(10^{-5}\).
 
-*** White noise generation
+*** White noise generation algorithm
 In order to eliminate periodicity from generated wavy surface, it is imperative
 to use PRNG with sufficiently large period to generate white noise. Parallel
 Mersenne Twister\nbsp{}cite:matsumoto1998mersenne with a period of \(2^{19937}-1\) is
@@ -1544,7 +1543,7 @@ states consumes considerable amount of processor time, vector of initial states
 is created preliminary with knowingly larger number of parallel threads and
 saved to a file, which is then read before starting white noise generation.
 
-*** Wavy surface generation
+*** Wavy surface generation algorithm
 In ARMA model value of wavy surface elevation at a particular point depends on
 previous in space and time points, as a result the so called /ramp-up interval/
 (see fig.\nbsp{}[[fig-ramp-up-interval]]), in which realisation does not correspond to
@@ -1807,7 +1806,7 @@ work.
 
 * High-performance software implementation of ocean wave simulation
 ** Computational model
-*** Mapping wavy surface generation algorithm on computational model
+**** Mapping wavy surface generation algorithm on computational model.
 Software implementation of ARMA model works as a computational pipeline, in
 which each joint applies some function to the output coming from the pipe of the
 previous joint. Joints are distributed across computer cluster nodes to enable
@@ -1977,7 +1976,7 @@ incurs too much overhead and is not popular in HPC community. As of now, the
 framework runs in the same process as an parallel application that uses it. The
 framework is called Factory, it is now in proof-of-concept development stage.
 
-*** Computational model overview
+**** Computational model overview.
 The key feature that is missing in the current parallel programming technologies
 is a possibility to specify hierarchical dependencies between parallel tasks.
 When one has such dependency, it is trivial to determine which task should be
@@ -2145,7 +2144,7 @@ graph G {
 #+RESULTS: fig-subord-ppl
 [[file:build/subord-ppl.pdf]]
 
-*** Governing principles
+**** Governing principles.
 Data processing pipeline model is based on the following principles, following
 which maximises efficiency of a programme.
 - There is no notion of a message in the model, a kernel is itself a message
@@ -2193,7 +2192,7 @@ So, control flow objects (or kernels) possess properties of both cooperative
 routines and event handlers.
 
 ** SMP implementation
-*** Load balancing algorithm
+**** Load balancing algorithm.
 The simplest approach to balance the load on a multi-processor system is to
 split data into equal parts (or a task into homogeneous subtasks) and to
 distribute them evenly between processor cores and cluster nodes, however, this
@@ -2221,8 +2220,9 @@ work in parallel to each other, lowering overall system resources downtime
 compared to using all devices from a single thread.
 
 In order to take into account non-homogeneous input data parts or tasks, one may
-predict execution time of each task. Relevant study is done in\nbsp{}cite:degtyarev2016balance since ARMA model implementation includes mostly
-homogeneous tasks.
+predict execution time of each task. Relevant study is done
+in\nbsp{}cite:degtyarev2016balance since ARMA model implementation includes
+mostly homogeneous tasks.
 
 So, load balancing is done in two stages: in the first stage the task wrapped in
 the kernel is routed to the appropriate device and in the second stage the
@@ -2230,7 +2230,6 @@ kernel is routed to one of the thread from the device thread pool.
 Non-homogeneous kernels may be handled by predicting their execution time, but
 such kernels are not present in ARMA model implementation.
 
-*** Evaluation
 **** Performance of MPI, OpenMP, OpenCL implementations.
 ARMA model does not require highly optimised software implementation to be
 efficient, its performance is high even without use of co-processors; there are
@@ -2353,7 +2352,7 @@ devices other than disks may be used as well.
 :PROPERTIES:
 :CUSTOM_ID: sec:node-discovery
 :END:
-**** Introduction.
+
 Many distributed systems are built on the principle of /subordination/: there is
 principal node in each cluster which manages job queue, schedules their
 execution on subordinate nodes and monitors their state. Principal role is
