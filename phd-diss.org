@@ -1,3 +1,13 @@
+# Local Variables:
+# org-ref-default-bibliography ("bib/refs.bib")
+# org-latex-image-default-width nil
+# org-latex-caption-above nil
+# org-latex-hyperref-template "\\hypersetup{\n pdfauthor={%a},\n pdftitle={%t},\n pdfkeywords={%k},\n pdfsubject={%d},\n pdfcreator={%c},\n pdflang={%L},\n unicode={true}\n}\n\\setdefaultlanguage{%l}\n"
+# org-export-latex-tables-hline "\\midrule"
+# org-export-latex-tables-tstart "\\toprule"
+# org-export-latex-tables-tend "\\bottomrule"
+# End:
+
 #+TITLE: High-performance ocean wave simulation model for studying marine object behaviour
 #+AUTHOR: Ivan Gankevich
 #+DATE: St. Petersburg, 2017

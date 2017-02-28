@@ -1,3 +1,13 @@
+# Local Variables:
+# org-ref-default-bibliography ("bib/refs.bib")
+# org-latex-image-default-width nil
+# org-latex-caption-above nil
+# org-latex-hyperref-template "\\hypersetup{\n pdfauthor={%a},\n pdftitle={%t},\n pdfkeywords={%k},\n pdfsubject={%d},\n pdfcreator={%c},\n pdflang={%L},\n unicode={true}\n}\n\\setdefaultlanguage{%l}\n"
+# org-export-latex-tables-hline "\\midrule"
+# org-export-latex-tables-tstart "\\toprule"
+# org-export-latex-tables-tend "\\bottomrule"
+# End:
+
 #+TITLE: Высокопроизводительная модель морского волнения для программ динамики морских объектов
 #+AUTHOR: Иван Ганкевич
 #+DATE: Санкт-Петербург, 2017
@@ -16,16 +26,6 @@
 #+PROPERTY: header-args:R :results graphics :exports results
 
 * Config                                                           :noexport:
-# default export options
-#+begin_src emacs-lisp :exports none :results silent
-;; For the full list of options see
-;; http://orgmode.org/manual/Publishing-options.html
-;; move table/figure captions to the bottom
-(setq org-latex-caption-above nil)
-;; preserve original image width
-(setq org-latex-image-default-width nil)
-#+end_src
-
 ** Produce data for Q-Q and ACF plots
 #+begin_src sh :exports none :results verbatim
 root=$(pwd)
@@ -3366,7 +3366,6 @@ Emacs, предоставляющего вычислительное окруж�
 \mbox{16-07-01113}).
 
 [fn:repo] [[https://github.com/igankevich/arma-thesis]]
-
 
 * Список сокращений и условных обозначений
 - <<<MPP>>> :: Massively Parallel Processing, класс вычислительных систем с разделенной памятью.
