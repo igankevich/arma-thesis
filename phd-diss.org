@@ -1702,7 +1702,25 @@ for (i in seq(0, 4)) {
 #+RESULTS: acf-slices
 [[file:build/acf-slices.pdf]]
 
-*** TODO Discuss graphs
+Graph tails in fig.\nbsp{}[[propagating-wave-distributions]] deviate from original
+distribution for individual wave characteristics, because every wave have to be
+extracted from the resulting wavy surface to measure its length, period and
+height. There is no algorithm that guarantees correct extraction of all waves,
+because they may and often overlap each other. Weibull distribution right tail
+represents infrequently occurring waves, so it deviates more than left tail.
+
+Correspondence rate for standing waves (fig.\nbsp{}[[standing-wave-distributions]])
+is lower for height and length, roughly the same for surface
+elevation and higher for wave period distribution tails. Lower correspondence
+degree for length and height may be attributed to the fact that Weibull
+distributions were obtained empirically for ocean waves which are typically
+propagating, and distributions may be different for standings waves. Higher
+correspondence degree for wave periods is attributed to the fact that wave
+periods of standing waves are extracted more precisely as the waves do not move
+outside simulated wavy surface region. The same correspondence degree for wave elevation
+is obtained, because this is the characteristic of the wavy surface (and
+corresponding AR or MA process) and is not affected by the type of waves.
+
 *** Verification of velocity potential fields
 :PROPERTIES:
 :CUSTOM_ID: sec:compare-formulae
