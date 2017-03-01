@@ -1221,11 +1221,11 @@ theory formulae is made under the same assumptions.
 Three-dimensional version of eqref:eq-problem is written as
 \begin{align}
     \label{eq-problem-3d}
-    & \phi_xx + \phi_yy + \phi_zz = 0,\\
+    & \phi_{xx} + \phi_{yy} + \phi_{zz} = 0,\\
     & \zeta_t + \zeta_x\phi_x + \zeta_y\phi_y
     =
-    \frac{\zeta_x}{\sqrt{1 + \zeta_x^2}} \phi_x
-    +\frac{\zeta_y}{\sqrt{\vphantom{\zeta_x^2}\smash[b]{1 + \zeta_y^2}}} \phi_y
+    \frac{\zeta_x}{\SqrtZeta{1 + \zeta_x^2 + \zeta_y^2}} \phi_x
+    +\frac{\zeta_y}{\SqrtZeta{1 + \zeta_x^2 + \zeta_y^2}} \phi_y
     - \phi_z, & \text{на }z=\zeta(x,y,t).\nonumber
 \end{align}
 Again, use Fourier method to solve it. Applying Fourier transform to both sides
@@ -1263,10 +1263,10 @@ Plugging \(\phi\) into the boundary condition on the free surface yields
         - & \InverseFourierY{2 \pi \sqrt{u^2+v^2} \SinhX{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y}
     \end{array}
 \end{equation*}
-where \(f_1(x,y)={\zeta_x}/{\sqrt{1+\zeta_x^2}}-\zeta_x\) and
-\(f_2(x,y)={\zeta_y}/{\sqrt{\vphantom{\zeta_x^2}\smash[b]{1+\zeta_y^2}}}-\zeta_y\).
-Applying Fourier transform to both sides of the equation yields formula for
-coefficients \(E\):
+where \(f_1(x,y)={\zeta_x}/{\SqrtZeta{1+\zeta_x^2+\zeta_y^2}}-\zeta_x\) and
+\(f_2(x,y)={\zeta_y}/{\SqrtZeta{1+\zeta_x^2+\zeta_y^2}}-\zeta_y\). Applying
+Fourier transform to both sides of the equation yields formula for coefficients
+\(E\):
 \begin{equation*}
     \arraycolsep=1.4pt
     \begin{array}{rl}
