@@ -1,8 +1,12 @@
 out_grid = (200,40,40)
-acf_grid = (10,10,10) : (2.5,5,5)
-ar_order = (7,7,7)
 
-least_squares = 0
-acf = standing_wave
 model = AR
 verification = manual
+ar_model = {
+	acf = {
+		func = standing_wave
+		grid = (10,10,10) : (2.5,5,5)
+	}
+	least_squares = 0
+	order = (7,7,7)
+}

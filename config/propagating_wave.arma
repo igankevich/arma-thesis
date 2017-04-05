@@ -1,9 +1,15 @@
 out_grid = (200,40,40)
-acf_grid = (20,10,10) : (10,5,5)
-ma_order = (20,10,10)
 
-least_squares = 0
-acf = propagating_wave
 model = MA
-ma_algorithm = fixed_point_iteration
+ma_model = {
+	acf = {
+		func = propagating_wave
+		grid = (20,10,10) : (10,5,5)
+	}
+	algorithm = fixed_point_iteration
+	order = (20,10,10)
+    max_iterations = 1000
+    eps = 1e-5
+    min_var_wn = 1e-6
+}
 verification = manual
