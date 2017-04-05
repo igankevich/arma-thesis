@@ -2030,6 +2030,23 @@ experiment, in which all terms of eqref:eq-solution-2d-full that are neglected
 in the framework of linear wave theory are eliminated, shows no difference (as
 much as machine precision allows) in resulting velocity potential fields.
 
+#+begin_src R :file build/plain-wave-linear-solver.pdf
+source(file.path("R", "velocity-potentials.R"))
+par(pty="s", mfrow=c(1, 2))
+lvls=pretty(c(-200,200), 20)
+arma.plot_velocity_potential_field(
+  file.path("build", "plain_wave_linear_solver"),
+  levels=lvls
+)
+arma.plot_velocity_potential_field(
+  file.path("build", "plain_wave_high_amplitude_solver"),
+  levels=lvls
+)
+#+end_src
+
+#+RESULTS:
+[[file:build/plain-wave-linear-solver.pdf]]
+
 #+name: fig-potential-field-nonlinear
 #+caption: Velocity potential field of propagating wave \(\zeta(x,y,t) = \cos(2\pi x - t/2)\). Field produced by formula eqref:eq-solution-2d-full (top) and linear wave theory formula (bottom).
 #+begin_figure
