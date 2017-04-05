@@ -27,26 +27,34 @@ arma.plot_velocity_potential_field <- function (dir, ...) {
     out[indices] <- phi
     out
   })
-  #summary(u)
 
   # get wave profile
   zeta <- read.csv(file.path(dir, 'zeta.csv'))
   zeta_slice <- zeta[zeta$t == slice_t & zeta$y == slice_y & zeta$x >= left_top_x,]
 
-  #phi_range <- range(phi_slice[phi_slice$z <= zeta_slice$z, "phi"])
+  plot.new()
+  plot.window(xlim=range(x),ylim=range(z),asp=1)
+  axis(1); axis(2); box()
+
+  .filled.contour(
+    x, z, u,
+    levels=args$levels,
+    col=args$col
+  )
+
 
   contour(
-    x, z, u, levels=args$levels,
+    x, z, u,
+    levels=args$levels,
     asp=1,
-    drawlabels=FALSE
-  #	color.palette=colorRampPalette( c("blue", "white", "red") )
+    drawlabels=TRUE,
+    add=TRUE
   )
 
   top_area_x <- c(left_top_x*0.99, zeta_slice$x, right_top_x*1.01)
   top_area_z <- c(left_top_z*1.10, zeta_slice$z, right_top_z*1.10)
   polygon(top_area_x, top_area_z, lwd=4, border=NA, col='white')
   lines(zeta_slice$x, zeta_slice$z, lwd=4)
-  #image(x, z, u, c(-2,2), col=heat.colors(128))
   box()
   title(xlab="x", ylab="z")
 }
