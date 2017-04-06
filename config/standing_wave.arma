@@ -10,3 +10,8 @@ ar_model = {
 	least_squares = 0
 	order = (7,7,7)
 }
+velocity_potential_solver = linear {
+	wnmax = (0,0.25)
+	depth = 12
+	domain = from (10,-12) to (10,4) npoints (1,128)
+}

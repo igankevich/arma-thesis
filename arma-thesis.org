@@ -2030,8 +2030,9 @@ experiment, in which all terms of eqref:eq-solution-2d-full that are neglected
 in the framework of linear wave theory are eliminated, shows no difference (as
 much as machine precision allows) in resulting velocity potential fields.
 
-#+header: :width 1024 :height 512
-#+begin_src R :file build/plain-wave-linear-solver.png
+#+name: fig-potential-field-nonlinear
+#+header: :width 8 :height 11
+#+begin_src R :file build/plain-wave-velocity-field-comparison.pdf
 source(file.path("R", "velocity-potentials.R"))
 par(pty="s")
 nlevels <- 41
@@ -2040,7 +2041,7 @@ palette <- colorRampPalette(c("blue", "lightyellow", "red"))
 col <- palette(nlevels-1)
 
 # linear solver
-par(fig=c(0,0.45,0,1),new=TRUE)
+par(fig=c(0,0.95,0,0.5),new=TRUE)
 arma.plot_velocity_potential_field(
   file.path("build", "plain_wave_linear_solver"),
   levels=levels,
@@ -2048,39 +2049,33 @@ arma.plot_velocity_potential_field(
 )
 
 # high-amplitude solver
-par(fig=c(0.45,0.90,0,1),new=TRUE)
+par(fig=c(0,0.95,0.5,1),new=TRUE)
 arma.plot_velocity_potential_field(
   file.path("build", "plain_wave_high_amplitude_solver"),
   levels=levels,
   col=col
 )
 
-# legend
-par(pty="m")
-par(fig=c(0.9,1,0,1), new=TRUE)
-plot.new()
-plot.window(
-  xlim = c(0, 1),
-  ylim = range(levels),
-  xaxs = "i",
-  yaxs = "i"
+# legend 1
+par(pty="m",fig=c(0.80,1,0.5,1), new=TRUE)
+arma.plot_velocity_potential_field_legend(
+  levels=levels,
+  col=col
 )
-rect(0, levels[-length(levels)], 1, levels[-1L], col = col)
-axis(4)
-box()
+
+# legend 2
+par(pty="m",fig=c(0.80,1,0,0.5), new=TRUE)
+arma.plot_velocity_potential_field_legend(
+  levels=levels,
+  col=col
+)
 #+end_src
 
-#+RESULTS:
-[[file:build/plain-wave-linear-solver.png]]
-
-#+name: fig-potential-field-nonlinear
 #+caption: Velocity potential field of propagating wave \(\zeta(x,y,t) = \cos(2\pi x - t/2)\). Field produced by formula eqref:eq-solution-2d-full (top) and linear wave theory formula (bottom).
-#+begin_figure
-#+attr_latex: :width 0.47\textwidth
-[[file:graphics/pressure/potential-5.eps]]
-#+attr_latex: :width 0.47\textwidth
-[[file:graphics/pressure/potential-6.eps]]
-#+end_figure
+#+label: fig-potential-field-nonlinear
+#+attr_latex: :width \textwidth
+#+RESULTS: fig-potential-field-nonlinear
+[[file:build/plain-wave-velocity-field-comparison.pdf]]
 
 **** The difference with small-amplitude wave theory.
 The experiment, in which velocity fields produced numerically by different

@@ -1815,13 +1815,52 @@ eqref:eq-solution-2d-full были исключены члены, которым
 потенциалов скоростей (насколько это позволяет сделать машинная точность).
 
 #+name: fig-potential-field-nonlinear
+#+header: :width 8 :height 11
+#+begin_src R :file build/plain-wave-velocity-field-comparison-ru.pdf
+source(file.path("R", "velocity-potentials.R"))
+par(pty="s")
+nlevels <- 41
+levels <- pretty(c(-200,200), nlevels)
+palette <- colorRampPalette(c("blue", "lightyellow", "red"))
+col <- palette(nlevels-1)
+
+# linear solver
+par(fig=c(0,0.95,0,0.5),new=TRUE)
+arma.plot_velocity_potential_field(
+  file.path("build", "plain_wave_linear_solver"),
+  levels=levels,
+  col=col
+)
+
+# high-amplitude solver
+par(fig=c(0,0.95,0.5,1),new=TRUE)
+arma.plot_velocity_potential_field(
+  file.path("build", "plain_wave_high_amplitude_solver"),
+  levels=levels,
+  col=col
+)
+
+# legend 1
+par(pty="m",fig=c(0.80,1,0.5,1), new=TRUE)
+arma.plot_velocity_potential_field_legend(
+  levels=levels,
+  col=col
+)
+
+# legend 2
+par(pty="m",fig=c(0.80,1,0,0.5), new=TRUE)
+arma.plot_velocity_potential_field_legend(
+  levels=levels,
+  col=col
+)
+#+end_src
+
+#+label: fig-potential-field-nonlinear
 #+caption: Поле потенциала скорости прогрессивной волны \(\zeta(x,y,t) = \cos(2\pi x - t/2)\). Поле, полученное по формуле eqref:eq-solution-2d-full (сверху) и по формуле линейной теории волн (снизу).
-#+begin_figure
-#+attr_latex: :width 0.47\textwidth
-[[file:graphics/pressure/potential-5.eps]]
-#+attr_latex: :width 0.47\textwidth
-[[file:graphics/pressure/potential-6.eps]]
-#+end_figure
+#+attr_latex: :width \textwidth
+#+RESULTS: fig-potential-field-nonlinear
+[[file:build/plain-wave-velocity-field-comparison-ru.pdf]]
+
 
 **** Отличие от формул теории волн малой амплитуды.
 Эксперимент, в котором сравнивались поля потенциалов скоростей, полученные

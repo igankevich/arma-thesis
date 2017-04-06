@@ -58,3 +58,19 @@ arma.plot_velocity_potential_field <- function (dir, ...) {
   box()
   title(xlab="x", ylab="z")
 }
+
+arma.plot_velocity_potential_field_legend <- function (...) {
+  args <- list(...)
+  levels <- args$levels
+  col <- args$col
+  plot.new()
+  plot.window(
+    xlim = c(0, 1),
+    ylim = range(levels),
+    xaxs = "i",
+    yaxs = "i"
+  )
+  rect(0, levels[-length(levels)], 1, levels[-1L], col = col)
+  axis(4)
+  box()
+}
