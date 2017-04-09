@@ -1541,14 +1541,15 @@ analytic formula for coefficients \(E\) we need to assume, that all Fourier
 transforms in the equation have radially symmetric kernels, i.e. replace \(u\)
 and \(v\) with \(\Kveclen\). There are two points supporting this assumption.
 First, in numerical implementation integration is done over positive wave
-numbers, so the sign of \(u\) and \(v\) does not affect the result. Second, the
-growth of \(\cosh\) term of the integral kernel is much higher than the growth
-of \(u\) or \(\Kveclen\), so the substitution has small effect on the magnitude
-of the solution. Despite these two points, a use of more mathematically rigorous
-approach would be preferable.
+numbers, so the sign of \(u\) and \(v\) does not affect the solution. Second,
+the rate growth of \(\cosh\) term of the integral kernel is much higher than the
+one of \(u\) or \(\Kveclen\), so the substitution has small effect on the
+magnitude of the solution. Despite these two points, a use of more
+mathematically rigorous approach would be preferable.
 
-Then applying Fourier transform to both sides of the equation and plugging the
-result into eqref:eq-guessed-sol-3d yields formula for \(\phi\):
+Making the replacement, applying Fourier transform to both sides of the equation
+and plugging the result into eqref:eq-guessed-sol-3d yields formula for
+\(\phi\):
 \begin{equation*}
     \phi(x,y,z,t) = \InverseFourierY{
         \frac{ \Sinh{\smash{2\pi \Kveclen (z+h)}} }{ 2\pi\Kveclen }
