@@ -11,10 +11,10 @@ export TEXINPUTS=$(PWD)//:
 
 all: build/$(PHD_RU).pdf build/$(PHD_EN).pdf
 
-build/$(PHD_RU).pdf: $(PHD_RU).tex bib/*
+build/$(PHD_RU).pdf: $(PHD_RU).tex preamble.tex bib/*
 	latexmk $(FLAGS) -f $(PHD_RU).tex
 
-build/$(PHD_EN).pdf: $(PHD_EN).tex bib/*
+build/$(PHD_EN).pdf: $(PHD_EN).tex preamble.tex bib/*
 	latexmk $(FLAGS) -f $(PHD_EN).tex
 
 clean:

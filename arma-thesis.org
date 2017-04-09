@@ -1504,12 +1504,12 @@ of Laplace equation yields
 \end{equation*}
 hence \(w=\pm{i}\sqrt{u^2+v^2}\). We seek solution in the form of inverse Fourier
 transform \(\phi(x,y,z)=\InverseFourierY{E(u,v,w)}{x,y,z}\). Plugging
-\(w=i\sqrt{u^2+v^2}\) into the formula yields
+\(w=i\sqrt{u^2+v^2}=i\Kveclen\) into the formula yields
 \begin{equation*}
     \phi(x,y,z) = \InverseFourierY{
         \left(
-            C_1 e^{2\pi \sqrt{u^2+v^2} z}
-            -C_2 e^{-2\pi \sqrt{u^2+v^2} z}
+            C_1 e^{2\pi \Kveclen z}
+            -C_2 e^{-2\pi \Kveclen z}
         \right)
         E(u,v)
     }{x,y}.
@@ -1519,32 +1519,44 @@ two-dimensional case) yields
 \begin{equation}
     \label{eq-guessed-sol-3d}
     \phi(x,y,z) = \InverseFourierY{
-        \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)
+        \Sinh{2\pi \Kveclen (z+h)} E(u,v)
     }{x,y}.
 \end{equation}
 Plugging \(\phi\) into the boundary condition on the free surface yields
 \begin{equation*}
     \arraycolsep=1.4pt
     \begin{array}{rl}
-        \zeta_t = & i f_1(x,y) \InverseFourierY{2 \pi u \Sinh{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y} \\
-        + & i f_2(x,y) \InverseFourierY{2 \pi v \Sinh{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y} \\
-        - & \InverseFourierY{2 \pi \sqrt{u^2+v^2} \SinhX{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y}
+        \zeta_t = & i f_1(x,y) \InverseFourierY{2 \pi u \Sinh{2\pi \Kveclen (z+h)}E(u,v)}{x,y} \\
+        + & i f_2(x,y) \InverseFourierY{2 \pi v \Sinh{2\pi \Kveclen (z+h)}E(u,v)}{x,y} \\
+        - & \InverseFourierY{2 \pi \Kveclen \SinhX{2\pi \Kveclen (z+h)}E(u,v)}{x,y}
     \end{array}
 \end{equation*}
 where \(f_1(x,y)={\zeta_x}/{\SqrtZeta{1+\zeta_x^2+\zeta_y^2}}-\zeta_x\) and
-\(f_2(x,y)={\zeta_y}/{\SqrtZeta{1+\zeta_x^2+\zeta_y^2}}-\zeta_y\). Applying
-Fourier transform to both sides of the equation yields formula for coefficients
-\(E\):
+\(f_2(x,y)={\zeta_y}/{\SqrtZeta{1+\zeta_x^2+\zeta_y^2}}-\zeta_y\).
+
+Like in Section\nbsp{}[[#sec:pressure-2d]] we assume that
+\(\Sinh{2\pi{u}(z+h)}\approx\SinhX{2\pi{u}(z+h)}\) near free surface, but in
+three-dimensional case this is not enough to solve the problem. In order to get
+analytic formula for coefficients \(E\) we need to assume, that all Fourier
+transforms in the equation have radially symmetric kernels, i.e. replace \(u\)
+and \(v\) with \(\Kveclen\). There are two points supporting this assumption.
+First, in numerical implementation integration is done over positive wave
+numbers, so the sign of \(u\) and \(v\) does not affect the result. Second, the
+growth of \(\cosh\) term of the integral kernel is much higher than the growth
+of \(u\) or \(\Kveclen\), so the substitution has small effect on the magnitude
+of the solution. Despite these two points, a use of more mathematically rigorous
+approach would be preferable.
+
+Then applying Fourier transform to both sides of the equation and plugging the
+result into eqref:eq-guessed-sol-3d yields formula for \(\phi\):
 \begin{equation*}
-    \arraycolsep=1.4pt
-    \begin{array}{rl}
-        \FourierY{\zeta_t}{u,v} = &
-        \FourierY{i f_1(x,y) \InverseFourierY{2 \pi u \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)}{x,y}}{u,v}  \\
-        + & \FourierY{i f_2(x,y) \InverseFourierY{2 \pi v \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)}{x,y}}{u,v}  \\
-        - & 2 \pi \sqrt{u^2+v^2} \SinhX{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)
-    \end{array}
+    \phi(x,y,z,t) = \InverseFourierY{
+        \frac{ \Sinh{\smash{2\pi \Kveclen (z+h)}} }{ 2\pi\Kveclen }
+        \frac{ \FourierY{ \zeta_t / \left( i f_1(x,y) + i f_2(x,y) - 1 \right)}{u,v} }
+        { \FourierY{\mathcal{D}_3\left( x,y,\zeta\left(x,y\right) \right)}{u,v} }
+    }{x,y},
 \end{equation*}
-Final solution is obtained after plugging \(E(u,v)\) into eqref:eq-guessed-sol-3d.
+where \(\FourierY{\mathcal{D}_3\left(x,y,z\right)}{u,v}=\Sinh{\smash{2\pi\Kveclen{}z}}\).
 
 * Numerical methods and experimental results
 ** The shape of ACF for different types of waves

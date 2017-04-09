@@ -1273,13 +1273,14 @@ eqref:eq-solution-2d-full до
     \FourierY{\phi(x,y,z)}{u,v,w} = 0,
 \end{equation*}
 откуда имеем \(w=\pm{i}\sqrt{u^2+v^2}\). Решение уравнения будем искать в виде
-обратного преобразования Фурье \(\phi(x,y,z)=\InverseFourierY{E(u,v,w)}{x,y,z}\).
-Применяя полученное равенство, получаем
+обратного преобразования Фурье
+\(\phi(x,y,z)=\InverseFourierY{E(u,v,w)}{x,y,z}\). Подставляя
+\(w=i\sqrt{u^2+v^2}=i\Kveclen\) в исходную формулу, получаем
 \begin{equation*}
     \phi(x,y,z) = \InverseFourierY{
         \left(
-            C_1 e^{2\pi \sqrt{u^2+v^2} z}
-            -C_2 e^{-2\pi \sqrt{u^2+v^2} z}
+            C_1 e^{2\pi \Kveclen z}
+            -C_2 e^{-2\pi \Kveclen z}
         \right)
         E(u,v)
     }{x,y}.
@@ -1289,16 +1290,16 @@ eqref:eq-solution-2d-full до
 \begin{equation}
     \label{eq-guessed-sol-3d}
     \phi(x,y,z) = \InverseFourierY{
-        \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)
+        \Sinh{2\pi \Kveclen (z+h)} E(u,v)
     }{x,y}.
 \end{equation}
 Подставляя выражение для \(\phi\) в граничное условие, получим
 \begin{equation*}
     \arraycolsep=1.4pt
     \begin{array}{rl}
-        \zeta_t = & i f_1(x,y) \InverseFourierY{2 \pi u \Sinh{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y} \\
-        + & i f_2(x,y) \InverseFourierY{2 \pi v \Sinh{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y} \\
-        - & \InverseFourierY{2 \pi \sqrt{u^2+v^2} \Sinh{2\pi \sqrt{u^2+v^2} (z+h)}E(u,v)}{x,y}
+        \zeta_t = & i f_1(x,y) \InverseFourierY{2 \pi u \Sinh{2\pi \Kveclen (z+h)}E(u,v)}{x,y} \\
+        + & i f_2(x,y) \InverseFourierY{2 \pi v \Sinh{2\pi \Kveclen (z+h)}E(u,v)}{x,y} \\
+        - & \InverseFourierY{2 \pi \sqrt{u^2+v^2} \Sinh{2\pi \Kveclen (z+h)}E(u,v)}{x,y}
     \end{array}
 \end{equation*}
 где \(f_1(x,y)={\zeta_x}/{\SqrtZeta{1+\zeta_x^2+\zeta_y^2}}-\zeta_x\) и
@@ -1308,9 +1309,9 @@ eqref:eq-solution-2d-full до
     \arraycolsep=1.4pt
     \begin{array}{rl}
         \FourierY{\zeta_t}{u,v} = &
-        \FourierY{i f_1(x,y) \InverseFourierY{2 \pi u \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)}{x,y}}{u,v}  \\
-        + & \FourierY{i f_2(x,y) \InverseFourierY{2 \pi v \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)}{x,y}}{u,v}  \\
-        - & 2 \pi \sqrt{u^2+v^2} \Sinh{2\pi \sqrt{u^2+v^2} (z+h)} E(u,v)
+        \FourierY{i f_1(x,y) \InverseFourierY{2 \pi u \Sinh{2\pi \Kveclen (z+h)} E(u,v)}{x,y}}{u,v}  \\
+        + & \FourierY{i f_2(x,y) \InverseFourierY{2 \pi v \Sinh{2\pi \Kveclen (z+h)} E(u,v)}{x,y}}{u,v}  \\
+        - & 2 \pi \Kveclen \Sinh{2\pi \Kveclen (z+h)} E(u,v)
     \end{array}
 \end{equation*}
 Окончательное решение получается при подстановке выражения для \(E(u,v)\)
