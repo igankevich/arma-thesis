@@ -1874,17 +1874,18 @@ two-dimensional pressure determination problem there are functions
 \(\FunSecond{z}=\InverseFourierY{\Sinh{2\pi{u}{z}}}{x}\) which has multiple
 analytic representations and are difficult to compute. Each function is a
 Fourier transform of linear combination of exponents which reduces to poorly
-defined Dirac delta function of a complex argument (see table\nbsp{}[[tab-delta-functions]]).
-The usual way of handling this type of functions is to write them as
-multiplication of Dirac delta functions of real and imaginary part, however,
-this approach does not work here, because applying inverse Fourier transform to
-this representation does not produce exponent, which severely warp resulting
-velocity field. In order to get unique analytic definition normalisation factor
-\(1/\Sinh{2\pi{u}{h}}\) (which is also included in formula for \(E(u)\)) may be
-used. Despite the fact that normalisation allows to obtain adequate velocity
-potential field, numerical experiments show that there is little difference
-between this field and the one produced by formulae from linear wave theory, in
-which terms with \(\zeta\) are omitted.
+defined Dirac delta function of a complex argument (see
+table\nbsp{}[[tab-delta-functions]]). The usual way of handling this type of
+functions is to write them as multiplication of Dirac delta functions of real
+and imaginary part, however, this approach does not work here, because applying
+inverse Fourier transform to this representation does not produce exponent,
+which severely warp resulting velocity field. In order to get unique analytic
+definition normalisation factor \(1/\Sinh{2\pi{u}{h}}\) (which is also included
+in formula for \(E(u)\)) may be used. Despite the fact that normalisation allows
+to obtain adequate velocity potential field, numerical experiments show that
+there is little difference between this field and the one produced by formulae
+from linear wave theory, in which terms with \(\zeta\) are omitted. As a result,
+the formula for three-dimensional case was not derived.
 
 #+name: tab-delta-functions
 #+caption: Formulae for computing \(\Fun{z}\) and \(\FunSecond{z}\) from [[#sec:pressure-2d]], that use normalisation to eliminate uncertainty from definition of Dirac delta function of complex argument.
