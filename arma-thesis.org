@@ -3239,7 +3239,7 @@ margin, and in case of backup node failure within 50% margin for the number of
 node less than 6[fn::Measuring this margin for higher number of nodes does not
 make sense since time before failure is greater than total execution time with
 these numbers of nodes, and programme's execution finishes before a failure
-occurs.]]. Increase in execution time of 50% is more than \(1/3\) of execution
+occurs.]. Increase in execution time of 50% is more than \(1/3\) of execution
 time after which a failure occurs, but backup node failure needs some time to be
 discovered: it is detected only when subordinate kernel carrying the copy of the
 main kernel finishes its execution and tries to reach its parent. Instant
