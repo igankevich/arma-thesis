@@ -1894,11 +1894,32 @@ eqref:eq-solution-2d-full показывает удовлетворительн�
 ограничения на амплитуду волн.
 
 #+name: fig-velocity-field-2d
+#+name: fig-velocity-field-2d
+#+header: :width 8 :height 11
+#+begin_src R :file build/large-and-small-amplitude-velocity-field-comparison-ru.pdf
+source(file.path("R", "velocity-potentials.R"))
+linetypes = c("solid", "dashed")
+par(mfrow=c(2, 1))
+arma.plot_velocity(
+  file.path("data", "velocity", "low-amp"),
+  file.path("data", "velocity", "low-amp-0"),
+  linetypes=linetypes,
+  ylim=c(-2,2)
+)
+arma.plot_velocity(
+  file.path("data", "velocity", "high-amp"),
+  file.path("data", "velocity", "high-amp-0"),
+  linetypes=linetypes,
+  ylim=c(-2,2)
+)
+#+end_src
+
+#+label: fig-velocity-field-2d
 #+caption: Сравнение полей скоростей на поверхности моря, полученных по общей формуле (\(u_1\)) и формуле для волн малой амплитуды (\(u_2\)). Поле скоростей для поверхности волн малой амплитуды (сверху) и большой амплитуды (снизу).
-#+begin_figure
-[[file:build/low-amp-nocolor.eps]]
-[[file:build/high-amp-nocolor.eps]]
-#+end_figure
+#+attr_latex: :width \textwidth
+#+RESULTS: fig-velocity-field-2d
+[[file:build/large-and-small-amplitude-velocity-field-comparison-ru.pdf]]
+
 
 *** Нефизическая природа модели
 Благодаря своей нефизической природе модель АРСС не включает в себя понятие

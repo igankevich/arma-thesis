@@ -2107,11 +2107,31 @@ formula eqref:eq-solution-2d-full gives satisfactory results without restriction
 on wave amplitudes.
 
 #+name: fig-velocity-field-2d
+#+header: :width 8 :height 11
+#+begin_src R :file build/large-and-small-amplitude-velocity-field-comparison.pdf
+source(file.path("R", "velocity-potentials.R"))
+linetypes = c("solid", "dashed")
+par(mfrow=c(2, 1))
+arma.plot_velocity(
+  file.path("data", "velocity", "low-amp"),
+  file.path("data", "velocity", "low-amp-0"),
+  linetypes=linetypes,
+  ylim=c(-2,2)
+)
+arma.plot_velocity(
+  file.path("data", "velocity", "high-amp"),
+  file.path("data", "velocity", "high-amp-0"),
+  linetypes=linetypes,
+  ylim=c(-2,2)
+)
+#+end_src
+
+#+label: fig-velocity-field-2d
 #+caption: Comparison of velocity field on the ocean wavy surface obtained by generic formula (\(u_1\)) and formula for small-amplitude waves (\(u_2\)). Velocity field for realisations containing small-amplitude (top) and large-amplitude (bottom) waves.
-#+begin_figure
-[[file:build/low-amp-nocolor.eps]]
-[[file:build/high-amp-nocolor.eps]]
-#+end_figure
+#+attr_latex: :width \textwidth
+#+RESULTS: fig-velocity-field-2d
+[[file:build/large-and-small-amplitude-velocity-field-comparison.pdf]]
+
 *** Non-physical nature of ARMA model
 ARMA model, owing to its non-physical nature, does not have the notion of ocean
 wave; it simulates wavy surface as a whole instead. Motions of individual waves
