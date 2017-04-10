@@ -2587,13 +2587,13 @@ convergence rate and non-existence of periodicity allows to use far fewer
 coefficients compared to LH model.
 
 ARMA implementation uses several libraries of reusable mathematical functions
-and numerical algorithms (listed in table\nbsp{}[[tab-arma-libs]]), and was implemented using
-several parallel programming technologies (MPI, OpenMP, OpenCL) to find the most
-efficient one.
+and numerical algorithms (listed in table\nbsp{}[[tab-arma-libs]]), and was
+implemented using several parallel programming technologies (MPI, OpenMP,
+OpenCL) to find the most efficient one.
 
 #+name: tab-arma-libs
 #+caption: A list of mathematical libraries used in ARMA model implementation.
-#+attr_latex: :booktabs t :align lp{0.6\linewidth}
+#+attr_latex: :booktabs t
 | Library                                                      | What it is used for             |
 |--------------------------------------------------------------+---------------------------------|
 | DCMT\nbsp{}cite:matsumoto1998dynamic                         | parallel PRNG                   |

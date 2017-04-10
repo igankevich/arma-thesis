@@ -2461,8 +2461,8 @@ GotoBLAS и основанная на ней LAPACK, для непрерывно
 
 #+name: tab-arma-libs
 #+caption: Список библиотек, используемых в реализации модели АРСС.
-#+attr_latex: :booktabs t :align lp{0.6\linewidth}
-| Library                                                      | What it is used for              |
+#+attr_latex: :booktabs t
+| Библиотека                                                   | Назначение                       |
 |--------------------------------------------------------------+----------------------------------|
 | DCMT\nbsp{}cite:matsumoto1998dynamic                         | параллельный ГПСЧ                |
 | Blitz\nbsp{}cite:veldhuizen1997will,veldhuizen2000techniques | многомерные массивы              |
