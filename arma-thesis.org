@@ -825,18 +825,18 @@ process to ocean wave modelling.
 
 ** Pressure field determination formulae
 **** Small amplitude waves theory.
-In\nbsp{}cite:stab2012,детярев1998моделирование,degtyarev1997analysis the authors
-propose a solution for inverse problem of hydrodynamics of potential flow in the
-framework of small-amplitude wave theory (under assumption that wave length is
-much larger than height: \(\lambda \gg h\)). In that case inverse problem is
-linear and reduces to Laplace equation with mixed boundary conditions, and
-equation of motion is solely used to determine pressures for calculated velocity
-potential derivatives. The assumption of small amplitudes means the slow decay
-of wind wave coherence function, i.e. small change of local wave number in time
-and space compared to the wavy surface elevation (\(z\) coordinate). This
-assumption allows to calculate elevation \(z\) derivative as \(\zeta_z=k\zeta\),
-where \(k\) is wave number. In two-dimensional case the solution is written
-explicitly as
+In\nbsp{}cite:stab2012,детярев1998моделирование,degtyarev1997analysis the
+authors propose a solution for inverse problem of hydrodynamics of potential
+flow in the framework of small-amplitude wave theory (under assumption that wave
+length is much larger than height: \(\lambda \gg h\)). In that case inverse
+problem is linear and reduces to Laplace equation with mixed boundary
+conditions, and equation of motion is solely used to determine pressures for
+calculated velocity potential derivatives. The assumption of small amplitudes
+means the slow decay of wind wave coherence function, i.e. small change of local
+wave number in time and space compared to the wavy surface elevation (\(z\)
+coordinate). This assumption allows to calculate elevation \(z\) derivative as
+\(\zeta_z=k\zeta\), where \(k\) is wave number. In two-dimensional case the
+solution is written explicitly as
 \begin{align}
     \left.\frac{\partial\phi}{\partial x}\right|_{x,t}= &
         -\frac{1}{\sqrt{1+\alpha^{2}}}e^{-I(x)}
@@ -844,7 +844,6 @@ explicitly as
                 z+\alpha\dot{\alpha}}{\sqrt{1+\alpha^{2}}}e^{I(x)}dx,\label{eq-old-sol-2d}\\
     I(x)= & \int\limits_{0}^x\frac{\partial\alpha/\partial z}{1+\alpha^{2}}dx,\nonumber
 \end{align}
-
 where \(\alpha\) is wave slope. In three-dimensional case solution is written in
 the form of elliptic partial differential equation (PDE):
 \begin{align*}

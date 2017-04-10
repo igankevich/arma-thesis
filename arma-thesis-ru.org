@@ -594,8 +594,8 @@ Motion Programme (LAMP), программе для моделирования к
                 z+\alpha\dot{\alpha}}{\sqrt{1+\alpha^{2}}}e^{I(x)}dx,\label{eq-old-sol-2d}\\
     I(x)= & \int\limits_{0}^x\frac{\partial\alpha/\partial z}{1+\alpha^{2}}dx,\nonumber
 \end{align}
-где \(\alpha\)\nbsp{}--- уклоны волн. В трехмерном случае решение записывается в виде
-эллиптического дифференциального уравнения в частных производных
+где \(\alpha\)\nbsp{}--- уклоны волн. В трехмерном случае решение записывается в
+виде эллиптического дифференциального уравнения в частных производных
 \begin{align*}
     & \frac{\partial^2 \phi}{\partial x^2} \left( 1 + \alpha_x^2 \right) +
     \frac{\partial^2 \phi}{\partial y^2} \left( 1 + \alpha_y^2 \right) +
