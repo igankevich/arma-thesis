@@ -2594,14 +2594,15 @@ efficient one.
 #+name: tab-arma-libs
 #+caption: A list of mathematical libraries used in ARMA model implementation.
 #+attr_latex: :booktabs t :align lp{0.6\linewidth}
-| Library                                                | What it is used for             |
-|--------------------------------------------------------+---------------------------------|
+| Library                                                      | What it is used for             |
+|--------------------------------------------------------------+---------------------------------|
 | DCMT\nbsp{}cite:matsumoto1998dynamic                         | parallel PRNG                   |
 | Blitz\nbsp{}cite:veldhuizen1997will,veldhuizen2000techniques | multidimensional arrays         |
 | GSL\nbsp{}cite:gsl2008scientific                             | PDF, CDF, FFT computation       |
-|                                                        | checking process stationarity   |
+|                                                              | checking process stationarity   |
 | LAPACK, GotoBLAS\nbsp{}cite:goto2008high,goto2008anatomy     | finding AR coefficients         |
 | GL, GLUT\nbsp{}cite:kilgard1996opengl                        | three-dimensional visualisation |
+| CGAL\nbsp{}cite:fabri2009cgal                                | wave numbers triangulation      |
 
 **** Performance of load balancing algorithm.
 Software implementation of wavy surface generation is balanced in terms of the
