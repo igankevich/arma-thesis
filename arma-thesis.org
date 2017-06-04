@@ -1684,7 +1684,7 @@ kurtosis and skewness. In\nbsp{}cite:рожков1996теория the authors sh
 of PDF expands in Gram---Charlier series:
 \begin{align}
     \label{eq-skew-normal-1}
-    F(z; \gamma_1, \gamma_2) & = \phi(z)
+    F(z; \gamma_1, \gamma_2) & \approx \phi(z)
         - \gamma_1 \frac{\phi'''(z)}{3!}
         + \gamma_2 \frac{\phi''''(z)}{4!} \nonumber \\
     & =
@@ -1696,7 +1696,7 @@ of PDF expands in Gram---Charlier series:
         + \frac{1}{24} \gamma_2 z \left(z^2-3\right)
     \right]
     ,\nonumber \\
-    f(z; \gamma_1, \gamma_2) & =
+    f(z; \gamma_1, \gamma_2) & \approx
     \frac{e^{-\frac{z^2}{2}}}{\sqrt{2 \pi }}
     \left[
         \frac{1}{6} \gamma_1 z \left(z^2-3\right)
