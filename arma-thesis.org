@@ -1683,32 +1683,27 @@ kurtosis and skewness. In\nbsp{}cite:рожков1996теория the authors sh
 of PDF expands in Gram---Charlier series:
 \begin{align}
     \label{eq-skew-normal-1}
-    F(z; \gamma_1, \gamma_2) & \approx \phi(z)
-        - \gamma_1 \frac{\phi'''(z)}{3!}
-        + \gamma_2 \frac{\phi''''(z)}{4!} \nonumber \\
-    & =
-    \frac{1}{2} \text{erf}\left[\frac{z}{\sqrt{2}}\right]
-    -
-    \frac{e^{-\frac{z^2}{2}}}{\sqrt{2\pi}}
+    & F(z; \mu=0, \sigma=1, \gamma_1, \gamma_2) \approx
+    \Phi(z; \mu, \sigma) \frac{2 + \gamma_2}{2}
+    - \frac{2}{3} \phi(z; \mu, \sigma)
+    \left(\gamma_2 z^3+\gamma_1
+    \left(2 z^2+1\right)\right) \nonumber
+    \\
+    & f(z; \mu, \sigma, \gamma_1, \gamma_2) \approx
+    \phi(z; \mu, \sigma)
     \left[
-        \frac{1}{6} \gamma_1 \left(z^2-1\right)
-        + \frac{1}{24} \gamma_2 z \left(z^2-3\right)
-    \right]
-    ,\nonumber \\
-    f(z; \gamma_1, \gamma_2) & \approx
-    \frac{e^{-\frac{z^2}{2}}}{\sqrt{2 \pi }}
-    \left[
-        \frac{1}{6} \gamma_1 z \left(z^2-3\right)
-        + \frac{1}{24} \gamma_2 \left(z^4-6z^2+3\right)
-        +1
+        1+
+        \frac{1}{3!} \gamma_1 H_3 \left(\frac{z-\mu}{\sigma}\right)
+        + \frac{1}{4!} \gamma_2 H_4 \left(\frac{z-\mu}{\sigma}\right)
     \right],
 \end{align}
-where \(\phi(z)=\frac{1}{2}\mathrm{erf}(z/\sqrt{2})\), \(\gamma_1\)\nbsp{}--- skewness,
-\(\gamma_2\)\nbsp{}--- kurtosis, \(f\)\nbsp{}--- PDF, \(F\)\nbsp{}--- cumulative distribution function
-(CDF). According to\nbsp{}cite:рожков1990вероятностные for ocean waves skewness is
-selected from interval \(0.1\leq\gamma_1\leq{0.52}]\) and kurtosis from interval
-\(0.1\leq\gamma_2\leq{0.7}\). Family of probability density functions for
-different parameters is shown in fig.\nbsp{}[[fig-skew-normal-1]].
+where \(\Phi(z)\)\nbsp{}--- CDF of normal distribution, \(\phi\)\nbsp{}--- PDF
+of normal distribution, \(\gamma_1\)\nbsp{}--- skewness, \(\gamma_2\)\nbsp{}---
+kurtosis, \(f\)\nbsp{}--- PDF, \(F\)\nbsp{}--- cumulative distribution function
+(CDF). According to\nbsp{}cite:рожков1990вероятностные for ocean waves skewness
+is selected from interval \(0.1\leq\gamma_1\leq{0.52}]\) and kurtosis from
+interval \(0.1\leq\gamma_2\leq{0.7}\). Family of probability density functions
+for different parameters is shown in fig.\nbsp{}[[fig-skew-normal-1]].
 
 #+NAME: fig-skew-normal-1
 #+begin_src R :file build/skew-normal-1.pdf

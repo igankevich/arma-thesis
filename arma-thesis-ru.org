@@ -1458,32 +1458,28 @@ eqref:eq-solution-2d-full до
 раскладывается в ряд Грама---Шарлье:
 \begin{align}
     \label{eq-skew-normal-1}
-    F(z; \gamma_1, \gamma_2) & = \phi(z)
-        - \gamma_1 \frac{\phi'''(z)}{3!}
-        + \gamma_2 \frac{\phi''''(z)}{4!} \nonumber \\
-    & =
-    \frac{1}{2} \text{erf}\left[\frac{z}{\sqrt{2}}\right]
-    -
-    \frac{e^{-\frac{z^2}{2}}}{\sqrt{2\pi}}
+    & F(z; \mu=0, \sigma=1, \gamma_1, \gamma_2) \approx
+    \Phi(z; \mu, \sigma) \frac{2 + \gamma_2}{2}
+    - \frac{2}{3} \phi(z; \mu, \sigma)
+    \left(\gamma_2 z^3+\gamma_1
+    \left(2 z^2+1\right)\right) \nonumber
+    \\
+    & f(z; \gamma_1, \gamma_2) \approx
+    \frac{1}{\sigma\sqrt{2 \pi}}e^{-\frac{(z-\mu)^2}{2\sigma^2}}
     \left[
-        \frac{1}{6} \gamma_1 \left(z^2-1\right)
-        + \frac{1}{24} \gamma_2 z \left(z^2-3\right)
-    \right]
-    ,\nonumber \\
-    f(z; \gamma_1, \gamma_2) & =
-    \frac{e^{-\frac{z^2}{2}}}{\sqrt{2 \pi }}
-    \left[
+        1+
         \frac{1}{6} \gamma_1 z \left(z^2-3\right)
         + \frac{1}{24} \gamma_2 \left(z^4-6z^2+3\right)
-        +1
     \right],
 \end{align}
-где \(\phi(z)=\frac{1}{2}\mathrm{erf}(z/\sqrt{2})\), \(\gamma_1\)\nbsp{}--- асимметрия,
-\(\gamma_2\)\nbsp{}--- эксцесс, \(f\)\nbsp{}--- ФПР, \(F\)\nbsp{}--- функция распределения (ФР).
-Согласно\nbsp{}cite:рожков1990вероятностные для аппликат морских волн значение
-асимметрии выбирается на интервале \(0,1\leq\gamma_1\leq{0,52}]\), а значение
-эксцесса на интервале \(0,1\leq\gamma_2\leq{0,7}\). Семейство плотностей
-распределения при различных параметрах показано на рис.\nbsp{}[[fig-skew-normal-1]].
+где \(\Phi(z)\)\nbsp{}--- ФР нормального распределения, \(\phi\)\nbsp{}--- ФПР
+нормального распределения, \(\gamma_1\)\nbsp{}--- асимметрия,
+\(\gamma_2\)\nbsp{}--- эксцесс, \(f\)\nbsp{}--- ФПР, \(F\)\nbsp{}--- функция
+распределения (ФР). Согласно\nbsp{}cite:рожков1990вероятностные для аппликат
+морских волн значение асимметрии выбирается на интервале
+\(0,1\leq\gamma_1\leq{0,52}]\), а значение эксцесса на интервале
+\(0,1\leq\gamma_2\leq{0,7}\). Семейство плотностей распределения при различных
+параметрах показано на рис.\nbsp{}[[fig-skew-normal-1]].
 
 #+name: fig-skew-normal-1
 #+begin_src R :file build/skew-normal-1-ru.pdf
