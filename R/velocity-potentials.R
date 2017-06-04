@@ -74,3 +74,32 @@ arma.plot_velocity_potential_field_legend <- function (...) {
   axis(4)
   box()
 }
+
+arma.plot_velocity <- function(file1, file2, ...) {
+  args <- list(...)
+  data1 <- read.table(file1)
+  data2 <- read.table(file2)
+  ylim <- range(c(data1, data2))
+  if ("ylim" %in% names(args)) {
+    ylim <- args$ylim
+  }
+  plot.new()
+  plot.window(
+    xlim = c(0, nrow(data1)-1),
+    ylim = ylim
+  )
+  lines(data1, lty=args$linetypes[[1]])
+  lines(data2, lty=args$linetypes[[2]])
+  axis(1)
+  axis(2)
+  box()
+  title(xlab="x",ylab="u(x)")
+  legend(
+    "topleft",
+    c(
+      as.expression(bquote(u[1](x))),
+      as.expression(bquote(u[2](x)))
+    ),
+    lty = paste(args$linetypes)
+  )
+}
