@@ -696,16 +696,18 @@ for it in general case is written as\nbsp{}cite:kochin1966theoretical
     & \phi_t+\frac{1}{2} |\vec{\upsilon}|^2 + g\zeta=-\frac{p}{\rho}, & \text{на }z=\zeta(x,y,t),\label{eq-problem}\\
     & D\zeta = \nabla \phi \cdot \vec{n}, & \text{на }z=\zeta(x,y,t),\nonumber
 \end{align}
-where \(\phi\)\nbsp{}--- velocity potential, \(\zeta\)\nbsp{}--- elevation (\(z\) coordinate)
-of wavy surface, \(p\)\nbsp{}--- wave pressure, \(\rho\)\nbsp{}--- fluid density,
-\(\vec{\upsilon}=(\phi_x,\phi_y,\phi_z)\)\nbsp{}--- velocity vector, \(g\)\nbsp{}---
-acceleration of gravity, and \(D\)\nbsp{}--- substantial (Lagrange) derivative. The
-first equation is called continuity (Laplace) equation, the second one is the
-conservation of momentum law (the so called dynamic boundary condition); the
-third one is kinematic boundary condition for free wavy surface, which states
-that rate of change of wavy surface elevation (\(D\zeta\)) equals to the change of
-velocity potential derivative along the wavy surface normal
-(\(\nabla\phi\cdot\vec{n}\)).
+where \(\phi\)\nbsp{}--- velocity potential, \(\zeta\)\nbsp{}--- elevation
+(\(z\) coordinate) of wavy surface, \(p\)\nbsp{}--- wave pressure,
+\(\rho\)\nbsp{}--- fluid density,
+\(\vec{\upsilon}=(\phi_x,\phi_y,\phi_z)\)\nbsp{}--- velocity vector,
+\(g\)\nbsp{}--- acceleration of gravity, and \(D\)\nbsp{}--- substantial
+(Lagrange) derivative. The first equation is called continuity (Laplace)
+equation, the second one is the conservation of momentum law (the so called
+dynamic boundary condition); the third one is kinematic boundary condition for
+free wavy surface, which states that rate of change of wavy surface elevation
+(\(D\zeta\)) equals to the change of velocity potential derivative along the
+wavy surface normal (\(\nabla\phi\cdot\vec{n}\), see
+section\nbsp{}[[#directional-derivative]]).
 
 Inverse problem of hydrodynamics consists in solving this system of equations
 for \(\phi\). In this formulation dynamic boundary condition becomes explicit
@@ -1921,13 +1923,13 @@ they may (and often) overlap.
 #+caption: Values of Weibull shape parameter for different wave characteristics.
 #+attr_latex: :booktabs t
 | Characteristic       | Weibull shape (\(k\)) |
-|----------------------+---------------------|
-| Wave height          |                   2 |
-| Wave length          |                 2.3 |
-| Crest length         |                 2.3 |
-| Wave period          |                   3 |
-| Wave slope           |                 2.5 |
-| Three-dimensionality |                 2.5 |
+|----------------------+-----------------------|
+| Wave height          |                     2 |
+| Wave length          |                   2.3 |
+| Crest length         |                   2.3 |
+| Wave period          |                     3 |
+| Wave slope           |                   2.5 |
+| Three-dimensionality |                   2.5 |
 
 Verification was performed for standing and propagating waves. The corresponding
 ACFs and quantile-quantile plots of wave characteristics distributions are shown
@@ -3559,3 +3561,22 @@ Plugging it in the boundary condition yields
 Here \(\epsilon\) is white noise and \(C_t\) includes \(dk\). Substituting
 integral with infinite sum yields two-dimensional form of
 eq.\nbsp{}[[eq-longuet-higgins]].
+
+** Derivative in the direction of the surface normal
+:PROPERTIES:
+:CUSTOM_ID: directional-derivative
+:END:
+Directional derivative of \(\phi\) in the direction of vector \(\vec{n}\) is
+given by \(\nabla_n\phi=\nabla\phi\cdot\frac{\vec{n}}{|\vec{n}|}\). Normal
+vector \(\vec{n}\) to the surface \(z=\zeta(x,y)\) at point \((x_0,y_0)\) is
+given by
+\begin{equation*}
+  \vec{n} = \begin{bmatrix}\zeta_x(x_0,y_0)\\\zeta_y(x_0,y_0)\\-1\end{bmatrix}.
+\end{equation*}
+Hence, derivative in the direction of the surface normal is given by
+\begin{equation*}
+\nabla_n \phi = \phi_x \frac{\zeta_x}{\sqrt{\zeta_x^2+\zeta_y^2+1}}
+    + \phi_y \frac{\zeta_y}{\sqrt{\zeta_x^2+\zeta_y^2+1}}
+    + \phi_z \frac{-1}{\sqrt{\zeta_x^2+\zeta_y^2+1}},
+\end{equation*}
+where \(\zeta\) derivatives are calculated at \((x_0,y_0)\).
