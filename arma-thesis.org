@@ -1897,8 +1897,8 @@ the formula for three-dimensional case was not derived.
 :CUSTOM_ID: sec:verification
 :END:
 
-In\nbsp{}cite:degtyarev2011modelling,degtyarev2013synoptic,boukhanovsky1997thesis AR
-model the following items are verified experimentally:
+In\nbsp{}cite:degtyarev2011modelling,degtyarev2013synoptic,boukhanovsky1997thesis
+AR model the following items are verified experimentally:
 - probability distributions of different wave characteristics (wave heights,
   lengths, crests, periods, slopes, three-dimensionality),
 - dispersion relation,
@@ -2129,6 +2129,22 @@ arma.plot_velocity(
 [[file:build/large-and-small-amplitude-velocity-field-comparison.pdf]]
 
 *** Verification of nonlinear inertialess transformation
+In order to measure the effect of NIT on the shape of the resulting wavy
+surface, three realisations were generated:
+- realisation with Gaussian distribution (without NIT),
+- realisation with Gram---Charlier series based distribution, and
+- realisation with skew normal distribution.
+The seed of PRNG was set to be the same for all progrmme executions to make ARMA
+model produce the same values for eahc realisation. Standing wave ACF was used
+in all experiments.
+
+The results of the experiment are twofold: while the experiment showed that
+applying NIT with GCS-based distribution makes wave profiles steeper, the same
+is not true for skew normal distribution (fig.\nbsp{}[[fig-nonlinear]]. Using this
+distribution results in wavy surface each \(z\)-coordinate of which is always
+greater or equal to nought. So, skew normal distribution is unsuitable for NIT.
+
+
 *** Non-physical nature of ARMA model
 ARMA model, owing to its non-physical nature, does not have the notion of ocean
 wave; it simulates wavy surface as a whole instead. Motions of individual waves
@@ -3525,6 +3541,7 @@ Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
 - <<<LAPACK>>> :: Linear Algebra Package.
 - <<<DNS>>> :: Dynamic name resolution.
 - <<<HPC>>> ::  High-performance computing.
+- <<<GCS>>> ::  Gram---Charlier series.
 - Master/slave node ::
 - Principal/subordinate kernel ::
 
