@@ -1157,80 +1157,6 @@ propagating waves. With new formulae for 3 dimensions a single mixed ARMA
 process might increase model precision, which is one of the objectives of the
 future research.
 
-** Modelling non-linearity of ocean waves
-ARMA model allows to model asymmetry of wave elevation distribution, i.e.
-generate ocean waves, distribution of z-coordinate of which has non-nought
-kurtosis and asymmetry. Such distribution is inherent to real ocean waves\nbsp{}cite:longuet1963nonlinear.
-
-Wave asymmetry is modelled by non-linear inertia-less transform (NIT) of
-stochastic process, however, transforming resulting wavy surface means
-transforming initial ACF. In order to alleviate this, ACF must be preliminary
-transformed as shown in\nbsp{}cite:boukhanovsky1997thesis.
-
-**** Wavy surface transformation.
-Explicit formula \(z=f(y)\) that transforms wavy surface to desired
-one-dimensional distribution \(F(z)\) is the solution of non-linear transcendental
-equation \(F(z)=\Phi(y)\), where \(\Phi(y)\)\nbsp{}--- one-dimensional Gaussian
-distribution. Since distribution of wave elevation is often given by some
-approximation based on field data, this equation is solved numerically with
-respect to \(z_k\) in each grid point \(y_k|_{k=0}^N\) of generated wavy surface. In
-this case equation is rewritten as
-\begin{equation}
-    \label{eq-distribution-transformation}
-    F(z_k)
-    =
-    \frac{1}{\sqrt{2\pi}}
-    \int\limits_0^{y_k} \exp\left[ -\frac{t^2}{2} \right] dt
-    .
-\end{equation}
-Since, distribution functions are monotonic, the simplest interval halving
-(bisection) numerical method is used to solve this equation.
-
-**** Preliminary ACF transformation.
-In order to transform ACF \(\gamma_z\) of the process, it should be expanded in
-series of Hermite polynomials (Gram---Charlier series)
-\begin{equation*}
-    \gamma_z \left( \vec u \right)
-    =
-    \sum\limits_{m=0}^{\infty}
-    C_m^2 \frac{\gamma_y^m \left( \vec u \right)}{m!},
-\end{equation*}
-where
-\begin{equation*}
-    C_m = \frac{1}{\sqrt{2\pi}}
-  \int\limits_{0}^\infty
-    f(y) H_m(y) \exp\left[ -\frac{y^2}{2} \right],
-\end{equation*}
-\(H_m\)\nbsp{}--- Hermite polynomial, and \(f(y)\)\nbsp{}--- solution to equation
-eqref:eq-distribution-transformation. Plugging polynomial approximation
-\(f(y)\approx\sum\limits_{i}d_{i}y^i\) and analytic formulae for Hermite
-polynomial yields
-\begin{equation*}
-    \frac{1}{\sqrt{2\pi}}
-    \int\limits_\infty^\infty
-    y^k \exp\left[ -\frac{y^2}{2} \right]
-    =
-    \begin{cases}
-        (k-1)!! & \text{if }k\text{ is even},\\
-        0       & \text{if }k\text{ is odd},
-    \end{cases}
-\end{equation*}
-which simplifies the former equation. Optimal number of coefficients \(C_m\) is
-determined by computing them sequentially and stopping when variances of both
-fields become equal with desired accuracy \(\epsilon\):
-\begin{equation*}
-    \left| \Var{z} - \sum\limits_{k=0}^m
-    \frac{C_k^2}{k!} \right| \leq \epsilon.
-\end{equation*}
-
-In\nbsp{}cite:boukhanovsky1997thesis the author suggests using polynomial
-approximation \(f(y)\) also for wavy surface transformation, however, in practice
-ocean surface realisation often contains points, where z-coordinate is beyond
-the limits of the approximation, which makes solution wrong. In these points it
-is more efficient to solve equation eqref:eq-distribution-transformation by
-bisection method. Using the same approximation in Gram---Charlier series does
-not lead to such errors.
-
 ** Determining wave pressures for discretely given wavy surface
 Analytic solutions to boundary problems in classical equations are often used to
 study different properties of the solution, and for that purpose general
@@ -1559,6 +1485,81 @@ and plugging the result into eqref:eq-guessed-sol-3d yields formula for
     }{x,y},
 \end{equation*}
 where \(\FourierY{\mathcal{D}_3\left(x,y,z\right)}{u,v}=\Sinh{\smash{2\pi\Kveclen{}z}}\).
+
+** Modelling non-linearity of ocean waves
+ARMA model allows to model asymmetry of wave elevation distribution, i.e.\nbsp{}
+generate ocean waves, distribution of \(z\)-coordinate of which has non-nought
+kurtosis and asymmetry. Such distribution is inherent to real ocean
+waves\nbsp{}cite:longuet1963nonlinear.
+
+Wave asymmetry is modelled by non-linear inertia-less transform (NIT) of
+stochastic process, however, transforming resulting wavy surface means
+transforming initial ACF. In order to alleviate this, ACF must be preliminary
+transformed as shown in\nbsp{}cite:boukhanovsky1997thesis.
+
+**** Wavy surface transformation.
+Explicit formula \(z=f(y)\) that transforms wavy surface to desired
+one-dimensional distribution \(F(z)\) is the solution of non-linear
+transcendental equation \(F(z)=\Phi(y)\), where \(\Phi(y)\)\nbsp{}---
+one-dimensional Gaussian distribution. Since distribution of wave elevation is
+often given by some approximation based on field data, this equation is solved
+numerically with respect to \(z_k\) in each grid point \(y_k|_{k=0}^N\) of
+generated wavy surface. In this case equation is rewritten as
+\begin{equation}
+    \label{eq-distribution-transformation}
+    F(z_k)
+    =
+    \frac{1}{\sqrt{2\pi}}
+    \int\limits_0^{y_k} \exp\left[ -\frac{t^2}{2} \right] dt
+    .
+\end{equation}
+Since, distribution functions are monotonic, the simplest interval halving
+(bisection) numerical method is used to solve this equation.
+
+**** Preliminary ACF transformation.
+In order to transform ACF \(\gamma_z\) of the process, it is expanded in series
+of Hermite polynomials (Gram---Charlier series)
+\begin{equation*}
+    \gamma_z \left( \vec u \right)
+    =
+    \sum\limits_{m=0}^{\infty}
+    C_m^2 \frac{\gamma_y^m \left( \vec u \right)}{m!},
+\end{equation*}
+where
+\begin{equation*}
+    C_m = \frac{1}{\sqrt{2\pi}}
+  \int\limits_{0}^\infty
+    f(y) H_m(y) \exp\left[ -\frac{y^2}{2} \right],
+\end{equation*}
+\(H_m\)\nbsp{}--- Hermite polynomial, and \(f(y)\)\nbsp{}--- solution to equation
+eqref:eq-distribution-transformation. Plugging polynomial approximation
+\(f(y)\approx\sum\limits_{i}d_{i}y^i\) and analytic formulae for Hermite
+polynomial yields
+\begin{equation*}
+    \frac{1}{\sqrt{2\pi}}
+    \int\limits_\infty^\infty
+    y^k \exp\left[ -\frac{y^2}{2} \right]
+    =
+    \begin{cases}
+        (k-1)!! & \text{if }k\text{ is even},\\
+        0       & \text{if }k\text{ is odd},
+    \end{cases}
+\end{equation*}
+which simplifies the former equation. Optimal number of coefficients \(C_m\) is
+determined by computing them sequentially and stopping when variances of both
+fields become equal with desired accuracy \(\epsilon\):
+\begin{equation*}
+    \left| \Var{z} - \sum\limits_{k=0}^m
+    \frac{C_k^2}{k!} \right| \leq \epsilon.
+\end{equation*}
+
+In\nbsp{}cite:boukhanovsky1997thesis the author suggests using polynomial
+approximation \(f(y)\) also for wavy surface transformation, however, in
+practice ocean surface realisation often contains points, where \(z\)-coordinate
+is beyond the limits of the approximation, which makes solution invalid. In
+these points it is more efficient to solve equation
+eqref:eq-distribution-transformation by bisection method. Using the same
+approximation in Gram---Charlier series does not lead to such errors.
 
 * Numerical methods and experimental results
 ** The shape of ACF for different types of waves
@@ -2008,7 +2009,6 @@ periods of standing waves are extracted more precisely as the waves do not move
 outside simulated wavy surface region. The same correspondence degree for wave elevation
 is obtained, because this is the characteristic of the wavy surface (and
 corresponding AR or MA process) and is not affected by the type of waves.
-
 *** Verification of velocity potential fields
 :PROPERTIES:
 :CUSTOM_ID: sec:compare-formulae
@@ -2128,6 +2128,7 @@ arma.plot_velocity(
 #+RESULTS: fig-velocity-field-2d
 [[file:build/large-and-small-amplitude-velocity-field-comparison.pdf]]
 
+*** Verification of nonlinear inertialess transformation
 *** Non-physical nature of ARMA model
 ARMA model, owing to its non-physical nature, does not have the notion of ocean
 wave; it simulates wavy surface as a whole instead. Motions of individual waves
