@@ -2136,13 +2136,18 @@ surface, three realisations were generated:
 - realisation with skew normal distribution.
 The seed of PRNG was set to be the same for all progrmme executions to make ARMA
 model produce the same values for eahc realisation. Standing wave ACF was used
-in all experiments.
+in the first experiment.
 
 The results of the experiment are twofold: while the experiment showed that
 applying NIT with GCS-based distribution makes wave profiles steeper, the same
 is not true for skew normal distribution (fig.\nbsp{}[[fig-nonlinear]]. Using this
 distribution results in wavy surface each \(z\)-coordinate of which is always
 greater or equal to nought. So, skew normal distribution is unsuitable for NIT.
+In addition to this, NIT did not change wave asymmetry as expected, but this can
+be related to the fact that the wave is standing.
+
+In the second experiment the same benchmarks were repeated for propagating
+waves.
 
 
 *** Non-physical nature of ARMA model
