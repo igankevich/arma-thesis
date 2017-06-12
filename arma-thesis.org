@@ -2103,6 +2103,9 @@ approximation in Gram---Charlier series does not lead to such errors.
 
 * Numerical methods and experimental results
 ** The shape of ACF for different types of waves
+:PROPERTIES:
+:CUSTOM_ID: sec-wave-acfs
+:END:
 **** Analytic method of finding the ACF.
 The straightforward way to find ACF for a given ocean wave profile is to apply
 Wiener---Khinchin theorem. According to this theorem the autocorrelation \(K\) of
@@ -2675,16 +2678,20 @@ surface, three realisations were generated:
 - realisation with Gram---Charlier series based distribution, and
 - realisation with skew normal distribution.
 The seed of PRNG was set to be the same for all progrmme executions to make ARMA
-model produce the same values for eahc realisation. Standing wave ACF was used
-in the first experiment.
+model produce the same values for each realisation. There we two experiments: on
+for standing and one for propagating waves with ACFs similar to the ones in
+section\nbsp{}[[#sec-wave-acfs]].
 
 The results of the experiment are twofold: while the experiment showed that
 applying NIT with GCS-based distribution makes wave profiles steeper, the same
-is not true for skew normal distribution (fig.\nbsp{}[[fig-nonlinear]]. Using this
+is not true for skew normal distribution (fig.\nbsp{}[[fig-nonlinear]]). Using this
 distribution results in wavy surface each \(z\)-coordinate of which is always
 greater or equal to nought. So, skew normal distribution is unsuitable for NIT.
-In addition to this, NIT did not change wave asymmetry as expected, but this can
-be related to the fact that the wave is standing.
+NIT increases the wave height of standing waves and decreases the wave height of
+propagating waves. Since wave height depends on ACF, this is a consequence of
+ACF being different for each wave type. For both wave types the wave steepness
+is increased. Finally, increasing skewness parameter of GCS-based distribution
+increases wave steepness, while increasing kurtosis increases the wave height.
 
 #+name: fig-nit
 #+header: :width 5 :height 5 :pointsize 8
@@ -2704,9 +2711,6 @@ arma.plot_nonlinear(file.path("build", "nit-standing"), args)
 #+label: fig-nit
 #+RESULTS: fig-nit
 [[file:build/nit.pdf]]
-
-In the second experiment the same benchmarks were repeated for propagating
-waves.
 
 *** Non-physical nature of ARMA model
 ARMA model, owing to its non-physical nature, does not have the notion of ocean
