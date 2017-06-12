@@ -24,11 +24,6 @@ transform = nit {
 		skewness=2.25
 		kurtosis=0.4
 	}
-#	distribution = skew_normal {
-#		mean=0
-#		stdev=1
-#		alpha=1
-#	}
 	interpolation_order = 12
 	interpolation_nodes = 100
 	gram_charlier_order = 20

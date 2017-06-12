@@ -16,11 +16,12 @@ arma.read_zeta_slice <- function (filename) {
 
 arma.plot_nonlinear <- function (dirname, args) {
 
-  zeta_linear <- arma.read_zeta_slice(file.path(dirname, 'zeta-linear.csv'))
-  zeta_nonlinear <- arma.read_zeta_slice(file.path(dirname, 'zeta-nonlinear.csv'))
+  zeta_none <- arma.read_zeta_slice(file.path(dirname, 'zeta-none.csv'))
+  zeta_gcs <- arma.read_zeta_slice(file.path(dirname, 'zeta-gramcharlier.csv'))
+  zeta_sn <- arma.read_zeta_slice(file.path(dirname, 'zeta-skewnormal.csv'))
 
-  x <- unique(zeta_linear$x)
-  z <- unique(zeta_linear$z)
+  x <- unique(zeta_none$x)
+  z <- unique(zeta_none$z)
 
   # plot the graph
   rx <- range(x)
@@ -30,8 +31,9 @@ arma.plot_nonlinear <- function (dirname, args) {
   plot.window(xlim=rx, ylim=rz, asp=1)
   axis(1)
   axis(2)
-  lines(zeta_linear$x, zeta_linear$z, lty='dashed')
-  lines(zeta_nonlinear$x, zeta_nonlinear$z, lty='solid')
+  lines(zeta_none$x, zeta_none$z, lty='solid')
+  lines(zeta_gcs$x, zeta_gcs$z, lty='dashed')
+  lines(zeta_sn$x, zeta_sn$z, lty='dotted')
   title(args$title, xlab="x", ylab="z", line=-1.5)
   box()
   legend(
