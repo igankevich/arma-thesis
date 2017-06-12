@@ -42,3 +42,20 @@ arma.plot_nonlinear <- function (dirname, args) {
     lty=paste(args$linetypes)
   )
 }
+
+arma.wave_height <- function (realisation) {
+  sqrt(2*pi*var(realisation))
+}
+
+arma.print_wave_height <- function (dirname) {
+  zeta_none <- read.csv(file.path(dirname, 'zeta-none.csv'))
+  zeta_gcs <- read.csv(file.path(dirname, 'zeta-gramcharlier.csv'))
+  zeta_sn <- read.csv(file.path(dirname, 'zeta-skewnormal.csv'))
+  library('ascii')
+  options(asciiType='org')
+  data.frame(
+    h1=arma.wave_height(zeta_none$z),
+    h2=arma.wave_height(zeta_gcs$z),
+    h3=arma.wave_height(zeta_sn$z)
+  )
+}
