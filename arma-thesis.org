@@ -40,7 +40,7 @@ do
     rm -rf $wd
     mkdir -p $wd
     cd $wd
-    cp $root/config/parallel_mt.dat .
+    cp $root/config/mt.dat .
     arma -c $root/config/$testname.arma 2>&1
 done
 #+end_src
@@ -532,6 +532,546 @@ Verification scheme            = manual
 Plain wave model               = func=cos,amplitudes=[4],wavenumbers=[0.125],phases=[0],velocities=[0.5]
 Velocity potential solver name = N4arma8velocity21High_amplitude_solverIdEE
 Velocity potential solver      = wnmax=(0,0.25),depth=12,domain=from (10,-12) to (10,4) npoints (1,128)
+#+end_example
+** Produce NIT plots
+#+begin_src sh :exports none :results verbatim
+root=$(pwd)
+
+function generate_surface() {
+  linear=$1
+  nonlinear=$2
+  testcase=$3
+
+  wd=$root/build/$testcase
+  rm -rf $wd
+  mkdir -p $wd
+  cd $wd
+  cp $root/config/mt.dat .
+
+  # run linear case
+  arma -c $root/config/$linear 2>&1
+  cp -v zeta.csv zeta-linear.csv
+
+  # run nonlinear case
+  arma -c $root/config/$nonlinear 2>&1
+  cp -v zeta.csv zeta-nonlinear.csv
+}
+
+echo "NIT for propagating waves"
+generate_surface propagating-linear.arma propagating-nonlinear.arma nit-propagating
+
+echo "NIT for standing waves"
+generate_surface standing-linear.arma standing-nonlinear.arma nit-standing
+#+end_src
+
+#+RESULTS:
+#+begin_example
+NIT for propagating waves
+Input file                     = /home/igankevich/workspace/arma-thesis/config/propagating-linear.arma
+Output grid size               = (200,40,40)
+Output grid patch size         = (1,1,1)
+Model                          = MA
+Verification scheme            = manual
+MA model                       = order=(20,10,10),acf.shape=(20,10,10),algorithm=fixed_point_iteration
+Velocity potential solver name = N4arma8velocity21High_amplitude_solverIdEE
+Velocity potential solver      = wnmax=from (0,0) to (0,0.25) npoints (2,2),depth=12,domain=from (10,-12) to (10,3) npoints (1,128)
+NIT transform                  = none
+ACF variance = 5
+fixed_point_iteration:Iteration=0, var_wn=2.70831
+fixed_point_iteration:Iteration=1, var_wn=1.93791
+fixed_point_iteration:Iteration=2, var_wn=1.54801
+fixed_point_iteration:Iteration=3, var_wn=1.31202
+fixed_point_iteration:Iteration=4, var_wn=1.15328
+fixed_point_iteration:Iteration=5, var_wn=1.0386
+fixed_point_iteration:Iteration=6, var_wn=0.951442
+fixed_point_iteration:Iteration=7, var_wn=0.882674
+fixed_point_iteration:Iteration=8, var_wn=0.82688
+fixed_point_iteration:Iteration=9, var_wn=0.780623
+fixed_point_iteration:Iteration=10, var_wn=0.74161
+fixed_point_iteration:Iteration=11, var_wn=0.708244
+fixed_point_iteration:Iteration=12, var_wn=0.679374
+fixed_point_iteration:Iteration=13, var_wn=0.654145
+fixed_point_iteration:Iteration=14, var_wn=0.63191
+fixed_point_iteration:Iteration=15, var_wn=0.612168
+fixed_point_iteration:Iteration=16, var_wn=0.594523
+fixed_point_iteration:Iteration=17, var_wn=0.578663
+fixed_point_iteration:Iteration=18, var_wn=0.564333
+fixed_point_iteration:Iteration=19, var_wn=0.551325
+fixed_point_iteration:Iteration=20, var_wn=0.539469
+fixed_point_iteration:Iteration=21, var_wn=0.528623
+fixed_point_iteration:Iteration=22, var_wn=0.518666
+fixed_point_iteration:Iteration=23, var_wn=0.509497
+fixed_point_iteration:Iteration=24, var_wn=0.50103
+fixed_point_iteration:Iteration=25, var_wn=0.493191
+fixed_point_iteration:Iteration=26, var_wn=0.485915
+fixed_point_iteration:Iteration=27, var_wn=0.479148
+fixed_point_iteration:Iteration=28, var_wn=0.472841
+fixed_point_iteration:Iteration=29, var_wn=0.466951
+fixed_point_iteration:Iteration=30, var_wn=0.461442
+fixed_point_iteration:Iteration=31, var_wn=0.456279
+fixed_point_iteration:Iteration=32, var_wn=0.451435
+fixed_point_iteration:Iteration=33, var_wn=0.446882
+fixed_point_iteration:Iteration=34, var_wn=0.442597
+fixed_point_iteration:Iteration=35, var_wn=0.43856
+fixed_point_iteration:Iteration=36, var_wn=0.434752
+fixed_point_iteration:Iteration=37, var_wn=0.431155
+fixed_point_iteration:Iteration=38, var_wn=0.427755
+fixed_point_iteration:Iteration=39, var_wn=0.424537
+fixed_point_iteration:Iteration=40, var_wn=0.42149
+fixed_point_iteration:Iteration=41, var_wn=0.4186
+fixed_point_iteration:Iteration=42, var_wn=0.415859
+fixed_point_iteration:Iteration=43, var_wn=0.413256
+fixed_point_iteration:Iteration=44, var_wn=0.410782
+fixed_point_iteration:Iteration=45, var_wn=0.408429
+fixed_point_iteration:Iteration=46, var_wn=0.406191
+fixed_point_iteration:Iteration=47, var_wn=0.404059
+fixed_point_iteration:Iteration=48, var_wn=0.402028
+fixed_point_iteration:Iteration=49, var_wn=0.400092
+fixed_point_iteration:Iteration=50, var_wn=0.398246
+fixed_point_iteration:Iteration=51, var_wn=0.396483
+fixed_point_iteration:Iteration=52, var_wn=0.3948
+fixed_point_iteration:Iteration=53, var_wn=0.393193
+fixed_point_iteration:Iteration=54, var_wn=0.391656
+fixed_point_iteration:Iteration=55, var_wn=0.390187
+fixed_point_iteration:Iteration=56, var_wn=0.388782
+fixed_point_iteration:Iteration=57, var_wn=0.387438
+fixed_point_iteration:Iteration=58, var_wn=0.386151
+fixed_point_iteration:Iteration=59, var_wn=0.384918
+fixed_point_iteration:Iteration=60, var_wn=0.383738
+fixed_point_iteration:Iteration=61, var_wn=0.382606
+fixed_point_iteration:Iteration=62, var_wn=0.381522
+fixed_point_iteration:Iteration=63, var_wn=0.380482
+fixed_point_iteration:Iteration=64, var_wn=0.379485
+fixed_point_iteration:Iteration=65, var_wn=0.378528
+fixed_point_iteration:Iteration=66, var_wn=0.37761
+fixed_point_iteration:Iteration=67, var_wn=0.376728
+fixed_point_iteration:Iteration=68, var_wn=0.375882
+fixed_point_iteration:Iteration=69, var_wn=0.37507
+fixed_point_iteration:Iteration=70, var_wn=0.374289
+fixed_point_iteration:Iteration=71, var_wn=0.373539
+fixed_point_iteration:Iteration=72, var_wn=0.372818
+fixed_point_iteration:Iteration=73, var_wn=0.372126
+fixed_point_iteration:Iteration=74, var_wn=0.37146
+fixed_point_iteration:Iteration=75, var_wn=0.370819
+fixed_point_iteration:Iteration=76, var_wn=0.370204
+fixed_point_iteration:Iteration=77, var_wn=0.369611
+fixed_point_iteration:Iteration=78, var_wn=0.369042
+fixed_point_iteration:Iteration=79, var_wn=0.368493
+fixed_point_iteration:Iteration=80, var_wn=0.367966
+fixed_point_iteration:Iteration=81, var_wn=0.367458
+fixed_point_iteration:Iteration=82, var_wn=0.366969
+fixed_point_iteration:Iteration=83, var_wn=0.366499
+fixed_point_iteration:Iteration=84, var_wn=0.366046
+fixed_point_iteration:Iteration=85, var_wn=0.365609
+fixed_point_iteration:Iteration=86, var_wn=0.365189
+fixed_point_iteration:Iteration=87, var_wn=0.364785
+fixed_point_iteration:Iteration=88, var_wn=0.364395
+fixed_point_iteration:Iteration=89, var_wn=0.364019
+fixed_point_iteration:Iteration=90, var_wn=0.363657
+fixed_point_iteration:Iteration=91, var_wn=0.363309
+fixed_point_iteration:Iteration=92, var_wn=0.362973
+fixed_point_iteration:Iteration=93, var_wn=0.362649
+fixed_point_iteration:Iteration=94, var_wn=0.362337
+fixed_point_iteration:Iteration=95, var_wn=0.362036
+fixed_point_iteration:Iteration=96, var_wn=0.361746
+fixed_point_iteration:Iteration=97, var_wn=0.361466
+fixed_point_iteration:Iteration=98, var_wn=0.361196
+fixed_point_iteration:Iteration=99, var_wn=0.360936
+fixed_point_iteration:Iteration=100, var_wn=0.360686
+fixed_point_iteration:Iteration=101, var_wn=0.360444
+fixed_point_iteration:Iteration=102, var_wn=0.360211
+fixed_point_iteration:Iteration=103, var_wn=0.359986
+fixed_point_iteration:Iteration=104, var_wn=0.359769
+fixed_point_iteration:Iteration=105, var_wn=0.35956
+fixed_point_iteration:Iteration=106, var_wn=0.359358
+fixed_point_iteration:Iteration=107, var_wn=0.359163
+fixed_point_iteration:Iteration=108, var_wn=0.358975
+fixed_point_iteration:Iteration=109, var_wn=0.358794
+fixed_point_iteration:Iteration=110, var_wn=0.358619
+fixed_point_iteration:Iteration=111, var_wn=0.35845
+fixed_point_iteration:Iteration=112, var_wn=0.358287
+fixed_point_iteration:Iteration=113, var_wn=0.35813
+fixed_point_iteration:Iteration=114, var_wn=0.357979
+fixed_point_iteration:Iteration=115, var_wn=0.357832
+fixed_point_iteration:Iteration=116, var_wn=0.357691
+fixed_point_iteration:Iteration=117, var_wn=0.357555
+fixed_point_iteration:Iteration=118, var_wn=0.357423
+fixed_point_iteration:Iteration=119, var_wn=0.357296
+fixed_point_iteration:Iteration=120, var_wn=0.357173
+fixed_point_iteration:Iteration=121, var_wn=0.357055
+fixed_point_iteration:Iteration=122, var_wn=0.356941
+fixed_point_iteration:Iteration=123, var_wn=0.35683
+fixed_point_iteration:Iteration=124, var_wn=0.356724
+fixed_point_iteration:Iteration=125, var_wn=0.356621
+fixed_point_iteration:Iteration=126, var_wn=0.356522
+fixed_point_iteration:Iteration=127, var_wn=0.356426
+fixed_point_iteration:Iteration=128, var_wn=0.356334
+fixed_point_iteration:Iteration=129, var_wn=0.356244
+fixed_point_iteration:Iteration=130, var_wn=0.356158
+fixed_point_iteration:Iteration=131, var_wn=0.356075
+fixed_point_iteration:Iteration=132, var_wn=0.355994
+fixed_point_iteration:Iteration=133, var_wn=0.355917
+fixed_point_iteration:Iteration=134, var_wn=0.355842
+fixed_point_iteration:Iteration=135, var_wn=0.355769
+fixed_point_iteration:Iteration=136, var_wn=0.355699
+fixed_point_iteration:Iteration=137, var_wn=0.355632
+fixed_point_iteration:Iteration=138, var_wn=0.355566
+fixed_point_iteration:Iteration=139, var_wn=0.355504
+fixed_point_iteration:Iteration=140, var_wn=0.355443
+fixed_point_iteration:Iteration=141, var_wn=0.355384
+fixed_point_iteration:Iteration=142, var_wn=0.355327
+fixed_point_iteration:Iteration=143, var_wn=0.355272
+fixed_point_iteration:Iteration=144, var_wn=0.35522
+fixed_point_iteration:Iteration=145, var_wn=0.355168
+fixed_point_iteration:Iteration=146, var_wn=0.355119
+fixed_point_iteration:Iteration=147, var_wn=0.355071
+fixed_point_iteration:Iteration=148, var_wn=0.355025
+fixed_point_iteration:Iteration=149, var_wn=0.354981
+fixed_point_iteration:Iteration=150, var_wn=0.354938
+fixed_point_iteration:Iteration=151, var_wn=0.354896
+fixed_point_iteration:Iteration=152, var_wn=0.354856
+fixed_point_iteration:Iteration=153, var_wn=0.354818
+fixed_point_iteration:Iteration=154, var_wn=0.35478
+fixed_point_iteration:Iteration=155, var_wn=0.354744
+fixed_point_iteration:Iteration=156, var_wn=0.354709
+fixed_point_iteration:Iteration=157, var_wn=0.354676
+fixed_point_iteration:Iteration=158, var_wn=0.354643
+fixed_point_iteration:Iteration=159, var_wn=0.354612
+fixed_point_iteration:Iteration=160, var_wn=0.354581
+fixed_point_iteration:Iteration=161, var_wn=0.354552
+fixed_point_iteration:Iteration=162, var_wn=0.354523
+fixed_point_iteration:Iteration=163, var_wn=0.354496
+fixed_point_iteration:Iteration=164, var_wn=0.35447
+fixed_point_iteration:Iteration=165, var_wn=0.354444
+fixed_point_iteration:Iteration=166, var_wn=0.354419
+fixed_point_iteration:Iteration=167, var_wn=0.354396
+fixed_point_iteration:Iteration=168, var_wn=0.354373
+fixed_point_iteration:Iteration=169, var_wn=0.35435
+fixed_point_iteration:Iteration=170, var_wn=0.354329
+fixed_point_iteration:Iteration=171, var_wn=0.354308
+fixed_point_iteration:Iteration=172, var_wn=0.354288
+fixed_point_iteration:Iteration=173, var_wn=0.354269
+fixed_point_iteration:Iteration=174, var_wn=0.35425
+fixed_point_iteration:Iteration=175, var_wn=0.354232
+fixed_point_iteration:Iteration=176, var_wn=0.354214
+fixed_point_iteration:Iteration=177, var_wn=0.354197
+fixed_point_iteration:Iteration=178, var_wn=0.354181
+fixed_point_iteration:Iteration=179, var_wn=0.354165
+fixed_point_iteration:Iteration=180, var_wn=0.35415
+fixed_point_iteration:Iteration=181, var_wn=0.354135
+fixed_point_iteration:Iteration=182, var_wn=0.354121
+fixed_point_iteration:Iteration=183, var_wn=0.354107
+fixed_point_iteration:Iteration=184, var_wn=0.354094
+fixed_point_iteration:Iteration=185, var_wn=0.354081
+fixed_point_iteration:Iteration=186, var_wn=0.354069
+fixed_point_iteration:Iteration=187, var_wn=0.354057
+fixed_point_iteration:Iteration=188, var_wn=0.354046
+fixed_point_iteration:Iteration=189, var_wn=0.354034
+fixed_point_iteration:Iteration=190, var_wn=0.354024
+fixed_point_iteration:Iteration=191, var_wn=0.354013
+fixed_point_iteration:Iteration=192, var_wn=0.354003
+fixed_point_iteration:Iteration=193, var_wn=0.353993
+WN variance = 0.353993
+Partition size                 = (34,13,13)
+Finished part [1/96]Finished part [2/96]Finished part [3/96]Finished part [4/96]Finished part [5/96]Finished part [6/96]Finished part [7/96]Finished part [8/96]Finished part [9/96]Finished part [10/96]Finished part [11/96]Finished part [12/96]Finished part [13/96]Finished part [14/96]Finished part [15/96]Finished part [16/96]Finished part [17/96]Finished part [18/96]Finished part [19/96]Finished part [20/96]Finished part [21/96]Finished part [22/96]Finished part [23/96]Finished part [24/96]Finished part [25/96]Finished part [26/96]Finished part [27/96]Finished part [28/96]Finished part [29/96]Finished part [30/96]Finished part [31/96]Finished part [32/96]Finished part [33/96]Finished part [34/96]Finished part [35/96]Finished part [36/96]Finished part [37/96]Finished part [38/96]Finished part [39/96]Finished part [40/96]Finished part [41/96]Finished part [42/96]Finished part [43/96]Finished part [44/96]Finished part [45/96]Finished part [46/96]Finished part [47/96]Finished part [48/96]Finished part [49/96]Finished part [50/96]Finished part [51/96]Finished part [52/96]Finished part [53/96]Finished part [54/96]Finished part [55/96]Finished part [56/96]Finished part [57/96]Finished part [58/96]Finished part [59/96]Finished part [60/96]Finished part [61/96]Finished part [62/96]Finished part [63/96]Finished part [64/96]Finished part [65/96]Finished part [66/96]Finished part [67/96]Finished part [68/96]Finished part [69/96]Finished part [70/96]Finished part [71/96]Finished part [72/96]Finished part [73/96]Finished part [74/96]Finished part [75/96]Finished part [76/96]Finished part [77/96]Finished part [78/96]Finished part [79/96]Finished part [80/96]Finished part [81/96]Finished part [82/96]Finished part [83/96]Finished part [84/96]Finished part [85/96]Finished part [86/96]Finished part [87/96]Finished part [88/96]Finished part [89/96]Finished part [90/96]Finished part [91/96]Finished part [92/96]Finished part [93/96]Finished part [94/96]Finished part [95/96]Finished part [96/96]
+prfl dev_to_host_copy = 0us
+prfl fft = 64052us
+prfl second_function = 1745us
+prfl window_function = 641825us
+'zeta.csv' -> 'zeta-linear.csv'
+Input file                     = /home/igankevich/workspace/arma-thesis/config/propagating-nonlinear.arma
+Output grid size               = (200,40,40)
+Output grid patch size         = (1,1,1)
+Model                          = MA
+Verification scheme            = manual
+MA model                       = order=(20,10,10),acf.shape=(20,10,10),algorithm=fixed_point_iteration
+Velocity potential solver name = N4arma8velocity21High_amplitude_solverIdEE
+Velocity potential solver      = wnmax=from (0,0) to (0,0.25) npoints (2,2),depth=12,domain=from (10,-12) to (10,3) npoints (1,128)
+NIT transform                  = dist=gram_charlier,skewness=2.25,kurtosis=0.4,interpolation_nodes=100,interpolation_order=12,gram_charlier_order=20
+err = 0.901016
+err = 0.633282
+err = 0.627391
+err = 2.05244
+err = 2.73649
+err = 40.2987
+err = 46.5501
+err = 365.031
+err = 404.844
+err = 2334.7
+err = 2527.68
+err = 11727.1
+err = 12493.7
+err = 49080.1
+err = 51693.4
+err = 177912
+err = 185800
+err = 573975
+err = 595541
+err = 1.68124e+06
+trim = 3
+ACF variance = 5
+fixed_point_iteration:Iteration=0, var_wn=2.70831
+fixed_point_iteration:Iteration=1, var_wn=1.93791
+fixed_point_iteration:Iteration=2, var_wn=1.54801
+fixed_point_iteration:Iteration=3, var_wn=1.31202
+fixed_point_iteration:Iteration=4, var_wn=1.15328
+fixed_point_iteration:Iteration=5, var_wn=1.0386
+fixed_point_iteration:Iteration=6, var_wn=0.951442
+fixed_point_iteration:Iteration=7, var_wn=0.882674
+fixed_point_iteration:Iteration=8, var_wn=0.82688
+fixed_point_iteration:Iteration=9, var_wn=0.780623
+fixed_point_iteration:Iteration=10, var_wn=0.74161
+fixed_point_iteration:Iteration=11, var_wn=0.708244
+fixed_point_iteration:Iteration=12, var_wn=0.679374
+fixed_point_iteration:Iteration=13, var_wn=0.654145
+fixed_point_iteration:Iteration=14, var_wn=0.63191
+fixed_point_iteration:Iteration=15, var_wn=0.612168
+fixed_point_iteration:Iteration=16, var_wn=0.594523
+fixed_point_iteration:Iteration=17, var_wn=0.578663
+fixed_point_iteration:Iteration=18, var_wn=0.564333
+fixed_point_iteration:Iteration=19, var_wn=0.551325
+fixed_point_iteration:Iteration=20, var_wn=0.539469
+fixed_point_iteration:Iteration=21, var_wn=0.528623
+fixed_point_iteration:Iteration=22, var_wn=0.518666
+fixed_point_iteration:Iteration=23, var_wn=0.509497
+fixed_point_iteration:Iteration=24, var_wn=0.50103
+fixed_point_iteration:Iteration=25, var_wn=0.493191
+fixed_point_iteration:Iteration=26, var_wn=0.485915
+fixed_point_iteration:Iteration=27, var_wn=0.479148
+fixed_point_iteration:Iteration=28, var_wn=0.472841
+fixed_point_iteration:Iteration=29, var_wn=0.466951
+fixed_point_iteration:Iteration=30, var_wn=0.461442
+fixed_point_iteration:Iteration=31, var_wn=0.456279
+fixed_point_iteration:Iteration=32, var_wn=0.451435
+fixed_point_iteration:Iteration=33, var_wn=0.446882
+fixed_point_iteration:Iteration=34, var_wn=0.442597
+fixed_point_iteration:Iteration=35, var_wn=0.43856
+fixed_point_iteration:Iteration=36, var_wn=0.434752
+fixed_point_iteration:Iteration=37, var_wn=0.431155
+fixed_point_iteration:Iteration=38, var_wn=0.427755
+fixed_point_iteration:Iteration=39, var_wn=0.424537
+fixed_point_iteration:Iteration=40, var_wn=0.42149
+fixed_point_iteration:Iteration=41, var_wn=0.4186
+fixed_point_iteration:Iteration=42, var_wn=0.415859
+fixed_point_iteration:Iteration=43, var_wn=0.413256
+fixed_point_iteration:Iteration=44, var_wn=0.410782
+fixed_point_iteration:Iteration=45, var_wn=0.408429
+fixed_point_iteration:Iteration=46, var_wn=0.406191
+fixed_point_iteration:Iteration=47, var_wn=0.404059
+fixed_point_iteration:Iteration=48, var_wn=0.402028
+fixed_point_iteration:Iteration=49, var_wn=0.400092
+fixed_point_iteration:Iteration=50, var_wn=0.398246
+fixed_point_iteration:Iteration=51, var_wn=0.396483
+fixed_point_iteration:Iteration=52, var_wn=0.3948
+fixed_point_iteration:Iteration=53, var_wn=0.393193
+fixed_point_iteration:Iteration=54, var_wn=0.391656
+fixed_point_iteration:Iteration=55, var_wn=0.390187
+fixed_point_iteration:Iteration=56, var_wn=0.388782
+fixed_point_iteration:Iteration=57, var_wn=0.387438
+fixed_point_iteration:Iteration=58, var_wn=0.386151
+fixed_point_iteration:Iteration=59, var_wn=0.384918
+fixed_point_iteration:Iteration=60, var_wn=0.383738
+fixed_point_iteration:Iteration=61, var_wn=0.382606
+fixed_point_iteration:Iteration=62, var_wn=0.381522
+fixed_point_iteration:Iteration=63, var_wn=0.380482
+fixed_point_iteration:Iteration=64, var_wn=0.379485
+fixed_point_iteration:Iteration=65, var_wn=0.378528
+fixed_point_iteration:Iteration=66, var_wn=0.37761
+fixed_point_iteration:Iteration=67, var_wn=0.376728
+fixed_point_iteration:Iteration=68, var_wn=0.375882
+fixed_point_iteration:Iteration=69, var_wn=0.37507
+fixed_point_iteration:Iteration=70, var_wn=0.374289
+fixed_point_iteration:Iteration=71, var_wn=0.373539
+fixed_point_iteration:Iteration=72, var_wn=0.372818
+fixed_point_iteration:Iteration=73, var_wn=0.372126
+fixed_point_iteration:Iteration=74, var_wn=0.37146
+fixed_point_iteration:Iteration=75, var_wn=0.370819
+fixed_point_iteration:Iteration=76, var_wn=0.370204
+fixed_point_iteration:Iteration=77, var_wn=0.369611
+fixed_point_iteration:Iteration=78, var_wn=0.369042
+fixed_point_iteration:Iteration=79, var_wn=0.368493
+fixed_point_iteration:Iteration=80, var_wn=0.367966
+fixed_point_iteration:Iteration=81, var_wn=0.367458
+fixed_point_iteration:Iteration=82, var_wn=0.366969
+fixed_point_iteration:Iteration=83, var_wn=0.366499
+fixed_point_iteration:Iteration=84, var_wn=0.366046
+fixed_point_iteration:Iteration=85, var_wn=0.365609
+fixed_point_iteration:Iteration=86, var_wn=0.365189
+fixed_point_iteration:Iteration=87, var_wn=0.364785
+fixed_point_iteration:Iteration=88, var_wn=0.364395
+fixed_point_iteration:Iteration=89, var_wn=0.364019
+fixed_point_iteration:Iteration=90, var_wn=0.363657
+fixed_point_iteration:Iteration=91, var_wn=0.363309
+fixed_point_iteration:Iteration=92, var_wn=0.362973
+fixed_point_iteration:Iteration=93, var_wn=0.362649
+fixed_point_iteration:Iteration=94, var_wn=0.362337
+fixed_point_iteration:Iteration=95, var_wn=0.362036
+fixed_point_iteration:Iteration=96, var_wn=0.361746
+fixed_point_iteration:Iteration=97, var_wn=0.361466
+fixed_point_iteration:Iteration=98, var_wn=0.361196
+fixed_point_iteration:Iteration=99, var_wn=0.360936
+fixed_point_iteration:Iteration=100, var_wn=0.360686
+fixed_point_iteration:Iteration=101, var_wn=0.360444
+fixed_point_iteration:Iteration=102, var_wn=0.360211
+fixed_point_iteration:Iteration=103, var_wn=0.359986
+fixed_point_iteration:Iteration=104, var_wn=0.359769
+fixed_point_iteration:Iteration=105, var_wn=0.35956
+fixed_point_iteration:Iteration=106, var_wn=0.359358
+fixed_point_iteration:Iteration=107, var_wn=0.359163
+fixed_point_iteration:Iteration=108, var_wn=0.358975
+fixed_point_iteration:Iteration=109, var_wn=0.358794
+fixed_point_iteration:Iteration=110, var_wn=0.358619
+fixed_point_iteration:Iteration=111, var_wn=0.35845
+fixed_point_iteration:Iteration=112, var_wn=0.358287
+fixed_point_iteration:Iteration=113, var_wn=0.35813
+fixed_point_iteration:Iteration=114, var_wn=0.357979
+fixed_point_iteration:Iteration=115, var_wn=0.357832
+fixed_point_iteration:Iteration=116, var_wn=0.357691
+fixed_point_iteration:Iteration=117, var_wn=0.357555
+fixed_point_iteration:Iteration=118, var_wn=0.357423
+fixed_point_iteration:Iteration=119, var_wn=0.357296
+fixed_point_iteration:Iteration=120, var_wn=0.357173
+fixed_point_iteration:Iteration=121, var_wn=0.357055
+fixed_point_iteration:Iteration=122, var_wn=0.356941
+fixed_point_iteration:Iteration=123, var_wn=0.35683
+fixed_point_iteration:Iteration=124, var_wn=0.356724
+fixed_point_iteration:Iteration=125, var_wn=0.356621
+fixed_point_iteration:Iteration=126, var_wn=0.356522
+fixed_point_iteration:Iteration=127, var_wn=0.356426
+fixed_point_iteration:Iteration=128, var_wn=0.356334
+fixed_point_iteration:Iteration=129, var_wn=0.356244
+fixed_point_iteration:Iteration=130, var_wn=0.356158
+fixed_point_iteration:Iteration=131, var_wn=0.356075
+fixed_point_iteration:Iteration=132, var_wn=0.355994
+fixed_point_iteration:Iteration=133, var_wn=0.355917
+fixed_point_iteration:Iteration=134, var_wn=0.355842
+fixed_point_iteration:Iteration=135, var_wn=0.355769
+fixed_point_iteration:Iteration=136, var_wn=0.355699
+fixed_point_iteration:Iteration=137, var_wn=0.355632
+fixed_point_iteration:Iteration=138, var_wn=0.355566
+fixed_point_iteration:Iteration=139, var_wn=0.355504
+fixed_point_iteration:Iteration=140, var_wn=0.355443
+fixed_point_iteration:Iteration=141, var_wn=0.355384
+fixed_point_iteration:Iteration=142, var_wn=0.355327
+fixed_point_iteration:Iteration=143, var_wn=0.355272
+fixed_point_iteration:Iteration=144, var_wn=0.35522
+fixed_point_iteration:Iteration=145, var_wn=0.355168
+fixed_point_iteration:Iteration=146, var_wn=0.355119
+fixed_point_iteration:Iteration=147, var_wn=0.355071
+fixed_point_iteration:Iteration=148, var_wn=0.355025
+fixed_point_iteration:Iteration=149, var_wn=0.354981
+fixed_point_iteration:Iteration=150, var_wn=0.354938
+fixed_point_iteration:Iteration=151, var_wn=0.354896
+fixed_point_iteration:Iteration=152, var_wn=0.354856
+fixed_point_iteration:Iteration=153, var_wn=0.354818
+fixed_point_iteration:Iteration=154, var_wn=0.35478
+fixed_point_iteration:Iteration=155, var_wn=0.354744
+fixed_point_iteration:Iteration=156, var_wn=0.354709
+fixed_point_iteration:Iteration=157, var_wn=0.354676
+fixed_point_iteration:Iteration=158, var_wn=0.354643
+fixed_point_iteration:Iteration=159, var_wn=0.354612
+fixed_point_iteration:Iteration=160, var_wn=0.354581
+fixed_point_iteration:Iteration=161, var_wn=0.354552
+fixed_point_iteration:Iteration=162, var_wn=0.354523
+fixed_point_iteration:Iteration=163, var_wn=0.354496
+fixed_point_iteration:Iteration=164, var_wn=0.35447
+fixed_point_iteration:Iteration=165, var_wn=0.354444
+fixed_point_iteration:Iteration=166, var_wn=0.354419
+fixed_point_iteration:Iteration=167, var_wn=0.354396
+fixed_point_iteration:Iteration=168, var_wn=0.354373
+fixed_point_iteration:Iteration=169, var_wn=0.35435
+fixed_point_iteration:Iteration=170, var_wn=0.354329
+fixed_point_iteration:Iteration=171, var_wn=0.354308
+fixed_point_iteration:Iteration=172, var_wn=0.354288
+fixed_point_iteration:Iteration=173, var_wn=0.354269
+fixed_point_iteration:Iteration=174, var_wn=0.35425
+fixed_point_iteration:Iteration=175, var_wn=0.354232
+fixed_point_iteration:Iteration=176, var_wn=0.354214
+fixed_point_iteration:Iteration=177, var_wn=0.354197
+fixed_point_iteration:Iteration=178, var_wn=0.354181
+fixed_point_iteration:Iteration=179, var_wn=0.354165
+fixed_point_iteration:Iteration=180, var_wn=0.35415
+fixed_point_iteration:Iteration=181, var_wn=0.354135
+fixed_point_iteration:Iteration=182, var_wn=0.354121
+fixed_point_iteration:Iteration=183, var_wn=0.354107
+fixed_point_iteration:Iteration=184, var_wn=0.354094
+fixed_point_iteration:Iteration=185, var_wn=0.354081
+fixed_point_iteration:Iteration=186, var_wn=0.354069
+fixed_point_iteration:Iteration=187, var_wn=0.354057
+fixed_point_iteration:Iteration=188, var_wn=0.354046
+fixed_point_iteration:Iteration=189, var_wn=0.354034
+fixed_point_iteration:Iteration=190, var_wn=0.354024
+fixed_point_iteration:Iteration=191, var_wn=0.354013
+fixed_point_iteration:Iteration=192, var_wn=0.354003
+fixed_point_iteration:Iteration=193, var_wn=0.353993
+WN variance = 0.353993
+Partition size                 = (34,13,13)
+Finished part [1/96]Finished part [2/96]Finished part [3/96]Finished part [4/96]Finished part [5/96]Finished part [6/96]Finished part [7/96]Finished part [8/96]Finished part [9/96]Finished part [10/96]Finished part [11/96]Finished part [12/96]Finished part [13/96]Finished part [14/96]Finished part [15/96]Finished part [16/96]Finished part [17/96]Finished part [18/96]Finished part [19/96]Finished part [20/96]Finished part [21/96]Finished part [22/96]Finished part [23/96]Finished part [24/96]Finished part [25/96]Finished part [26/96]Finished part [27/96]Finished part [28/96]Finished part [29/96]Finished part [30/96]Finished part [31/96]Finished part [32/96]Finished part [33/96]Finished part [34/96]Finished part [35/96]Finished part [36/96]Finished part [37/96]Finished part [38/96]Finished part [39/96]Finished part [40/96]Finished part [41/96]Finished part [42/96]Finished part [43/96]Finished part [44/96]Finished part [45/96]Finished part [46/96]Finished part [47/96]Finished part [48/96]Finished part [49/96]Finished part [50/96]Finished part [51/96]Finished part [52/96]Finished part [53/96]Finished part [54/96]Finished part [55/96]Finished part [56/96]Finished part [57/96]Finished part [58/96]Finished part [59/96]Finished part [60/96]Finished part [61/96]Finished part [62/96]Finished part [63/96]Finished part [64/96]Finished part [65/96]Finished part [66/96]Finished part [67/96]Finished part [68/96]Finished part [69/96]Finished part [70/96]Finished part [71/96]Finished part [72/96]Finished part [73/96]Finished part [74/96]Finished part [75/96]Finished part [76/96]Finished part [77/96]Finished part [78/96]Finished part [79/96]Finished part [80/96]Finished part [81/96]Finished part [82/96]Finished part [83/96]Finished part [84/96]Finished part [85/96]Finished part [86/96]Finished part [87/96]Finished part [88/96]Finished part [89/96]Finished part [90/96]Finished part [91/96]Finished part [92/96]Finished part [93/96]Finished part [94/96]Finished part [95/96]Finished part [96/96]
+prfl dev_to_host_copy = 0us
+prfl fft = 67741us
+prfl second_function = 1769us
+prfl window_function = 641271us
+'zeta.csv' -> 'zeta-nonlinear.csv'
+NIT for standing waves
+Input file                     = /home/igankevich/workspace/arma-thesis/config/standing-linear.arma
+Output grid size               = (200,40,40)
+Output grid patch size         = (1,1,1)
+Model                          = AR
+Verification scheme            = manual
+AR model                       = order=(7,7,7),acf.shape=(10,10,10)
+Velocity potential solver name = N4arma8velocity21High_amplitude_solverIdEE
+Velocity potential solver      = wnmax=from (0,0) to (0,0.25) npoints (2,2),depth=12,domain=from (10,-12) to (10,3) npoints (1,128)
+NIT transform                  = none
+ACF variance = 1
+WN variance = 0.000519022
+Partition size                 = (21,10,10)
+Finished part [1/160]Finished part [2/160]Finished part [3/160]Finished part [4/160]Finished part [5/160]Finished part [6/160]Finished part [7/160]Finished part [8/160]Finished part [9/160]Finished part [10/160]Finished part [11/160]Finished part [12/160]Finished part [13/160]Finished part [14/160]Finished part [15/160]Finished part [16/160]Finished part [17/160]Finished part [18/160]Finished part [19/160]Finished part [20/160]Finished part [21/160]Finished part [22/160]Finished part [23/160]Finished part [24/160]Finished part [25/160]Finished part [26/160]Finished part [27/160]Finished part [28/160]Finished part [29/160]Finished part [30/160]Finished part [31/160]Finished part [32/160]Finished part [33/160]Finished part [34/160]Finished part [35/160]Finished part [36/160]Finished part [37/160]Finished part [38/160]Finished part [39/160]Finished part [40/160]Finished part [41/160]Finished part [42/160]Finished part [43/160]Finished part [44/160]Finished part [45/160]Finished part [46/160]Finished part [47/160]Finished part [48/160]Finished part [49/160]Finished part [50/160]Finished part [51/160]Finished part [52/160]Finished part [53/160]Finished part [54/160]Finished part [55/160]Finished part [56/160]Finished part [57/160]Finished part [58/160]Finished part [59/160]Finished part [60/160]Finished part [61/160]Finished part [62/160]Finished part [63/160]Finished part [64/160]Finished part [65/160]Finished part [66/160]Finished part [67/160]Finished part [68/160]Finished part [69/160]Finished part [70/160]Finished part [71/160]Finished part [72/160]Finished part [73/160]Finished part [74/160]Finished part [75/160]Finished part [76/160]Finished part [77/160]Finished part [78/160]Finished part [79/160]Finished part [80/160]Finished part [81/160]Finished part [82/160]Finished part [83/160]Finished part [84/160]Finished part [85/160]Finished part [86/160]Finished part [87/160]Finished part [88/160]Finished part [89/160]Finished part [90/160]Finished part [91/160]Finished part [92/160]Finished part [93/160]Finished part [94/160]Finished part [95/160]Finished part [96/160]Finished part [97/160]Finished part [98/160]Finished part [99/160]Finished part [100/160]Finished part [101/160]Finished part [102/160]Finished part [103/160]Finished part [104/160]Finished part [105/160]Finished part [106/160]Finished part [107/160]Finished part [108/160]Finished part [109/160]Finished part [110/160]Finished part [111/160]Finished part [112/160]Finished part [113/160]Finished part [114/160]Finished part [115/160]Finished part [116/160]Finished part [117/160]Finished part [118/160]Finished part [119/160]Finished part [120/160]Finished part [121/160]Finished part [122/160]Finished part [123/160]Finished part [124/160]Finished part [125/160]Finished part [126/160]Finished part [127/160]Finished part [128/160]Finished part [129/160]Finished part [130/160]Finished part [131/160]Finished part [132/160]Finished part [133/160]Finished part [134/160]Finished part [135/160]Finished part [136/160]Finished part [137/160]Finished part [138/160]Finished part [139/160]Finished part [140/160]Finished part [141/160]Finished part [142/160]Finished part [143/160]Finished part [144/160]Finished part [145/160]Finished part [146/160]Finished part [147/160]Finished part [148/160]Finished part [149/160]Finished part [150/160]Finished part [151/160]Finished part [152/160]Finished part [153/160]Finished part [154/160]Finished part [155/160]Finished part [156/160]Finished part [157/160]Finished part [158/160]Finished part [159/160]Finished part [160/160]
+Zeta size = (192,32,32)
+prfl dev_to_host_copy = 0us
+prfl fft = 70942us
+prfl second_function = 1878us
+prfl window_function = 680890us
+'zeta.csv' -> 'zeta-linear.csv'
+Input file                     = /home/igankevich/workspace/arma-thesis/config/standing-nonlinear.arma
+Output grid size               = (200,40,40)
+Output grid patch size         = (1,1,1)
+Model                          = AR
+Verification scheme            = manual
+AR model                       = order=(7,7,7),acf.shape=(10,10,10)
+Velocity potential solver name = N4arma8velocity21High_amplitude_solverIdEE
+Velocity potential solver      = wnmax=from (0,0) to (0,0.25) npoints (2,2),depth=12,domain=from (10,-12) to (10,3) npoints (1,128)
+NIT transform                  = dist=gram_charlier,skewness=3.25,kurtosis=0.4,interpolation_nodes=100,interpolation_order=12,gram_charlier_order=20
+err = 0.999513
+err = 0.323269
+err = 0.35074
+err = 3.54887
+err = 4.51559
+err = 41.3726
+err = 47.0185
+err = 366.395
+err = 407.29
+err = 2336.75
+err = 2527.75
+err = 11726.4
+err = 12493
+err = 49079.5
+err = 51692.8
+err = 177911
+err = 185800
+err = 573975
+err = 595540
+err = 1.68124e+06
+trim = 2
+ACF variance = 1
+WN variance = 0.000519022
+Partition size                 = (21,10,10)
+Finished part [1/160]Finished part [2/160]Finished part [3/160]Finished part [4/160]Finished part [5/160]Finished part [6/160]Finished part [7/160]Finished part [8/160]Finished part [9/160]Finished part [10/160]Finished part [11/160]Finished part [12/160]Finished part [13/160]Finished part [14/160]Finished part [15/160]Finished part [16/160]Finished part [17/160]Finished part [18/160]Finished part [19/160]Finished part [20/160]Finished part [21/160]Finished part [22/160]Finished part [23/160]Finished part [24/160]Finished part [25/160]Finished part [26/160]Finished part [27/160]Finished part [28/160]Finished part [29/160]Finished part [30/160]Finished part [31/160]Finished part [32/160]Finished part [33/160]Finished part [34/160]Finished part [35/160]Finished part [36/160]Finished part [37/160]Finished part [38/160]Finished part [39/160]Finished part [40/160]Finished part [41/160]Finished part [42/160]Finished part [43/160]Finished part [44/160]Finished part [45/160]Finished part [46/160]Finished part [47/160]Finished part [48/160]Finished part [49/160]Finished part [50/160]Finished part [51/160]Finished part [52/160]Finished part [53/160]Finished part [54/160]Finished part [55/160]Finished part [56/160]Finished part [57/160]Finished part [58/160]Finished part [59/160]Finished part [60/160]Finished part [61/160]Finished part [62/160]Finished part [63/160]Finished part [64/160]Finished part [65/160]Finished part [66/160]Finished part [67/160]Finished part [68/160]Finished part [69/160]Finished part [70/160]Finished part [71/160]Finished part [72/160]Finished part [73/160]Finished part [74/160]Finished part [75/160]Finished part [76/160]Finished part [77/160]Finished part [78/160]Finished part [79/160]Finished part [80/160]Finished part [81/160]Finished part [82/160]Finished part [83/160]Finished part [84/160]Finished part [85/160]Finished part [86/160]Finished part [87/160]Finished part [88/160]Finished part [89/160]Finished part [90/160]Finished part [91/160]Finished part [92/160]Finished part [93/160]Finished part [94/160]Finished part [95/160]Finished part [96/160]Finished part [97/160]Finished part [98/160]Finished part [99/160]Finished part [100/160]Finished part [101/160]Finished part [102/160]Finished part [103/160]Finished part [104/160]Finished part [105/160]Finished part [106/160]Finished part [107/160]Finished part [108/160]Finished part [109/160]Finished part [110/160]Finished part [111/160]Finished part [112/160]Finished part [113/160]Finished part [114/160]Finished part [115/160]Finished part [116/160]Finished part [117/160]Finished part [118/160]Finished part [119/160]Finished part [120/160]Finished part [121/160]Finished part [122/160]Finished part [123/160]Finished part [124/160]Finished part [125/160]Finished part [126/160]Finished part [127/160]Finished part [128/160]Finished part [129/160]Finished part [130/160]Finished part [131/160]Finished part [132/160]Finished part [133/160]Finished part [134/160]Finished part [135/160]Finished part [136/160]Finished part [137/160]Finished part [138/160]Finished part [139/160]Finished part [140/160]Finished part [141/160]Finished part [142/160]Finished part [143/160]Finished part [144/160]Finished part [145/160]Finished part [146/160]Finished part [147/160]Finished part [148/160]Finished part [149/160]Finished part [150/160]Finished part [151/160]Finished part [152/160]Finished part [153/160]Finished part [154/160]Finished part [155/160]Finished part [156/160]Finished part [157/160]Finished part [158/160]Finished part [159/160]Finished part [160/160]
+Zeta size = (192,32,32)
+prfl dev_to_host_copy = 0us
+prfl fft = 58739us
+prfl second_function = 1743us
+prfl window_function = 634151us
+'zeta.csv' -> 'zeta-nonlinear.csv'
 #+end_example
 
 * Introduction
@@ -2146,9 +2686,27 @@ greater or equal to nought. So, skew normal distribution is unsuitable for NIT.
 In addition to this, NIT did not change wave asymmetry as expected, but this can
 be related to the fact that the wave is standing.
 
+#+name: fig-nit
+#+header: :width 5 :height 5 :pointsize 8
+#+begin_src R :file build/nit.pdf
+source(file.path("R", "nonlinear.R"))
+par(mfrow=c(2, 1), mar=c(4,4,4,0.5), family='serif')
+args <- list(
+  graphs=c('No transform', 'NIT'),
+  linetypes=c('dashed', 'solid')
+)
+args$title <- 'Propagating waves'
+arma.plot_nonlinear(file.path("build", "nit-propagating"), args)
+args$title <- 'Standing waves'
+arma.plot_nonlinear(file.path("build", "nit-standing"), args)
+#+end_src
+
+#+label: fig-nit
+#+RESULTS: fig-nit
+[[file:build/nit.pdf]]
+
 In the second experiment the same benchmarks were repeated for propagating
 waves.
-
 
 *** Non-physical nature of ARMA model
 ARMA model, owing to its non-physical nature, does not have the notion of ocean

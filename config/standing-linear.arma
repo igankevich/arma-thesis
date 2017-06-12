@@ -1,0 +1,19 @@
+no_seed = 1
+out_grid = (200,40,40)
+
+model = AR
+ar_model = {
+	acf = {
+		func = standing_wave
+		grid = (10,10,10) : (2.5,5,5)
+	}
+	least_squares = 0
+	order = (7,7,7)
+}
+verification = manual
+velocity_potential_solver = high_amplitude {
+	wnmax = from (0,0) to (0,0.25) npoints (2,2)
+	depth = 12
+	domain = from (10,-12) to (10,3) npoints (1,128)
+}
+transform = none

@@ -1,0 +1,22 @@
+no_seed = 1
+out_grid = (200,40,40)
+
+model = MA
+ma_model = {
+	acf = {
+		func = propagating_wave
+		grid = (20,10,10) : (10,5,5)
+	}
+	order = (20,10,10)
+	algorithm = fixed_point_iteration
+	max_iterations = 1000
+	eps = 1e-5
+	min_var_wn = 1e-6
+}
+verification = manual
+velocity_potential_solver = high_amplitude {
+	wnmax = from (0,0) to (0,0.25) npoints (2,2)
+	depth = 12
+	domain = from (10,-12) to (10,3) npoints (1,128)
+}
+transform = none
