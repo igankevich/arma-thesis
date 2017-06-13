@@ -2798,9 +2798,8 @@ arma.plot_velocity(
 In order to measure the effect of NIT on the shape of the resulting wavy
 surface, three realisations were generated:
 - realisation with Gaussian distribution (without NIT),
-- realisation with Gram---Charlier series (GCS) based distribution (with
-  \(\gamma_1=2.25,\gamma_2=0.4\)), and
-- realisation with skew normal distribution (with \(\alpha=1\)).
+- realisation with Gram---Charlier series (GCS) based distribution, and
+- realisation with skew normal distribution.
 The seed of PRNG was set to be the same for all progrmme executions to make ARMA
 model produce the same values for each realisation. There we two experiments:
 for standing and propagating waves with ACFs given by formulae from
@@ -2818,12 +2817,12 @@ approximation (eq.\nbsp{}eqref:eq-nit-error) ranges from 0.20 for GCS-based
 distribution to 0.70 for skew normal distribution (table\nbsp{}[[tab-nit-error]]).
 
 #+name: fig-nit
-#+header: :width 5 :height 5 :pointsize 8
+#+header: :width 7 :height 7
 #+begin_src R :file build/nit.pdf
 source(file.path("R", "nonlinear.R"))
 par(mfrow=c(2, 1), mar=c(4,4,4,0.5), family='serif')
 args <- list(
-  graphs=c('Gaussian', 'Gram---Charlier', 'Skew normal'),
+  graphs=c('Gaussian', 'Gram—Charlier', 'Skew normal'),
   linetypes=c('solid', 'dashed', 'dotted')
 )
 args$title <- 'Propagating waves'
@@ -2838,16 +2837,16 @@ arma.plot_nonlinear(file.path("build", "nit-standing"), args)
 [[file:build/nit.pdf]]
 
 #+name: tab-nit-error
-#+caption: Errors of ACF approximations (the difference of variances) for different wave elevation distributions.
+#+caption: Errors of ACF approximations (the difference of variances) for different wave elevation distributions. \(N\)\nbsp{}--- number of coefficients of ACF approximation.
 #+attr_latex: :booktabs t
-| Wave type   | Distribution | Error | No. of coef. | Wave height |
-|-------------+--------------+-------+--------------+-------------|
-| propagating | Gaussian     |       |              |        2.41 |
-| propagating | GCS-based    |  0.20 |            2 |        2.75 |
-| propagating | skew normal  |  0.70 |            3 |        1.37 |
-| standing    | Gaussian     |       |              |        1.73 |
-| standing    | GCS-based    |  0.26 |            2 |        1.96 |
-| standing    | skew normal  |  0.70 |            3 |        0.94 |
+| Wave type   | Distribution | \(\gamma_1\) | \(\gamma_2\) | \(\alpha\) | Error | \(N\) | Wave height |
+|-------------+--------------+--------------+--------------+------------+-------+-------+-------------|
+| propagating | Gaussian     |              |              |            |       |       |        2.41 |
+| propagating | GCS-based    |         2.25 |          0.4 |            |  0.20 |     2 |        2.75 |
+| propagating | skew normal  |              |              |          1 |  0.70 |     3 |        1.37 |
+| standing    | Gaussian     |              |              |            |       |       |        1.73 |
+| standing    | GCS-based    |         2.25 |          0.4 |            |  0.26 |     2 |        1.96 |
+| standing    | skew normal  |              |              |          1 |  0.70 |     3 |        0.94 |
 
 To summarise, the only test case that showed acceptable results is realisation
 with GCS-based distribution for both standing and propagating waves. Skew normal

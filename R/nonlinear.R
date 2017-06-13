@@ -34,12 +34,13 @@ arma.plot_nonlinear <- function (dirname, args) {
   lines(zeta_none$x, zeta_none$z, lty='solid')
   lines(zeta_gcs$x, zeta_gcs$z, lty='dashed')
   lines(zeta_sn$x, zeta_sn$z, lty='dotted')
-  title(args$title, xlab="x", ylab="z", line=-1.5)
+  title(args$title, xlab="x", ylab="z")
   box()
   legend(
-    "bottomright",
+    "bottom",
     legend=paste(args$graphs),
-    lty=paste(args$linetypes)
+    lty=paste(args$linetypes),
+    horiz=TRUE
   )
 }
 
