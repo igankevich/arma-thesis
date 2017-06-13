@@ -3342,7 +3342,8 @@ parent by setting principal field to the address/identified of the parent,
 destination IP-address field to the source IP-address, and process identifier to
 the source process identifier. After that kernel becomes a downstream kernel and
 is sent by the system to the node, where its current principal is located
-without invoking load balancing algorithm.
+without invoking load balancing algorithm. For downstream kernel ~react~ method
+of its parent is called by a pipeline with the kernel as the method argument.
 
 There is no way to provide fine-grained resilience to cluster node failures, if
 there are downstream kernels in the programme, except the ones returning to
