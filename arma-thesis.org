@@ -3236,7 +3236,6 @@ graph G {
 #+label: fig-subord-ppl
 #+RESULTS: fig-subord-ppl
 [[file:build/subord-ppl.pdf]]
-
 **** Governing principles.
 Data processing pipeline model is based on the following principles, following
 which maximises efficiency of a programme.
@@ -3283,6 +3282,23 @@ which maximises efficiency of a programme.
 
 So, control flow objects (or kernels) possess properties of both cooperative
 routines and event handlers.
+
+**** Definitions of hierarchies
+To disambiguate hierarchical links between daemon processes and kernels and to
+simplify the discussion, we will use the following naming conventions throughout
+the text. If the link is between two daemon processes, the relationship is
+denoted as /master-slave/. If the link is between two kernels, then the
+relationship is denoted as either /principal-subordinate/ or /parent-child/. Two
+hierarchies are orthogonal to each other in a sense that no kernel may have a
+link to a daemon, and vice versa. Since daemon hierarchy is used to distribute
+the load on cluster nodes, kernel hierarchy is mapped onto it, and this mapping
+can be arbitrary: It is common to have principal kernel on a slave node with its
+subordinate kernels distributed evenly between all cluster nodes (including the
+node where the principal is located). Both hierarchies can be arbitrarily deep,
+but "shallow" ones are preferred for highly parallel programmes, as there are
+less number of hops when kernels are distributed between cluster nodes. Since
+there is one-to-one correspondence between daemons and cluster nodes, they are
+used interchangeably in the work.
 
 ** SMP implementation
 **** Load balancing algorithm.
