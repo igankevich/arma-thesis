@@ -3349,7 +3349,7 @@ make it possible for a parent to collect the result of the execution.
 There is no way to provide fine-grained resilience to cluster node failures, if
 there are downstream kernels in the programme, except the ones returning to
 their parents. Instead, an exit code of the kernel is checked and a custom
-recovery action is executed. If there is no error checking, the system restarts
+recovery code is executed. If there is no error checking, the system restarts
 execution from the first parent kernel, which did not produce any downstream
 kernels. This means, that if a problem being solved by the programme has
 information dependencies between parts that are computed in parallel, and a node
@@ -3357,7 +3357,8 @@ failure occurs during computation of these parts, then this computation is
 restarted from the very beginning, discarding any already computed parts. This
 does not occur for embarrassingly parallel programmes, where parallel parts do
 not have such information dependencies between each other: in this case only
-failed parts are recomputed and all previously computed parts are retained.
+parts from failed nodes are recomputed and all previously computed parts are
+retained.
 
 ** SMP implementation
 **** Load balancing algorithm.
