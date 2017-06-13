@@ -3307,7 +3307,7 @@ Each kernel has three types of fields (listed in table\nbsp{}[[tab-kernel-fields
 - fields defining the target location of the kernel.
 
 #+name: tab-kernel-fields
-#+caption: Kernel fields and their purpose.
+#+caption: Kernel fields and their description.
 #+attr_latex: :booktabs t :align lp{0.7\textwidth}
 | Field             | Description                                                                                    |
 |-------------------+------------------------------------------------------------------------------------------------|
@@ -3326,6 +3326,36 @@ Each kernel has three types of fields (listed in table\nbsp{}[[tab-kernel-fields
 | ~principal~       | Address/identifier of a target kernel (a kernel to which the current one is sent or returned). |
 | ~dst_ip~          | IP-address of a destination cluster node.                                                      |
 
+Upon creation each kernel is assigned a parent and a pipeline. If there no other
+fields are set, then the kernel is an /upstream/ kernel\nbsp{}--- a kernel that
+can be distributed on any node and any processor core to exploit parallelism. If
+principal field is set, then the kernel is a /downstream/ kernel\nbsp{}--- a
+kernel that can only be sent to its principal, and a processor core to which the
+kernel is sent is defined by the principal memory address/identifier. If a
+downstream kernel is to be sent to another node, the destination IP-address must
+be set, otherwise the system will not find the target kernel.
+
+When kernel execution completes (its ~act~ method finishes), the kernel is
+explicitly sent to some other kernel, this directive is explicitly called inside
+~act~ method. Usually, after the execution completes a kernel is sent to its
+parent by setting principal field to the address/identified of the parent,
+destination IP-address field to the source IP-address, and process identifier to
+the source process identifier. After that kernel becomes a downstream kernel and
+is sent by the system to the node, where its current principal is located
+without invoking load balancing algorithm.
+
+There is no way to provide fine-grained resilience to cluster node failures, if
+there are downstream kernels in the programme, except the ones returning to
+their parents. Instead, an exit code of the kernel is checked and a custom
+recovery action is executed. If there is no error checking, the system restarts
+execution from the first parent kernel, which did not produce any downstream
+kernels. This means, that if a problem being solved by the programme has
+information dependencies between parts that are computed in parallel, and a node
+failure occurs during computation of these parts, then this computation is
+restarted from the very beginning, discarding any already computed parts. This
+does not occur for embarrassingly parallel programmes, where parallel parts do
+not have such information dependencies between each other: in this case only
+failed parts are recomputed and all previously computed parts are retained.
 
 ** SMP implementation
 **** Load balancing algorithm.
