@@ -3300,28 +3300,28 @@ there is one-to-one correspondence between daemons and cluster nodes, they are
 used interchangeably in the work.
 
 **** Kernel structure and algorithms
-Each kernel has three types of fields (listed in table\nbsp{}[[tab-kernel-fields]]):
+Each kernel has four types of fields (listed in table\nbsp{}[[tab-kernel-fields]]):
 - fields related to control flow,
 - fields defining the source location of the kernel,
 - fields defining the current location of the kernel, and
 - fields defining the target location of the kernel.
 
 #+name: tab-kernel-fields
-#+caption: Kernel fields and their description.
+#+caption: Description of kernel fields.
 #+attr_latex: :booktabs t :align lp{0.7\textwidth}
 | Field             | Description                                                                                    |
 |-------------------+------------------------------------------------------------------------------------------------|
 | ~process_id~      | Identifier of a cluster-wide process (application) a kernel belongs to.                        |
 | ~id~              | Identifier of a kernel within a process.                                                       |
-| ~pipeline~        | Identifier of a pipeline a kernel is processed on.                                             |
+| ~pipeline~        | Identifier of a pipeline a kernel is processed by.                                             |
 |                   |                                                                                                |
-| ~exit_code~       | A status of a kernel execution.                                                                |
-| ~flags~           | Auxiliary flags affecting scheduling.                                                          |
+| ~exit_code~       | A result of a kernel execution.                                                                |
+| ~flags~           | Auxiliary bit flags used in scheduling.                                                        |
 | ~time_point~      | A time point at which a kernel is scheduled to be executed.                                    |
 |                   |                                                                                                |
 | ~parent~          | Address/identifier of a parent kernel.                                                         |
 | ~src_ip~          | IP-address of a source cluster node.                                                           |
-| ~from_process_id~ | Identifier of a cluster-wide process from which a kernel was sent.                             |
+| ~from_process_id~ | Identifier of a cluster-wide process from which a kernel originated.                           |
 |                   |                                                                                                |
 | ~principal~       | Address/identifier of a target kernel (a kernel to which the current one is sent or returned). |
 | ~dst_ip~          | IP-address of a destination cluster node.                                                      |
