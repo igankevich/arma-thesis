@@ -3338,12 +3338,13 @@ be set, otherwise the system will not find the target kernel.
 When kernel execution completes (its ~act~ method finishes), the kernel is
 explicitly sent to some other kernel, this directive is explicitly called inside
 ~act~ method. Usually, after the execution completes a kernel is sent to its
-parent by setting principal field to the address/identified of the parent,
+parent by setting principal field to the address/identifier of the parent,
 destination IP-address field to the source IP-address, and process identifier to
 the source process identifier. After that kernel becomes a downstream kernel and
 is sent by the system to the node, where its current principal is located
 without invoking load balancing algorithm. For downstream kernel ~react~ method
-of its parent is called by a pipeline with the kernel as the method argument.
+of its parent is called by a pipeline with the kernel as the method argument to
+make it possible for a parent to collect the result of the execution.
 
 There is no way to provide fine-grained resilience to cluster node failures, if
 there are downstream kernels in the programme, except the ones returning to
