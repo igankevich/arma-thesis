@@ -3282,7 +3282,6 @@ which maximises efficiency of a programme.
 
 So, control flow objects (or kernels) possess properties of both cooperative
 routines and event handlers.
-
 **** Definitions of hierarchies
 To disambiguate hierarchical links between daemon processes and kernels and to
 simplify the discussion, we will use the following naming conventions throughout
@@ -3299,6 +3298,34 @@ but "shallow" ones are preferred for highly parallel programmes, as there are
 less number of hops when kernels are distributed between cluster nodes. Since
 there is one-to-one correspondence between daemons and cluster nodes, they are
 used interchangeably in the work.
+
+**** Kernel structure and algorithms
+Each kernel has three types of fields (listed in table\nbsp{}[[tab-kernel-fields]]):
+- fields related to control flow,
+- fields defining the source location of the kernel,
+- fields defining the current location of the kernel, and
+- fields defining the target location of the kernel.
+
+#+name: tab-kernel-fields
+#+caption: Kernel fields and their purpose.
+#+attr_latex: :booktabs t :align lp{0.7\textwidth}
+| Field             | Description                                                                                    |
+|-------------------+------------------------------------------------------------------------------------------------|
+| ~process_id~      | Identifier of a cluster-wide process (application) a kernel belongs to.                        |
+| ~id~              | Identifier of a kernel within a process.                                                       |
+| ~pipeline~        | Identifier of a pipeline a kernel is processed on.                                             |
+|                   |                                                                                                |
+| ~exit_code~       | A status of a kernel execution.                                                                |
+| ~flags~           | Auxiliary flags affecting scheduling.                                                          |
+| ~time_point~      | A time point at which a kernel is scheduled to be executed.                                    |
+|                   |                                                                                                |
+| ~parent~          | Address/identifier of a parent kernel.                                                         |
+| ~src_ip~          | IP-address of a source cluster node.                                                           |
+| ~from_process_id~ | Identifier of a cluster-wide process from which a kernel was sent.                             |
+|                   |                                                                                                |
+| ~principal~       | Address/identifier of a target kernel (a kernel to which the current one is sent or returned). |
+| ~dst_ip~          | IP-address of a destination cluster node.                                                      |
+
 
 ** SMP implementation
 **** Load balancing algorithm.
