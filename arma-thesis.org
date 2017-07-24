@@ -1377,7 +1377,7 @@ obtained from the remaining equations. So, from mathematical point of view
 inverse problem of hydrodynamics reduces to Laplace equation with mixed boundary
 condition\nbsp{}--- Robin problem.
 
-* Related work
+* ARMA model for sea wave simulation
 ** Sea wave models analysis
 Pressure computation is only possible when the shape of wavy surface is known.
 It is defined either at discrete grid points, or continuously via some analytic
@@ -1486,71 +1486,6 @@ model gives the most accurate prediction of low-frequency swell waves for up to
 two typical wave periods. It is an example of successful application of AR
 process to sea wave modelling.
 
-** Pressure field determination formulae
-**** Small amplitude waves theory.
-In\nbsp{}cite:stab2012,детярев1998моделирование,degtyarev1997analysis the
-authors propose a solution for inverse problem of hydrodynamics of potential
-flow in the framework of small-amplitude wave theory (under assumption that wave
-length is much larger than height: \(\lambda \gg h\)). In that case inverse
-problem is linear and reduces to Laplace equation with mixed boundary
-conditions, and equation of motion is solely used to determine pressures for
-calculated velocity potential derivatives. The assumption of small amplitudes
-means the slow decay of wind wave coherence function, i.e. small change of local
-wave number in time and space compared to the wavy surface elevation (\(z\)
-coordinate). This assumption allows to calculate elevation \(z\) derivative as
-\(\zeta_z=k\zeta\), where \(k\) is wave number. In two-dimensional case the
-solution is written explicitly as
-\begin{align}
-    \left.\frac{\partial\phi}{\partial x}\right|_{x,t}= &
-        -\frac{1}{\sqrt{1+\alpha^{2}}}e^{-I(x)}
-            \int\limits_{0}^x\frac{\partial\dot{\zeta}/\partial
-                z+\alpha\dot{\alpha}}{\sqrt{1+\alpha^{2}}}e^{I(x)}dx,\label{eq-old-sol-2d}\\
-    I(x)= & \int\limits_{0}^x\frac{\partial\alpha/\partial z}{1+\alpha^{2}}dx,\nonumber
-\end{align}
-where \(\alpha\) is wave slope. In three-dimensional case solution is written in
-the form of elliptic partial differential equation (PDE):
-\begin{align*}
-    & \frac{\partial^2 \phi}{\partial x^2} \left( 1 + \alpha_x^2 \right) +
-    \frac{\partial^2 \phi}{\partial y^2} \left( 1 + \alpha_y^2 \right) +
-    2\alpha_x\alpha_y \frac{\partial^2 \phi}{\partial x \partial y} + \\
-    & \left(
-        \frac{\partial \alpha_x}{\partial z} +
-        \alpha_x \frac{\partial \alpha_x}{\partial x} +
-        \alpha_y \frac{\partial \alpha_x}{\partial y}
-    \right) \frac{\partial \phi}{\partial x} + \\
-    & \left(
-        \frac{\partial \alpha_y}{\partial z} +
-        \alpha_x \frac{\partial \alpha_y}{\partial x} +
-        \alpha_y \frac{\partial \alpha_y}{\partial y}
-    \right) \frac{\partial \phi}{\partial y} + \\
-    & \frac{\partial \dot{\zeta}}{\partial z} +
-    \alpha_x \dot{\alpha_x} + \alpha_y \dot{\alpha_y} = 0.
-\end{align*}
-The authors suggest transforming this equation to finite differences and solve
-it numerically.
-
-As will be shown in [[#sec:compare-formulae]] that eqref:eq-old-sol-2d diverges when
-attempted to calculate velocity field for large-amplitude waves, and this is the
-reason that it can not be used together with ARMA model, that generates
-arbitrary-amplitude waves.
-
-**** Linearisation of boundary condition.
-:PROPERTIES:
-:CUSTOM_ID: linearisation
-:END:
-
-LH model allows to derive an explicit formula for velocity field by linearising
-kinematic boundary condition. Velocity potential formula is written as
-\begin{equation*}
-\phi(x,y,z,t) = \sum_n \frac{c_n g}{\omega_n}
-     e^{\sqrt{u_n^2+v_n^2} z}
-     \sin(u_n x + v_n y - \omega_n t + \epsilon_n).
-\end{equation*}
-This formula is differentiated to obtain velocity potential derivatives, which
-are plugged to dynamic boundary condition to obtain pressures.
-
-
-* ARMA model for sea wave simulation
 ** Governing equations for 3-dimensional ARMA process
 ARMA sea simulation model defines sea wavy surface as three-dimensional (two
 dimensions in space and one in time) autoregressive moving average process:
@@ -1818,6 +1753,69 @@ generation is to use AR process for standing waves and MA process for
 propagating waves. With new formulae for 3 dimensions a single mixed ARMA
 process might increase model precision, which is one of the objectives of the
 future research.
+
+** Pressure field determination formulae
+**** Small amplitude waves theory.
+In\nbsp{}cite:stab2012,детярев1998моделирование,degtyarev1997analysis the
+authors propose a solution for inverse problem of hydrodynamics of potential
+flow in the framework of small-amplitude wave theory (under assumption that wave
+length is much larger than height: \(\lambda \gg h\)). In that case inverse
+problem is linear and reduces to Laplace equation with mixed boundary
+conditions, and equation of motion is solely used to determine pressures for
+calculated velocity potential derivatives. The assumption of small amplitudes
+means the slow decay of wind wave coherence function, i.e. small change of local
+wave number in time and space compared to the wavy surface elevation (\(z\)
+coordinate). This assumption allows to calculate elevation \(z\) derivative as
+\(\zeta_z=k\zeta\), where \(k\) is wave number. In two-dimensional case the
+solution is written explicitly as
+\begin{align}
+    \left.\frac{\partial\phi}{\partial x}\right|_{x,t}= &
+        -\frac{1}{\sqrt{1+\alpha^{2}}}e^{-I(x)}
+            \int\limits_{0}^x\frac{\partial\dot{\zeta}/\partial
+                z+\alpha\dot{\alpha}}{\sqrt{1+\alpha^{2}}}e^{I(x)}dx,\label{eq-old-sol-2d}\\
+    I(x)= & \int\limits_{0}^x\frac{\partial\alpha/\partial z}{1+\alpha^{2}}dx,\nonumber
+\end{align}
+where \(\alpha\) is wave slope. In three-dimensional case solution is written in
+the form of elliptic partial differential equation (PDE):
+\begin{align*}
+    & \frac{\partial^2 \phi}{\partial x^2} \left( 1 + \alpha_x^2 \right) +
+    \frac{\partial^2 \phi}{\partial y^2} \left( 1 + \alpha_y^2 \right) +
+    2\alpha_x\alpha_y \frac{\partial^2 \phi}{\partial x \partial y} + \\
+    & \left(
+        \frac{\partial \alpha_x}{\partial z} +
+        \alpha_x \frac{\partial \alpha_x}{\partial x} +
+        \alpha_y \frac{\partial \alpha_x}{\partial y}
+    \right) \frac{\partial \phi}{\partial x} + \\
+    & \left(
+        \frac{\partial \alpha_y}{\partial z} +
+        \alpha_x \frac{\partial \alpha_y}{\partial x} +
+        \alpha_y \frac{\partial \alpha_y}{\partial y}
+    \right) \frac{\partial \phi}{\partial y} + \\
+    & \frac{\partial \dot{\zeta}}{\partial z} +
+    \alpha_x \dot{\alpha_x} + \alpha_y \dot{\alpha_y} = 0.
+\end{align*}
+The authors suggest transforming this equation to finite differences and solve
+it numerically.
+
+As will be shown in [[#sec:compare-formulae]] that eqref:eq-old-sol-2d diverges when
+attempted to calculate velocity field for large-amplitude waves, and this is the
+reason that it can not be used together with ARMA model, that generates
+arbitrary-amplitude waves.
+
+**** Linearisation of boundary condition.
+:PROPERTIES:
+:CUSTOM_ID: linearisation
+:END:
+
+LH model allows to derive an explicit formula for velocity field by linearising
+kinematic boundary condition. Velocity potential formula is written as
+\begin{equation*}
+\phi(x,y,z,t) = \sum_n \frac{c_n g}{\omega_n}
+     e^{\sqrt{u_n^2+v_n^2} z}
+     \sin(u_n x + v_n y - \omega_n t + \epsilon_n).
+\end{equation*}
+This formula is differentiated to obtain velocity potential derivatives, which
+are plugged to dynamic boundary condition to obtain pressures.
 
 ** Determining wave pressures for discretely given wavy surface
 Analytic solutions to boundary problems in classical equations are often used to
