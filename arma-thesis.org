@@ -1385,6 +1385,11 @@ obtained from the remaining equations. So, from mathematical point of view
 inverse problem of hydrodynamics reduces to Laplace equation with mixed boundary
 condition\nbsp{}--- Robin problem.
 
+Inverse problem is feasible because ARMA model generate hydrodynamically
+adequate sea wavy surface: distributions of integral characteristics and
+dispersion relation match the ones of real
+waves\nbsp{}cite:boukhanovsky1997thesis,degtyarev2011modelling.
+
 * ARMA model for sea wave simulation
 ** Sea wave models analysis
 Pressure computation is only possible when the shape of wavy surface is known.
