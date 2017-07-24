@@ -1519,6 +1519,12 @@ any scalar quantity can be a component (temperature, salinity, concentration of
 some substance in water etc.). Equation parameters are AR and MA process
 coefficients and order.
 
+Sea simulation model is derived to simulate realistic realisations of wind
+induced wave field and is suitable to use in ship dynamics calculations.
+Stationarity and invertibility properties are the main criteria for choosing one
+or another process to simulate waves with different profiles, which are
+discussed in sec.\nbsp{}[[#sec-process-selection]].
+
 **** Autoregressive (AR) process.
 AR process is ARMA process with only one random impulse instead of theirs
 weighted sum:
