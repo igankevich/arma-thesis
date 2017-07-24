@@ -1354,8 +1354,8 @@ problem of hydrodynamics for incompressible inviscid fluid. System of equations
 for it in general case is written as\nbsp{}cite:kochin1966theoretical
 \begin{align}
     & \nabla^2\phi = 0,\nonumber\\
-    & \phi_t+\frac{1}{2} |\vec{\upsilon}|^2 + g\zeta=-\frac{p}{\rho}, & \text{на }z=\zeta(x,y,t),\label{eq-problem}\\
-    & D\zeta = \nabla \phi \cdot \vec{n}, & \text{на }z=\zeta(x,y,t),\nonumber
+    & \phi_t+\frac{1}{2} |\vec{\upsilon}|^2 + g\zeta=-\frac{p}{\rho}, & \text{at }z=\zeta(x,y,t),\label{eq-problem}\\
+    & D\zeta = \nabla \phi \cdot \vec{n}, & \text{at }z=\zeta(x,y,t),\nonumber
 \end{align}
 where \(\phi\)\nbsp{}--- velocity potential, \(\zeta\)\nbsp{}--- elevation
 (\(z\) coordinate) of wavy surface, \(p\)\nbsp{}--- wave pressure,
