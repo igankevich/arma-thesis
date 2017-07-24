@@ -1252,20 +1252,21 @@ required mathematical apparatus.
    Gaussian distribution; so, convergence rate is not probabilistic.
 
 **** Goals and objectives.
-ARMA process became the basis for ARMA sea simulation model, however, there
-was still much work to be done to make it useful in practice.
+ARMA process is the basis for ARMA sea simulation model, however, there
+is still much work to be done to make it useful in practice.
 1. One have to investigate how different ACF shapes affect the choice of ARMA
    parameters (the number of moving average and autoregressive processes
    coefficients).
 2. Then, investigate a possibility to generate waves of arbitrary profile, not
    only cosines (which means taking into account asymmetric distribution of wavy
    surface elevation).
-3. Then, derive formulae to determine pressure field under wavy surface.
+3. Then, develop a method to determine pressure field under wavy surface.
    Usually, such formulae are derived for a particular model by substituting
-   wave profile into the eq. eqref:eq-problem, however, ARMA process does not
-   provide explicit wave profile formula, so this problem had to be solved for
-   general wavy surface (which is not defined by an analytic formula),
-   without linearisation of boundaries and assumption of small-amplitude waves.
+   wave profile formula into the eq. eqref:eq-problem, however, ARMA process
+   does not provide explicit wave profile formula, so this problem has to be
+   solved for general wavy surface (which is not defined by an analytic
+   formula), without linearisation of boundaries and assumption of
+   small-amplitude waves.
 4. Finally, verify wavy surface integral characteristics to match the ones of
    real sea waves.
 5. In the final stage, develop software programme that implements ARMA model and
@@ -1283,6 +1284,12 @@ This makes it possible to use ARMA process to model transition between normal
 and storm weather taking into account climate spectra and assimilation data of a
 particular ocean region, which is not possible with models based on linear wave
 theory.
+
+The distinct feature of this work is the use of /three-dimensional/ AR and MA
+models in all experiments and the development of software programme that
+implements sea wavy surface generation and pressure field computation on both
+shared memory (SMP) and distributed memory (MPP) computer systems, and also on
+hybrid (GPGPU) systems using graphical coprocessors to accelerate computations.
 
 **** Theoretical and practical significance.
 Implementing ARMA model, that does not use assumptions of linear wave theory,
@@ -4325,6 +4332,7 @@ Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
 * List of acronyms and symbols
 - <<<MPP>>> :: Massively Parallel Processing, computers with distributed memory.
 - <<<SMP>>> :: Symmetric Multi-Processing, computers with shared memory.
+- <<<GPGPU>>> :: General-purpose computing on graphics processing units.
 - <<<ACF>>> :: auto-covariate function.
 - <<<FFT>>> :: fast Fourier transform.
 - <<<PRNG>>> :: pseudo-random number generator.
