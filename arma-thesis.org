@@ -1254,24 +1254,23 @@ required mathematical apparatus.
 **** Goals and objectives.
 ARMA process is the basis for ARMA sea simulation model, however, there
 is still much work to be done to make it useful in practice.
-1. One have to investigate how different ACF shapes affect the choice of ARMA
-   parameters (the number of moving average and autoregressive processes
-   coefficients).
-2. Then, investigate a possibility to generate waves of arbitrary profile, not
-   only cosines (which means taking into account asymmetric distribution of wavy
+1. Investigate how different ACF shapes affect the choice of ARMA parameters
+   (the number of moving average and autoregressive processes coefficients).
+2. Investigate a possibility to generate waves of arbitrary profile, not only
+   cosines (which means taking into account asymmetric distribution of wavy
    surface elevation).
-3. Then, develop a method to determine pressure field under wavy surface.
-   Usually, such formulae are derived for a particular model by substituting
-   wave profile formula into the eq. eqref:eq-problem, however, ARMA process
-   does not provide explicit wave profile formula, so this problem has to be
-   solved for general wavy surface (which is not defined by an analytic
-   formula), without linearisation of boundaries and assumption of
+3. Develop a method to determine pressure field under discretely given wavy
+   surface. Usually, such formulae are derived for a particular model by
+   substituting wave profile formula into the eq. eqref:eq-problem, however,
+   ARMA process does not provide explicit wave profile formula, so this problem
+   has to be solved for general wavy surface (which is not defined by an
+   analytic formula), without linearisation of boundaries and assumption of
    small-amplitude waves.
-4. Finally, verify wavy surface integral characteristics to match the ones of
-   real sea waves.
-5. In the final stage, develop software programme that implements ARMA model and
-   pressure calculation method, and allows to run simulations on both shared
-   memory (SMP) and distributed memory (MPP) computer systems.
+4. Verify wavy surface integral characteristics to match the ones of real sea
+   waves.
+5. Develop software programme that implements ARMA model and pressure
+   calculation method, and allows to run simulations on both shared memory (SMP)
+   and distributed memory (MPP) computer systems.
 
 **** Scientific novelty.
 ARMA model, as opposed to other sea simulation models, does not use linear
