@@ -1194,6 +1194,24 @@ Partition size                 = (21,10,10)
 Zeta size = (192,32,32)
 'zeta.csv' -> 'zeta-skewnormal.csv'
 #+end_example
+** Download arma-benchmarks data from repository
+#+begin_src sh :exports none :results verbatim
+set -e
+dir=build/arma-benchmarks
+mkdir -p $dir
+if ! test -d "$dir/.git"
+then
+    git clone https://github.com/igankevich/arma-benchmarks $dir
+fi
+cd $dir
+git checkout master
+git pull
+git checkout c230b968c19b29c05a1c37691c3c039b74298871
+#+end_src
+
+#+RESULTS:
+: Ваша ветка обновлена в соответствии с «origin/master».
+: Already up-to-date.
 
 * Introduction
 **** Topic relevance.
@@ -3417,6 +3435,9 @@ Non-homogeneous kernels may be handled by predicting their execution time, but
 such kernels are not present in ARMA model implementation.
 
 **** Performance of MPI, OpenMP, OpenCL implementations.
+:PROPERTIES:
+:header-args:R: :results output org
+:END:
 ARMA model does not require highly optimised software implementation to be
 efficient, its performance is high even without use of co-processors; there are
 two main causes of that. First, ARMA model itself does not use transcendental
@@ -3450,6 +3471,41 @@ OpenCL) to find the most efficient one.
 | LAPACK, GotoBLAS\nbsp{}cite:goto2008high,goto2008anatomy     | finding AR coefficients         |
 | GL, GLUT\nbsp{}cite:kilgard1996opengl                        | three-dimensional visualisation |
 | CGAL\nbsp{}cite:fabri2009cgal                                | wave numbers triangulation      |
+
+#+name: tab-arma-performance
+#+begin_src R :results output org :exports results
+source(file.path("R", "benchmarks.R"))
+model_names <- list(
+	ar.x="AR",
+	ma.x="MA",
+	lh.x="LH",
+	ar.y="AR",
+	ma.y="MA",
+	lh.y="LH",
+  Row.names="\\orgcmidrule{2-4}{5-6}Subroutine"
+)
+row_names <- list(
+  deteremine_coefficients="Determine coefficients",
+  validate="Validate model",
+  generate_surface="Generate wavy surface",
+  velocity="Compute velocity potentials"
+)
+arma.print_openmp_vs_opencl(model_names, row_names)
+#+end_src
+
+#+name: tab-arma-performance
+#+caption: Running time (s.) for OpenMP and OpenCL implementations of AR, MA and LH models.
+#+attr_latex: :booktabs t
+#+RESULTS: tab-arma-performance
+#+BEGIN_SRC org
+|                                  |      |       | OpenMP |        | OpenCL |
+| \orgcmidrule{2-4}{5-6}Subroutine |   AR |    MA |     LH |     AR |     LH |
+|----------------------------------+------+-------+--------+--------+--------|
+| Determine coefficients           | 0.02 |  0.26 |   0.18 |   0.01 |   1.19 |
+| Validate model                   | 0.09 | 19.19 |        |   0.08 |        |
+| Generate wavy surface            | 1.29 | 10.12 | 351.67 | 769.42 |  25.09 |
+| Compute velocity potentials      | 0.02 |  0.02 |   0.02 |   0.01 |   0.01 |
+#+END_SRC
 
 **** Performance of load balancing algorithm.
 Software implementation of wavy surface generation is balanced in terms of the
