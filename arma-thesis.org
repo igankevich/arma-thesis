@@ -1586,9 +1586,9 @@ Generic form of YW equations is
         0, \quad \text{if } \vec{k}\neq0,
     \end{cases}
 \end{equation}
-where \(\gamma\)\nbsp{}--- ACF of process \(\zeta\), \(\Var{\epsilon}\)\nbsp{}--- white noise
-variance. Matrix form of three-dimensional YW equations, which is used in the
-present work, is
+where \(\gamma\)\nbsp{}--- ACF of process \(\zeta\),
+\(\Var{\epsilon}\)\nbsp{}--- white noise variance. Matrix form of
+three-dimensional YW equations, which is used in the present work, is
 \begin{equation*}
     \Gamma
     \left[
@@ -3562,6 +3562,18 @@ arma.print_openmp_vs_opencl(model_names, row_names)
 | Compute velocity potentials      | 0.02 |  0.02 |   0.02 |   0.01 |   0.01 |
 #+END_SRC
 
+In contrast to AR model, LH model exhibits the best performance on GPU and the
+worst performance on GPU. The reasons for that are
+- the large number of transcendental functions in its formula which help offset
+  high memory latency,
+- linear memory access pattern which help vectorise calculations and coalesce
+  memory accesses by different hardware threads,
+- and no information dependencies between output grid points.
+Despite the fact that GPU on the test platform is more performant than CPU (in
+terms of floating point operations per second), the overall performance of LH
+model compared to AR model is lower. The reason for that is higher number of
+coefficients needed for LH model to discretise spectrum and eliminate
+periodicity from the realisation.
 
 
 **** Performance of load balancing algorithm.
