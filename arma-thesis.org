@@ -1206,12 +1206,15 @@ fi
 cd $dir
 git checkout master
 git pull
-git checkout c230b968c19b29c05a1c37691c3c039b74298871
+git checkout 46acdd0ebdbbd7a5ca50b76e7af19997d8f09f1d
 #+end_src
 
 #+RESULTS:
 : Ваша ветка обновлена в соответствии с «origin/master».
-: Already up-to-date.
+: Обновление c230b96..46acdd0
+: Fast-forward
+:  R/arma.load.R | 12 +++++++++---
+:  1 file changed, 9 insertions(+), 3 deletions(-)
 
 * Introduction
 **** Topic relevance.
@@ -2939,19 +2942,20 @@ Software implementation of ARMA model works as a computational pipeline, in
 which each joint applies some function to the output coming from the pipe of the
 previous joint. Joints are distributed across computer cluster nodes to enable
 function parallelism, and then data flowing through the joints is distributed
-across processor cores to enable data parallelism. Figure\nbsp{}[[fig-pipeline]] shows a
-diagram of data processing pipeline in which rectangles with rounded corners
-denote joints, regular rectangles denote arrays of problem domain objects
-flowing from one joint to another, and arrows show flow direction. Some joints
-are divided into /sections/ each of which process a separate part of the array.
-If joints are connected without a /barrier/ (horizontal or vertical bar), then
-transfer of separate objects between them is done in parallel to computations,
-as they become available. Sections work in parallel on each processor core (or
-node of the cluster). There is surjective mapping between a set of processor
-cores, a set of pipeline joint sections and objects, i.e. each processor core
-may run several sections, each of which may sequentially process several
-objects, but a section can not work simultaneously on several processor cores,
-and an object can not be processed simultaneously by several sections.
+across processor cores to enable data parallelism. Figure\nbsp{}[[fig-pipeline]]
+shows a diagram of data processing pipeline in which rectangles with rounded
+corners denote joints, regular rectangles denote arrays of problem domain
+objects flowing from one joint to another, and arrows show flow direction. Some
+joints are divided into /sections/ each of which process a separate part of the
+array. If joints are connected without a /barrier/ (horizontal or vertical bar),
+then transfer of separate objects between them is done in parallel to
+computations, as they become available. Sections work in parallel on each
+processor core (or node of the cluster). There is surjective mapping between a
+set of processor cores, a set of pipeline joint sections and objects, i.e. each
+processor core may run several sections, each of which may sequentially process
+several objects, but a section can not work simultaneously on several processor
+cores, and an object can not be processed simultaneously by several sections.
+So, the programme is a pipeline through which control objects flow.
 
 #+name: fig-pipeline
 #+begin_src dot :exports results :file build/pipeline.pdf
@@ -3061,10 +3065,11 @@ digraph {
 [[file:build/pipeline.pdf]]
 
 Object pipeline may be seen as an improvement of BSP (Bulk Synchronous Parallel)
-model\nbsp{}cite:valiant1990bridging, which is used in graph processing\nbsp{}cite:malewicz2010pregel,seo2010hama. Pipeline eliminates global synchronisation
-(where it is possible) after each sequential computation step by doing data
-transfer between joints in parallel to computations, whereas in BSP model global
-synchronisation occurs after each step.
+model\nbsp{}cite:valiant1990bridging, which is used in graph
+processing\nbsp{}cite:malewicz2010pregel,seo2010hama. Pipeline eliminates global
+synchronisation (where it is possible) after each sequential computation step by
+doing data transfer between joints in parallel to computations, whereas in BSP
+model global synchronisation occurs after each step.
 
 Object pipeline speeds up the programme by parallel execution of code blocks
 that work with different compute devices: while the current part of wavy surface
@@ -3084,13 +3089,13 @@ to a file, the other do computations on the processor in parallel. This
 minimises downtime of the processor and other computer devices and increases
 throughput of the computer cluster.
 
-Pipelining of otherwise sequential steps is beneficial not only for code work
+Pipelining of otherwise sequential steps is beneficial not only for code working
 with different devices, but for code different branches of which are suitable
-for execution by multiple hardware threads of the same processor core, i.e.
-branches accessing different memory blocks or performing mixed arithmetic
-(integer and floating point). Code branches which use different modules of
-processor are good candidates to run in parallel on a processor core with
-multiple hardware threads.
+for execution by multiple hardware threads of the same processor core,
+i.e.\nbsp{}branches accessing different memory blocks or performing mixed
+arithmetic (integer and floating point). Code branches which use different
+modules of processor are good candidates to run in parallel on a processor core
+with multiple hardware threads.
 
 So, computational model with a pipeline can be seen as /bulk-asynchronous
 model/, because of the parallel nature of programme steps. This model is the
@@ -3434,7 +3439,7 @@ kernel is routed to one of the thread from the device thread pool.
 Non-homogeneous kernels may be handled by predicting their execution time, but
 such kernels are not present in ARMA model implementation.
 
-**** Performance of MPI, OpenMP, OpenCL implementations.
+**** Performance of OpenMP and OpenCL implementations.
 :PROPERTIES:
 :header-args:R: :results output org
 :END:
@@ -3454,10 +3459,18 @@ transcendental functions and heavy use of FFT, not to mention that high
 convergence rate and non-existence of periodicity allows to use far fewer
 coefficients compared to LH model.
 
-ARMA implementation uses several libraries of reusable mathematical functions
-and numerical algorithms (listed in table\nbsp{}[[tab-arma-libs]]), and was
-implemented using several parallel programming technologies (MPI, OpenMP,
-OpenCL) to find the most efficient one.
+ARMA implementation uses several libraries of mathematical functions, numerical
+algorithms and visualisation primitives (listed in table\nbsp{}[[tab-arma-libs]]),
+and was implemented using several parallel programming technologies (OpenMP,
+OpenCL) to find the most efficient one. For each technology and each model an
+optimised wavy surface generation was implemented (except for MA model for which
+only OpenMP implementation was done). Velocity potential computation was done in
+OpenMP and was implemented in OpenCL only for real-time visualisation of the
+surface. For each technology the programme was recompiled and run multiple times
+and performance of each top-level subroutine was measured using system clock.
+Results of benchmarks of the technologies are summarised in
+table\nbsp{}[[tab-arma-performance]]. All benchmarks were run on a machine equipped
+with a GPU, characteristics of which is summarised in table\nbsp{}.
 
 #+name: tab-arma-libs
 #+caption: A list of mathematical libraries used in ARMA model implementation.
@@ -3471,6 +3484,48 @@ OpenCL) to find the most efficient one.
 | LAPACK, GotoBLAS\nbsp{}cite:goto2008high,goto2008anatomy     | finding AR coefficients         |
 | GL, GLUT\nbsp{}cite:kilgard1996opengl                        | three-dimensional visualisation |
 | CGAL\nbsp{}cite:fabri2009cgal                                | wave numbers triangulation      |
+
+In all benchmarks wavy surface generation takes the most of the running time,
+whereas velocity potential calculation together with other subroutines only a
+small fraction of it. The only exception is MA model for which coefficients
+calculation and model validation takes considerable amount of time. Slow
+calculation of coefficients is due to usage of fixed-point iteration algorithm
+with linear convergence rate, replacement of which with an algorithm with
+quadratic rate may improve performance. Slow MA model validation is explained by
+the higher number of coefficients compared to AR model in this benchmark.
+
+AR model exhibits the best performance in OpenMP and the worst performance in
+OpenCL implementations, which is also the best and the worst performance across
+all model and framework combinations. In the best model and framework
+combination AR performance is 8 times higher than MA performance, and 20 times
+higher than LH performance; in the worst combination\nbsp{}--- 77 times slower
+than MA and 2 times slower than LH. The ratio between the best (OpenMP) and the
+worst (OpenCL) AR model performance is several hundreds. This is explained by
+the fact that the model formula\nbsp{}eqref:eq-ar-process is efficiently mapped
+on the CPU architecture with caches, low-bandwidth memory and small number of
+floating point units:
+- it contains no transcendental mathematical functions (sines, cosines and
+  exponents),
+- all of the multiplications and additions in the formula can be implemented
+  using FMA processor instructions,
+- and cache locality is achieved by using Blitz library which implements
+  optimised traversals for multidimensional arrays based on Hilbert
+  space-filling curve.
+In contrast to CPU, GPU has less number of caches, high-bandwidth memory and
+large number of floating point units, which is the worst case scenario for AR
+model:
+- there are no transcendental functions which compensate high memory latency,
+- there are FMA instructions but they do not improve performance due to high
+  latency,
+- and optimal traversal was not used due to a lack of libraries implementing it
+  for a GPU.
+Finally, GPU does not have synchronisation primitives that allow to implement
+autoregressive dependencies between distinct wavy surface parts to compute them
+in parallel, and instead of this processor launches a separate OpenCL kernel for
+each part, controlling all the dependencies between them using CPU. So, for AR
+model CPU architecture is superior compared to GPU due to better handling of
+complex information dependencies, non-intensive calculations (multiplications
+and additions) and complex memory access patterns.
 
 #+name: tab-arma-performance
 #+begin_src R :results output org :exports results
@@ -3506,6 +3561,8 @@ arma.print_openmp_vs_opencl(model_names, row_names)
 | Generate wavy surface            | 1.29 | 10.12 | 351.67 | 769.42 |  25.09 |
 | Compute velocity potentials      | 0.02 |  0.02 |   0.02 |   0.01 |   0.01 |
 #+END_SRC
+
+
 
 **** Performance of load balancing algorithm.
 Software implementation of wavy surface generation is balanced in terms of the
