@@ -3481,10 +3481,60 @@ scheduler, in which
 - and jobs are executed by a simple thread pool in which each thread removes the
   first job for which all dependent jobs have completed and executes it.
 
+In contrast to AR model, MA model does not have autoregressive dependencies
+between points, instead, each surface points depends on previous in time and
+space white noise values. MA model's formula allows for rewriting it as a
+convolution of white noise with the coefficients as a kernel. Using convolution
+theorem, the convolution is rewritten as inverse Fourier transform of the
+product of Fourier transforms of white noise and coefficients. Since the number
+of MA coefficients is much smaller than the number of wavy surface points,
+parallel FFT implementation is not suitable here, as it requires padding the
+coefficients with noughts to match the size of the surface. Instead, the surface
+is divided into parts along each dimension which are padded with noughts to
+match the number of the coefficients along each dimension multiplied by two.
+Then Fourier transform of each part is computed in parallel, multiplied by
+previously computed Fourier transform of the coefficients, and inverse Fourier
+transform of the result is computed. After that, each part is written to the
+output array with overlapping points (due to padding) added to each other. This
+algorithm is commonly known in signal processing as
+"overlap-add"\nbsp{}cite:svoboda2011efficient. Padding with noughts is needed to
+prevent aliasing errors: without it the result would be circular convolution.
+
+Despite the fact that MA model algorithm partitions the surface into the same
+parts (but possible of different sizes), the vicinity of autoregressive
+dependencies between them allows to compute them in parallel without the use of
+specialised job scheduler. However, it requires padding with noughts to make the
+result correspond to the original MA model's formula. So, MA model's algorithm
+is more scalable to a large number of nodes as it has less dependencies between
+parts computed in parallel, but the size of the parts is greater than in AR
+model, so they are slower to compute.
+
+The distinct feature of LH model's algorithm is its simplicity: to make it
+parallel, the surface is partitioned into parts of equal sizes and each part is
+computed in parallel. There are no dependencies between parts, which makes this
+algorithm particularly suitable for computation on GPU: each hardware thread
+simply computes its own point. In addition, sine and cosine functions in the
+model's formula which are slow to compute on CPU, make GPU even more favourable
+choice.
+
+To summarise, even though AR and MA models are part of the mixed ARMA model,
+their parallel algorithms are fundamentally different and are more complicated
+than trivial parallel algorithm of LH model. Efficient AR algorithm requires
+specialised job scheduler to manage autoregressive dependencies between wavy
+surface parts, whereas MA algorithm requires padding part with noughts to be
+able to compute them in parallel. In contrast to these models, LH model has no
+dependencies between parts computed in parallel, but requires more computational
+power (floating point operations per seconds).
+
 **** Performance of OpenMP and OpenCL implementations.
 :PROPERTIES:
 :header-args:R: :results output org
 :END:
+
+Differences in models' parallel algorithms make them efficient on different
+processor architectures, and to find the most efficient one all the models were
+benchmarked in both CPU and GPU.
+
 ARMA model does not require highly optimised software implementation to be
 efficient, its performance is high even without use of co-processors; there are
 two main causes of that. First, ARMA model itself does not use transcendental
