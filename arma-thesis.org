@@ -3436,8 +3436,50 @@ kernel is routed to one of the thread from the device thread pool.
 Non-homogeneous kernels may be handled by predicting their execution time, but
 such kernels are not present in ARMA model implementation.
 
-**** Parallel AR, MA and LH implementations.
+**** Parallel AR, MA and LH model algorithms.
+Although, AR and MA models are part of the mixed ARMA model they have completely
+disparate parallel algorithms, which are different from trivial one of LH model.
+AR algorithm is based on partitioning wavy surface into equal three-dimensional
+parts along each dimension and computing them in parallel taking into account
+causality constraints imposed by autoregressive dependencies between surface
+points. There are no autoregressive dependencies between points in MA model, its
+formula represents convolution of white noise with model coefficients, which is
+reduced to computation of three Fourier transforms via convolution theorem,
+which in turn have parallel implementations; so, MA algorithm is based on
+parallel FFT. Finally, LH algorithm is made parallel by simply computing each
+wavy surface point in parallel. So, parallel implementation of ARMA model
+consists of two parallel algorithms, one for each part of the model, which are
+more sophisticated than the one for LH model.
 
+AR model's formula main feature is autoregressive dependencies between wavy
+surface points along each dimension which prevent computing each surface point
+in parallel. Instead the surface is partitioned along each dimension into equal
+three-dimensional parts, and for each part information dependencies, which
+define execution order, are established. Figure\nbsp{} shows these dependencies.
+Here arrow denotes dependency of one part on availability of another. Here part
+\(A\) does not have dependencies, parts \(B\) and \(C\) depend on \(A\), and
+part \(D\) depends on \(A\), \(B\) and \(C\). In essence, each part depends only
+on the parts that have previous index along each dimension (if such parts
+exist). The first part does not have any dependencies, and the size of each part
+along each dimension is made greater or equal to the corresponding number of
+coefficient along the dimension to simplify dependency handling.
+
+Each part has an three-dimensional index and a completion status. The algorithm
+starts by submitting objects containing this information into a queue. After
+that parallel threads start, each thread finds the first part for which all
+dependencies are satisfied (by checking the completion status of each part),
+removes the part from the queue, generates wavy surface for this part and sets
+completion status. The algorithm ends when the queue becomes empty. Access to
+the queue is synchronised by locks. The algorithm is suitable for SMP machines,
+for MPP the copying of dependent parts needs to be done prior to computation of
+each part.
+
+So, the AR model algorithm is made parallel by implementing minimalistic job
+scheduler, in which
+- each job corresponds to a wavy surface part,
+- the order of execution of jobs is defined by autoregressive dependencies,
+- and jobs are executed by a simple thread pool in which each thread removes the
+  first job for which all dependent jobs have completed and executes it.
 
 **** Performance of OpenMP and OpenCL implementations.
 :PROPERTIES:
