@@ -3436,6 +3436,9 @@ kernel is routed to one of the thread from the device thread pool.
 Non-homogeneous kernels may be handled by predicting their execution time, but
 such kernels are not present in ARMA model implementation.
 
+**** Parallel AR, MA and LH implementations.
+
+
 **** Performance of OpenMP and OpenCL implementations.
 :PROPERTIES:
 :header-args:R: :results output org
@@ -3456,6 +3459,17 @@ transcendental functions and heavy use of FFT, not to mention that high
 convergence rate and non-existence of periodicity allows to use far fewer
 coefficients compared to LH model.
 
+#+name: tab-gpulab
+#+caption: GPU test platform configuration.
+#+attr_latex: :booktabs t
+| CPU                     | AMD FX-8370                   |
+| RAM                     | 16Gb                          |
+| GPU                     | GeForce GTX 1060              |
+| GPU memory              | 6GB                           |
+| HDD                     | WDC WD40EZRZ-00WN9B0, 5400rpm |
+| No. of CPU cores        | 4                             |
+| No. of threads per core | 2                             |
+
 ARMA implementation uses several libraries of mathematical functions, numerical
 algorithms and visualisation primitives (listed in table\nbsp{}[[tab-arma-libs]]),
 and was implemented using several parallel programming technologies (OpenMP,
@@ -3467,10 +3481,16 @@ surface. For each technology the programme was recompiled and run multiple times
 and performance of each top-level subroutine was measured using system clock.
 Results of benchmarks of the technologies are summarised in
 table\nbsp{}[[tab-arma-performance]]. All benchmarks were run on a machine equipped
-with a GPU, characteristics of which are summarised in table\nbsp{}. In all
-benchmarks wavy surface generation takes the most of the running time, whereas
-velocity potential calculation together with other subroutines only a small
-fraction of it.
+with a GPU, characteristics of which are summarised in table\nbsp{}[[tab-gpulab]].
+All benchmarks were run with the same input parameters for all the models:
+realisation length 10000s and output grid size \(40\times40\)m. The only
+parameter that was different is the order (the number of coefficients): order of
+AR and MA model was \(7,7,7\) and order of LH model was \(40,40\). This is due
+to higher number of coefficient for LH model to eliminate periodicity.
+
+In all benchmarks wavy surface generation takes the most of the running time,
+whereas velocity potential calculation together with other subroutines only a
+small fraction of it.
 
 #+name: tab-arma-libs
 #+caption: A list of mathematical libraries used in ARMA model implementation.
