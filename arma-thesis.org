@@ -3467,7 +3467,10 @@ surface. For each technology the programme was recompiled and run multiple times
 and performance of each top-level subroutine was measured using system clock.
 Results of benchmarks of the technologies are summarised in
 table\nbsp{}[[tab-arma-performance]]. All benchmarks were run on a machine equipped
-with a GPU, characteristics of which is summarised in table\nbsp{}.
+with a GPU, characteristics of which are summarised in table\nbsp{}. In all
+benchmarks wavy surface generation takes the most of the running time, whereas
+velocity potential calculation together with other subroutines only a small
+fraction of it.
 
 #+name: tab-arma-libs
 #+caption: A list of mathematical libraries used in ARMA model implementation.
@@ -3482,20 +3485,11 @@ with a GPU, characteristics of which is summarised in table\nbsp{}.
 | GL, GLUT\nbsp{}cite:kilgard1996opengl                        | three-dimensional visualisation |
 | CGAL\nbsp{}cite:fabri2009cgal                                | wave numbers triangulation      |
 
-In all benchmarks wavy surface generation takes the most of the running time,
-whereas velocity potential calculation together with other subroutines only a
-small fraction of it. The only exception is MA model for which coefficients
-calculation and model validation takes considerable amount of time. Slow
-calculation of coefficients is due to usage of fixed-point iteration algorithm
-with linear convergence rate, replacement of which with an algorithm with
-quadratic rate may improve performance. Slow MA model validation is explained by
-the higher number of coefficients compared to AR model in this benchmark.
-
 AR model exhibits the best performance in OpenMP and the worst performance in
 OpenCL implementations, which is also the best and the worst performance across
 all model and framework combinations. In the best model and framework
-combination AR performance is 8 times higher than MA performance, and 20 times
-higher than LH performance; in the worst combination\nbsp{}--- 77 times slower
+combination AR performance is 4.5 times higher than MA performance, and 20 times
+higher than LH performance; in the worst combination\nbsp{}--- 137 times slower
 than MA and 2 times slower than LH. The ratio between the best (OpenMP) and the
 worst (OpenCL) AR model performance is several hundreds. This is explained by
 the fact that the model formula\nbsp{}eqref:eq-ar-process is efficiently mapped
@@ -3572,7 +3566,12 @@ model compared to AR model is lower. The reason for that is higher number of
 coefficients needed for LH model to discretise spectrum and eliminate
 periodicity from the realisation.
 
-
+The last MA model is faster than LH and slower than AR. As the convolution in
+its formula is implemented using FFT, its performance depends on the performance
+of underlying FFT implementation: GSL for CPU and clFFT for GPU. In this work
+performance of MA model on GPU was not tested due to unavailability of the
+three-dimensional transform in clFFT library; if the transform was available, it
+could made the model even faster than AR.
 
 **** Performance of load balancing algorithm.
 Software implementation of wavy surface generation is balanced in terms of the
