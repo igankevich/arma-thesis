@@ -1206,15 +1206,12 @@ fi
 cd $dir
 git checkout master
 git pull
-git checkout 46acdd0ebdbbd7a5ca50b76e7af19997d8f09f1d
+git checkout 5c07dd4b6a334cc869e81588b2a2a772d6b85e43
 #+end_src
 
 #+RESULTS:
 : Ваша ветка обновлена в соответствии с «origin/master».
-: Обновление c230b96..46acdd0
-: Fast-forward
-:  R/arma.load.R | 12 +++++++++---
-:  1 file changed, 9 insertions(+), 3 deletions(-)
+: Already up-to-date.
 
 * Introduction
 **** Topic relevance.
@@ -3540,7 +3537,7 @@ model_names <- list(
   Row.names="\\orgcmidrule{2-4}{5-6}Subroutine"
 )
 row_names <- list(
-  deteremine_coefficients="Determine coefficients",
+  determine_coefficients="Determine coefficients",
   validate="Validate model",
   generate_surface="Generate wavy surface",
   velocity="Compute velocity potentials"
@@ -3553,17 +3550,17 @@ arma.print_openmp_vs_opencl(model_names, row_names)
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-performance
 #+BEGIN_SRC org
-|                                  |      |       | OpenMP |        | OpenCL |
-| \orgcmidrule{2-4}{5-6}Subroutine |   AR |    MA |     LH |     AR |     LH |
-|----------------------------------+------+-------+--------+--------+--------|
-| Determine coefficients           | 0.02 |  0.26 |   0.18 |   0.01 |   1.19 |
-| Validate model                   | 0.09 | 19.19 |        |   0.08 |        |
-| Generate wavy surface            | 1.29 | 10.12 | 351.67 | 769.42 |  25.09 |
-| Compute velocity potentials      | 0.02 |  0.02 |   0.02 |   0.01 |   0.01 |
+|                                  |      |      | OpenMP |        | OpenCL |
+| \orgcmidrule{2-4}{5-6}Subroutine |   AR |   MA |     LH |     AR |     LH |
+|----------------------------------+------+------+--------+--------+--------|
+| Determine coefficients           | 0.02 | 0.01 |   0.18 |   0.02 |   1.19 |
+| Validate model                   | 0.09 | 0.11 |        |   0.08 |        |
+| Generate wavy surface            | 1.26 | 5.60 | 351.68 | 769.55 |  25.05 |
+| Compute velocity potentials      | 0.02 | 0.01 |   0.02 |   0.01 |   0.01 |
 #+END_SRC
 
 In contrast to AR model, LH model exhibits the best performance on GPU and the
-worst performance on GPU. The reasons for that are
+worst performance on CPU. The reasons for that are
 - the large number of transcendental functions in its formula which help offset
   high memory latency,
 - linear memory access pattern which help vectorise calculations and coalesce
@@ -3574,6 +3571,7 @@ terms of floating point operations per second), the overall performance of LH
 model compared to AR model is lower. The reason for that is higher number of
 coefficients needed for LH model to discretise spectrum and eliminate
 periodicity from the realisation.
+
 
 
 **** Performance of load balancing algorithm.
