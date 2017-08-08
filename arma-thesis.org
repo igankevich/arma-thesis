@@ -3398,44 +3398,6 @@ parts from failed nodes are recomputed and all previously computed parts are
 retained.
 
 ** SMP implementation
-**** Load balancing algorithm.
-The simplest approach to balance the load on a multi-processor system is to
-split data into equal parts (or a task into homogeneous subtasks) and to
-distribute them evenly between processor cores and cluster nodes, however, this
-approach does not work efficiently in all cases. First, the total number of
-parts, into which input data is split, is often dictated by the problem being
-solved, rather than computer system architecture. Such load balancing may not
-efficient from the computer system point of view: the number of parts is either
-too large compared to the number of processors working in parallel, which
-increases data transfer overhead, or too small, which prevents using all
-available processor cores. Second, restrictions of problem being solved may not
-allow to split input data into even parts which may result in load imbalance
-across processor cores. Third, there are multiple components in the system aside
-from the processor that take part in the computation (such as vector
-co-processors and storage devices), and the problem solution time depends on the
-performance of all the components involved. So, how to make load balancing
-algorithm more efficient in the presence of non-homogeneous input data parts and
-take into account all the devices involved in the computation?
-
-The load balancing algorithm consists of two stages. In the first stage, the
-algorithm places input data part (or a subtask) wrapped in a kernel into an
-appropriate kernel pool: there is a separate pool for each device and an
-associated thread pool. In the second stage, a kernel is retrieved from the pool
-by one of the threads and processed. Due to separate thread pools all devices
-work in parallel to each other, lowering overall system resources downtime
-compared to using all devices from a single thread.
-
-In order to take into account non-homogeneous input data parts or tasks, one may
-predict execution time of each task. Relevant study is done
-in\nbsp{}cite:degtyarev2016balance since ARMA model implementation includes
-mostly homogeneous tasks.
-
-So, load balancing is done in two stages: in the first stage the task wrapped in
-the kernel is routed to the appropriate device and in the second stage the
-kernel is routed to one of the thread from the device thread pool.
-Non-homogeneous kernels may be handled by predicting their execution time, but
-such kernels are not present in ARMA model implementation.
-
 **** Parallel AR, MA and LH model algorithms.
 Although, AR and MA models are part of the mixed ARMA model they have completely
 disparate parallel algorithms, which are different from trivial one of LH model.
@@ -3696,13 +3658,55 @@ performance of MA model on GPU was not tested due to unavailability of the
 three-dimensional transform in clFFT library; if the transform was available, it
 could made the model even faster than AR.
 
-**** Performance of load balancing algorithm.
+**** Load balancing algorithm.
 Software implementation of wavy surface generation is balanced in terms of the
-load on processor cores, however, as shown by tests, has high load on storage
-device. Before testing wavy surface generation was implemented using OpenMP for
-parallel computations and in order to implement load balancing algorithm was
-rewritten using POSIX threads. Performance of the two implementations was
-compared on the platform with the configuration listed in table\nbsp{}[[tab-multicore-specs]].
+load on processor cores, however, as was shown by performance benchmarks, has
+high load on storage device. In order to balance the load between processor and
+disks, wavy surface generation with AR model was rewritten using POSIX threads.
+
+In general, the simplest approach to balance the load on a multi-processor
+system is to split data into equal parts (or a task into homogeneous subtasks)
+and to distribute them evenly between processor cores and cluster nodes,
+however, this approach does not work efficiently in all cases. First, the total
+number of parts, into which input data is split, is often dictated by the
+problem being solved, rather than computer system architecture. Such load
+balancing may not be efficient from the computer system point of view: the
+number of parts is either too large compared to the number of processors working
+in parallel, which increases data transfer overhead, or too small, which
+prevents using all available processor cores. Second, restrictions of problem
+being solved may not allow to split input data into even parts which may result
+in load imbalance across processor cores. Third, there are multiple components
+in the system aside from the processor that take part in the computation (such
+as vector co-processors and storage devices), and the problem solution time
+depends on the performance of all the components involved. So, how to make load
+balancing algorithm more efficient in the presence of non-homogeneous input data
+parts and take into account all the devices involved in the computation?
+
+The load balancing algorithm consists of two stages. In the first stage, the
+algorithm places input data part (or a subtask) wrapped in a kernel into an
+appropriate kernel pool: there is a separate pool for each device and an
+associated thread pool. In the second stage, a kernel is retrieved from the pool
+by one of the threads and processed. Due to separate thread pools all devices
+work in parallel to each other, lowering overall system resources downtime
+compared to using all devices from a single thread.
+
+In order to take into account non-homogeneous input data parts or tasks, one may
+predict execution time of each task. Relevant study is done
+in\nbsp{}cite:degtyarev2016balance since ARMA model implementation includes
+mostly homogeneous tasks.
+
+So, load balancing is done in two stages: in the first stage the task wrapped in
+the kernel is routed to the appropriate device and in the second stage the
+kernel is routed to one of the thread from the device thread pool.
+Non-homogeneous kernels may be handled by predicting their execution time, but
+such kernels are not present in ARMA model implementation.
+
+**** Performance of load balancing algorithm.
+We benchmarked two implementations on a multi-core machine, configuration of
+which is listed in table\nbsp{}[[tab-multicore-specs]], varying the size of the
+surface. The size of CPU thread pool and I/O thread pool remained constant
+during the experiment. I/O thread pool consisted of one thread, and CPU thread
+pool size was equal the number of physical processor cores.
 
 #+name: tab-multicore-specs
 #+caption: Multi-core system configuration.
@@ -3724,11 +3728,6 @@ compared on the platform with the configuration listed in table\nbsp{}[[tab-mult
 | Amount of RAM (GB)        | 8                                |
 | Disk                      | Seagate ST3250318AS              |
 | Disk speed (rpm)          | 7200                             |
-
-The experiment consisted of running both implementations on a multi-core machine
-varying the size of the surface; the size of CPU thread pool and I/O thread pool
-was not changed during the experiment. I/O thread pool consisted of one thread,
-and CPU thread pool size was equal the number of physical processor cores.
 
 In the experiment load balancing algorithm showed higher performance than
 implementation without it. The more the size of the generated surface is the
@@ -3774,11 +3773,12 @@ arma.plot_factory_vs_openmp_overlap(
 #+RESULTS: fig-factory-overlap
 [[file:build/factory-vs-openmp-overlap.pdf]]
 
-Proposed load balancing method for multi-core systems allows to increase
-performance of applications that read or write large volumes of data to disk,
-but may be used in other cases too. The main idea of the algorithm is to
-classify the load and find the suitable device to route the load to. So, any
-devices other than disks may be used as well.
+Proposed load balancing method for multi-core systems increases I/O performance
+of applications that read or write large volumes of data to disk, but may be
+used in other cases too. The main idea of the algorithm is to classify the load
+and find the suitable device to route the load to. So, any devices other than
+disks may be used as well.
+
 ** MPP implementation
 *** Cluster node discovery algorithm
 :PROPERTIES:
@@ -3786,23 +3786,28 @@ devices other than disks may be used as well.
 :END:
 
 Many distributed systems are built on the principle of /subordination/: there is
-principal node in each cluster which manages job queue, schedules their
-execution on subordinate nodes and monitors their state. Principal role is
-assigned either /statically/ by an administrator to a particular physical node,
-or /dynamically/ by electing one of the cluster nodes as principal. In the
-former case fault tolerance is provided by reserving additional spare node which
-takes principal role when current principal fails. In the latter case fault
-tolerance is provided by electing new principal node from survived nodes.
+principal node in each cluster which manages job queue, schedules job execution
+on subordinate nodes and monitors their state. Principal role is assigned either
+/statically/ by an administrator to a particular physical node, or /dynamically/
+by periodically electing one of the cluster nodes as principal by an algorithm.
+In the former case fault tolerance is provided by reserving additional spare
+node which takes principal role when current principal fails. In the latter case
+fault tolerance is provided by electing new principal node from survived nodes.
 Despite the fact that dynamic role assignment requires specialised distributed
 algorithm, this approach becomes more and more popular as it does not require
-spare reserved nodes to recover from principal node failure.
+spare reserved nodes to recover from principal node
+failure\nbsp{}cite:hunt2010zookeeper,lakshman2010cassandra,divya2013elasticsearch
+and generally leads to a symmetric system in which the same software stack with
+the same configuration is installed on every
+node\nbsp{}cite:boyer2012glusterfs,ostrovsky2015couchbase.
 
 Leader election algorithms (which sometimes referred to as /distributed
-consensus/ algorithms are special cases of wave algorithms. In\nbsp{}cite:tel2000introduction Tel defines them as algorithms in which termination
-event is preceded by at least one event occurring in /each/ parallel process.
-Wave algorithms are not defined for anonymous networks, that is they apply only
-to processes that can uniquely define themselves. However, the number of
-processes affected by the "wave" can be determined in the course of an
+consensus/ algorithms are special cases of wave algorithms.
+In\nbsp{}cite:tel2000introduction the author defines them as algorithms in which
+termination event is preceded by at least one event occurring in /each/ parallel
+process. Wave algorithms are not defined for anonymous networks, that is they
+apply only to processes that can uniquely define themselves. However, the number
+of processes affected by the "wave" can be determined in the course of an
 algorithm. For a distributed system this means that wave algorithms work for
 computer clusters with dynamically changing number of nodes, and the algorithm
 is unaffected by some nodes going on-line and off-line.
@@ -3829,7 +3834,7 @@ The following key features distinguish this approach with respect to some
 existing proposals\nbsp{}cite:brunekreef1996design,aguilera2001stable,romano2014design.
 - *Multi-level hierarchy.* The number of principal nodes in a network depends on
   the fan-out value. If it is lesser than the number of IP-addresses in the
-  network, then there are multiple principle nodes in the cluster. If it is
+  network, then there are multiple principal nodes in the cluster. If it is
   greater or equal to the number of IP-addresses in the network, then there is
   only one principal node. When some node fail, multi-level hierarchy changes
   locally, only nodes adjacent to the failed one communicate.
@@ -3863,8 +3868,8 @@ are not suitable for the algorithm.
 
 The other disadvantage is that the algorithm creates artificial dependence of
 node rank on IP-address: it is difficult to substitute IP-address mapping with a
-more sophisticated one (e.g. a mapping which uses current node and network load
-to infer node ranks) because measurement errors may result in unstable
+more sophisticated one (e.g.\nbsp{}a mapping which uses current node and network
+load to infer node ranks) because measurement errors may result in unstable
 hierarchy, and the algorithm cease to be fully event-based.
 
 Node discovery algorithm is designed to balance the load on a cluster of compute
