@@ -3457,20 +3457,19 @@ in parallel. Instead the surface is partitioned along each dimension into equal
 three-dimensional parts, and for each part information dependencies, which
 define execution order, are established. Figure\nbsp{}[[fig-ar-cubes]] shows these
 dependencies. Here arrow denotes dependency of one part on availability of
-another. Here part \(A\) does not have dependencies, parts \(B\) and \(C\)
-depend on \(A\), and part \(D\) depends on \(A\), \(B\) and \(C\). In essence,
+another. Here part \(A\) does not have dependencies, parts \(B\) and \(D\)
+depend on \(A\), and part \(E\) depends on \(A\), \(B\) and \(C\). In essence,
 each part depends only on the parts that have previous index along each
 dimension (if such parts exist). The first part does not have any dependencies,
 and the size of each part along each dimension is made greater or equal to the
-corresponding number of coefficient along the dimension to simplify dependency
-handling.
+corresponding number of coefficients along the dimension to consider only
+adjacent parts.
 
 #+name: fig-ar-cubes
-#+header: :width 5 :height 4
+#+header: :width 5 :height 5
 #+begin_src R :file build/ar-cubes.pdf
 source(file.path("R", "common.R"))
-arma.plot_ar_cubes(3,3,3)
-rgl.postscript("build/ar-cubes.pdf", fmt="pdf")
+arma.plot_ar_cubes_2d(3, 3, xlabel="Part index (X)", ylabel="Part index (Y)")
 #+end_src
 
 #+RESULTS: fig-ar-cubes

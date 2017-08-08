@@ -178,6 +178,58 @@ arma.plot_ar_cubes <- function(nx, ny, nz) {
   view3d(45,30)
 }
 
+arma.plot_ar_cubes_2d <- function (nx, ny, xlabel, ylabel) {
+  part_size <- 2
+  plot.new()
+  plot.window(xlim=c(0,nx*part_size),ylim=rev(c(0,ny*part_size)))
+  par(pty="s", family="serif")
+  char_idx <- 1
+  adj_x <- 0.3
+  adj_y <- 0.4
+  for (i in c(1:nx)-1) {
+    for (j in c(1:ny)-1) {
+      x0 <- i*part_size
+      y0 <- j*part_size
+      x1 <- x0 + part_size
+      y1 <- y0 + part_size
+      rect(x0, y0, x1, y1)
+      text(x0+part_size/2, y0+part_size/2, LETTERS[char_idx], cex=1.5)
+      m1 <- max(i-1, 0)
+      m2 <- max(j-1, 0)
+      # draw arrows denoting AR dependencies
+      for (l in c(m1:i)) {
+        for (m in c(m2:j)) {
+          if (!(l==i && m==j)) {
+            xl <- l*part_size
+            ym <- m*part_size
+            x00 <- x0
+            y00 <- y0
+            if (xl != x0) {
+              xl <- xl + adj_x
+              x00 <- x00 - adj_x
+            }
+            if (ym != y0) {
+              ym <- ym + adj_y
+              y00 <- y00 - adj_y
+            }
+            arrows(
+              x00 + part_size/2,
+              y00 + part_size/2,
+              xl + part_size/2,
+              ym + part_size/2,
+              angle=7, lwd=3)
+          }
+        }
+      }
+      char_idx <- char_idx + 1
+    }
+  }
+  axis(3, at=c(0:nx)*part_size, labels=c(0:nx))
+  axis(2, at=c(0:ny)*part_size, labels=c(0:ny))
+  mtext(xlabel, side=3, line=3)
+  mtext(ylabel, side=2, line=3)
+}
+
 arma.plot_factory_vs_openmp <- function(...) {
   args <- list(...)
   perf <- read.csv(file.path("data", "performance", "factory-vs-openmp.csv"))
