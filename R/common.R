@@ -119,11 +119,63 @@ arma.plot_ramp_up_interval <- function(label="Ramp-up interval") {
 		c(0, my, my,  0, 0),
 		c(0,  0,  0,  0, 0),
 		pmat=res
-	), col="red", lwd=3) 
-	text(trans3d(0, my/2, max(zeta$z)*1.5, pmat=res), label, col="red", font=2) 
+  ), col="red", lwd=3)
+  text(trans3d(0, my/2, max(zeta$z)*1.5, pmat=res), label, col="red", font=2)
 	from <- trans3d(0, my/2, max(zeta$z)*1.4, pmat=res)
 	to <- trans3d(0, my/2, max(zeta$z)*0.05, pmat=res)
 	arrows(from$x, from$y, to$x, to$y, lwd=2, angle=10, length=0.1, col="red")
+}
+
+arma.cube <- function (x, y, z) {
+  c <- cube3d(alpha=0.2)
+  c$material$lwd <- 4
+#  c$material$front <- 'line'
+  c$material$back <- 'line'
+  c$material$col <- '#ffffff'
+  shade3d(translate3d(c, x, y, z))
+}
+
+arma.arrow <- function (x1,x2,ps) {
+  arrow3d(
+    c(x1[1], x1[2], x1[3])*ps,
+    c(x2[1], x2[2], x2[3])*ps,
+    type="rotation", col="grey", s=1/7)
+}
+
+arma.plot_ar_cubes <- function(nx, ny, nz) {
+  library("rgl")
+  part_size <- 2
+  # generate cubes
+#  for (i in c(1:nx)) {
+#    for (j in c(1:ny)) {
+#      for (k in c(1:nz)) {
+#        arma.cube(i*part_size, j*part_size, k*part_size)
+#      }
+#    }
+#  }
+  # generate arrows
+  for (i in c(1:nx)) {
+    for (j in c(1:ny)) {
+      for (k in c(1:nz)) {
+        m1 <- min(i+1, nx)
+        m2 <- min(j+1, ny)
+        m3 <- min(k+1, nz)
+        for (l in c(i:m1)) {
+          for (m in c(j:m2)) {
+            for (n in c(k:m3)) {
+              v1 <- c(i,j,k)
+              v2 <- c(l,m,n)
+              if (!(i==l && j==m && k==n)) {
+                arma.arrow(v1, v2, part_size)
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  # rotate the camera
+  view3d(45,30)
 }
 
 arma.plot_factory_vs_openmp <- function(...) {

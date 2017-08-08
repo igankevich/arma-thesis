@@ -3455,14 +3455,26 @@ AR model's formula main feature is autoregressive dependencies between wavy
 surface points along each dimension which prevent computing each surface point
 in parallel. Instead the surface is partitioned along each dimension into equal
 three-dimensional parts, and for each part information dependencies, which
-define execution order, are established. Figure\nbsp{} shows these dependencies.
-Here arrow denotes dependency of one part on availability of another. Here part
-\(A\) does not have dependencies, parts \(B\) and \(C\) depend on \(A\), and
-part \(D\) depends on \(A\), \(B\) and \(C\). In essence, each part depends only
-on the parts that have previous index along each dimension (if such parts
-exist). The first part does not have any dependencies, and the size of each part
-along each dimension is made greater or equal to the corresponding number of
-coefficient along the dimension to simplify dependency handling.
+define execution order, are established. Figure\nbsp{}[[fig-ar-cubes]] shows these
+dependencies. Here arrow denotes dependency of one part on availability of
+another. Here part \(A\) does not have dependencies, parts \(B\) and \(C\)
+depend on \(A\), and part \(D\) depends on \(A\), \(B\) and \(C\). In essence,
+each part depends only on the parts that have previous index along each
+dimension (if such parts exist). The first part does not have any dependencies,
+and the size of each part along each dimension is made greater or equal to the
+corresponding number of coefficient along the dimension to simplify dependency
+handling.
+
+#+name: fig-ar-cubes
+#+header: :width 5 :height 4
+#+begin_src R :file build/ar-cubes.pdf
+source(file.path("R", "common.R"))
+arma.plot_ar_cubes(3,3,3)
+rgl.postscript("build/ar-cubes.pdf", fmt="pdf")
+#+end_src
+
+#+RESULTS: fig-ar-cubes
+[[file:build/ar-cubes.pdf]]
 
 Each part has an three-dimensional index and a completion status. The algorithm
 starts by submitting objects containing this information into a queue. After
