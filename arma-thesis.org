@@ -2174,13 +2174,14 @@ mathematically rigorous approach would be preferable.
 Making the replacement, applying Fourier transform to both sides of the equation
 and plugging the result into eqref:eq-guessed-sol-3d yields formula for
 \(\phi\):
-\begin{equation*}
+\begin{equation}
+    \label{eq-phi-3d}
     \phi(x,y,z,t) = \InverseFourierY{
         \frac{ \Sinh{\smash{2\pi \Kveclen (z+h)}} }{ 2\pi\Kveclen }
         \frac{ \FourierY{ \zeta_t / \left( i f_1(x,y) + i f_2(x,y) - 1 \right)}{u,v} }
         { \FourierY{\mathcal{D}_3\left( x,y,\zeta\left(x,y\right) \right)}{u,v} }
     }{x,y},
-\end{equation*}
+\end{equation}
 where \(\FourierY{\mathcal{D}_3\left(x,y,z\right)}{u,v}=\Sinh{\smash{2\pi\Kveclen{}z}}\).
 
 ** Modelling non-linearity of sea waves
@@ -3498,7 +3499,6 @@ surface parts, whereas MA algorithm requires padding part with noughts to be
 able to compute them in parallel. In contrast to these models, LH model has no
 dependencies between parts computed in parallel, but requires more computational
 power (floating point operations per seconds).
-
 **** Performance of OpenMP and OpenCL implementations.
 :PROPERTIES:
 :header-args:R: :results output org
@@ -3658,126 +3658,109 @@ performance of MA model on GPU was not tested due to unavailability of the
 three-dimensional transform in clFFT library; if the transform was available, it
 could made the model even faster than AR.
 
-**** Load balancing algorithm.
-Software implementation of wavy surface generation is balanced in terms of the
-load on processor cores, however, as was shown by performance benchmarks, has
-high load on storage device. In order to balance the load between processor and
-disks, wavy surface generation with AR model was rewritten using POSIX threads.
+**** Parallel velocity potential field computation.
+The benchmarks for AR, MA and LH models showed that velocity potential field
+computation consume only a fraction of total programme execution time, however,
+the absolute computation time over a large $XY$ domain may still be high. One
+application where faster computation is needed is real-time simulation and
+visualisation of wavy surface. The purpose of real-time visualisation is
+two-fold:
+- it allows to adjust parameters of the model and ACF function in
+  real-time and see the result of the changes immediately, and
+- it allows to visually compare the size and the shape of regions where the most
+  wave energy is concentrated, which is valuable for education.
 
-In general, the simplest approach to balance the load on a multi-processor
-system is to split data into equal parts (or a task into homogeneous subtasks)
-and to distribute them evenly between processor cores and cluster nodes,
-however, this approach does not work efficiently in all cases. First, the total
-number of parts, into which input data is split, is often dictated by the
-problem being solved, rather than computer system architecture. Such load
-balancing may not be efficient from the computer system point of view: the
-number of parts is either too large compared to the number of processors working
-in parallel, which increases data transfer overhead, or too small, which
-prevents using all available processor cores. Second, restrictions of problem
-being solved may not allow to split input data into even parts which may result
-in load imbalance across processor cores. Third, there are multiple components
-in the system aside from the processor that take part in the computation (such
-as vector co-processors and storage devices), and the problem solution time
-depends on the performance of all the components involved. So, how to make load
-balancing algorithm more efficient in the presence of non-homogeneous input data
-parts and take into account all the devices involved in the computation?
+Since visualisation is done by GPU, doing velocity potential computation on CPU
+may cause a bottleneck in data transfer between RAM and GPU memory. To
+circumvent this, we use OpenCL/OpenGL interoperability API which allows creating
+buffers, that are shared between OpenCL and OpenGL contexts thus eliminating
+unnecessary copying of data. In addition to this, three-dimensional velocity
+potential field formula\nbsp{}eqref:eq-phi-3d is particularly suitable for
+computation by GPUs:
+- it contains transcendental mathematical functions (hyperbolic cosines and
+  complex exponents);
+- it is computed over large four-dimensional \(t,x,y,z\) region;
+- it is analytic with no information dependencies between individual data points
+  in \(t\) and \(z\) dimensions.
+These considerations make velocity potential field computation on GPU
+advantageous in the application to real-time simulation and visualisation of
+wavy surface.
 
-The load balancing algorithm consists of two stages. In the first stage, the
-algorithm places input data part (or a subtask) wrapped in a kernel into an
-appropriate kernel pool: there is a separate pool for each device and an
-associated thread pool. In the second stage, a kernel is retrieved from the pool
-by one of the threads and processed. Due to separate thread pools all devices
-work in parallel to each other, lowering overall system resources downtime
-compared to using all devices from a single thread.
+In order to investigate, how GPGPU computations can be used to speed-up velocity
+potential field computation, we benchmarked simplified version of
+eq.\nbsp{}eqref:phi-3d:
+\begin{align}
+    \label{eq:phi-linear}
+    \phi(x,y,z,t) &= \InverseFourierY{
+        \frac{ \Sinh{\smash{2\pi \Kveclen (z+h)}} }
+        { 2\pi\Kveclen \Sinh{\smash{2\pi \Kveclen h}} }
+        \FourierY{ \zeta_t }{u,v}
+    }{x,y}\nonumber \\
+    &= \InverseFourierY{ g_1(u,v) \FourierY{ g_2(x,y) }{u,v} }{x,y}.
+\end{align}
+Velocity potential solver was rewritten in OpenCL and its performance was
+compared to an existing OpenMP implementation.
 
-In order to take into account non-homogeneous input data parts or tasks, one may
-predict execution time of each task. Relevant study is done
-in\nbsp{}cite:degtyarev2016balance since ARMA model implementation includes
-mostly homogeneous tasks.
+For each implementation the overall performance of the solver for a particular
+time instant was measured. Velocity field was computed for one $t$ point, for
+128 $z$ points below wavy surface and for each $x$ and $y$ point of
+four-dimensional $(t,x,y,z)$ grid. The only parameter that was varied between
+subsequent programme runs is the size of the grid along $x$ dimension.
 
-So, load balancing is done in two stages: in the first stage the task wrapped in
-the kernel is routed to the appropriate device and in the second stage the
-kernel is routed to one of the thread from the device thread pool.
-Non-homogeneous kernels may be handled by predicting their execution time, but
-such kernels are not present in ARMA model implementation.
+A different FFT library was used for each version of the solver: GNU Scientific
+Library (GSL)\nbsp{}cite:galassi2015gnu for OpenMP and clFFT
+library\nbsp{}cite:clfft for OpenCL. There are two major differences in the
+routines from these libraries.
+- The order of frequencies in Fourier transforms is different and clFFT library
+  requires reordering the result of\nbsp{}eqref:eq:phi-linear whereas GSL does
+  not.
+- Discontinuity at $(x,y)=(0,0)$ of velocity potential field grid is handled
+  automatically by clFFT library, whereas GSL library produce skewed values at
+  this point.
+For GSL library an additional interpolation from neighbouring points was used to
+smooth velocity potential field at these points. We have not spotted other
+differences in FFT implementations that have impact on the overall performance.
 
-**** Performance of load balancing algorithm.
-We benchmarked two implementations on a multi-core machine, configuration of
-which is listed in table\nbsp{}[[tab-multicore-specs]], varying the size of the
-surface. The size of CPU thread pool and I/O thread pool remained constant
-during the experiment. I/O thread pool consisted of one thread, and CPU thread
-pool size was equal the number of physical processor cores.
+In the course of the numerical experiments we have measured how much time each
+solver's implementation spends in each computation stage to explain find out how
+efficient data copying between host and device is in OpenCL implementation, and
+how one implementation corresponds to the other in terms of performance.
 
-#+name: tab-multicore-specs
-#+caption: Multi-core system configuration.
-#+attr_latex: :booktabs t
-| Component                 | Details                          |
-|---------------------------+----------------------------------|
-| Programming language      | C++11                            |
-| Threading library         | C++11 STL threads                |
-| Atomic operations library | C++11 STL atomic                 |
-| Routines to measure time  | ~clock_gettime(CLOCK_MONOTONIC)~ |
-|                           | ~/usr/bin/time -f \%e~           |
-| Compiler                  | GCC 4.8.2                        |
-| Compiler flags            | ~-std=c++11 -O2 -march=native~   |
-| Operating system          | Debian 3.2.51-1 x86_64           |
-| File system               | ext4                             |
-| Processor                 | Intel Core 2 Quad Q9650          |
-| Core frequency (GHz)      | 3.00                             |
-| No. of cores              | 4                                |
-| Amount of RAM (GB)        | 8                                |
-| Disk                      | Seagate ST3250318AS              |
-| Disk speed (rpm)          | 7200                             |
+**** Performance of velocity potential OpenCL solver.
+The experiments showed that OpenCL outperforms OpenMP implementation by a factor
+of 10--15 (fig.\nbsp{}), however, distribution of time between computation
+stages is different for each implementation (fig.\nbsp{}). The major time
+consumer on CPU is $g_1$, whereas in GPU its running time is comparable to
+$g_2$. Copying the resulting velocity potential field between CPU and GPU
+consumes $\approx{}20\%$ of solver execution time. \(g_2\) consumes the most of
+the execution time for OpenCL solver, and \(g_1\) for OpenMP solver. In both
+implementations \(g_2\) is computed on CPU, but for GPU implementation the
+result is duplicated for each \(z\) grid point in order to perform
+multiplication of all \(XYZ\) planes along \(z\) dimension in single OpenCL
+kernel, and, subsequently copied to GPU memory which severely hinders the
+overall performance.
 
-In the experiment load balancing algorithm showed higher performance than
-implementation without it. The more the size of the generated surface is the
-more the gap in performance is (fig.\nbsp{}[[fig-factory-performance]]) which is a
-result of overlap of computation phase and data output phase
-(fig.\nbsp{}[[fig-factory-overlap]]). In OpenMP implementation data output phase
-begins only when computation is over, whereas load balancing algorithm makes
-both phases end almost simultaneously. So, /pipelined execution of internally
-parallel sequential phases is more efficient than their sequential execution/,
-and this allows to balance the load across different devices involved in
-computation.
+The reason for different distribution of time between computation stages is the
+same as for different AR model performance on CPU and GPU: GPU has more floating
+point units and modules for transcendental mathematical functions, which are
+needed for computation of \(g_1\), but lacks caches which are needed to
+optimised irregular memory access pattern of \(g_2\). In contrast to AR model,
+performance of multidimensional derivative computation on GPU is easier to
+improve, as there are no information dependencies between points:
+Multidimensional array library optimised for GPU may solve the problem, however,
+due to unavailability of such library it was not done in this work.
+Additionally, such library may allow to efficiently compute the non-simplified
+formula entirely on GPU, since omitted terms also contain derivatives.
 
-#+name: fig-factory-performance
-#+header: :width 5 :height 4
-#+begin_src R :file build/factory-vs-openmp.pdf
-source(file.path("R", "common.R"))
-arma.plot_factory_vs_openmp(
-  xlab="Realisation size",
-  ylab="Time, s",
-  power=6
-)
-#+end_src
-
-#+caption: Performance comparison of OpenMP and Factory implementations.
-#+label: fig-factory-performance
-#+RESULTS: fig-factory-performance
-[[file:build/factory-vs-openmp.pdf]]
-
-#+name: fig-factory-overlap
-#+header: :width 7 :height 4
-#+begin_src R :file build/factory-vs-openmp-overlap.pdf
-source(file.path("R", "common.R"))
-par(mar=c(5, 6, 0, 1), pty="m")
-arma.plot_factory_vs_openmp_overlap(
-  xlab="Time, s",
-  labels=c("Factory", "OpenMP"),
-  scale=10**9
-)
-#+end_src
-
-#+caption: Overlap of parallel computations on \([G_0,G_1]\) and data output to disk on \([W_0,W_1]\). In OpenMP implementation there is no overlap.
-#+label: fig-factory-overlap
-#+RESULTS: fig-factory-overlap
-[[file:build/factory-vs-openmp-overlap.pdf]]
-
-Proposed load balancing method for multi-core systems increases I/O performance
-of applications that read or write large volumes of data to disk, but may be
-used in other cases too. The main idea of the algorithm is to classify the load
-and find the suitable device to route the load to. So, any devices other than
-disks may be used as well.
+As expected, sharing the same buffer between OpenCL and OpenGL contexts
+increases overall solver performance by eliminating data transfer between CPU
+and GPU memory, but also requires for the data to be in vertex buffer object
+format, that OpenGL can operate on. Conversion to this format is fast, but
+requires more memory to store velocity potential field to be able to visualise
+it, since each point now is a vector with three components. The other
+disadvantage of using OpenCL and OpenGL together is the requirement for manual
+locking of shared objects: failure to do so results in screen artefacts which
+can be removed only by rebooting the computer.
 
 ** MPP implementation
 *** Cluster node discovery algorithm
