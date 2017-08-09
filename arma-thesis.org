@@ -3501,7 +3501,7 @@ dependencies between parts computed in parallel, but requires more computational
 power (floating point operations per seconds).
 **** Performance of OpenMP and OpenCL implementations.
 :PROPERTIES:
-:header-args:R: :results output org
+:header-args:R: :results output raw :exports results
 :END:
 
 Differences in models' parallel algorithms make them efficient on different
@@ -3604,7 +3604,7 @@ complex information dependencies, non-intensive calculations (multiplications
 and additions) and complex memory access patterns.
 
 #+name: tab-arma-performance
-#+begin_src R :results output org :exports results
+#+begin_src R
 source(file.path("R", "benchmarks.R"))
 model_names <- list(
 	ar.x="AR",
@@ -3628,7 +3628,6 @@ arma.print_openmp_vs_opencl(model_names, row_names)
 #+caption: Running time (s.) for OpenMP and OpenCL implementations of AR, MA and LH models.
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-performance
-#+BEGIN_SRC org
 |                                  |      |      | OpenMP |        | OpenCL |
 | \orgcmidrule{2-4}{5-6}Subroutine |   AR |   MA |     LH |     AR |     LH |
 |----------------------------------+------+------+--------+--------+--------|
@@ -3636,7 +3635,6 @@ arma.print_openmp_vs_opencl(model_names, row_names)
 | Validate model                   | 0.09 | 0.11 |        |   0.08 |        |
 | Generate wavy surface            | 1.26 | 5.60 | 351.68 | 769.55 |  25.05 |
 | Compute velocity potentials      | 0.02 | 0.01 |   0.02 |   0.01 |   0.01 |
-#+END_SRC
 
 In contrast to AR model, LH model exhibits the best performance on GPU and the
 worst performance on CPU. The reasons for that are
