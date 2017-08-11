@@ -11,7 +11,7 @@ arma.load_benchmark_data <- function(framework, models, tags) {
 			values <- arma.load(
 				file.path("build", "arma-benchmarks", "output"),
 				"gpulab1",
-				"a2",
+				"a4",
 				10000,
 				framework,
 				m,
@@ -35,7 +35,10 @@ arma.print_openmp_vs_opencl <- function(model_names, row_names) {
     determine_coefficients=c("deteremine_coefficients", "determine_coefficients"),
     "validate",
     "generate_surface",
-    velocity=c("window_function", "second_function", "fft", "dev_to_host_copy")
+    nit=c("nit_acf", "nit_realisation"),
+    "copy_to_host",
+    velocity=c("window_function", "second_function", "fft", "dev_to_host_copy"),
+    "write_all"
   )
   all_data <- list()
   for (framework in frameworks) {

@@ -1,5 +1,4 @@
 # Local Variables:
-# org-ref-default-bibliography ("bib/refs.bib")
 # org-latex-image-default-width nil
 # org-latex-caption-above nil
 # org-latex-hyperref-template "\\hypersetup{\n pdfauthor={%a},\n pdftitle={%t},\n pdfkeywords={%k},\n pdfsubject={%d},\n pdfcreator={%c},\n pdflang={%L},\n unicode={true}\n}\n\\setdefaultlanguage{%l}\n"
@@ -1206,7 +1205,7 @@ fi
 cd $dir
 git checkout master
 git pull
-git checkout 63075156c65bdb2c6cafca70518f94b2b69a2315
+git checkout f5d212bbd9da472f3b8e08ae5ddc44a20e3d7966
 #+end_src
 
 #+RESULTS:
@@ -3566,9 +3565,10 @@ small fraction of it.
 | Blitz\nbsp{}cite:veldhuizen1997will,veldhuizen2000techniques | multidimensional arrays         |
 | GSL\nbsp{}cite:gsl2008scientific                             | PDF, CDF, FFT computation       |
 |                                                              | checking process stationarity   |
+| clFFT\nbsp{}cite:clfft                                       | FFT computation                 |
 | LAPACK, GotoBLAS\nbsp{}cite:goto2008high,goto2008anatomy     | finding AR coefficients         |
 | GL, GLUT\nbsp{}cite:kilgard1996opengl                        | three-dimensional visualisation |
-| CGAL\nbsp{}cite:fabri2009cgal                                | wave numbers triangulation      |
+| CGAL\nbsp{}cite:fabri2009cgal                                | wave numbers interpolation      |
 
 AR model exhibits the best performance in OpenMP and the worst performance in
 OpenCL implementations, which is also the best and the worst performance across
@@ -3619,6 +3619,9 @@ row_names <- list(
   determine_coefficients="Determine coefficients",
   validate="Validate model",
   generate_surface="Generate wavy surface",
+  nit="NIT",
+  write_all="Write output to files",
+  copy_to_host="Copy data from GPU",
   velocity="Compute velocity potentials"
 )
 arma.print_openmp_vs_opencl(model_names, row_names)
@@ -3631,10 +3634,13 @@ arma.print_openmp_vs_opencl(model_names, row_names)
 |                                  |      |      | OpenMP |        | OpenCL |
 | \orgcmidrule{2-4}{5-6}Subroutine |   AR |   MA |     LH |     AR |     LH |
 |----------------------------------+------+------+--------+--------+--------|
-| Determine coefficients           | 0.02 | 0.01 |   0.18 |   0.02 |   1.19 |
-| Validate model                   | 0.09 | 0.11 |        |   0.08 |        |
-| Generate wavy surface            | 1.26 | 5.60 | 351.68 | 769.55 |  25.05 |
-| Compute velocity potentials      | 0.07 | 0.06 |   0.06 |   0.03 |   0.03 |
+| Determine coefficients           | 0.02 | 0.01 |   0.19 |   0.01 |   1.19 |
+| Validate model                   | 0.08 | 0.10 |        |   0.08 |        |
+| Generate wavy surface            | 1.26 | 5.57 | 350.98 | 769.38 |   0.02 |
+| NIT                              | 7.11 | 7.43 |        |   0.02 |        |
+| Copy data from GPU to host       |      |      |        |   5.22 |  25.06 |
+| Compute velocity potentials      | 0.05 | 0.05 |   0.06 |   0.03 |   0.03 |
+| Write output to files            | 0.27 | 0.27 |   0.27 |   0.28 |   0.27 |
 
 In contrast to AR model, LH model exhibits the best performance on GPU and the
 worst performance on CPU. The reasons for that are
