@@ -1205,7 +1205,7 @@ fi
 cd $dir
 git checkout master
 git pull
-git checkout f5d212bbd9da472f3b8e08ae5ddc44a20e3d7966
+git checkout 19c0abb1cc442a5ec0134c5028f77cb9f3fb9816
 #+end_src
 
 #+RESULTS:
@@ -3498,7 +3498,7 @@ surface parts, whereas MA algorithm requires padding part with noughts to be
 able to compute them in parallel. In contrast to these models, LH model has no
 dependencies between parts computed in parallel, but requires more computational
 power (floating point operations per seconds).
-**** TODO Performance of OpenMP and OpenCL implementations.
+**** Performance of OpenMP and OpenCL implementations.
 :PROPERTIES:
 :header-args:R: :results output raw :exports results
 :END:
@@ -3638,7 +3638,7 @@ arma.print_openmp_vs_opencl(model_names, row_names)
 | Validate model                   | 0.08 | 0.10 |        |   0.08 |        |
 | Generate wavy surface            | 1.26 | 5.57 | 350.98 | 769.38 |   0.02 |
 | NIT                              | 7.11 | 7.43 |        |   0.02 |        |
-| Copy data from GPU to host       |      |      |        |   5.22 |  25.06 |
+| Copy data from GPU               |      |      |        |   5.22 |  25.06 |
 | Compute velocity potentials      | 0.05 | 0.05 |   0.06 |   0.03 |   0.03 |
 | Write output to files            | 0.27 | 0.27 |   0.27 |   0.28 |   0.27 |
 
@@ -3685,6 +3685,36 @@ increased, but the I/O is done in parallel to computation so the total running
 time is decreased. Using this approach with local file system has the same
 effect, but the total reduction in execution time is small, because local file
 system is more performant.
+
+#+name: tab-arma-io-performance
+#+begin_src R
+source(file.path("R", "benchmarks.R"))
+suffix_names <- list(
+  xfs.x="XFS",
+  xfs.y="XFS",
+  nfs.x="NFS",
+  nfs.y="NFS",
+  gfs.x="GlusterFS",
+  gfs.y="GlusterFS",
+  Row.names="\\orgcmidrule{2-4}{5-7}Subroutine"
+)
+top_names <- c("Sequential", "Parallel")
+row_names <- list(
+  generate_surface="Generate wavy surface",
+  write_all="Write output to files"
+)
+arma.print_sync_vs_async_io(suffix_names, row_names, top_names)
+#+end_src
+
+#+name: tab-arma-io-performance
+#+caption: Running time (s.) for XFS, NFS and GlusterFS with sequential and parallel I/O programme versions.
+#+attr_latex: :booktabs t
+#+RESULTS: tab-arma-io-performance
+|                                  |      |      | Sequential |      |      |  Parallel |
+| \orgcmidrule{2-4}{5-7}Subroutine |  XFS |  NFS |  GlusterFS |  XFS |  NFS | GlusterFS |
+|----------------------------------+------+------+------------+------+------+-----------|
+| Generate wavy surface            | 1.26 | 1.26 |       1.33 | 1.33 | 3.30 |     11.06 |
+| Write output to files            | 0.28 | 2.34 |      10.95 | 0.00 | 0.00 |      0.00 |
 
 **** Parallel velocity potential field computation.
 The benchmarks for AR, MA and LH models showed that velocity potential field
