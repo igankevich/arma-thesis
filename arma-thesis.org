@@ -3498,7 +3498,7 @@ surface parts, whereas MA algorithm requires padding part with noughts to be
 able to compute them in parallel. In contrast to these models, LH model has no
 dependencies between parts computed in parallel, but requires more computational
 power (floating point operations per seconds).
-**** Performance of OpenMP and OpenCL implementations.
+**** TODO Performance of OpenMP and OpenCL implementations.
 :PROPERTIES:
 :header-args:R: :results output raw :exports results
 :END:
@@ -3552,9 +3552,9 @@ parameter that was different is the order (the number of coefficients): order of
 AR and MA model was \(7,7,7\) and order of LH model was \(40,40\). This is due
 to higher number of coefficient for LH model to eliminate periodicity.
 
-In all benchmarks wavy surface generation takes the most of the running time,
-whereas velocity potential calculation together with other subroutines only a
-small fraction of it.
+In all benchmarks wavy surface generation and NIT take the most of the running
+time, whereas velocity potential calculation together with other subroutines
+only a small fraction of it.
 
 #+name: tab-arma-libs
 #+caption: A list of mathematical libraries used in ARMA model implementation.
@@ -3651,9 +3651,8 @@ worst performance on CPU. The reasons for that are
 - and no information dependencies between output grid points.
 Despite the fact that GPU on the test platform is more performant than CPU (in
 terms of floating point operations per second), the overall performance of LH
-model compared to AR model is lower. The reason for that is higher number of
-coefficients needed for LH model to discretise spectrum and eliminate
-periodicity from the realisation.
+model compared to AR model is lower. The reason for that is slow data transfer
+between GPU and CPU memory.
 
 The last MA model is faster than LH and slower than AR. As the convolution in
 its formula is implemented using FFT, its performance depends on the performance
@@ -3661,6 +3660,31 @@ of underlying FFT implementation: GSL for CPU and clFFT for GPU. In this work
 performance of MA model on GPU was not tested due to unavailability of the
 three-dimensional transform in clFFT library; if the transform was available, it
 could made the model even faster than AR.
+
+NIT takes less time on GPU and more time on CPU, but taking data transfer
+between CPU and GPU into consideration makes their execution time comparable.
+This is explained by the large amount of transcendental mathematical functions
+that need to be computed for each wavy surface point to transform distribution
+of its \(z\)-coordinates. For each point a non-linear transcendental
+equation\nbsp{}eqref:eq-distribution-transformation is solved using bisection
+method. GPU performs this task several hundred times faster than CPU, but spends
+a lot of time to transfer the result back to the main memory. So, the only
+possibility to optimise this routine is to use root finding method with
+quadratic convergence rate to reduce the number of transcendental functions that
+need to be computed.
+
+Although, in the current benchmarks writing data to files does not consume much
+of the running time, the use of network-mounted file systems may slow down this
+stage. To optimise it wavy surface parts were written to file as soon as full
+time slice was available: all completed parts were grouped by time slices they
+belong to and subsequently written to file, as soon as the whole time slice is
+finished. That way a separate thread starts writing to files as soon as the
+first time slice is available and finishes it after the main thread group
+finishes the computation. The total time needed to perform I/O is slightly
+increased, but the I/O is done in parallel to computation so the total running
+time is decreased. Using this approach with local file system has the same
+effect, but the total reduction in execution time is small, because local file
+system is more performant.
 
 **** Parallel velocity potential field computation.
 The benchmarks for AR, MA and LH models showed that velocity potential field
