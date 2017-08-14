@@ -1205,7 +1205,7 @@ fi
 cd $dir
 git checkout master
 git pull
-git checkout 19c0abb1cc442a5ec0134c5028f77cb9f3fb9816
+git checkout 908739d3a21354b86b5397619deca26c84355fb6
 #+end_src
 
 #+RESULTS:
@@ -3678,13 +3678,14 @@ of the running time, the use of network-mounted file systems may slow down this
 stage. To optimise it wavy surface parts were written to file as soon as full
 time slice was available: all completed parts were grouped by time slices they
 belong to and subsequently written to file, as soon as the whole time slice is
-finished. That way a separate thread starts writing to files as soon as the
-first time slice is available and finishes it after the main thread group
-finishes the computation. The total time needed to perform I/O is slightly
-increased, but the I/O is done in parallel to computation so the total running
-time is decreased. Using this approach with local file system has the same
-effect, but the total reduction in execution time is small, because local file
-system is more performant.
+finished (fig.\nbsp{}[[fig-arma-io-events]]). That way a separate thread starts
+writing to files as soon as the first time slice is available and finishes it
+after the main thread group finishes the computation. The total time needed to
+perform I/O is slightly increased, but the I/O is done in parallel to
+computation so the total running time is decreased
+(table\nbsp{}[[tab-arma-io-performance]]). Using this approach with local file
+system has the same effect, but the total reduction in execution time is small,
+because local file system is more performant.
 
 #+name: tab-arma-io-performance
 #+begin_src R
@@ -3715,6 +3716,24 @@ arma.print_sync_vs_async_io(suffix_names, row_names, top_names)
 |----------------------------------+------+------+------------+------+------+-----------|
 | Generate wavy surface            | 1.26 | 1.26 |       1.33 | 1.33 | 3.30 |     11.06 |
 | Write output to files            | 0.28 | 2.34 |      10.95 | 0.00 | 0.00 |      0.00 |
+
+#+name: fig-arma-io-events
+#+header: :width 6 :height 9 :results output graphics
+#+begin_src R :file build/arma-io-events.pdf
+source(file.path("R", "benchmarks.R"))
+fsnames <- list(
+  xfs="XFS",
+  nfs="NFS",
+  gfs="GlusterFS"
+)
+par(mfrow=c(3,1), family="serif")
+arma.plot_io_events(fsnames)
+#+end_src
+
+#+name: fig-arma-io-events
+#+caption: Event plot for XFS, NFS and GlusterFS that shows time intervals spent for I/O and computation by different threads.
+#+RESULTS: fig-arma-io-events
+[[file:build/arma-io-events.pdf]]
 
 **** Parallel velocity potential field computation.
 The benchmarks for AR, MA and LH models showed that velocity potential field
@@ -4705,7 +4724,6 @@ Plugging it in the boundary condition yields
 Here \(\epsilon\) is white noise and \(C_t\) includes \(dk\). Substituting
 integral with infinite sum yields two-dimensional form of
 eq.\nbsp{}[[eq-longuet-higgins]].
-
 ** Derivative in the direction of the surface normal
 :PROPERTIES:
 :CUSTOM_ID: directional-derivative
