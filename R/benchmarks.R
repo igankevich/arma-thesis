@@ -25,7 +25,6 @@ arma.load_benchmark_data <- function(attempt, framework, models, tags) {
 }
 
 arma.print_openmp_vs_opencl <- function(model_names, row_names) {
-  library(ascii)
   options(asciiType="org")
   models <- c("ar", "ma", "lh");
   frameworks <- c("openmp", "opencl")
@@ -82,7 +81,6 @@ arma.load_io_benchmark_data <- function(attempt, filesystems, suffix, tags) {
 }
 
 arma.print_sync_vs_async_io <- function(suffix_names, row_names, top_names) {
-  library(ascii)
   options(asciiType="org")
   tags <- list("generate_surface", "write_all")
   filesystems <- c("xfs", "nfs", "gfs")
@@ -171,4 +169,84 @@ arma.plot_io_events <- function (fsnames) {
     lwd=sapply(conf, function (c) c$lwd),
     xpd=TRUE
   )
+}
+
+arma.load_realtime_data <- function () {
+  tags <- c(
+    "harts_g1",
+    "harts_g2",
+    "harts_fft",
+    "harts_copy_to_host"
+  )
+  sizes <- 2^c(7:14)
+  frameworks <- c("openmp", "opencl")
+  attempt <- "a6"
+  data <- data.frame()
+  row <- 1
+  for (framework in frameworks) {
+    for (m in sizes) {
+      for (t in tags) {
+        all_data <- arma.load(
+          file.path("build", "arma-benchmarks", "output", "storm", attempt, m, framework),
+          t,
+          ".*\\s+([0-9]+)us.*"
+        )
+        data[row,"framework"] <- framework
+        data[row,"size"] <- as.character(m)
+        data[row,"t"] <- mean(all_data/1000/1000)
+        data[row,"routine"] <- t
+        row <- row + 1
+      }
+    }
+  }
+  data
+}
+
+arma.aggregate_by_size <- function (data, framework) {
+  fwdata <- data[data["framework"] == framework,]
+  fwdata <- aggregate(
+  	fwdata$t,
+  	by=list(size=fwdata$size),
+  	FUN=sum
+  )
+  fwdata <- setNames(fwdata, c("size", "t"))
+  fwdata
+}
+
+arma.plot_realtime_data <- function (data, ...) {
+  args <- list(...)
+  openmp <- arma.aggregate_by_size(data, "openmp")
+  opencl <- arma.aggregate_by_size(data, "opencl")
+  openmp_len <- length(openmp$t)
+  opencl_len <- length(opencl$t)
+  plot.new()
+  plot.window(xlim=range(openmp$size), ylim=range(openmp$t))
+  lines(openmp$size, openmp$t, lty="solid", type="b")
+  lines(opencl$size, opencl$t, lty="dashed", type="b")
+  axis(1, at=2^c(7:14))
+  axis(2)
+  box()
+	text(openmp$size[[openmp_len-1]], openmp$t[[openmp_len-1]], "OpenMP", pos=4, offset=1)
+	text(opencl$size[[opencl_len-1]], opencl$t[[opencl_len-1]], "OpenCL", pos=4, offset=1)
+}
+
+arma.filter_by_framework_and_size <- function (data, size, framework) {
+  data <- data[data["framework"]==framework & data["size"] == size, ]
+  data <- data[c("routine", "t")]
+  rownames(data) <- c(1:length(data$t))
+  data
+}
+
+arma.print_table_for_realtime_data <- function (data, routine_names, column_names) {
+  par(family="serif")
+  openmp <- arma.filter_by_framework_and_size(data, 2^14, "openmp")
+  opencl <- arma.filter_by_framework_and_size(data, 2^14, "opencl")
+  all_data <- merge(openmp, opencl, by="row.names")
+  all_data <- all_data[c("routine.x", "t.x", "t.y")]
+  all_data <- setNames(all_data, c("routine", "openmp", "opencl"))
+  # remove non-existent data copying
+  all_data[all_data$routine=="harts_copy_to_host", "openmp"] <- NA
+  all_data$routine <- sapply(all_data$routine, function (c) get(c, routine_names))
+  all_data <- setNames(all_data, column_names)
+  ascii(all_data, include.rownames=FALSE, digits=4)
 }

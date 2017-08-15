@@ -3745,7 +3745,7 @@ arma.plot_io_events(fsnames)
 **** Parallel velocity potential field computation.
 The benchmarks for AR, MA and LH models showed that velocity potential field
 computation consume only a fraction of total programme execution time, however,
-the absolute computation time over a large $XY$ domain may still be high. One
+the absolute computation time over a large \(XY\) domain may still be high. One
 application where faster computation is needed is real-time simulation and
 visualisation of wavy surface. The purpose of real-time visualisation is
 two-fold:
@@ -3786,10 +3786,10 @@ Velocity potential solver was rewritten in OpenCL and its performance was
 compared to an existing OpenMP implementation.
 
 For each implementation the overall performance of the solver for a particular
-time instant was measured. Velocity field was computed for one $t$ point, for
-128 $z$ points below wavy surface and for each $x$ and $y$ point of
-four-dimensional $(t,x,y,z)$ grid. The only parameter that was varied between
-subsequent programme runs is the size of the grid along $x$ dimension.
+time instant was measured. Velocity field was computed for one \(t\) point, for
+128 \(z\) points below wavy surface and for each \(x\) and \(y\) point of
+four-dimensional \((t,x,y,z)\) grid. The only parameter that was varied between
+subsequent programme runs is the size of the grid along \(x\) dimension.
 
 A different FFT library was used for each version of the solver: GNU Scientific
 Library (GSL)\nbsp{}cite:galassi2015gnu for OpenMP and clFFT
@@ -3798,7 +3798,7 @@ routines from these libraries.
 - The order of frequencies in Fourier transforms is different and clFFT library
   requires reordering the result of\nbsp{}eqref:eq:phi-linear whereas GSL does
   not.
-- Discontinuity at $(x,y)=(0,0)$ of velocity potential field grid is handled
+- Discontinuity at \((x,y)=(0,0)\) of velocity potential field grid is handled
   automatically by clFFT library, whereas GSL library produce skewed values at
   this point.
 For GSL library an additional interpolation from neighbouring points was used to
@@ -3811,18 +3811,41 @@ efficient data copying between host and device is in OpenCL implementation, and
 how one implementation corresponds to the other in terms of performance.
 
 **** Performance of velocity potential OpenCL solver.
+:PROPERTIES:
+:header-args:R: :results output raw :exports results
+:END:
+
 The experiments showed that OpenCL outperforms OpenMP implementation by a factor
-of 10--15 (fig.\nbsp{}), however, distribution of time between computation
-stages is different for each implementation (fig.\nbsp{}). The major time
-consumer on CPU is $g_1$, whereas in GPU its running time is comparable to
-$g_2$. Copying the resulting velocity potential field between CPU and GPU
-consumes $\approx{}20\%$ of solver execution time. \(g_2\) consumes the most of
-the execution time for OpenCL solver, and \(g_1\) for OpenMP solver. In both
-implementations \(g_2\) is computed on CPU, but for GPU implementation the
-result is duplicated for each \(z\) grid point in order to perform
-multiplication of all \(XYZ\) planes along \(z\) dimension in single OpenCL
-kernel, and, subsequently copied to GPU memory which severely hinders the
+of 10--15 (fig.\nbsp{}[[fig-arma-realtime-graph]]), however, distribution of time
+between computation stages is different for each implementation (fig.\nbsp{}).
+The major time consumer on CPU is \(g_1\), whereas in GPU its running time is
+comparable to \(g_2\). Copying the resulting velocity potential field between
+CPU and GPU consumes \(\approx{}20\%\) of solver execution time. \(g_2\)
+consumes the most of the execution time for OpenCL solver, and \(g_1\) for
+OpenMP solver. In both implementations \(g_2\) is computed on CPU, but for GPU
+implementation the result is duplicated for each \(z\) grid point in order to
+perform multiplication of all \(XYZ\) planes along \(z\) dimension in single
+OpenCL kernel, and, subsequently copied to GPU memory which severely hinders the
 overall performance.
+
+#+name: fig-arma-realtime-graph
+#+header: :results output graphics
+#+begin_src R :file build/realtime-performance.pdf
+source(file.path("R", "benchmarks.R"))
+par(family="serif")
+data <- arma.load_realtime_data()
+params <- list(
+  titles <- c("OpenMP", "OpenCL"),
+  linetypes = c("solid", "dashed")
+)
+arma.plot_realtime_data(data, params)
+title(xlab="Wavy surface size", ylab="Time, s")
+#+end_src
+
+#+name: fig-arma-realtime-graph
+#+caption: Performance comparison of CPU (OpenMP) and GPU (OpenCL) versions of velocity potential solver.
+#+RESULTS: fig-arma-realtime-graph
+[[file:build/realtime-performance.pdf]]
 
 The reason for different distribution of time between computation stages is the
 same as for different AR model performance on CPU and GPU: GPU has more floating
@@ -3835,6 +3858,31 @@ Multidimensional array library optimised for GPU may solve the problem, however,
 due to unavailability of such library it was not done in this work.
 Additionally, such library may allow to efficiently compute the non-simplified
 formula entirely on GPU, since omitted terms also contain derivatives.
+
+#+name: fig-arma-realtime-table
+#+begin_src R
+source(file.path("R", "benchmarks.R"))
+routine_names <- list(
+  harts_g1="\\(g_1\\)",
+  harts_g2="\\(g_2\\)",
+  harts_fft="FFT",
+  harts_copy_to_host="Copy data from GPU"
+)
+column_names <- c("Subroutine", "OpenMP time, s", "OpenCL time, s")
+data <- arma.load_realtime_data()
+arma.print_table_for_realtime_data(data, routine_names, column_names)
+#+end_src
+
+#+name: fig-arma-realtime-table
+#+caption: Running time of real-time velocity potential solver subroutines.
+#+attr_latex: :booktabs t
+#+RESULTS: fig-arma-realtime-table
+| Subroutine         | OpenMP time, s | OpenCL time, s |
+|--------------------+----------------+----------------|
+| \(g_1\)            |         4.6730 |         0.0038 |
+| \(g_2\)            |         0.0002 |         0.8253 |
+| FFT                |         2.8560 |         0.3585 |
+| Copy data from GPU |                |         2.6357 |
 
 As expected, sharing the same buffer between OpenCL and OpenGL contexts
 increases overall solver performance by eliminating data transfer between CPU
