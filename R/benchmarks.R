@@ -10,12 +10,9 @@ arma.load_benchmark_data <- function(attempt, framework, models, tags) {
 		idx <- 1
 		for (t in tags) {
 			values <- arma.load(
-				file.path("build", "arma-benchmarks", "output"),
-				"gpulab1",
-        attempt,
-				10000,
-				framework,
-				m,
+				file.path(
+          "build", "arma-benchmarks", "output",
+          "gpulab1", attempt, 10000, framework, m),
 				t,
 				".*\\s+([0-9]+)us.*"
 			)
@@ -70,12 +67,9 @@ arma.load_io_benchmark_data <- function(attempt, filesystems, suffix, tags) {
 		idx <- 1
 		for (t in tags) {
 			values <- arma.load(
-				file.path("build", "arma-benchmarks", "output"),
-				"gpulab1",
-        paste(attempt, fs, suffix, sep="-"),
-				10000,
-				"openmp",
-				"ar",
+				file.path(
+          "build", "arma-benchmarks", "output", "gpulab1",
+          paste(attempt, fs, suffix, sep="-"), 10000, "openmp", "ar"),
 				t,
 				".*\\s+([0-9]+)us.*"
 			)

@@ -1205,7 +1205,7 @@ fi
 cd $dir
 git checkout master
 git pull
-git checkout 908739d3a21354b86b5397619deca26c84355fb6
+git checkout 1ed6679387f0b79d8495c8bf55a6b0b304347e48
 #+end_src
 
 #+RESULTS:
@@ -3603,6 +3603,7 @@ model CPU architecture is superior compared to GPU due to better handling of
 complex information dependencies, non-intensive calculations (multiplications
 and additions) and complex memory access patterns.
 
+#+header :results output raw :exports results
 #+name: tab-arma-performance
 #+begin_src R
 source(file.path("R", "benchmarks.R"))
@@ -3673,6 +3674,11 @@ possibility to optimise this routine is to use root finding method with
 quadratic convergence rate to reduce the number of transcendental functions that
 need to be computed.
 
+**** I/O performance.
+:PROPERTIES:
+:header-args:R: :results output raw :exports results
+:END:
+
 Although, in the current benchmarks writing data to files does not consume much
 of the running time, the use of network-mounted file systems may slow down this
 stage. To optimise it wavy surface parts were written to file as soon as full
@@ -3687,6 +3693,7 @@ computation so the total running time is decreased
 system has the same effect, but the total reduction in execution time is small,
 because local file system is more performant.
 
+#+header :results output raw :exports results
 #+name: tab-arma-io-performance
 #+begin_src R
 source(file.path("R", "benchmarks.R"))
@@ -3765,7 +3772,7 @@ wavy surface.
 
 In order to investigate, how GPGPU computations can be used to speed-up velocity
 potential field computation, we benchmarked simplified version of
-eq.\nbsp{}eqref:phi-3d:
+eq.\nbsp{}eqref:eq-phi-3d:
 \begin{align}
     \label{eq:phi-linear}
     \phi(x,y,z,t) &= \InverseFourierY{
