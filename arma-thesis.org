@@ -2436,7 +2436,7 @@ legend(
 #+end_src
 
 #+caption: Probability density function eqref:eq-skew-normal-1 of sea wavy surface elevation for different values of skewness \(\gamma_1\) and kurtosis \(\gamma_2\).
-#+label: fig-skew-normal-1
+#+name: fig-skew-normal-1
 #+RESULTS: fig-skew-normal-1
 [[file:build/skew-normal-1.pdf]]
 
@@ -2488,7 +2488,7 @@ legend(
 #+end_src
 
 #+caption: Probability density function eqref:eq-skew-normal-2 of sea wavy surface for different values of skewness coefficient \(\alpha\).
-#+label: fig-skew-normal-2
+#+name: fig-skew-normal-2
 #+RESULTS: fig-skew-normal-2
 [[file:build/skew-normal-2.pdf]]
 
@@ -2557,7 +2557,7 @@ arma.plot_ramp_up_interval()
 #+end_src
 
 #+caption: Ramp-up interval at the beginning of the \(OX\) axis of the realisation.
-#+label: fig-ramp-up-interval
+#+name: fig-ramp-up-interval
 #+RESULTS: fig-ramp-up-interval
 [[file:build/ramp-up-interval.pdf]]
 
@@ -2652,7 +2652,7 @@ arma.qqplot_grid(
 #+end_src
 
 #+caption: Quantile-quantile plots for propagating waves.
-#+label: propagating-wave-distributions
+#+name: propagating-wave-distributions
 #+RESULTS: propagating-wave-distributions
 [[file:build/propagating-wave-qqplots.pdf]]
 
@@ -2670,7 +2670,7 @@ arma.qqplot_grid(
 #+end_src
 
 #+caption: Quantile-quantile plots for standing waves.
-#+label: standing-wave-distributions
+#+name: standing-wave-distributions
 #+RESULTS: standing-wave-distributions
 [[file:build/standing-wave-qqplots.pdf]]
 
@@ -2688,7 +2688,7 @@ for (i in seq(0, 4)) {
 #+end_src
 
 #+caption: Time slices of ACF for standing (left column) and propagating waves (right column).
-#+label: acf-slices
+#+name: acf-slices
 #+RESULTS: acf-slices
 [[file:build/acf-slices.pdf]]
 
@@ -2710,6 +2710,7 @@ periods of standing waves are extracted more precisely as the waves do not move
 outside simulated wavy surface region. The same correspondence degree for wave elevation
 is obtained, because this is the characteristic of the wavy surface (and
 corresponding AR or MA process) and is not affected by the type of waves.
+
 *** Verification of velocity potential fields
 :PROPERTIES:
 :CUSTOM_ID: sec:compare-formulae
@@ -2783,7 +2784,7 @@ arma.plot_velocity_potential_field_legend(
 #+end_src
 
 #+caption: Velocity potential field of propagating wave \(\zeta(x,y,t) = \cos(2\pi x - t/2)\). Field produced by formula eqref:eq-solution-2d-full (top) and linear wave theory formula (bottom).
-#+label: fig-potential-field-nonlinear
+#+name: fig-potential-field-nonlinear
 #+attr_latex: :width \textwidth
 #+RESULTS: fig-potential-field-nonlinear
 [[file:build/plain-wave-velocity-field-comparison.pdf]]
@@ -2823,7 +2824,7 @@ arma.plot_velocity(
 )
 #+end_src
 
-#+label: fig-velocity-field-2d
+#+name: fig-velocity-field-2d
 #+caption: Comparison of velocity field on the sea wavy surface obtained by generic formula (\(u_1\)) and formula for small-amplitude waves (\(u_2\)). Velocity field for realisations containing small-amplitude (top) and large-amplitude (bottom) waves.
 #+attr_latex: :width \textwidth
 #+RESULTS: fig-velocity-field-2d
@@ -2866,7 +2867,7 @@ args$title <- 'Standing waves'
 arma.plot_nonlinear(file.path("build", "nit-standing"), args)
 #+end_src
 
-#+label: fig-nit
+#+name: fig-nit
 #+caption: Wavy surface slices with different distributions of wave elevation (Gaussian, Gram---Charlier series based and skew normal).
 #+RESULTS: fig-nit
 [[file:build/nit.pdf]]
@@ -2933,470 +2934,6 @@ to generate waves of arbitrary profiles, and is one of the directions of future
 work.
 
 * High-performance software implementation of sea wave simulation
-** Computational model
-**** Mapping wavy surface generation algorithm on computational model.
-Software implementation of ARMA model works as a computational pipeline, in
-which each joint applies some function to the output coming from the pipe of the
-previous joint. Joints are distributed across computer cluster nodes to enable
-function parallelism, and then data flowing through the joints is distributed
-across processor cores to enable data parallelism. Figure\nbsp{}[[fig-pipeline]]
-shows a diagram of data processing pipeline in which rectangles with rounded
-corners denote joints, regular rectangles denote arrays of problem domain
-objects flowing from one joint to another, and arrows show flow direction. Some
-joints are divided into /sections/ each of which process a separate part of the
-array. If joints are connected without a /barrier/ (horizontal or vertical bar),
-then transfer of separate objects between them is done in parallel to
-computations, as they become available. Sections work in parallel on each
-processor core (or node of the cluster). There is surjective mapping between a
-set of processor cores, a set of pipeline joint sections and objects, i.e. each
-processor core may run several sections, each of which may sequentially process
-several objects, but a section can not work simultaneously on several processor
-cores, and an object can not be processed simultaneously by several sections.
-So, the programme is a pipeline through which control objects flow.
-
-#+name: fig-pipeline
-#+begin_src dot :exports results :file build/pipeline.pdf
-digraph {
-
-  node [fontsize=14,margin="0.055,0"]
-  graph [nodesep="0.25",ranksep="0.25",rankdir="TB"]
-  edge [arrowsize=0.66]
-
-  # data
-  subgraph xcluster_linear {
-    label="Linear model"
-
-    start [label="",shape=circle,style=filled,fillcolor=black,width=0.23]
-    spectrum [label="S(ω,θ)",shape=box]
-    acf [label="K(i,j,k)",shape=box]
-    phi [label="Φ(i,j,k)",shape=box]
-
-    # transformations
-    fourier_transform [label="Fourier transform",shape=box,style=rounded]
-    solve_yule_walker [label="Solve Yule—Walker\nequations",shape=box,style=rounded]
-
-    subgraph cluster_nonlinear_1 {
-      label="Simulate non-linearity\l"
-      labeljust=left
-      style=filled
-      color=lightgrey
-      acf2 [label="K*(i,j,k)",shape=box]
-      transform_acf [label="Transform ACF",shape=box,style=rounded]
-    }
-  }
-
-  subgraph xcluster_linear2 {
-
-    eps_parts [label="<e1> ε₁|<e2> ε₂|<e3> …|<e4> εₙ|<e> ε(t,x,y)",shape=record]
-    end [label="",shape=doublecircle,style=filled,fillcolor=black,width=0.23]
-
-    generate_white_noise [label="<g1> g₁|<g2> g₂|<g3> …|<g4> gₙ|<gen> Generate\lwhite noise",shape=record,style=rounded]
-    generate_zeta [label="<g1> g₁|<g2> g₂|<g3> …|<g4> gₙ|<gen> Generate sea\lwavy surface parts\l",shape=record,style=rounded]
-
-    zeta_parts [label="<g1> ζ₁|<g2> ζ₂|<g3> …|<g4> ζₙ|<gen> Non-crosslinked\lrealisation parts",shape=record]
-    overlap_add [label="<g1> ζ₁|<g2> ζ₂|<g3> …|<g4> ζₙ|<gen> Crosslink realisation\lparts\l",shape=record,style=rounded]
-
-    zeta_parts:g1->overlap_add:g1
-    zeta_parts:g2->overlap_add:g2
-    zeta_parts:g3->overlap_add:g3
-    zeta_parts:g4->overlap_add:g4
-
-    zeta_parts:g2->overlap_add:g1 [constraint=false]
-    zeta_parts:g3->overlap_add:g2 [constraint=false]
-    zeta_parts:g4->overlap_add:g3 [constraint=false]
-
-    overlap_add:g1->zeta2_parts:g1
-    overlap_add:g2->zeta2_parts:g2
-    overlap_add:g3->zeta2_parts:g3
-    overlap_add:g4->zeta2_parts:g4
-
-    zeta2_parts:g1->transform_zeta:g1->zeta3_parts:g1->write_zeta:g1->eps_end
-    zeta2_parts:g2->transform_zeta:g2->zeta3_parts:g2->write_zeta:g2->eps_end
-    zeta2_parts:g3->transform_zeta:g3->zeta3_parts:g3->write_zeta:g3->eps_end
-    zeta2_parts:g4->transform_zeta:g4->zeta3_parts:g4->write_zeta:g4->eps_end
-
-  }
-
-  subgraph part3 {
-
-    zeta2_parts [label="<g1> ζ₁|<g2> ζ₂|<g3> …|<g4> ζₙ|<gen> Wavy surface with\lGaussian distribution\l",shape=record]
-
-    subgraph cluster_nonlinear_2 {
-      label="Simulate non-linearity\r"
-      labeljust=right
-      style=filled
-      color=lightgrey
-      zeta3_parts [label="<g1> ζ₁|<g2> ζ₂|<g3> …|<g4> ζₙ|<gen> ζ(t,x,y)",shape=record]
-      transform_zeta [label="<g1> g₁|<g2> g₂|<g3> …|<g4> gₙ|<gen> Transform wavy\lsurface elevation\lprobability distribution\l",shape=record,style=rounded]
-    }
-
-    # barriers
-    eps_start [label="",shape=box,style=filled,fillcolor=black,height=0.05]
-    eps_end [label="",shape=box,style=filled,fillcolor=black,height=0.05]
-
-    write_zeta [label="<g1> g₁|<g2> g₂|<g3> …|<g4> gₙ|<gen> Write finished\lparts to a file\l",shape=record,style=rounded]
-  }
-
-  # edges
-  start->spectrum->fourier_transform->acf->transform_acf
-  transform_acf->acf2
-  acf2->solve_yule_walker
-  solve_yule_walker->phi
-  phi->eps_start [constraint=false]
-  eps_start->generate_white_noise:g1
-  eps_start->generate_white_noise:g2
-  eps_start->generate_white_noise:g3
-  eps_start->generate_white_noise:g4
-  generate_white_noise:g1->eps_parts:e1->generate_zeta:g1->zeta_parts:g1
-  generate_white_noise:g2->eps_parts:e2->generate_zeta:g2->zeta_parts:g2
-  generate_white_noise:g3->eps_parts:e3->generate_zeta:g3->zeta_parts:g3
-  generate_white_noise:g4->eps_parts:e4->generate_zeta:g4->zeta_parts:g4
-
-  eps_end->end
-}
-#+end_src
-
-#+caption: Diagram of data processing pipeline, that implements sea wavy surface generation via AR model.
-#+label: fig-pipeline
-#+RESULTS: fig-pipeline
-[[file:build/pipeline.pdf]]
-
-Object pipeline may be seen as an improvement of BSP (Bulk Synchronous Parallel)
-model\nbsp{}cite:valiant1990bridging, which is used in graph
-processing\nbsp{}cite:malewicz2010pregel,seo2010hama. Pipeline eliminates global
-synchronisation (where it is possible) after each sequential computation step by
-doing data transfer between joints in parallel to computations, whereas in BSP
-model global synchronisation occurs after each step.
-
-Object pipeline speeds up the programme by parallel execution of code blocks
-that work with different compute devices: while the current part of wavy surface
-is generated by a processor, the previous part is written to a disk. This
-approach allows to get speed-up because compute devices operate asynchronously,
-and their parallel usage increases the whole programme performance.
-
-Since data transfer between pipeline joints is done in parallel to computations,
-the same pipeline may be used to run several copies of the application but with
-different parameters (generate several sea wavy surfaces having different
-characteristics). In practise, high-performance applications do not always
-consume 100% of processor time spending a portion of time on synchronisation of
-parallel processes and writing data to disk. Using pipeline in this case allows
-to run several computations on the same set of processes, and use all of the
-computer devices at maximal efficiency. For example, when one object writes data
-to a file, the other do computations on the processor in parallel. This
-minimises downtime of the processor and other computer devices and increases
-throughput of the computer cluster.
-
-Pipelining of otherwise sequential steps is beneficial not only for code working
-with different devices, but for code different branches of which are suitable
-for execution by multiple hardware threads of the same processor core,
-i.e.\nbsp{}branches accessing different memory blocks or performing mixed
-arithmetic (integer and floating point). Code branches which use different
-modules of processor are good candidates to run in parallel on a processor core
-with multiple hardware threads.
-
-So, computational model with a pipeline can be seen as /bulk-asynchronous
-model/, because of the parallel nature of programme steps. This model is the
-basis of the fault-tolerance model which will be described later.
-
-**** Software implementation.
-For efficiency reasons object pipeline and fault tolerance techniques (which
-will be described later) are implemented in the C++ framework: From the author's
-perspective C language is deemed low-level for distributed programmes, and Java
-incurs too much overhead and is not popular in HPC community. As of now, the
-framework runs in the same process as an parallel application that uses it. The
-framework is called Factory, it is now in proof-of-concept development stage.
-
-**** Computational model overview.
-The key feature that is missing in the current parallel programming technologies
-is a possibility to specify hierarchical dependencies between parallel tasks.
-When one has such dependency, it is trivial to determine which task should be
-responsible for re-executing a failed task on one of the survived nodes. To
-re-execute the task on the top of the hierarchy, a backup task is created and
-executed on a different node. There exists a number of systems that are capable
-of executing directed acyclic graphs of tasks in parallel\nbsp{}cite:acun2014charmpp,islam2012oozie, but graphs are not suitable to infer
-principal-subordinate relationship between tasks, because a node in the graph
-may have multiple parent nodes.
-
-The main purpose of the model is to simplify development of distributed batch
-processing applications and middleware. The main focus is to make application
-resilient to failures, i.e. make it fault tolerant and highly available, and do
-it transparently to a programmer. The implementation is divided into two layers:
-the lower layer consists of routines and classes for single node applications
-(with no network interactions), and the upper layer for applications that run on
-an arbitrary number of nodes. There are two kinds of tightly coupled entities in
-the model\nbsp{}--- /control flow objects/ (or /kernels/ for short) and
-/pipelines/\nbsp{}--- which are used together to compose a programme.
-
-Kernels implement control flow logic in theirs ~act~ and ~react~ methods and
-store the state of the current control flow branch. Both logic and state are
-implemented by a programmer. In ~act~ method some function is either directly
-computed or decomposed into nested functions (represented by a set of
-subordinate kernels) which are subsequently sent to a pipeline. In ~react~
-method subordinate kernels that returned from the pipeline are processed by
-their parent. Calls to ~act~ and ~react~ methods are asynchronous and are made
-within threads attached to a pipeline. For each kernel ~act~ is called only
-once, and for multiple kernels the calls are done in parallel to each other,
-whereas ~react~ method is called once for each subordinate kernel, and all the
-calls are made in the same thread to prevent race conditions (for different
-parent kernels different threads may be used).
-
-Pipelines implement asynchronous calls to ~act~ and ~react~, and try to make as
-many parallel calls as possible considering concurrency of the platform (no. of
-cores per node and no. of nodes in a cluster). A pipeline consists of a kernel
-pool, which contains all the subordinate kernels sent by their parents, and a
-thread pool that processes kernels in accordance with rules outlined in the
-previous paragraph. A separate pipeline is used for each device: There are
-pipelines for parallel processing, schedule-based processing (periodic and
-delayed tasks), and a proxy pipeline for processing of kernels on other cluster
-nodes (see fig.\nbsp{}[[fig-subord-ppl]]).
-
-In principle, kernels and pipelines machinery reflect the one of procedures and
-call stacks, with the advantage that kernel methods are called asynchronously
-and in parallel to each other (as much as programme logic allows). Kernel field
-is the stack, ~act~ method is a sequence of processor instructions before nested
-procedure call, and ~react~ method is a sequence of processor instructions after
-the call. Constructing and sending subordinate kernels to the pipeline is nested
-procedure call. Two methods are necessary to make calls asynchronous, and
-replace active wait for completion of subordinate kernels with passive one.
-Pipelines, in turn, allow to implement passive wait, and call correct kernel
-methods by analysing their internal state.
-
-#+name: fig-subord-ppl
-#+begin_src dot :exports results :file build/subord-ppl.pdf
-graph G {
-
-  node [fontname="Old Standard",fontsize=14,margin="0.055,0",shape=box]
-  graph [nodesep="0.25",ranksep="0.25",rankdir="LR"]
-  edge [arrowsize=0.66]
-
-  subgraph cluster_daemon {
-    label="Daemon process"
-    style=filled
-    color=lightgrey
-
-    factory [label="Factory"]
-    parallel_ppl [label="Parallel\npipeline"]
-    io_ppl [label="I/O\npipeline"]
-    sched_ppl [label="Schedule-based\npipeline"]
-    net_ppl [label="Network\npipeline"]
-    proc_ppl [label="Process\npipeline"]
-
-    upstream [label="Upstream\nthread pool"]
-    downstream [label="Downstream\nthread pool"]
-  }
-
-  factory--parallel_ppl
-  factory--io_ppl
-  factory--sched_ppl
-  factory--net_ppl
-  factory--proc_ppl
-
-  subgraph cluster_hardware {
-    label="Compute devices"
-    style=filled
-    color=lightgrey
-
-    cpu [label="CPU"]
-    core0 [label="Core 0"]
-    core1 [label="Core 1"]
-    core2 [label="Core 2"]
-    core3 [label="Core 3"]
-
-    storage [label="Storage"]
-    disk0 [label="Disk 0"]
-
-    network [label="Network"]
-    nic0 [label="NIC 0"]
-
-    timer [label="Timer"]
-
-  }
-
-  core0--cpu
-  core1--cpu
-  core2--cpu
-  core3--cpu
-
-  disk0--storage
-  nic0--network
-
-  parallel_ppl--upstream
-  parallel_ppl--downstream
-
-  upstream--{core0,core1,core2,core3} [style="dashed"]
-  downstream--core0 [style="dashed"]
-
-  io_ppl--core0 [style="dashed"]
-  io_ppl--disk0 [style="dashed"]
-  sched_ppl--core0 [style="dashed"]
-  sched_ppl--timer [style="dashed"]
-  net_ppl--core0 [style="dashed"]
-  net_ppl--nic0 [style="dashed"]
-  proc_ppl--core0 [style="dashed"]
-
-  subgraph cluster_children {
-    style=filled
-    color=white
-
-    subgraph cluster_child0 {
-      label="Child process 0"
-      style=filled
-      color=lightgrey
-      labeljust=right
-
-      app0_factory [label="Factory"]
-      app0 [label="Child process\rpipeline"]
-    }
-
-#    subgraph cluster_child1 {
-#      label="Child process 1"
-#      style=filled
-#      color=lightgrey
-#      labeljust=right
-#
-#      app1_factory [label="Factory"]
-#      app1 [label="Child process\rpipeline"]
-#    }
-  }
-
-  proc_ppl--app0
-#  proc_ppl--app1
-
-  app0_factory--app0 [constraint=false]
-#  app1_factory--app1 [constraint=false]
-
-}
-#+end_src
-
-#+caption: Mapping of parent and child process pipelines to compute devices. Solid lines denote aggregation, dashed lines denote mapping between logical and physical entities.
-#+attr_latex: :width \textwidth
-#+label: fig-subord-ppl
-#+RESULTS: fig-subord-ppl
-[[file:build/subord-ppl.pdf]]
-**** Governing principles.
-Data processing pipeline model is based on the following principles, following
-which maximises efficiency of a programme.
-- There is no notion of a message in the model, a kernel is itself a message
-  that can be sent over network to another node and directly access any kernel
-  on the local node. Only programme logic may guarantee the existence of the
-  kernel.
-- A kernel is a /cooperative routine/, which is submitted to kernel pool upon the
-  call and is executed asynchronously by a scheduler. There can be any number of
-  calls to other subroutines inside routine body. Every call submits
-  corresponding subroutine to kernel pool and returns immediately. Kernels in the
-  pool can be executed in any order; this fact is used by a scheduler to exploit
-  parallelism offered by the computer by distributing kernels from the pool
-  across available cluster nodes and processor cores.
-- Asynchronous execution prevents the use of explicit synchronisation after the
-  call to subroutine is made; system scheduler returns control flow to the
-  routine each time one of its subroutine returns. Such cooperation transforms
-  each routine which calls subroutines into event handler, where each event is a
-  subroutine and the handler is the routine that called them.
-- The routine may communicate with any number of local kernels, addresses of
-  which it knows; communication with kernels which are not adjacent in the call
-  stack complexifies control flow and call stack looses its tree shape. Only
-  programme logic may guarantee presence of communicating kernels in memory. One
-  way to ensure this is to perform communication between subroutines which are
-  called from the same routine. Since such communication is possible within
-  hierarchy through parent routine, it may treated as an optimisation that
-  eliminates overhead of transferring data over intermediate node. The situation
-  is different for interactive or event-based programmes (e.g. servers and
-  programmes with graphical interface) in which this is primary type of
-  communication.
-- In addition to this, communication which does not occur along hierarchical
-  links and executed over cluster network complexify design of resiliency
-  algorithms. Since it is impossible to ensure that a kernel resides in memory
-  of a neighbour node, because a node may fail in the middle of its execution of
-  the corresponding routine. As a result, upon failure of a routine all of its
-  subroutines must be restarted. This encourages a programmer to construct
-  - deep tree hierarchies of tightly-coupled kernels (which communicate on the
-    same level of hierarchy) to reduce overhead of recomputation;
-  - fat tree hierarchies of loosely-coupled kernels, providing maximal degree of
-    parallelism.
-  Deep hierarchy is not only requirement of technology, it helps optimise
-  communication of large number of cluster nodes reducing it to communication of
-  adjacent nodes.
-
-So, control flow objects (or kernels) possess properties of both cooperative
-routines and event handlers.
-**** Definitions of hierarchies
-To disambiguate hierarchical links between daemon processes and kernels and to
-simplify the discussion, we will use the following naming conventions throughout
-the text. If the link is between two daemon processes, the relationship is
-denoted as /master-slave/. If the link is between two kernels, then the
-relationship is denoted as either /principal-subordinate/ or /parent-child/. Two
-hierarchies are orthogonal to each other in a sense that no kernel may have a
-link to a daemon, and vice versa. Since daemon hierarchy is used to distribute
-the load on cluster nodes, kernel hierarchy is mapped onto it, and this mapping
-can be arbitrary: It is common to have principal kernel on a slave node with its
-subordinate kernels distributed evenly between all cluster nodes (including the
-node where the principal is located). Both hierarchies can be arbitrarily deep,
-but "shallow" ones are preferred for highly parallel programmes, as there are
-less number of hops when kernels are distributed between cluster nodes. Since
-there is one-to-one correspondence between daemons and cluster nodes, they are
-used interchangeably in the work.
-
-**** Kernel structure and algorithms
-Each kernel has four types of fields (listed in table\nbsp{}[[tab-kernel-fields]]):
-- fields related to control flow,
-- fields defining the source location of the kernel,
-- fields defining the current location of the kernel, and
-- fields defining the target location of the kernel.
-
-#+name: tab-kernel-fields
-#+caption: Description of kernel fields.
-#+attr_latex: :booktabs t :align lp{0.7\textwidth}
-| Field             | Description                                                                                    |
-|-------------------+------------------------------------------------------------------------------------------------|
-| ~process_id~      | Identifier of a cluster-wide process (application) a kernel belongs to.                        |
-| ~id~              | Identifier of a kernel within a process.                                                       |
-| ~pipeline~        | Identifier of a pipeline a kernel is processed by.                                             |
-|                   |                                                                                                |
-| ~exit_code~       | A result of a kernel execution.                                                                |
-| ~flags~           | Auxiliary bit flags used in scheduling.                                                        |
-| ~time_point~      | A time point at which a kernel is scheduled to be executed.                                    |
-|                   |                                                                                                |
-| ~parent~          | Address/identifier of a parent kernel.                                                         |
-| ~src_ip~          | IP-address of a source cluster node.                                                           |
-| ~from_process_id~ | Identifier of a cluster-wide process from which a kernel originated.                           |
-|                   |                                                                                                |
-| ~principal~       | Address/identifier of a target kernel (a kernel to which the current one is sent or returned). |
-| ~dst_ip~          | IP-address of a destination cluster node.                                                      |
-
-Upon creation each kernel is assigned a parent and a pipeline. If there no other
-fields are set, then the kernel is an /upstream/ kernel\nbsp{}--- a kernel that
-can be distributed on any node and any processor core to exploit parallelism. If
-principal field is set, then the kernel is a /downstream/ kernel\nbsp{}--- a
-kernel that can only be sent to its principal, and a processor core to which the
-kernel is sent is defined by the principal memory address/identifier. If a
-downstream kernel is to be sent to another node, the destination IP-address must
-be set, otherwise the system will not find the target kernel.
-
-When kernel execution completes (its ~act~ method finishes), the kernel is
-explicitly sent to some other kernel, this directive is explicitly called inside
-~act~ method. Usually, after the execution completes a kernel is sent to its
-parent by setting principal field to the address/identifier of the parent,
-destination IP-address field to the source IP-address, and process identifier to
-the source process identifier. After that kernel becomes a downstream kernel and
-is sent by the system to the node, where its current principal is located
-without invoking load balancing algorithm. For downstream kernel ~react~ method
-of its parent is called by a pipeline with the kernel as the method argument to
-make it possible for a parent to collect the result of the execution.
-
-There is no way to provide fine-grained resilience to cluster node failures, if
-there are downstream kernels in the programme, except the ones returning to
-their parents. Instead, an exit code of the kernel is checked and a custom
-recovery code is executed. If there is no error checking, the system restarts
-execution from the first parent kernel, which did not produce any downstream
-kernels. This means, that if a problem being solved by the programme has
-information dependencies between parts that are computed in parallel, and a node
-failure occurs during computation of these parts, then this computation is
-restarted from the very beginning, discarding any already computed parts. This
-does not occur for embarrassingly parallel programmes, where parallel parts do
-not have such information dependencies between each other: in this case only
-parts from failed nodes are recomputed and all previously computed parts are
-retained.
-
 ** SMP implementation
 **** Parallel AR, MA and LH model algorithms.
 Although, AR and MA models are part of the mixed ARMA model they have completely
@@ -3603,7 +3140,7 @@ model CPU architecture is superior compared to GPU due to better handling of
 complex information dependencies, non-intensive calculations (multiplications
 and additions) and complex memory access patterns.
 
-#+header :results output raw :exports results
+#+header: :results output raw :exports results
 #+name: tab-arma-performance
 #+begin_src R
 source(file.path("R", "benchmarks.R"))
@@ -3929,6 +3466,470 @@ as Fourier transforms, performance of velocity potential computation would be
 much lower.
 
 ** MPP implementation
+*** Computational model
+**** Mapping wavy surface generation algorithm on computational model.
+Software implementation of ARMA model works as a computational pipeline, in
+which each joint applies some function to the output coming from the pipe of the
+previous joint. Joints are distributed across computer cluster nodes to enable
+function parallelism, and then data flowing through the joints is distributed
+across processor cores to enable data parallelism. Figure\nbsp{}[[fig-pipeline]]
+shows a diagram of data processing pipeline in which rectangles with rounded
+corners denote joints, regular rectangles denote arrays of problem domain
+objects flowing from one joint to another, and arrows show flow direction. Some
+joints are divided into /sections/ each of which process a separate part of the
+array. If joints are connected without a /barrier/ (horizontal or vertical bar),
+then transfer of separate objects between them is done in parallel to
+computations, as they become available. Sections work in parallel on each
+processor core (or node of the cluster). There is surjective mapping between a
+set of processor cores, a set of pipeline joint sections and objects, i.e. each
+processor core may run several sections, each of which may sequentially process
+several objects, but a section can not work simultaneously on several processor
+cores, and an object can not be processed simultaneously by several sections.
+So, the programme is a pipeline through which control objects flow.
+
+#+name: fig-pipeline
+#+begin_src dot :exports results :file build/pipeline.pdf
+digraph {
+
+  node [fontsize=14,margin="0.055,0"]
+  graph [nodesep="0.25",ranksep="0.25",rankdir="TB"]
+  edge [arrowsize=0.66]
+
+  # data
+  subgraph xcluster_linear {
+    label="Linear model"
+
+    start [label="",shape=circle,style=filled,fillcolor=black,width=0.23]
+    spectrum [label="S(ω,θ)",shape=box]
+    acf [label="K(i,j,k)",shape=box]
+    phi [label="Φ(i,j,k)",shape=box]
+
+    # transformations
+    fourier_transform [label="Fourier transform",shape=box,style=rounded]
+    solve_yule_walker [label="Solve Yule—Walker\nequations",shape=box,style=rounded]
+
+    subgraph cluster_nonlinear_1 {
+      label="Simulate non-linearity\l"
+      labeljust=left
+      style=filled
+      color=lightgrey
+      acf2 [label="K*(i,j,k)",shape=box]
+      transform_acf [label="Transform ACF",shape=box,style=rounded]
+    }
+  }
+
+  subgraph xcluster_linear2 {
+
+    eps_parts [label="<e1> ε₁|<e2> ε₂|<e3> …|<e4> εₙ|<e> ε(t,x,y)",shape=record]
+    end [label="",shape=doublecircle,style=filled,fillcolor=black,width=0.23]
+
+    generate_white_noise [label="<g1> g₁|<g2> g₂|<g3> …|<g4> gₙ|<gen> Generate\lwhite noise",shape=record,style=rounded]
+    generate_zeta [label="<g1> g₁|<g2> g₂|<g3> …|<g4> gₙ|<gen> Generate sea\lwavy surface parts\l",shape=record,style=rounded]
+
+    zeta_parts [label="<g1> ζ₁|<g2> ζ₂|<g3> …|<g4> ζₙ|<gen> Non-crosslinked\lrealisation parts",shape=record]
+    overlap_add [label="<g1> ζ₁|<g2> ζ₂|<g3> …|<g4> ζₙ|<gen> Crosslink realisation\lparts\l",shape=record,style=rounded]
+
+    zeta_parts:g1->overlap_add:g1
+    zeta_parts:g2->overlap_add:g2
+    zeta_parts:g3->overlap_add:g3
+    zeta_parts:g4->overlap_add:g4
+
+    zeta_parts:g2->overlap_add:g1 [constraint=false]
+    zeta_parts:g3->overlap_add:g2 [constraint=false]
+    zeta_parts:g4->overlap_add:g3 [constraint=false]
+
+    overlap_add:g1->zeta2_parts:g1
+    overlap_add:g2->zeta2_parts:g2
+    overlap_add:g3->zeta2_parts:g3
+    overlap_add:g4->zeta2_parts:g4
+
+    zeta2_parts:g1->transform_zeta:g1->zeta3_parts:g1->write_zeta:g1->eps_end
+    zeta2_parts:g2->transform_zeta:g2->zeta3_parts:g2->write_zeta:g2->eps_end
+    zeta2_parts:g3->transform_zeta:g3->zeta3_parts:g3->write_zeta:g3->eps_end
+    zeta2_parts:g4->transform_zeta:g4->zeta3_parts:g4->write_zeta:g4->eps_end
+
+  }
+
+  subgraph part3 {
+
+    zeta2_parts [label="<g1> ζ₁|<g2> ζ₂|<g3> …|<g4> ζₙ|<gen> Wavy surface with\lGaussian distribution\l",shape=record]
+
+    subgraph cluster_nonlinear_2 {
+      label="Simulate non-linearity\r"
+      labeljust=right
+      style=filled
+      color=lightgrey
+      zeta3_parts [label="<g1> ζ₁|<g2> ζ₂|<g3> …|<g4> ζₙ|<gen> ζ(t,x,y)",shape=record]
+      transform_zeta [label="<g1> g₁|<g2> g₂|<g3> …|<g4> gₙ|<gen> Transform wavy\lsurface elevation\lprobability distribution\l",shape=record,style=rounded]
+    }
+
+    # barriers
+    eps_start [label="",shape=box,style=filled,fillcolor=black,height=0.05]
+    eps_end [label="",shape=box,style=filled,fillcolor=black,height=0.05]
+
+    write_zeta [label="<g1> g₁|<g2> g₂|<g3> …|<g4> gₙ|<gen> Write finished\lparts to a file\l",shape=record,style=rounded]
+  }
+
+  # edges
+  start->spectrum->fourier_transform->acf->transform_acf
+  transform_acf->acf2
+  acf2->solve_yule_walker
+  solve_yule_walker->phi
+  phi->eps_start [constraint=false]
+  eps_start->generate_white_noise:g1
+  eps_start->generate_white_noise:g2
+  eps_start->generate_white_noise:g3
+  eps_start->generate_white_noise:g4
+  generate_white_noise:g1->eps_parts:e1->generate_zeta:g1->zeta_parts:g1
+  generate_white_noise:g2->eps_parts:e2->generate_zeta:g2->zeta_parts:g2
+  generate_white_noise:g3->eps_parts:e3->generate_zeta:g3->zeta_parts:g3
+  generate_white_noise:g4->eps_parts:e4->generate_zeta:g4->zeta_parts:g4
+
+  eps_end->end
+}
+#+end_src
+
+#+caption: Diagram of data processing pipeline, that implements sea wavy surface generation via AR model.
+#+name: fig-pipeline
+#+RESULTS: fig-pipeline
+[[file:build/pipeline.pdf]]
+
+Object pipeline may be seen as an improvement of BSP (Bulk Synchronous Parallel)
+model\nbsp{}cite:valiant1990bridging, which is used in graph
+processing\nbsp{}cite:malewicz2010pregel,seo2010hama. Pipeline eliminates global
+synchronisation (where it is possible) after each sequential computation step by
+doing data transfer between joints in parallel to computations, whereas in BSP
+model global synchronisation occurs after each step.
+
+Object pipeline speeds up the programme by parallel execution of code blocks
+that work with different compute devices: while the current part of wavy surface
+is generated by a processor, the previous part is written to a disk. This
+approach allows to get speed-up because compute devices operate asynchronously,
+and their parallel usage increases the whole programme performance.
+
+Since data transfer between pipeline joints is done in parallel to computations,
+the same pipeline may be used to run several copies of the application but with
+different parameters (generate several sea wavy surfaces having different
+characteristics). In practise, high-performance applications do not always
+consume 100% of processor time spending a portion of time on synchronisation of
+parallel processes and writing data to disk. Using pipeline in this case allows
+to run several computations on the same set of processes, and use all of the
+computer devices at maximal efficiency. For example, when one object writes data
+to a file, the other do computations on the processor in parallel. This
+minimises downtime of the processor and other computer devices and increases
+throughput of the computer cluster.
+
+Pipelining of otherwise sequential steps is beneficial not only for code working
+with different devices, but for code different branches of which are suitable
+for execution by multiple hardware threads of the same processor core,
+i.e.\nbsp{}branches accessing different memory blocks or performing mixed
+arithmetic (integer and floating point). Code branches which use different
+modules of processor are good candidates to run in parallel on a processor core
+with multiple hardware threads.
+
+So, computational model with a pipeline can be seen as /bulk-asynchronous
+model/, because of the parallel nature of programme steps. This model is the
+basis of the fault-tolerance model which will be described later.
+
+**** Software implementation.
+For efficiency reasons object pipeline and fault tolerance techniques (which
+will be described later) are implemented in the C++ framework: From the author's
+perspective C language is deemed low-level for distributed programmes, and Java
+incurs too much overhead and is not popular in HPC community. As of now, the
+framework runs in the same process as an parallel application that uses it. The
+framework is called Factory, it is now in proof-of-concept development stage.
+
+**** Computational model overview.
+The key feature that is missing in the current parallel programming technologies
+is a possibility to specify hierarchical dependencies between parallel tasks.
+When one has such dependency, it is trivial to determine which task should be
+responsible for re-executing a failed task on one of the survived nodes. To
+re-execute the task on the top of the hierarchy, a backup task is created and
+executed on a different node. There exists a number of systems that are capable
+of executing directed acyclic graphs of tasks in parallel\nbsp{}cite:acun2014charmpp,islam2012oozie, but graphs are not suitable to infer
+principal-subordinate relationship between tasks, because a node in the graph
+may have multiple parent nodes.
+
+The main purpose of the model is to simplify development of distributed batch
+processing applications and middleware. The main focus is to make application
+resilient to failures, i.e. make it fault tolerant and highly available, and do
+it transparently to a programmer. The implementation is divided into two layers:
+the lower layer consists of routines and classes for single node applications
+(with no network interactions), and the upper layer for applications that run on
+an arbitrary number of nodes. There are two kinds of tightly coupled entities in
+the model\nbsp{}--- /control flow objects/ (or /kernels/ for short) and
+/pipelines/\nbsp{}--- which are used together to compose a programme.
+
+Kernels implement control flow logic in theirs ~act~ and ~react~ methods and
+store the state of the current control flow branch. Both logic and state are
+implemented by a programmer. In ~act~ method some function is either directly
+computed or decomposed into nested functions (represented by a set of
+subordinate kernels) which are subsequently sent to a pipeline. In ~react~
+method subordinate kernels that returned from the pipeline are processed by
+their parent. Calls to ~act~ and ~react~ methods are asynchronous and are made
+within threads attached to a pipeline. For each kernel ~act~ is called only
+once, and for multiple kernels the calls are done in parallel to each other,
+whereas ~react~ method is called once for each subordinate kernel, and all the
+calls are made in the same thread to prevent race conditions (for different
+parent kernels different threads may be used).
+
+Pipelines implement asynchronous calls to ~act~ and ~react~, and try to make as
+many parallel calls as possible considering concurrency of the platform (no. of
+cores per node and no. of nodes in a cluster). A pipeline consists of a kernel
+pool, which contains all the subordinate kernels sent by their parents, and a
+thread pool that processes kernels in accordance with rules outlined in the
+previous paragraph. A separate pipeline is used for each device: There are
+pipelines for parallel processing, schedule-based processing (periodic and
+delayed tasks), and a proxy pipeline for processing of kernels on other cluster
+nodes (see fig.\nbsp{}[[fig-subord-ppl]]).
+
+In principle, kernels and pipelines machinery reflect the one of procedures and
+call stacks, with the advantage that kernel methods are called asynchronously
+and in parallel to each other (as much as programme logic allows). Kernel field
+is the stack, ~act~ method is a sequence of processor instructions before nested
+procedure call, and ~react~ method is a sequence of processor instructions after
+the call. Constructing and sending subordinate kernels to the pipeline is nested
+procedure call. Two methods are necessary to make calls asynchronous, and
+replace active wait for completion of subordinate kernels with passive one.
+Pipelines, in turn, allow to implement passive wait, and call correct kernel
+methods by analysing their internal state.
+
+#+name: fig-subord-ppl
+#+begin_src dot :exports results :file build/subord-ppl.pdf
+graph G {
+
+  node [fontname="Old Standard",fontsize=14,margin="0.055,0",shape=box]
+  graph [nodesep="0.25",ranksep="0.25",rankdir="LR"]
+  edge [arrowsize=0.66]
+
+  subgraph cluster_daemon {
+    label="Daemon process"
+    style=filled
+    color=lightgrey
+
+    factory [label="Factory"]
+    parallel_ppl [label="Parallel\npipeline"]
+    io_ppl [label="I/O\npipeline"]
+    sched_ppl [label="Schedule-based\npipeline"]
+    net_ppl [label="Network\npipeline"]
+    proc_ppl [label="Process\npipeline"]
+
+    upstream [label="Upstream\nthread pool"]
+    downstream [label="Downstream\nthread pool"]
+  }
+
+  factory--parallel_ppl
+  factory--io_ppl
+  factory--sched_ppl
+  factory--net_ppl
+  factory--proc_ppl
+
+  subgraph cluster_hardware {
+    label="Compute devices"
+    style=filled
+    color=lightgrey
+
+    cpu [label="CPU"]
+    core0 [label="Core 0"]
+    core1 [label="Core 1"]
+    core2 [label="Core 2"]
+    core3 [label="Core 3"]
+
+    storage [label="Storage"]
+    disk0 [label="Disk 0"]
+
+    network [label="Network"]
+    nic0 [label="NIC 0"]
+
+    timer [label="Timer"]
+
+  }
+
+  core0--cpu
+  core1--cpu
+  core2--cpu
+  core3--cpu
+
+  disk0--storage
+  nic0--network
+
+  parallel_ppl--upstream
+  parallel_ppl--downstream
+
+  upstream--{core0,core1,core2,core3} [style="dashed"]
+  downstream--core0 [style="dashed"]
+
+  io_ppl--core0 [style="dashed"]
+  io_ppl--disk0 [style="dashed"]
+  sched_ppl--core0 [style="dashed"]
+  sched_ppl--timer [style="dashed"]
+  net_ppl--core0 [style="dashed"]
+  net_ppl--nic0 [style="dashed"]
+  proc_ppl--core0 [style="dashed"]
+
+  subgraph cluster_children {
+    style=filled
+    color=white
+
+    subgraph cluster_child0 {
+      label="Child process 0"
+      style=filled
+      color=lightgrey
+      labeljust=right
+
+      app0_factory [label="Factory"]
+      app0 [label="Child process\rpipeline"]
+    }
+
+#    subgraph cluster_child1 {
+#      label="Child process 1"
+#      style=filled
+#      color=lightgrey
+#      labeljust=right
+#
+#      app1_factory [label="Factory"]
+#      app1 [label="Child process\rpipeline"]
+#    }
+  }
+
+  proc_ppl--app0
+#  proc_ppl--app1
+
+  app0_factory--app0 [constraint=false]
+#  app1_factory--app1 [constraint=false]
+
+}
+#+end_src
+
+#+caption: Mapping of parent and child process pipelines to compute devices. Solid lines denote aggregation, dashed lines denote mapping between logical and physical entities.
+#+attr_latex: :width \textwidth
+#+name: fig-subord-ppl
+#+RESULTS: fig-subord-ppl
+[[file:build/subord-ppl.pdf]]
+**** Governing principles.
+Data processing pipeline model is based on the following principles, following
+which maximises efficiency of a programme.
+- There is no notion of a message in the model, a kernel is itself a message
+  that can be sent over network to another node and directly access any kernel
+  on the local node. Only programme logic may guarantee the existence of the
+  kernel.
+- A kernel is a /cooperative routine/, which is submitted to kernel pool upon the
+  call and is executed asynchronously by a scheduler. There can be any number of
+  calls to other subroutines inside routine body. Every call submits
+  corresponding subroutine to kernel pool and returns immediately. Kernels in the
+  pool can be executed in any order; this fact is used by a scheduler to exploit
+  parallelism offered by the computer by distributing kernels from the pool
+  across available cluster nodes and processor cores.
+- Asynchronous execution prevents the use of explicit synchronisation after the
+  call to subroutine is made; system scheduler returns control flow to the
+  routine each time one of its subroutine returns. Such cooperation transforms
+  each routine which calls subroutines into event handler, where each event is a
+  subroutine and the handler is the routine that called them.
+- The routine may communicate with any number of local kernels, addresses of
+  which it knows; communication with kernels which are not adjacent in the call
+  stack complexifies control flow and call stack looses its tree shape. Only
+  programme logic may guarantee presence of communicating kernels in memory. One
+  way to ensure this is to perform communication between subroutines which are
+  called from the same routine. Since such communication is possible within
+  hierarchy through parent routine, it may treated as an optimisation that
+  eliminates overhead of transferring data over intermediate node. The situation
+  is different for interactive or event-based programmes (e.g. servers and
+  programmes with graphical interface) in which this is primary type of
+  communication.
+- In addition to this, communication which does not occur along hierarchical
+  links and executed over cluster network complexify design of resiliency
+  algorithms. Since it is impossible to ensure that a kernel resides in memory
+  of a neighbour node, because a node may fail in the middle of its execution of
+  the corresponding routine. As a result, upon failure of a routine all of its
+  subroutines must be restarted. This encourages a programmer to construct
+  - deep tree hierarchies of tightly-coupled kernels (which communicate on the
+    same level of hierarchy) to reduce overhead of recomputation;
+  - fat tree hierarchies of loosely-coupled kernels, providing maximal degree of
+    parallelism.
+  Deep hierarchy is not only requirement of technology, it helps optimise
+  communication of large number of cluster nodes reducing it to communication of
+  adjacent nodes.
+
+So, control flow objects (or kernels) possess properties of both cooperative
+routines and event handlers.
+**** Definitions of hierarchies
+To disambiguate hierarchical links between daemon processes and kernels and to
+simplify the discussion, we will use the following naming conventions throughout
+the text. If the link is between two daemon processes, the relationship is
+denoted as /master-slave/. If the link is between two kernels, then the
+relationship is denoted as either /principal-subordinate/ or /parent-child/. Two
+hierarchies are orthogonal to each other in a sense that no kernel may have a
+link to a daemon, and vice versa. Since daemon hierarchy is used to distribute
+the load on cluster nodes, kernel hierarchy is mapped onto it, and this mapping
+can be arbitrary: It is common to have principal kernel on a slave node with its
+subordinate kernels distributed evenly between all cluster nodes (including the
+node where the principal is located). Both hierarchies can be arbitrarily deep,
+but "shallow" ones are preferred for highly parallel programmes, as there are
+less number of hops when kernels are distributed between cluster nodes. Since
+there is one-to-one correspondence between daemons and cluster nodes, they are
+used interchangeably in the work.
+
+**** Kernel structure and algorithms
+Each kernel has four types of fields (listed in table\nbsp{}[[tab-kernel-fields]]):
+- fields related to control flow,
+- fields defining the source location of the kernel,
+- fields defining the current location of the kernel, and
+- fields defining the target location of the kernel.
+
+#+name: tab-kernel-fields
+#+caption: Description of kernel fields.
+#+attr_latex: :booktabs t :align lp{0.7\textwidth}
+| Field             | Description                                                                                    |
+|-------------------+------------------------------------------------------------------------------------------------|
+| ~process_id~      | Identifier of a cluster-wide process (application) a kernel belongs to.                        |
+| ~id~              | Identifier of a kernel within a process.                                                       |
+| ~pipeline~        | Identifier of a pipeline a kernel is processed by.                                             |
+|                   |                                                                                                |
+| ~exit_code~       | A result of a kernel execution.                                                                |
+| ~flags~           | Auxiliary bit flags used in scheduling.                                                        |
+| ~time_point~      | A time point at which a kernel is scheduled to be executed.                                    |
+|                   |                                                                                                |
+| ~parent~          | Address/identifier of a parent kernel.                                                         |
+| ~src_ip~          | IP-address of a source cluster node.                                                           |
+| ~from_process_id~ | Identifier of a cluster-wide process from which a kernel originated.                           |
+|                   |                                                                                                |
+| ~principal~       | Address/identifier of a target kernel (a kernel to which the current one is sent or returned). |
+| ~dst_ip~          | IP-address of a destination cluster node.                                                      |
+
+Upon creation each kernel is assigned a parent and a pipeline. If there no other
+fields are set, then the kernel is an /upstream/ kernel\nbsp{}--- a kernel that
+can be distributed on any node and any processor core to exploit parallelism. If
+principal field is set, then the kernel is a /downstream/ kernel\nbsp{}--- a
+kernel that can only be sent to its principal, and a processor core to which the
+kernel is sent is defined by the principal memory address/identifier. If a
+downstream kernel is to be sent to another node, the destination IP-address must
+be set, otherwise the system will not find the target kernel.
+
+When kernel execution completes (its ~act~ method finishes), the kernel is
+explicitly sent to some other kernel, this directive is explicitly called inside
+~act~ method. Usually, after the execution completes a kernel is sent to its
+parent by setting principal field to the address/identifier of the parent,
+destination IP-address field to the source IP-address, and process identifier to
+the source process identifier. After that kernel becomes a downstream kernel and
+is sent by the system to the node, where its current principal is located
+without invoking load balancing algorithm. For downstream kernel ~react~ method
+of its parent is called by a pipeline with the kernel as the method argument to
+make it possible for a parent to collect the result of the execution.
+
+There is no way to provide fine-grained resilience to cluster node failures, if
+there are downstream kernels in the programme, except the ones returning to
+their parents. Instead, an exit code of the kernel is checked and a custom
+recovery code is executed. If there is no error checking, the system restarts
+execution from the first parent kernel, which did not produce any downstream
+kernels. This means, that if a problem being solved by the programme has
+information dependencies between parts that are computed in parallel, and a node
+failure occurs during computation of these parts, then this computation is
+restarted from the very beginning, discarding any already computed parts. This
+does not occur for embarrassingly parallel programmes, where parallel parts do
+not have such information dependencies between each other: in this case only
+parts from failed nodes are recomputed and all previously computed parts are
+retained.
+
 *** Cluster node discovery algorithm
 :PROPERTIES:
 :CUSTOM_ID: sec:node-discovery
@@ -4166,7 +4167,7 @@ digraph {
 #+end_src
 
 #+caption: Tree hierarchy for 11 nodes with fan-out equals 2.
-#+label: fig-tree-hierarchy-11
+#+name: fig-tree-hierarchy-11
 #+RESULTS: fig-tree-hierarchy-11
 [[file:build/tree-hierarchy-11.pdf]]
 
@@ -4418,7 +4419,7 @@ An example of fail over algorithm follows (fig.\nbsp{}[[fig-fail-over-example]])
 #+end_src
 
 #+caption: An example of fail over algorithm in action.
-#+label: fig-fail-over-example
+#+name: fig-fail-over-example
 #+attr_latex: :width \textwidth
 #+RESULTS: fig-fail-over-example
 [[file:build/fail-over-example.pdf]]
@@ -4515,11 +4516,13 @@ inapplicable for programmes with complicated logic.
 #+name: fig-benchmark
 #+begin_src R :file build/benchmark-xxx.pdf
 # TODO
+plot(c(1:10))
 #+end_src
 
 #+caption: Performance of hydrodynamics HPC application in the presence of node failures.
-#+label: fig-benchmark
+#+name: fig-benchmark
 #+RESULTS: fig-benchmark
+[[file:build/benchmark-xxx.pdf]]
 
 The results of the benchmark allows to conclude that no matter a principal or a
 subordinate node fails, the overall performance of a parallel programme roughly
@@ -4529,11 +4532,13 @@ when a backup node fails performance penalty is much higher.
 #+name: fig-slowdown
 #+begin_src R :file build/slowdown-xxx.pdf
 # TODO
+plot(c(1:10))
 #+end_src
 
 #+caption: Slowdown of the hydrodynamics HPC application in the presence of different types of node failures compared to execution without failures but with the number of nodes minus one.
-#+label: fig-slowdown
+#+name: fig-slowdown
 #+RESULTS: fig-slowdown
+[[file:build/slowdown-xxx.pdf]]
 
 **** Discussion of test results.
 Fail over algorithm guarantees to handle one failure per sequential programme
