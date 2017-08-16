@@ -3524,7 +3524,7 @@ convergence rate and non-existence of periodicity allows to use far fewer
 coefficients compared to LH model.
 
 #+name: tab-gpulab
-#+caption: GPU test platform configuration.
+#+caption: "Gpulab" test platform configuration.
 #+attr_latex: :booktabs t
 | CPU                     | AMD FX-8370                   |
 | RAM                     | 16Gb                          |
@@ -3826,7 +3826,19 @@ OpenCL solver, and \(g_1\) for OpenMP solver. In both implementations \(g_2\) is
 computed on CPU, but for GPU implementation the result is duplicated for each
 \(z\) grid point in order to perform multiplication of all \(XYZ\) planes along
 \(z\) dimension in single OpenCL kernel, and, subsequently copied to GPU memory
-which severely hinders the overall performance.
+which severely hinders the overall performance. All benchmarks were run on a
+machine equipped with a GPU, characteristics of which are summarised in
+table\nbsp{}[[tab-storm]].
+
+#+name: tab-storm
+#+caption: "Storm" test platform configuration.
+#+attr_latex: :booktabs t
+| CPU              | Intel Core 2 Quad Q9550     |
+| RAM              | 8Gb                         |
+| GPU              | AMD Radeon R7 360           |
+| GPU memory       | 2GB                         |
+| HDD              | Seagate Barracuda, 7200 rpm |
+| No. of CPU cores | 4                           |
 
 #+name: fig-arma-realtime-graph
 #+header: :results output graphics
