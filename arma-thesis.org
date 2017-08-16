@@ -3846,11 +3846,7 @@ table\nbsp{}[[tab-storm]].
 source(file.path("R", "benchmarks.R"))
 par(family="serif")
 data <- arma.load_realtime_data()
-params <- list(
-  titles <- c("OpenMP", "OpenCL"),
-  linetypes = c("solid", "dashed")
-)
-arma.plot_realtime_data(data, params)
+arma.plot_realtime_data(data)
 title(xlab="Wavy surface size", ylab="Time, s")
 #+end_src
 

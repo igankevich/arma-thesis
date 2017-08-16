@@ -213,23 +213,33 @@ arma.aggregate_by_size <- function (data, framework) {
   fwdata
 }
 
+arma.filter_copy_to_host <- function (data) {
+  data[data["routine"] == "harts_copy_to_host",]
+}
+
+arma.add_text <- function (data, str, pos=4, off=1) {
+  len <- length(data$t)
+	text(data$size[[len-1]], data$t[[len-1]], str, pos=pos, offset=off)
+}
+
 arma.plot_realtime_data <- function (data, ...) {
   args <- list(...)
   openmp <- arma.aggregate_by_size(data, "openmp")
   opencl <- arma.aggregate_by_size(data, "opencl")
-  openmp_len <- length(openmp$t)
-  opencl_len <- length(opencl$t)
+  opengl <- arma.aggregate_by_size(arma.filter_copy_to_host(data), "opencl")
   plot.new()
   plot.window(
-    xlim=range(c(openmp$size, opencl$size)),
-    ylim=range(c(openmp$t, opencl$t)))
+    xlim=range(c(openmp$size, opencl$size, opengl$size)),
+    ylim=range(c(openmp$t, opencl$t, opengl$t)))
   lines(openmp$size, openmp$t, lty="solid", type="b")
   lines(opencl$size, opencl$t, lty="dashed", type="b")
+  lines(opengl$size, opengl$t, lty="dotted", type="b")
   axis(1, at=2^c(7:14))
   axis(2)
   box()
-	text(openmp$size[[openmp_len-1]], openmp$t[[openmp_len-1]], "OpenMP", pos=4, offset=1)
-	text(opencl$size[[opencl_len-1]], opencl$t[[opencl_len-1]], "OpenCL", pos=4, offset=1)
+  arma.add_text(openmp, "OpenMP", pos=3, off=1.5)
+  arma.add_text(opencl, "OpenCL", pos=3, off=1.5)
+  arma.add_text(opengl, "OpenCL/OpenGL")
 }
 
 arma.filter_by_framework_and_size <- function (data, size, framework) {
