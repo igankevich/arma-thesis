@@ -230,12 +230,12 @@ arma.plot_realtime_data <- function (data, ...) {
   plot.new()
   plot.window(
     xlim=range(c(openmp$size, opencl$size, opengl$size)),
-    ylim=range(c(openmp$t, opencl$t, opengl$t)))
+    ylim=range(ceiling(c(0, openmp$t, opencl$t, opengl$t))))
   lines(openmp$size, openmp$t, lty="solid", type="b")
   lines(opencl$size, opencl$t, lty="dashed", type="b")
   lines(opengl$size, opengl$t, lty="dotted", type="b")
   axis(1, at=2^c(7:14))
-  axis(2)
+  axis(2, at=c(0:8))
   box()
   arma.add_text(openmp, "OpenMP", pos=3, off=1.5)
   arma.add_text(opencl, "OpenCL", pos=3, off=1.5)
