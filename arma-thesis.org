@@ -3817,16 +3817,16 @@ how one implementation corresponds to the other in terms of performance.
 
 The experiments showed that OpenCL outperforms OpenMP implementation by a factor
 of 10--15 (fig.\nbsp{}[[fig-arma-realtime-graph]]), however, distribution of time
-between computation stages is different for each implementation (fig.\nbsp{}).
-The major time consumer on CPU is \(g_1\), whereas in GPU its running time is
-comparable to \(g_2\). Copying the resulting velocity potential field between
-CPU and GPU consumes \(\approx{}20\%\) of solver execution time. \(g_2\)
-consumes the most of the execution time for OpenCL solver, and \(g_1\) for
-OpenMP solver. In both implementations \(g_2\) is computed on CPU, but for GPU
-implementation the result is duplicated for each \(z\) grid point in order to
-perform multiplication of all \(XYZ\) planes along \(z\) dimension in single
-OpenCL kernel, and, subsequently copied to GPU memory which severely hinders the
-overall performance.
+between computation stages is different for each implementation
+(table\nbsp{}[[tab-arma-realtime]]). The major time consumer on CPU is \(g_1\),
+whereas in GPU its running time is comparable to \(g_2\). Copying the resulting
+velocity potential field between CPU and GPU consumes \(\approx{}20\%\) of
+solver execution time. \(g_2\) consumes the most of the execution time for
+OpenCL solver, and \(g_1\) for OpenMP solver. In both implementations \(g_2\) is
+computed on CPU, but for GPU implementation the result is duplicated for each
+\(z\) grid point in order to perform multiplication of all \(XYZ\) planes along
+\(z\) dimension in single OpenCL kernel, and, subsequently copied to GPU memory
+which severely hinders the overall performance.
 
 #+name: fig-arma-realtime-graph
 #+header: :results output graphics
@@ -3859,7 +3859,7 @@ due to unavailability of such library it was not done in this work.
 Additionally, such library may allow to efficiently compute the non-simplified
 formula entirely on GPU, since omitted terms also contain derivatives.
 
-#+name: fig-arma-realtime-table
+#+name: tab-arma-realtime
 #+begin_src R
 source(file.path("R", "benchmarks.R"))
 routine_names <- list(
@@ -3873,10 +3873,10 @@ data <- arma.load_realtime_data()
 arma.print_table_for_realtime_data(data, routine_names, column_names)
 #+end_src
 
-#+name: fig-arma-realtime-table
+#+name: tab-arma-realtime
 #+caption: Running time of real-time velocity potential solver subroutines.
 #+attr_latex: :booktabs t
-#+RESULTS: fig-arma-realtime-table
+#+RESULTS: tab-arma-realtime
 | Subroutine         | OpenMP time, s | OpenCL time, s |
 |--------------------+----------------+----------------|
 | \(g_1\)            |         4.6730 |         0.0038 |
@@ -3893,6 +3893,32 @@ it, since each point now is a vector with three components. The other
 disadvantage of using OpenCL and OpenGL together is the requirement for manual
 locking of shared objects: failure to do so results in screen artefacts which
 can be removed only by rebooting the computer.
+
+**** Conclusions.
+Performance benchmarks showed that GPU outperforms CPU in arithmetic intensive
+tasks, i.e.\nbsp{}tasks requiring high number of floating point operations per
+second, however, its performance degrades when the volume of data that needs to
+be copied between CPU and GPU memory increases or when memory access pattern of
+the algorithm is non-linear. The first problem may be solved by using
+co-processors where high-bandwidth memory is located on the same die as the
+processor and the main memory. This eliminates data transfer bottleneck, but may
+also increase execution time due to smaller number of floating point units. The
+second problem may be solved programmatically, by using OpenCL library that
+optimises multi-dimensional array traversals for GPUs; due to unavailability of
+such library this was not done in present work.
+
+ARMA model outperforms LH model in benchmarks and does not require GPU to do so.
+Its computational strengths are:
+- vicinity of transcendental mathematical functions, and
+- simple algorithm for both AR and MA model, performance of which depends on the
+  performance of multi-dimensional array library and FFT library.
+Providing main functionality via low-level libraries makes performance portable:
+support for new processor architectures can be added by substituting the
+libraries. Finally, using analytic formula for velocity potential field made
+velocity potential solver consume only a small fraction of total programme
+execution time. If such formula was not available or did not have all integrals
+as Fourier transforms, performance of velocity potential computation would be
+much lower.
 
 ** MPP implementation
 *** Cluster node discovery algorithm
