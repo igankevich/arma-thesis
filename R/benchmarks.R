@@ -192,7 +192,7 @@ arma.load_realtime_data <- function () {
           ".*\\s+([0-9]+)us.*"
         )
         data[row,"framework"] <- framework
-        data[row,"size"] <- as.character(m)
+        data[row,"size"] <- as.integer(m)
         data[row,"t"] <- mean(all_data/1000/1000)
         data[row,"routine"] <- t
         row <- row + 1
@@ -220,7 +220,9 @@ arma.plot_realtime_data <- function (data, ...) {
   openmp_len <- length(openmp$t)
   opencl_len <- length(opencl$t)
   plot.new()
-  plot.window(xlim=range(openmp$size), ylim=range(openmp$t))
+  plot.window(
+    xlim=range(c(openmp$size, opencl$size)),
+    ylim=range(c(openmp$t, opencl$t)))
   lines(openmp$size, openmp$t, lty="solid", type="b")
   lines(opencl$size, opencl$t, lty="dashed", type="b")
   axis(1, at=2^c(7:14))

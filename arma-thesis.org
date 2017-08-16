@@ -3874,7 +3874,7 @@ arma.print_table_for_realtime_data(data, routine_names, column_names)
 #+end_src
 
 #+name: tab-arma-realtime
-#+caption: Running time of real-time velocity potential solver subroutines.
+#+caption: Running time of real-time velocity potential solver subroutines for wavy surface \(\text{size}=16384\).
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-realtime
 | Subroutine         | OpenMP time, s | OpenCL time, s |
