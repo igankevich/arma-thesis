@@ -1,0 +1,23 @@
+% pretty printing
+print.line.length = 80
+print.indent = 2
+print.align = 18
+print.align.key = 18
+print.use.tab = off
+
+% correct page typesetting
+rewrite.rule {pages # "[ ]*pp[\. ]*\(.*\)" = "\1"}
+rewrite.rule {pages # "\([0-9]+\) *\(-\|---\) *\([0-9]+\)" = "\1--\3"}
+
+% delete custom fields
+rewrite.rule {rawentry # ".*"}
+rewrite.rule {category # ".*"}
+rewrite.rule {abstract # ".*"}
+
+% replace double quotes with curly braces
+rewrite.rule {"^\"{\(.*\)}\"$" "{\1}"}
+rewrite.rule {"^\"\(.*\)\"$" "{\1}"}
+
+% delete empty fields
+rewrite.rule {"^\" *\"$"}
+rewrite.rule {"^{ *}$"}
