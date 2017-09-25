@@ -2737,13 +2737,13 @@ Many batch job scheduling systems are built on the principle of /subordination/:
 there is principal node in each cluster which manages job queue, schedules job
 execution on subordinate nodes and monitors their state. Principal role is
 assigned either /statically/ by an administrator to a particular physical node,
-or /dynamically/ by periodically electing one of the cluster nodes as principal
-by an algorithm. In the former case fault tolerance is provided by reserving
-additional spare node which takes principal role when current principal fails.
-In the latter case fault tolerance is provided by electing new principal node
-from survived nodes. Despite the fact that dynamic role assignment requires
-specialised distributed algorithm, this approach becomes more and more popular
-as it does not require spare reserved nodes to recover from principal node
+or /dynamically/ by periodically electing one of the cluster nodes as principal.
+In the former case fault tolerance is provided by reserving additional spare
+node which takes principal role when current principal fails. In the latter case
+fault tolerance is provided by electing new principal node from survived nodes.
+Despite the fact that dynamic role assignment requires leader election
+algorithm, this approach becomes more and more popular as it does not require
+spare reserved nodes to recover from principal node
 failure\nbsp{}cite:hunt2010zookeeper,lakshman2010cassandra,divya2013elasticsearch
 and generally leads to a symmetric system in which the same software stack with
 the same configuration is installed on every
@@ -2760,10 +2760,10 @@ algorithm. For a distributed system this means that wave algorithms work for
 computer clusters with dynamically changing number of nodes, and the algorithm
 is unaffected by some nodes going on-line and off-line.
 
-The approach in the following work does not use wave algorithms, and hence does
-not require communicating with each node of the cluster to determine a leader.
-Instead, each node enumerates all nodes in the network it is part of, and
-converts this list to a /tree hierarchy/ with a user-defined maximal fan-out
+The approach for cluster node discovery does not use wave algorithms, and hence
+does not require communicating with each node of the cluster to determine a
+leader. Instead, each node enumerates all nodes in the network it is part of,
+and converts this list to a /tree hierarchy/ with a user-defined maximal fan-out
 value (maximal number of subordinate nodes). Then the node determines its
 hierarchy level and tries to communicate with nodes from higher levels to become
 their subordinate. First, it checks the closest ones and then goes all the way
@@ -2775,11 +2775,163 @@ cluster nodes. Although, technically any function can be chosen to map a node to
 a number, in practise this function should be sufficiently smooth along the time
 axis and may have infrequent jumps: high-frequency oscillations (which are often
 caused by measurement errors) may result in constant passing of principal role
-from one node to another, which makes the cluster unmanageable. The simplest
-such function is the position of an IP address in network IP address range.
+from one node to another, which makes the hierarchy unusable for load balancing.
+The simplest such function is the position of an IP address in network IP
+address range.
 
+**** Tree hierarchy traversal algorithm.
+Strict total order on the set \(\mathcal{N}\) of cluster nodes connected to a
+network is defined as
+\begin{equation*}
+  \forall n_1 \forall n_2 \in \mathcal{N},
+  \forall f \colon \mathcal{N} \rightarrow \mathcal{R}^n
+  \Rightarrow (f(n_1) < f(n_2) \Leftrightarrow \neg (f(n_1) \geq f(n_2))),
+\end{equation*}
+where \(f\) maps a node to its level and operator \(<\) defines strict total order on
+\(\mathcal{R}^n\). Function \(f\) defines node's sequential number, and \(<\) makes
+this number unique.
+
+The simpliest function \(f\) maps each node to its Internet address position in
+network IP address range. Without conversion to a tree (when only /one/
+leader is allowed in the network) a node with the lowest position in this range
+becomes the principal. If IP-address of a node occupies the first position in
+the range, then there is no principal for it, and it continues to be at the top
+of the hierarchy until it fails. Although, IP address mapping is simple to
+implement, it introduces artificial dependence of the principal role on the
+address of a node. Still, it is useful for initial configuration of a cluster
+when more complex mappings are not applicable.
+
+To make node discovery scale to a large number of nodes, IP address range is
+mapped to a tree hierarchy. In this hierarchy each node is uniquely identified
+by its hierarchy level \(l\), which it occupies, and offset \(o\), which equals
+to the sequential number of node on its level. Values of level and offset are
+computed from the following optimisation problem.
+\begin{align*}
+    n = \sum\limits_{i=0}^{l(n)} p^i + o(n), \quad
+    l \rightarrow \min, \quad
+    o \rightarrow \min, \quad
+    l \geq 0, \quad
+    o \geq 0
+\end{align*}
+where \(n\) is the position of node's IP address in network IP address range and
+\(p\) is fan-out value (the maximal number of subordinates, a node can have). The
+principal of a node with level \(l\) and offset \(o\) has level \(l-1\) and offset
+\(\lfloor{o/p}\rfloor\). The distance between any two nodes in the tree with
+network positions \(i\) and \(j\) is computed as
+\begin{align*}
+    & \langle
+        \text{lsub}(l(j), l(i)), \quad
+        \left| o(j) - o(i)/p \right|
+    \rangle,\\
+    & \text{lsub}(l_1, l_2) =
+    \begin{cases}
+        \infty & \quad \text{if } l_1 \geq l_2, \\
+        l_1 - l_2 & \quad \text{if } l_1 < l_2.
+    \end{cases}
+\end{align*}
+The distance is compound to account for level in the first place.
+
+To determine its principal each node levels all nodes in the network according to
+their position \(\langle{l(n),o(n)}\rangle\), and using distance formula chooses
+the node which is closest to potential principal position and has lower level.
+That way IP addresses of offline nodes are skipped, however, for sparse networks
+(in which nodes occupy non-contiguous IP addresses) perfect tree is not
+guaranteed.
+
+Tree hierarchy traversal algorithm defines IP addresses and the order in which
+they are polled by each cluster node to find its principal. First, the /base/
+node (a node which searches for its principal) computes its potential principal
+address and tries to connect to this node. If the connection fails, the base
+node sequentially tries to connect to each node from the higher hierarchy
+levels, until it reaches the top of the hierarchy (the root of the tree). If
+none of the connections succeeds, the base node sequentially connects to all
+nodes on its own level having lesser position in IP address range. If none of
+the nodes respond, the base node becomes the principal node of the whole
+hierarchy, and the traversal repeats after a set period of time. An example of
+traversal order for a cluster of 11 nodes and a tree hierarchy with fan-out
+value of 2 is shown in\nbsp{}fig.[[fig-tree-hierarchy-11]].
+
+#+name: fig-tree-hierarchy-11
+#+begin_src dot :exports results :file build/tree-hierarchy-11.pdf
+digraph {
+
+  node [fontname="Old Standard",fontsize=14,margin="0.055,0.055",shape=box,style=rounded]
+  graph [nodesep="0.30",ranksep="0.30",rankdir="BT"]
+  edge [arrowsize=0.66]
+
+  m1 [label="10.0.0.1"]
+  m2 [label="10.0.0.2"]
+  m3 [label="10.0.0.3"]
+  m4 [label="10.0.0.4"]
+  m5 [label="10.0.0.5"]
+  m6 [label="10.0.0.6"]
+  m7 [label="10.0.0.7"]
+  m8 [label="10.0.0.8"]
+  m9 [label="10.0.0.9"]
+  m10 [label="10.0.0.10",fillcolor="#c0c0c0",style="filled,rounded"]
+  m11 [label="10.0.0.11",shape=Mrecord]
+
+  m2->m1
+  m3->m1
+  m4->m2
+  m5->m2
+  m6->m3
+  m7->m3
+  m8->m4
+  m9->m4
+  m10->m5
+  m11->m5
+
+  m5->m4->m6 [style="dashed,bold",color="#c00000",constraint=false]
+  {rank=same; m6->m7 [style="dashed,bold",color="#c00000"]}
+  m7->m2->m3->m1->m8->m9 [style="dashed,bold",color="#c00000",constraint=false]
+
+}
+#+end_src
+
+#+caption: Tree hierarchy for 11 nodes with fan-out equals 2. Red arrows denote hierarchy traversal order for a node with IP address 10.0.0.10.
+#+name: fig-tree-hierarchy-11
+#+RESULTS: fig-tree-hierarchy-11
+[[file:build/tree-hierarchy-11.pdf]]
+
+In order to determine its principal, a node is required to communicate to a node
+address of which it knows beforehand, so node discovery scales to a large number
+of nodes. Communication with other nodes occurs only when the current principal
+node fails. So, if cluster nodes occupy contiguous addresses in network IP
+address range, each node connects to its principal only, and inefficient scan of
+the whole network by each node does not occur.
+
+**** Evaluation results.
+Test platform consisted of several multi-core nodes, on top of which virtual
+clusters with varying number of nodes were deployed using Linux network
+namespaces. Similar approach is used
+in\nbsp{}cite:lantz2010network,handigol2012reproducible,heller2013reproducible
+where the authors reproduce various real-world experiments using virtual
+clusters and compare results to physical ones. The advantage of it is that the
+tests can be performed on a large virtual cluster using relatively small number
+of physical nodes. This approach was used to evaluate node discovery algorithm,
+because the algorithm has low requirement for system resources (processor time
+and network throughput).
+
+Performance of the algorithm was evaluated by measuring time needed to all nodes
+of the cluster to discover each other. Each change of the hierarchy (as seen by
+each node) was written to a file and after 30 seconds all the processes (each of
+which models cluster node) were forcibly terminated. Test runs showed that
+running more than 100 virtual nodes on one physical node simultaneously warp the
+results, thus additional physical nodes, each of which run 100 virtual nodes,
+were used for the experiment. The experiment showed that discovery of 100--400
+nodes each other takes 1.5 seconds on average, and the value increases only
+slightly with increase in the number of nodes (see
+fig.\nbsp{}[[fig-bootstrap-local]]).
+
+#+name: fig-bootstrap-local
+#+caption: Time to discover all nodes of the cluster in depending on number of nodes.
+[[file:graphics/discovery.eps]]
+
+**** Discussion.
 The following key features distinguish this approach with respect to some
-existing proposals\nbsp{}cite:brunekreef1996design,aguilera2001stable,romano2014design.
+existing
+proposals\nbsp{}cite:brunekreef1996design,aguilera2001stable,romano2014design.
 - *Multi-level hierarchy.* The number of principal nodes in a network depends on
   the fan-out value. If it is lesser than the number of IP-addresses in the
   network, then there are multiple principal nodes in the cluster. If it is
@@ -2793,7 +2945,7 @@ existing proposals\nbsp{}cite:brunekreef1996design,aguilera2001stable,romano2014
   there is no constant load on the network. Since the algorithm allows
   to tolerate failure of sending any message, there is no need in heartbeat
   packets indicating presence of a node in the network; instead, all messages
-  play role of heartbeats and packet send time-out is adjusted.
+  play the role of heartbeats and packet send time-out is adjusted.
 - *No manual configuration.* A node does not require any prior knowledge to find
   the principal: it determines the network it is part of, calculates potential
   principal IP-address and sends the message. If it fails, the process is
@@ -2836,174 +2988,6 @@ To summarise, node discovery algorithm is
 - fully fault-tolerant the state of every node can be recomputed at any time,
 - fully event-based which means it does not load the network by periodically
   sending messages.
-
-**** Building a tree hierarchy.
-Strict total order on the set \(\mathcal{N}\) of cluster nodes connected to a
-network is defined as
-\begin{equation*}
-  \forall n_1 \forall n_2 \in \mathcal{N},
-  \forall f \colon \mathcal{N} \rightarrow \mathcal{R}^n
-  \Rightarrow (f(n_1) < f(n_2) \Leftrightarrow \neg (f(n_1) \geq f(n_2))),
-\end{equation*}
-where \(f\) maps a node to its rank and operator \(<\) defines strict total order on
-\(\mathcal{R}^n\). Function \(f\) defines node's sequential number, and \(<\) makes
-this number unique.
-
-The simpliest function \(f\) maps each node to its Internet address position in
-network IP address range. Without conversion to a tree (when only /one/
-leader is allowed in the network) a node with the lowest position in this range
-becomes the principal. If IP-address of a node occupies the first position in
-the range, then there is no principal for it, and it continues to be at the top
-of the hierarchy until it fails. Although, IP address mapping is simple to
-implement, it introduces artificial dependence of the principal role on the
-address of a node. Still, it is useful for initial configuration of a cluster
-when more complex mappings are not applicable.
-
-To make discovery algorithm scale to a large number of nodes, IP address range
-is mapped to a tree hierarchy. In this hierarchy each node is uniquely
-identified by its hierarchy level \(l\), which it occupies, and offset \(o\),
-which equals to the sequential number of node on its level. Values of level and
-offset are computed from the following optimisation problem.
-\begin{align*}
-    n = \sum\limits_{i=0}^{l(n)} p^i + o(n), \quad
-    l \rightarrow \min, \quad
-    o \rightarrow \min, \quad
-    l \geq 0, \quad
-    o \geq 0
-\end{align*}
-where \(n\) is the position of node's IP address in network IP address range and
-\(p\) is fan-out value (the maximal number of subordinates, a node can have). The
-principal of a node with level \(l\) and offset \(o\) has level \(l-1\) and offset
-\(\lfloor{o/p}\rfloor\). The distance between any two nodes in the tree with
-network positions \(i\) and \(j\) is computed as
-\begin{align*}
-    & \langle
-        \text{lsub}(l(j), l(i)), \quad
-        \left| o(j) - o(i)/p \right|
-    \rangle,\\
-    & \text{lsub}(l_1, l_2) =
-    \begin{cases}
-        \infty & \quad \text{if } l_1 \geq l_2, \\
-        l_1 - l_2 & \quad \text{if } l_1 < l_2.
-    \end{cases}
-\end{align*}
-The distance is compound to account for level in the first place.
-
-To determine its principal each node ranks all nodes in the network according to
-their position \(\langle{l(n),o(n)}\rangle\), and using distance formula chooses
-the node which is closest to potential principal position and has lower rank.
-That way IP addresses of offline nodes are skipped, however, for sparse networks
-(in which nodes occupy non-contiguous IP addresses) perfect tree is not
-guaranteed.
-
-#+name: fig-tree-hierarchy-algo
-#+begin_src dot :exports results :file build/tree-hierarchy-algo.pdf
-digraph {
-
-  node [fontsize=14,margin="0.055,0.055",shape=box,style=rounded,fontname="Old Standard"]
-  graph [nodesep="0.15",ranksep="0.20",rankdir="BT"]
-  edge [arrowsize=0.66,fontname="Fira Mono"]
-
-  start [label="",shape=circle,style=filled,fillcolor=black,width=0.23]
-  end [label="",shape=doublecircle,style=filled,fillcolor=black,width=0.23]
-
-  initial [label="{Initial | }",shape=Mrecord]
-  traverse_parent [label="{Traversing parent node | Traverse only parent node}",shape=Mrecord]
-  traverse_upper_layers [label="{Traversing upper layers | Traverse all nodes\lfrom the parent layer\lto the top of the hierarchy}",shape=Mrecord]
-  traverse_base_layer [label="{Traversing base layer | Traverse all nodes\lon the same layer\lpreceding the base one}",shape=Mrecord]
-
-  start->initial
-  initial->end [label="[base.is_root()]"]
-  initial->traverse_parent [label="[!base.is_root()]"]
-  traverse_parent->traverse_upper_layers
-  traverse_upper_layers->traverse_base_layer [label="[current.is_root()]"]
-  traverse_base_layer->end [label="[current==base]"]
-
-}
-#+end_src
-
-#+caption: State diagram for tree hierarchy traversal algorithm.
-#+name: fig-tree-hierarchy-algo
-#+RESULTS: fig-tree-hierarchy-algo
-[[file:build/tree-hierarchy-algo.pdf]]
-
-In order to determine its principal a node is required to communicate to a node
-address of which it knows beforehand, so discovery algorithm scales to a large
-number of nodes. Communication with other nodes in ranked list occurs only when
-the current principal node fails. So, if address of cluster nodes occupy
-contiguous addresses network IP address range, each node connects to its
-principal only, and inefficient scan of all network by each node does not occur.
-
-**** Evaluation results.
-Test platform consisted of several multi-core nodes, on top of which virtual
-clusters with varying number of nodes were deployed using Linux network
-namespaces. Similar approach is used
-in\nbsp{}cite:lantz2010network,handigol2012reproducible,heller2013reproducible
-where the authors reproduce various real-world experiments using virtual
-clusters and compare results to physical ones. The advantage of it is that the
-tests can be performed on a large virtual cluster using relatively small number
-of physical nodes. This approach was used to evaluate node discovery algorithm,
-because the algorithm has low requirement for system resources (processor time
-and network throughput).
-
-Performance of the algorithm was evaluated by measuring time needed to all nodes
-of the cluster to discover each other. Each change of the hierarchy (as seen by
-each node) was written to a file and after 30 seconds all the processes (each of
-which models cluster node) were forcibly terminated. Test runs showed that
-running more than 100 virtual nodes on one physical node simultaneously warp the
-results, thus additional physical nodes, each of which run 100 virtual nodes,
-were used for the experiment. The experiment showed that discovery of 100--400
-nodes each other takes 1.5 seconds on average, and the value increases only
-slightly with increase in the number of nodes (see
-fig.\nbsp{}[[fig-bootstrap-local]]). An example of tree hierarchy for 11 nodes with
-fan-out 2 is shown in fig.\nbsp{}[[fig-tree-hierarchy-11]].
-
-#+name: fig-bootstrap-local
-#+caption: Time to discover all nodes of the cluster in depending on number of nodes.
-[[file:graphics/discovery.eps]]
-
-#+name: fig-tree-hierarchy-11
-#+begin_src dot :exports results :file build/tree-hierarchy-11.pdf
-digraph {
-
-  node [fontname="Old Standard",fontsize=14,margin="0.055,0.055",shape=box,style=rounded]
-  graph [nodesep="0.30",ranksep="0.30",rankdir="BT"]
-  edge [arrowsize=0.66]
-
-  m1 [label="10.0.0.1"]
-  m2 [label="10.0.0.2"]
-  m3 [label="10.0.0.3"]
-  m4 [label="10.0.0.4"]
-  m5 [label="10.0.0.5"]
-  m6 [label="10.0.0.6"]
-  m7 [label="10.0.0.7"]
-  m8 [label="10.0.0.8"]
-  m9 [label="10.0.0.9"]
-  m10 [label="10.0.0.10",fillcolor="#c0c0c0",style="filled,rounded"]
-  m11 [label="10.0.0.11",shape=Mrecord]
-
-  m2->m1
-  m3->m1
-  m4->m2
-  m5->m2
-  m6->m3
-  m7->m3
-  m8->m4
-  m9->m4
-  m10->m5
-  m11->m5
-
-  m5->m4->m6 [style="dashed,bold",color="#c00000",constraint=false]
-  {rank=same; m6->m7 [style="dashed,bold",color="#c00000"]}
-  m7->m2->m3->m1->m8->m9 [style="dashed,bold",color="#c00000",constraint=false]
-
-}
-#+end_src
-
-#+caption: Tree hierarchy for 11 nodes with fan-out equals 2. Read arrows denote tree hierarchy traversal order for 10.0.0.10.
-#+name: fig-tree-hierarchy-11
-#+RESULTS: fig-tree-hierarchy-11
-[[file:build/tree-hierarchy-11.pdf]]
 
 *** Fail over algorithm
 **** Checkpoints.
