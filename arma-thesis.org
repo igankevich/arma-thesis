@@ -2733,17 +2733,17 @@ retained.
 :CUSTOM_ID: sec:node-discovery
 :END:
 
-Many distributed systems are built on the principle of /subordination/: there is
-principal node in each cluster which manages job queue, schedules job execution
-on subordinate nodes and monitors their state. Principal role is assigned either
-/statically/ by an administrator to a particular physical node, or /dynamically/
-by periodically electing one of the cluster nodes as principal by an algorithm.
-In the former case fault tolerance is provided by reserving additional spare
-node which takes principal role when current principal fails. In the latter case
-fault tolerance is provided by electing new principal node from survived nodes.
-Despite the fact that dynamic role assignment requires specialised distributed
-algorithm, this approach becomes more and more popular as it does not require
-spare reserved nodes to recover from principal node
+Many batch job scheduling systems are built on the principle of /subordination/:
+there is principal node in each cluster which manages job queue, schedules job
+execution on subordinate nodes and monitors their state. Principal role is
+assigned either /statically/ by an administrator to a particular physical node,
+or /dynamically/ by periodically electing one of the cluster nodes as principal
+by an algorithm. In the former case fault tolerance is provided by reserving
+additional spare node which takes principal role when current principal fails.
+In the latter case fault tolerance is provided by electing new principal node
+from survived nodes. Despite the fact that dynamic role assignment requires
+specialised distributed algorithm, this approach becomes more and more popular
+as it does not require spare reserved nodes to recover from principal node
 failure\nbsp{}cite:hunt2010zookeeper,lakshman2010cassandra,divya2013elasticsearch
 and generally leads to a symmetric system in which the same software stack with
 the same configuration is installed on every
@@ -2768,7 +2768,7 @@ value (maximal number of subordinate nodes). Then the node determines its
 hierarchy level and tries to communicate with nodes from higher levels to become
 their subordinate. First, it checks the closest ones and then goes all the way
 to the top. If there is no top-level nodes or the node cannot connect to them,
-then the node itself becomes the principal of the hierarchy.
+then the node itself becomes the principal of the whole hierarchy.
 
 Tree hierarchy of all hosts in a network defines strict total order on a set of
 cluster nodes. Although, technically any function can be chosen to map a node to
@@ -2896,6 +2896,37 @@ That way IP addresses of offline nodes are skipped, however, for sparse networks
 (in which nodes occupy non-contiguous IP addresses) perfect tree is not
 guaranteed.
 
+#+name: fig-tree-hierarchy-algo
+#+begin_src dot :exports results :file build/tree-hierarchy-algo.pdf
+digraph {
+
+  node [fontsize=14,margin="0.055,0.055",shape=box,style=rounded,fontname="Old Standard"]
+  graph [nodesep="0.15",ranksep="0.20",rankdir="BT"]
+  edge [arrowsize=0.66,fontname="Fira Mono"]
+
+  start [label="",shape=circle,style=filled,fillcolor=black,width=0.23]
+  end [label="",shape=doublecircle,style=filled,fillcolor=black,width=0.23]
+
+  initial [label="{Initial | }",shape=Mrecord]
+  traverse_parent [label="{Traversing parent node | Traverse only parent node}",shape=Mrecord]
+  traverse_upper_layers [label="{Traversing upper layers | Traverse all nodes\lfrom the parent layer\lto the top of the hierarchy}",shape=Mrecord]
+  traverse_base_layer [label="{Traversing base layer | Traverse all nodes\lon the same layer\lpreceding the base one}",shape=Mrecord]
+
+  start->initial
+  initial->end [label="[base.is_root()]"]
+  initial->traverse_parent [label="[!base.is_root()]"]
+  traverse_parent->traverse_upper_layers
+  traverse_upper_layers->traverse_base_layer [label="[current.is_root()]"]
+  traverse_base_layer->end [label="[current==base]"]
+
+}
+#+end_src
+
+#+caption: State diagram for tree hierarchy traversal algorithm.
+#+name: fig-tree-hierarchy-algo
+#+RESULTS: fig-tree-hierarchy-algo
+[[file:build/tree-hierarchy-algo.pdf]]
+
 In order to determine its principal a node is required to communicate to a node
 address of which it knows beforehand, so discovery algorithm scales to a large
 number of nodes. Communication with other nodes in ranked list occurs only when
@@ -2935,21 +2966,21 @@ fan-out 2 is shown in fig.\nbsp{}[[fig-tree-hierarchy-11]].
 #+begin_src dot :exports results :file build/tree-hierarchy-11.pdf
 digraph {
 
-  node [fontname="Old Standard",fontsize=14,margin="0.055,0",shape=box,style=rounded]
-  graph [nodesep="0.15",ranksep="0.20",rankdir="BT"]
+  node [fontname="Old Standard",fontsize=14,margin="0.055,0.055",shape=box,style=rounded]
+  graph [nodesep="0.30",ranksep="0.30",rankdir="BT"]
   edge [arrowsize=0.66]
 
-  m1 [label="127.0.0.1"]
-  m2 [label="127.0.0.2"]
-  m3 [label="127.0.0.3"]
-  m4 [label="127.0.0.4"]
-  m5 [label="127.0.0.5"]
-  m6 [label="127.0.0.6"]
-  m7 [label="127.0.0.7"]
-  m8 [label="127.0.0.8"]
-  m9 [label="127.0.0.9"]
-  m10 [label="127.0.0.10"]
-  m11 [label="127.0.0.11"]
+  m1 [label="10.0.0.1"]
+  m2 [label="10.0.0.2"]
+  m3 [label="10.0.0.3"]
+  m4 [label="10.0.0.4"]
+  m5 [label="10.0.0.5"]
+  m6 [label="10.0.0.6"]
+  m7 [label="10.0.0.7"]
+  m8 [label="10.0.0.8"]
+  m9 [label="10.0.0.9"]
+  m10 [label="10.0.0.10",fillcolor="#c0c0c0",style="filled,rounded"]
+  m11 [label="10.0.0.11",shape=Mrecord]
 
   m2->m1
   m3->m1
@@ -2961,10 +2992,15 @@ digraph {
   m9->m4
   m10->m5
   m11->m5
+
+  m5->m4->m6 [style="dashed,bold",color="#c00000",constraint=false]
+  {rank=same; m6->m7 [style="dashed,bold",color="#c00000"]}
+  m7->m2->m3->m1->m8->m9 [style="dashed,bold",color="#c00000",constraint=false]
+
 }
 #+end_src
 
-#+caption: Tree hierarchy for 11 nodes with fan-out equals 2.
+#+caption: Tree hierarchy for 11 nodes with fan-out equals 2. Read arrows denote tree hierarchy traversal order for 10.0.0.10.
 #+name: fig-tree-hierarchy-11
 #+RESULTS: fig-tree-hierarchy-11
 [[file:build/tree-hierarchy-11.pdf]]
