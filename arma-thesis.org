@@ -2902,30 +2902,44 @@ address range, each node connects to its principal only, and inefficient scan of
 the whole network by each node does not occur.
 
 **** Evaluation results.
-Test platform consisted of several multi-core nodes, on top of which virtual
-clusters with varying number of nodes were deployed using Linux network
-namespaces. Similar approach is used
+To benchmark performance of node discovery, several daemon processes were
+launched on each physical cluster node, each listening on its own IP address.
+The number of processes per physical core varied from 2 to 16. Each process was
+bound to a particular physical core to reduce process migration overhead on the
+benchmark. Tree hierarchy traversal algorithm has low requirements for system
+resources (processor time and network throughput), so running multiple processes
+per physical core is feasible, in contrast to HPC codes, where oversubscribing
+generally leads to poor performance. Test platform configuration is shown in
+table\nbsp{}[[tab-cluster]].
+
+Similar approach was used in
 in\nbsp{}cite:lantz2010network,handigol2012reproducible,heller2013reproducible
 where the authors reproduce various real-world experiments using virtual
-clusters and compare results to physical ones. The advantage of it is that the
-tests can be performed on a large virtual cluster using relatively small number
-of physical nodes. This approach was used to evaluate node discovery algorithm,
-because the algorithm has low requirement for system resources (processor time
-and network throughput).
+clusters, based on Linux namespaces, and compare results to physical ones. The
+advantage of it is that the tests can be performed on a large virtual cluster
+using relatively small number of physical nodes. The advantage of our approach,
+which does not use Linux namespaces, is that it is more lightweight and larger
+number of daemon processes are be benchmarked on the same physical cluster.
 
-Performance of the algorithm was evaluated by measuring time needed to all nodes
-of the cluster to discover each other. Each change of the hierarchy (as seen by
-each node) was written to a file and after 30 seconds all the processes (each of
-which models cluster node) were forcibly terminated. Test runs showed that
-running more than 100 virtual nodes on one physical node simultaneously warp the
-results, thus additional physical nodes, each of which run 100 virtual nodes,
-were used for the experiment. The experiment showed that discovery of 100--400
-nodes each other takes 1.5 seconds on average, and the value increases only
-slightly with increase in the number of nodes (see
+Node discovery performance was evaluated by measuring time needed for all nodes
+of the cluster to discover each other, i.e. the time needed for the tree
+hierarchy of nodes to reach stable state. Each change of the hierarchy (as seen
+by each node) was written to a log file and after 30 seconds all daemon
+processes (each of which models cluster node) were forcibly terminated. Each new
+daemon process was launched with a 100ms delay to ensure that master nodes
+are always come online before slave nodes and hierarchy does not change randomly
+as a result of different start time of each process. As a result, in ideal case
+adding a daemon process to the hierarchy adds 100ms to the total discovery time.
+
+Test runs showed that running more than ??? virtual nodes on one physical node
+simultaneously warp the results, thus additional physical nodes, each of which
+run ??? virtual nodes, were used for the experiment. The experiment showed that
+discovery of 100--400 nodes each other takes 1.5 seconds on average, and the
+value increases only slightly with increase in the number of nodes (see
 fig.\nbsp{}[[fig-bootstrap-local]]).
 
 #+name: fig-bootstrap-local
-#+caption: Time to discover all nodes of the cluster in depending on number of nodes.
+#+caption: Time to discover all daemon processes running on the cluster depending on the number of daemon processes.
 [[file:graphics/discovery.eps]]
 
 **** Discussion.
@@ -3285,8 +3299,9 @@ time after the programme start which is equivalent approximately to \(1/3\) of
 the total run time without failures on a single node. The application
 immediately recognised node as offline, because the corresponding connection was
 closed; in real-world scenario, however, the failure is detected after a
-configurable time-out. All relevant parameters are summarised in table\nbsp{}[[tab-benchmark]]. The results of these runs were compared to the run without node
-failures (fig.\nbsp{}[[fig-benchmark]] and\nbsp{}[[fig-slowdown]]).
+configurable time-out. All relevant parameters are summarised in
+table\nbsp{}[[tab-benchmark]]. The results of these runs were compared to the run
+without node failures (fig.\nbsp{}[[fig-benchmark]] and\nbsp{}[[fig-slowdown]]).
 
 There is considerable difference in overall application performance for
 different types of failures. Graphs\nbsp{}2 and\nbsp{}3 in
