@@ -2264,8 +2264,323 @@ as Fourier transforms, performance of velocity potential computation would be
 much lower.
 
 ** MPP implementation
-*** Computational model
-**** Mapping wavy surface generation algorithm on computational model.
+*** System architecture
+**** Physical layer.
+Consists of nodes and direct/routed physical network links. On this layer full
+network connectivity, i.e. an ability to send packet from one cluster node to
+any other, is assumed.
+
+**** Daemon process layer.
+Consists of daemon processes residing on cluster nodes and hierarchical
+(master/slave) logical links between them. Master and slave roles are
+dynamically assigned to daemon processes, i.e.~any physical cluster node may
+become a master or a slave. Dynamic reassignment uses leader election algorithm
+that does not require periodic broadcasting of messages, and the role is derived
+from node's IP address. Detailed explanation of the algorithm is provided
+in\nbsp{}[[#sec:node-discovery]]. Its strengths are scalability to a large number of
+nodes and low overhead, which are essential for large-scale high-performance
+computations, and its weakness is in artificial dependence of node's position in
+the hierarchy on its IP address, which may not desirable in virtual
+environments, where nodes' IP addresses may change without a notice.
+
+The only purpose of tree hierarchy is to provide load balancing and
+automatically reconfigurable logical tree hierarchy of cluster nodes. This
+hierarchy is used to distribute the load from the current node to its neighbours
+by simply iterating over all directly connected daemons. Upon reconfiguration
+due to node failure or due to new node joining the cluster, daemons exchange
+messages telling each other how many daemons are "behind" the corresponding link
+in the hierarchy. This information is used to distribute the load evenly, even
+if a parallel programme is launched on a slave node. In addition, this topology
+reduces the number of simultaneous connections, thus preventing network
+overload.
+
+Load balancing is implemented as follows. When daemon \(A\) tries to become a
+subordinate of daemon \(B\), it sends a message to a corresponding IP address
+telling how many daemons are already connected to it (including itself). If
+there are no connections, then it counts itself only. After all links between
+daemons in the cluster are established, every daemon has enough information to
+tell, how many nodes exist behind each link. If the link is between a slave and
+a master, and the slave wants to know, how many nodes are behind the master,
+then it simply subtracts the total number of nodes behind all of its slave nodes
+from the total number of nodes behind the master to get the correct amount. To
+distribute kernels across nodes we use simple round-robin algorithm,
+i.e.\nbsp{}iterate over all links of the current daemon (including the link to
+its master) taking into account how many nodes are behind each link: the pointer
+advances to a next link, only when enough number of kernels are sent through the
+current link. That way even if an application is launched on a slave node in the
+bottom of the hierarchy, the kernels will be distributed evenly across all
+cluster nodes. A kernel can not be sent through the link, from which it was
+received.
+
+The advantage of this approach is that it can be extended to include
+sophisticated logic into load distribution policy. Any metric, that is required
+to implement such policy, can be sent from the directly linked daemon during the
+link initialisation. As of now, only the number of nodes behind the link is
+sent. The disadvantage of the approach is that an update of the metric happens
+only when a change in the hierarchy occurs: if a metric changes periodically,
+then periodically sending update messages is also required for implementing the
+policy, and too frequent updates may consume considerable amount of network
+bandwidth. The other disadvantage is that when reconfiguration of the hierarchy
+occurs due to a node failure or a new node joining the cluster, the kernels that
+are already executed on the nodes are not taken into account in the load
+distribution, so frequent updates to the hierarchy may cause uneven load
+distribution (which, however, balances over time). Uneven load distribution does
+not cause node overload, since there is a kernel pool on each node that queues
+the kernels prior to execution.
+
+Dynamic master/slave role distribution coupled with kernel distribution makes
+overall system architecture homogeneous within single cluster. On every node
+the same daemon is run, and no configuration is needed to make a hierarchy of
+daemons\nbsp{}--- it happens automatically.
+
+**** Control flow objects layer.
+The key feature that is missing in the current parallel programming technologies
+is a possibility to specify hierarchical dependencies between parallel tasks.
+When one has such dependency, it is trivial to determine which task should be
+responsible for re-executing a failed task on one of the survived nodes. To
+re-execute the task on the top of the hierarchy, a backup task is created and
+executed on a different node. There exists a number of systems that are capable
+of executing directed acyclic graphs of tasks in
+parallel\nbsp{}cite:acun2014charmpp,islam2012oozie, but graphs are not suitable
+to infer principal-subordinate relationship between tasks, because a node in the
+graph may have multiple parent nodes.
+
+The main purpose of the model is to simplify development of distributed batch
+processing applications and middleware. The main focus is to make application
+resilient to failures, i.e. make it fault tolerant and highly available, and do
+it transparently to a programmer. The implementation is divided into two layers:
+the lower layer consists of routines and classes for single node applications
+(with no network interactions), and the upper layer for applications that run on
+an arbitrary number of nodes. There are two kinds of tightly coupled entities in
+the model\nbsp{}--- /control flow objects/ (or /kernels/ for short) and
+/pipelines/\nbsp{}--- which are used together to compose a programme.
+
+Kernels implement control flow logic in theirs ~act~ and ~react~ methods and
+store the state of the current control flow branch. Both logic and state are
+implemented by a programmer. In ~act~ method some function is either directly
+computed or decomposed into nested functions (represented by a set of
+subordinate kernels) which are subsequently sent to a pipeline. In ~react~
+method subordinate kernels that returned from the pipeline are processed by
+their parent. Calls to ~act~ and ~react~ methods are asynchronous and are made
+within threads attached to a pipeline. For each kernel ~act~ is called only
+once, and for multiple kernels the calls are done in parallel to each other,
+whereas ~react~ method is called once for each subordinate kernel, and all the
+calls are made in the same thread to prevent race conditions (for different
+parent kernels different threads may be used).
+
+Pipelines implement asynchronous calls to ~act~ and ~react~, and try to make as
+many parallel calls as possible considering concurrency of the platform (no. of
+cores per node and no. of nodes in a cluster). A pipeline consists of a kernel
+pool, which contains all the subordinate kernels sent by their parents, and a
+thread pool that processes kernels in accordance with rules outlined in the
+previous paragraph. A separate pipeline is used for each device: There are
+pipelines for parallel processing, schedule-based processing (periodic and
+delayed tasks), and a proxy pipeline for processing of kernels on other cluster
+nodes (see fig.\nbsp{}[[fig-subord-ppl]]).
+
+In principle, kernels and pipelines machinery reflect the one of procedures and
+call stacks, with the advantage that kernel methods are called asynchronously
+and in parallel to each other (as much as programme logic allows). Kernel field
+is the stack, ~act~ method is a sequence of processor instructions before nested
+procedure call, and ~react~ method is a sequence of processor instructions after
+the call. Constructing and sending subordinate kernels to the pipeline is nested
+procedure call. Two methods are necessary to make calls asynchronous, and
+replace active wait for completion of subordinate kernels with passive one.
+Pipelines, in turn, allow to implement passive wait, and call correct kernel
+methods by analysing their internal state.
+
+#+name: fig-subord-ppl
+#+begin_src dot :exports results :file build/subord-ppl.pdf
+graph G {
+
+  node [fontname="Old Standard",fontsize=14,margin="0.055,0",shape=box]
+  graph [nodesep="0.25",ranksep="0.25",rankdir="LR"]
+  edge [arrowsize=0.66]
+
+  subgraph cluster_daemon {
+    label="Daemon process"
+    style=filled
+    color=lightgrey
+
+    factory [label="Factory"]
+    parallel_ppl [label="Parallel\npipeline"]
+    io_ppl [label="I/O\npipeline"]
+    sched_ppl [label="Schedule-based\npipeline"]
+    net_ppl [label="Network\npipeline"]
+    proc_ppl [label="Process\npipeline"]
+
+    upstream [label="Upstream\nthread pool"]
+    downstream [label="Downstream\nthread pool"]
+  }
+
+  factory--parallel_ppl
+  factory--io_ppl
+  factory--sched_ppl
+  factory--net_ppl
+  factory--proc_ppl
+
+  subgraph cluster_hardware {
+    label="Compute devices"
+    style=filled
+    color=lightgrey
+
+    cpu [label="CPU"]
+    core0 [label="Core 0"]
+    core1 [label="Core 1"]
+    core2 [label="Core 2"]
+    core3 [label="Core 3"]
+
+    storage [label="Storage"]
+    disk0 [label="Disk 0"]
+
+    network [label="Network"]
+    nic0 [label="NIC 0"]
+
+    timer [label="Timer"]
+
+  }
+
+  core0--cpu
+  core1--cpu
+  core2--cpu
+  core3--cpu
+
+  disk0--storage
+  nic0--network
+
+  parallel_ppl--upstream
+  parallel_ppl--downstream
+
+  upstream--{core0,core1,core2,core3} [style="dashed"]
+  downstream--core0 [style="dashed"]
+
+  io_ppl--core0 [style="dashed"]
+  io_ppl--disk0 [style="dashed"]
+  sched_ppl--core0 [style="dashed"]
+  sched_ppl--timer [style="dashed"]
+  net_ppl--core0 [style="dashed"]
+  net_ppl--nic0 [style="dashed"]
+  proc_ppl--core0 [style="dashed"]
+
+  subgraph cluster_children {
+    style=filled
+    color=white
+
+    subgraph cluster_child0 {
+      label="Child process 0"
+      style=filled
+      color=lightgrey
+      labeljust=right
+
+      app0_factory [label="Factory"]
+      app0 [label="Child process\rpipeline"]
+    }
+
+#    subgraph cluster_child1 {
+#      label="Child process 1"
+#      style=filled
+#      color=lightgrey
+#      labeljust=right
+#
+#      app1_factory [label="Factory"]
+#      app1 [label="Child process\rpipeline"]
+#    }
+  }
+
+  proc_ppl--app0
+#  proc_ppl--app1
+
+  app0_factory--app0 [constraint=false]
+#  app1_factory--app1 [constraint=false]
+
+}
+#+end_src
+
+#+caption: Mapping of parent and child process pipelines to compute devices. Solid lines denote aggregation, dashed lines denote mapping between logical and physical entities.
+#+attr_latex: :width \textwidth
+#+name: fig-subord-ppl
+#+RESULTS: fig-subord-ppl
+[[file:build/subord-ppl.pdf]]
+
+**** Software implementation.
+For efficiency reasons object pipeline and fault tolerance techniques (which
+will be described later) are implemented in the C++ framework: From the author's
+perspective C language is deemed low-level for distributed programmes, and Java
+incurs too much overhead and is not popular in HPC community. As of now, the
+framework runs in the same process as an parallel application that uses it. The
+framework is called Bscheduler, it is now in proof-of-concept development stage.
+
+**** Application programming interface.
+Each kernel has four types of fields (listed in table\nbsp{}[[tab-kernel-fields]]):
+- fields related to control flow,
+- fields defining the source location of the kernel,
+- fields defining the current location of the kernel, and
+- fields defining the target location of the kernel.
+
+#+name: tab-kernel-fields
+#+caption: Description of kernel fields.
+#+attr_latex: :booktabs t :align lp{0.7\textwidth}
+| Field             | Description                                                                                    |
+|-------------------+------------------------------------------------------------------------------------------------|
+| ~process_id~      | Identifier of a cluster-wide process (application) a kernel belongs to.                        |
+| ~id~              | Identifier of a kernel within a process.                                                       |
+| ~pipeline~        | Identifier of a pipeline a kernel is processed by.                                             |
+|                   |                                                                                                |
+| ~exit_code~       | A result of a kernel execution.                                                                |
+| ~flags~           | Auxiliary bit flags used in scheduling.                                                        |
+| ~time_point~      | A time point at which a kernel is scheduled to be executed.                                    |
+|                   |                                                                                                |
+| ~parent~          | Address/identifier of a parent kernel.                                                         |
+| ~src_ip~          | IP-address of a source cluster node.                                                           |
+| ~from_process_id~ | Identifier of a cluster-wide process from which a kernel originated.                           |
+|                   |                                                                                                |
+| ~principal~       | Address/identifier of a target kernel (a kernel to which the current one is sent or returned). |
+| ~dst_ip~          | IP-address of a destination cluster node.                                                      |
+
+Upon creation each kernel is assigned a parent and a pipeline. If there no other
+fields are set, then the kernel is an /upstream/ kernel\nbsp{}--- a kernel that
+can be distributed on any node and any processor core to exploit parallelism. If
+principal field is set, then the kernel is a /downstream/ kernel\nbsp{}--- a
+kernel that can only be sent to its principal, and a processor core to which the
+kernel is sent is defined by the principal memory address/identifier. If a
+downstream kernel is to be sent to another node, the destination IP-address must
+be set, otherwise the system will not find the target kernel.
+
+When kernel execution completes (its ~act~ method finishes), the kernel is
+explicitly sent to some other kernel, this directive is explicitly called inside
+~act~ method. Usually, after the execution completes a kernel is sent to its
+parent by setting principal field to the address/identifier of the parent,
+destination IP-address field to the source IP-address, and process identifier to
+the source process identifier. After that kernel becomes a downstream kernel and
+is sent by the system to the node, where its current principal is located
+without invoking load balancing algorithm. For downstream kernel ~react~ method
+of its parent is called by a pipeline with the kernel as the method argument to
+make it possible for a parent to collect the result of the execution.
+
+There is no way to provide fine-grained resilience to cluster node failures, if
+there are downstream kernels in the programme, except the ones returning to
+their parents. Instead, an exit code of the kernel is checked and a custom
+recovery code is executed. If there is no error checking, the system restarts
+execution from the first parent kernel, which did not produce any downstream
+kernels. This means, that if a problem being solved by the programme has
+information dependencies between parts that are computed in parallel, and a node
+failure occurs during computation of these parts, then this computation is
+restarted from the very beginning, discarding any already computed parts. This
+does not occur for embarrassingly parallel programmes, where parallel parts do
+not have such information dependencies between each other: in this case only
+parts from failed nodes are recomputed and all previously computed parts are
+retained.
+
+Unlike ~main~ function in programmes based on message passing library, the first
+(the main) kernel is initially run only on one node, and remote nodes are used
+on-demand. This design choice allows to have arbitrary number of nodes throughout
+execution of a programme, and use more nodes for highly parallel parts of the
+code. Similar choice is made in the design of big data
+frameworks\nbsp{}cite:dean2008mapreduce,vavilapalli2013yarn \nbsp{}--- a user
+submitting a job does not specify the number of hosts to run its job on, and
+actual hosts are the hosts where input files are located.
+
+**** Wavy surface generation algorithm mapping on system architecture.
 Software implementation of ARMA model works as a computational pipeline, in
 which each joint applies some function to the output coming from the pipe of the
 previous joint. Joints are distributed across computer cluster nodes to enable
@@ -2429,181 +2744,7 @@ So, computational model with a pipeline can be seen as /bulk-asynchronous
 model/, because of the parallel nature of programme steps. This model is the
 basis of the fault-tolerance model which will be described later.
 
-**** Software implementation.
-For efficiency reasons object pipeline and fault tolerance techniques (which
-will be described later) are implemented in the C++ framework: From the author's
-perspective C language is deemed low-level for distributed programmes, and Java
-incurs too much overhead and is not popular in HPC community. As of now, the
-framework runs in the same process as an parallel application that uses it. The
-framework is called Factory, it is now in proof-of-concept development stage.
-
-**** Computational model overview.
-The key feature that is missing in the current parallel programming technologies
-is a possibility to specify hierarchical dependencies between parallel tasks.
-When one has such dependency, it is trivial to determine which task should be
-responsible for re-executing a failed task on one of the survived nodes. To
-re-execute the task on the top of the hierarchy, a backup task is created and
-executed on a different node. There exists a number of systems that are capable
-of executing directed acyclic graphs of tasks in parallel\nbsp{}cite:acun2014charmpp,islam2012oozie, but graphs are not suitable to infer
-principal-subordinate relationship between tasks, because a node in the graph
-may have multiple parent nodes.
-
-The main purpose of the model is to simplify development of distributed batch
-processing applications and middleware. The main focus is to make application
-resilient to failures, i.e. make it fault tolerant and highly available, and do
-it transparently to a programmer. The implementation is divided into two layers:
-the lower layer consists of routines and classes for single node applications
-(with no network interactions), and the upper layer for applications that run on
-an arbitrary number of nodes. There are two kinds of tightly coupled entities in
-the model\nbsp{}--- /control flow objects/ (or /kernels/ for short) and
-/pipelines/\nbsp{}--- which are used together to compose a programme.
-
-Kernels implement control flow logic in theirs ~act~ and ~react~ methods and
-store the state of the current control flow branch. Both logic and state are
-implemented by a programmer. In ~act~ method some function is either directly
-computed or decomposed into nested functions (represented by a set of
-subordinate kernels) which are subsequently sent to a pipeline. In ~react~
-method subordinate kernels that returned from the pipeline are processed by
-their parent. Calls to ~act~ and ~react~ methods are asynchronous and are made
-within threads attached to a pipeline. For each kernel ~act~ is called only
-once, and for multiple kernels the calls are done in parallel to each other,
-whereas ~react~ method is called once for each subordinate kernel, and all the
-calls are made in the same thread to prevent race conditions (for different
-parent kernels different threads may be used).
-
-Pipelines implement asynchronous calls to ~act~ and ~react~, and try to make as
-many parallel calls as possible considering concurrency of the platform (no. of
-cores per node and no. of nodes in a cluster). A pipeline consists of a kernel
-pool, which contains all the subordinate kernels sent by their parents, and a
-thread pool that processes kernels in accordance with rules outlined in the
-previous paragraph. A separate pipeline is used for each device: There are
-pipelines for parallel processing, schedule-based processing (periodic and
-delayed tasks), and a proxy pipeline for processing of kernels on other cluster
-nodes (see fig.\nbsp{}[[fig-subord-ppl]]).
-
-In principle, kernels and pipelines machinery reflect the one of procedures and
-call stacks, with the advantage that kernel methods are called asynchronously
-and in parallel to each other (as much as programme logic allows). Kernel field
-is the stack, ~act~ method is a sequence of processor instructions before nested
-procedure call, and ~react~ method is a sequence of processor instructions after
-the call. Constructing and sending subordinate kernels to the pipeline is nested
-procedure call. Two methods are necessary to make calls asynchronous, and
-replace active wait for completion of subordinate kernels with passive one.
-Pipelines, in turn, allow to implement passive wait, and call correct kernel
-methods by analysing their internal state.
-
-#+name: fig-subord-ppl
-#+begin_src dot :exports results :file build/subord-ppl.pdf
-graph G {
-
-  node [fontname="Old Standard",fontsize=14,margin="0.055,0",shape=box]
-  graph [nodesep="0.25",ranksep="0.25",rankdir="LR"]
-  edge [arrowsize=0.66]
-
-  subgraph cluster_daemon {
-    label="Daemon process"
-    style=filled
-    color=lightgrey
-
-    factory [label="Factory"]
-    parallel_ppl [label="Parallel\npipeline"]
-    io_ppl [label="I/O\npipeline"]
-    sched_ppl [label="Schedule-based\npipeline"]
-    net_ppl [label="Network\npipeline"]
-    proc_ppl [label="Process\npipeline"]
-
-    upstream [label="Upstream\nthread pool"]
-    downstream [label="Downstream\nthread pool"]
-  }
-
-  factory--parallel_ppl
-  factory--io_ppl
-  factory--sched_ppl
-  factory--net_ppl
-  factory--proc_ppl
-
-  subgraph cluster_hardware {
-    label="Compute devices"
-    style=filled
-    color=lightgrey
-
-    cpu [label="CPU"]
-    core0 [label="Core 0"]
-    core1 [label="Core 1"]
-    core2 [label="Core 2"]
-    core3 [label="Core 3"]
-
-    storage [label="Storage"]
-    disk0 [label="Disk 0"]
-
-    network [label="Network"]
-    nic0 [label="NIC 0"]
-
-    timer [label="Timer"]
-
-  }
-
-  core0--cpu
-  core1--cpu
-  core2--cpu
-  core3--cpu
-
-  disk0--storage
-  nic0--network
-
-  parallel_ppl--upstream
-  parallel_ppl--downstream
-
-  upstream--{core0,core1,core2,core3} [style="dashed"]
-  downstream--core0 [style="dashed"]
-
-  io_ppl--core0 [style="dashed"]
-  io_ppl--disk0 [style="dashed"]
-  sched_ppl--core0 [style="dashed"]
-  sched_ppl--timer [style="dashed"]
-  net_ppl--core0 [style="dashed"]
-  net_ppl--nic0 [style="dashed"]
-  proc_ppl--core0 [style="dashed"]
-
-  subgraph cluster_children {
-    style=filled
-    color=white
-
-    subgraph cluster_child0 {
-      label="Child process 0"
-      style=filled
-      color=lightgrey
-      labeljust=right
-
-      app0_factory [label="Factory"]
-      app0 [label="Child process\rpipeline"]
-    }
-
-#    subgraph cluster_child1 {
-#      label="Child process 1"
-#      style=filled
-#      color=lightgrey
-#      labeljust=right
-#
-#      app1_factory [label="Factory"]
-#      app1 [label="Child process\rpipeline"]
-#    }
-  }
-
-  proc_ppl--app0
-#  proc_ppl--app1
-
-  app0_factory--app0 [constraint=false]
-#  app1_factory--app1 [constraint=false]
-
-}
-#+end_src
-
-#+caption: Mapping of parent and child process pipelines to compute devices. Solid lines denote aggregation, dashed lines denote mapping between logical and physical entities.
-#+attr_latex: :width \textwidth
-#+name: fig-subord-ppl
-#+RESULTS: fig-subord-ppl
-[[file:build/subord-ppl.pdf]]
+*** Computational model                                          :noexport:
 **** Governing principles.
 Data processing pipeline model is based on the following principles, following
 which maximises efficiency of a programme.
@@ -2650,89 +2791,8 @@ which maximises efficiency of a programme.
 
 So, control flow objects (or kernels) possess properties of both cooperative
 routines and event handlers.
-**** Definitions of hierarchies
-To disambiguate hierarchical links between daemon processes and kernels and to
-simplify the discussion, we will use the following naming conventions throughout
-the text. If the link is between two daemon processes, the relationship is
-denoted as /master-slave/. If the link is between two kernels, then the
-relationship is denoted as either /principal-subordinate/ or /parent-child/. Two
-hierarchies are orthogonal to each other in a sense that no kernel may have a
-link to a daemon, and vice versa. Since daemon hierarchy is used to distribute
-the load on cluster nodes, kernel hierarchy is mapped onto it, and this mapping
-can be arbitrary: It is common to have principal kernel on a slave node with its
-subordinate kernels distributed evenly between all cluster nodes (including the
-node where the principal is located). Both hierarchies can be arbitrarily deep,
-but "shallow" ones are preferred for highly parallel programmes, as there are
-less number of hops when kernels are distributed between cluster nodes. Since
-there is one-to-one correspondence between daemons and cluster nodes, they are
-used interchangeably in the work.
-
-**** Kernel structure and algorithms
-Each kernel has four types of fields (listed in table\nbsp{}[[tab-kernel-fields]]):
-- fields related to control flow,
-- fields defining the source location of the kernel,
-- fields defining the current location of the kernel, and
-- fields defining the target location of the kernel.
-
-#+name: tab-kernel-fields
-#+caption: Description of kernel fields.
-#+attr_latex: :booktabs t :align lp{0.7\textwidth}
-| Field             | Description                                                                                    |
-|-------------------+------------------------------------------------------------------------------------------------|
-| ~process_id~      | Identifier of a cluster-wide process (application) a kernel belongs to.                        |
-| ~id~              | Identifier of a kernel within a process.                                                       |
-| ~pipeline~        | Identifier of a pipeline a kernel is processed by.                                             |
-|                   |                                                                                                |
-| ~exit_code~       | A result of a kernel execution.                                                                |
-| ~flags~           | Auxiliary bit flags used in scheduling.                                                        |
-| ~time_point~      | A time point at which a kernel is scheduled to be executed.                                    |
-|                   |                                                                                                |
-| ~parent~          | Address/identifier of a parent kernel.                                                         |
-| ~src_ip~          | IP-address of a source cluster node.                                                           |
-| ~from_process_id~ | Identifier of a cluster-wide process from which a kernel originated.                           |
-|                   |                                                                                                |
-| ~principal~       | Address/identifier of a target kernel (a kernel to which the current one is sent or returned). |
-| ~dst_ip~          | IP-address of a destination cluster node.                                                      |
-
-Upon creation each kernel is assigned a parent and a pipeline. If there no other
-fields are set, then the kernel is an /upstream/ kernel\nbsp{}--- a kernel that
-can be distributed on any node and any processor core to exploit parallelism. If
-principal field is set, then the kernel is a /downstream/ kernel\nbsp{}--- a
-kernel that can only be sent to its principal, and a processor core to which the
-kernel is sent is defined by the principal memory address/identifier. If a
-downstream kernel is to be sent to another node, the destination IP-address must
-be set, otherwise the system will not find the target kernel.
-
-When kernel execution completes (its ~act~ method finishes), the kernel is
-explicitly sent to some other kernel, this directive is explicitly called inside
-~act~ method. Usually, after the execution completes a kernel is sent to its
-parent by setting principal field to the address/identifier of the parent,
-destination IP-address field to the source IP-address, and process identifier to
-the source process identifier. After that kernel becomes a downstream kernel and
-is sent by the system to the node, where its current principal is located
-without invoking load balancing algorithm. For downstream kernel ~react~ method
-of its parent is called by a pipeline with the kernel as the method argument to
-make it possible for a parent to collect the result of the execution.
-
-There is no way to provide fine-grained resilience to cluster node failures, if
-there are downstream kernels in the programme, except the ones returning to
-their parents. Instead, an exit code of the kernel is checked and a custom
-recovery code is executed. If there is no error checking, the system restarts
-execution from the first parent kernel, which did not produce any downstream
-kernels. This means, that if a problem being solved by the programme has
-information dependencies between parts that are computed in parallel, and a node
-failure occurs during computation of these parts, then this computation is
-restarted from the very beginning, discarding any already computed parts. This
-does not occur for embarrassingly parallel programmes, where parallel parts do
-not have such information dependencies between each other: in this case only
-parts from failed nodes are recomputed and all previously computed parts are
-retained.
-
 *** Cluster node discovery algorithm
-:PROPERTIES:
-:CUSTOM_ID: sec:node-discovery
-:END:
-
+**** Leader election algorithms.
 Many batch job scheduling systems are built on the principle of /subordination/:
 there is principal node in each cluster which manages job queue, schedules job
 execution on subordinate nodes and monitors their state. Principal role is
@@ -2745,8 +2805,8 @@ Despite the fact that dynamic role assignment requires leader election
 algorithm, this approach becomes more and more popular as it does not require
 spare reserved nodes to recover from principal node
 failure\nbsp{}cite:hunt2010zookeeper,lakshman2010cassandra,divya2013elasticsearch
-and generally leads to a symmetric system in which the same software stack with
-the same configuration is installed on every
+and generally leads to a symmetric system\nbsp{}--- a system in which the same
+software stack with the same configuration is installed on every
 node\nbsp{}cite:boyer2012glusterfs,ostrovsky2015couchbase.
 
 Leader election algorithms (which sometimes referred to as /distributed
@@ -2764,11 +2824,12 @@ The approach for cluster node discovery does not use wave algorithms, and hence
 does not require communicating with each node of the cluster to determine a
 leader. Instead, each node enumerates all nodes in the network it is part of,
 and converts this list to a /tree hierarchy/ with a user-defined maximal fan-out
-value (maximal number of subordinate nodes). Then the node determines its
-hierarchy level and tries to communicate with nodes from higher levels to become
-their subordinate. First, it checks the closest ones and then goes all the way
-to the top. If there is no top-level nodes or the node cannot connect to them,
-then the node itself becomes the principal of the whole hierarchy.
+value (maximal number of subordinate nodes a node may have). Then the node
+determines its hierarchy level and tries to communicate with nodes from higher
+levels to become their subordinate. First, it checks the closest ones and then
+goes all the way to the top. If there is no top-level nodes or the node cannot
+connect to them, then the node itself becomes the principal of the whole
+hierarchy.
 
 Tree hierarchy of all hosts in a network defines strict total order on a set of
 cluster nodes. Although, technically any function can be chosen to map a node to
@@ -2787,19 +2848,18 @@ network is defined as
   \forall f \colon \mathcal{N} \rightarrow \mathcal{R}^n
   \Rightarrow (f(n_1) < f(n_2) \Leftrightarrow \neg (f(n_1) \geq f(n_2))),
 \end{equation*}
-where \(f\) maps a node to its level and operator \(<\) defines strict total order on
-\(\mathcal{R}^n\). Function \(f\) defines node's sequential number, and \(<\) makes
-this number unique.
+where \(f\) maps a node to its level and operator \(<\) defines strict total
+order on \(\mathcal{R}^n\). Function \(f\) defines node's sequential number, and
+\(<\) makes this number unique.
 
-The simpliest function \(f\) maps each node to its Internet address position in
-network IP address range. Without conversion to a tree (when only /one/
-leader is allowed in the network) a node with the lowest position in this range
-becomes the principal. If IP-address of a node occupies the first position in
-the range, then there is no principal for it, and it continues to be at the top
-of the hierarchy until it fails. Although, IP address mapping is simple to
-implement, it introduces artificial dependence of the principal role on the
-address of a node. Still, it is useful for initial configuration of a cluster
-when more complex mappings are not applicable.
+The simplest function \(f\) maps each node to its IP address position in network
+IP address range. A node with the lowest position in this range becomes the
+principal of the whole hierarchy. If IP-address of a node occupies the first
+position in the range, then there is no principal for it, and it continues to be
+at the top of the hierarchy until it fails. Although, IP address mapping is
+simple to implement, it introduces artificial dependence of the principal role
+on the address of a node. Still, it is useful for initial configuration of a
+cluster when more complex mappings are not applicable.
 
 To make node discovery scale to a large number of nodes, IP address range is
 mapped to a tree hierarchy. In this hierarchy each node is uniquely identified
@@ -2814,10 +2874,10 @@ computed from the following optimisation problem.
     o \geq 0
 \end{align*}
 where \(n\) is the position of node's IP address in network IP address range and
-\(p\) is fan-out value (the maximal number of subordinates, a node can have). The
-principal of a node with level \(l\) and offset \(o\) has level \(l-1\) and offset
-\(\lfloor{o/p}\rfloor\). The distance between any two nodes in the tree with
-network positions \(i\) and \(j\) is computed as
+\(p\) is fan-out value (the maximal number of subordinates, a node can have).
+The principal of a node with level \(l\) and offset \(o\) has level \(l-1\) and
+offset \(\lfloor{o/p}\rfloor\). The distance between any two nodes in the tree
+hierarchy with network positions \(i\) and \(j\) is computed as
 \begin{align*}
     & \langle
         \text{lsub}(l(j), l(i)), \quad
@@ -2831,25 +2891,29 @@ network positions \(i\) and \(j\) is computed as
 \end{align*}
 The distance is compound to account for level in the first place.
 
-To determine its principal each node levels all nodes in the network according to
+To determine its principal each node ranks all nodes in the network according to
 their position \(\langle{l(n),o(n)}\rangle\), and using distance formula chooses
 the node which is closest to potential principal position and has lower level.
 That way IP addresses of offline nodes are skipped, however, for sparse networks
 (in which nodes occupy non-contiguous IP addresses) perfect tree is not
 guaranteed.
 
-Tree hierarchy traversal algorithm defines IP addresses and the order in which
-they are polled by each cluster node to find its principal. First, the /base/
-node (a node which searches for its principal) computes its potential principal
-address and tries to connect to this node. If the connection fails, the base
-node sequentially tries to connect to each node from the higher hierarchy
-levels, until it reaches the top of the hierarchy (the root of the tree). If
-none of the connections succeeds, the base node sequentially connects to all
-nodes on its own level having lesser position in IP address range. If none of
-the nodes respond, the base node becomes the principal node of the whole
-hierarchy, and the traversal repeats after a set period of time. An example of
-traversal order for a cluster of 11 nodes and a tree hierarchy with fan-out
-value of 2 is shown in\nbsp{}fig.[[fig-tree-hierarchy-11]].
+Formula for computing distance can be made arbitrary complex (to account for
+network latency and throughput or geographical location of the node), however,
+for its simplest form it is more efficient to use node traversal algorithm
+instead. The traversal requires less memory as it does not store ranked list of
+nodes, but iterates over IP addresses of the network in the order defined by the
+fan-out value. The algorithm is as follows. First, the /base/ node (a node which
+searches for its principal) computes its potential principal address and tries
+to connect to this node. If the connection fails, the base node sequentially
+tries to connect to each node from the higher hierarchy levels, until it reaches
+the top of the hierarchy (the root of the tree). If none of the connections
+succeeds, the base node sequentially connects to all nodes on its own level
+having lesser position in IP address range. If none of the nodes respond, the
+base node becomes the principal node of the whole hierarchy, and the traversal
+repeats after a set period of time. An example of traversal order for a cluster
+of 11 nodes and a tree hierarchy with fan-out value of 2 is shown
+in\nbsp{}fig.[[fig-tree-hierarchy-11]].
 
 #+name: fig-tree-hierarchy-11
 #+begin_src dot :exports results :file build/tree-hierarchy-11.pdf
@@ -2894,13 +2958,6 @@ digraph {
 #+RESULTS: fig-tree-hierarchy-11
 [[file:build/tree-hierarchy-11.pdf]]
 
-In order to determine its principal, a node is required to communicate to a node
-address of which it knows beforehand, so node discovery scales to a large number
-of nodes. Communication with other nodes occurs only when the current principal
-node fails. So, if cluster nodes occupy contiguous addresses in network IP
-address range, each node connects to its principal only, and inefficient scan of
-the whole network by each node does not occur.
-
 **** Evaluation results.
 To benchmark performance of node discovery, several daemon processes were
 launched on each physical cluster node, each listening on its own IP address.
@@ -2919,16 +2976,16 @@ clusters, based on Linux namespaces, and compare results to physical ones. The
 advantage of it is that the tests can be performed on a large virtual cluster
 using relatively small number of physical nodes. The advantage of our approach,
 which does not use Linux namespaces, is that it is more lightweight and larger
-number of daemon processes are be benchmarked on the same physical cluster.
+number of daemon processes can be benchmarked on the same physical cluster.
 
 Node discovery performance was evaluated by measuring time needed for all nodes
 of the cluster to discover each other, i.e. the time needed for the tree
 hierarchy of nodes to reach stable state. Each change of the hierarchy (as seen
 by each node) was written to a log file and after 30 seconds all daemon
 processes (each of which models cluster node) were forcibly terminated. Each new
-daemon process was launched with a 100ms delay to ensure that master nodes
-are always come online before slave nodes and hierarchy does not change randomly
-as a result of different start time of each process. As a result, in ideal case
+daemon process was launched with a 100ms delay to ensure that principal nodes
+are always come online before subordinates and hierarchy does not change
+randomly as a result of different start time of each process. So, in ideal case
 adding a daemon process to the hierarchy adds 100ms to the total discovery time.
 
 Test runs showed that running more than ??? virtual nodes on one physical node
@@ -2941,8 +2998,14 @@ fig.\nbsp{}[[fig-bootstrap-local]]).
 #+name: fig-bootstrap-local
 #+caption: Time to discover all daemon processes running on the cluster depending on the number of daemon processes.
 [[file:graphics/discovery.eps]]
-
 **** Discussion.
+Node discovery scales to a large number of nodes, because in order to determine
+its principal, a node is required to communicate to a node address of which it
+knows beforehand. Communication with other nodes occurs only when the current
+principal node fails. So, if cluster nodes occupy contiguous addresses in
+network IP address range, each node connects only to its principal, and
+inefficient scan of the whole network by each node does not occur.
+
 The following key features distinguish this approach with respect to some
 existing
 proposals\nbsp{}cite:brunekreef1996design,aguilera2001stable,romano2014design.
@@ -3117,54 +3180,22 @@ The following sections will describe the components that are required to write
 parallel programme and job scheduler, that can tolerate failure of cluster
 nodes.
 
-**** Hierarchy of control flow objects
-For load balancing purposes cluster nodes are combined into tree hierarchy (see
-section [[#sec:node-discovery]]), and the load is distributed between direct
-neighbours: when one runs the kernel on the subordinate node, the principal node
-also receive some of its subordinate kernels. This makes the system symmetrical
-and easy to maintain: each node have the same set of software that allows
-to replace one node with another in case of failure of the former. Similar
-architectural solution used in key-value stores\nbsp{}cite:anderson2010couchdb,lakshman2010cassandra to provide fault tolerance, but
-author does not know any task schedulers that use this approach.
-
-Unlike ~main~ function in programmes based on message passing library, the first
-(the main) kernel is initially run only on one node, and remote nodes are used
-on-demand. This design choice allows to have arbitrary number of nodes throughout
-execution of a programme, and use more nodes for highly parallel parts of the
-code. Similar choice is made in the design of big data
-frameworks\nbsp{}cite:dean2008mapreduce,vavilapalli2013yarn \nbsp{}--- a user
-submitting a job does not specify the number of hosts to run its job on, and
-actual hosts are the hosts where input files are located.
-
-From mathematical point of view kernel \(K\) can be described as a vector-valued
-functional which recursively maps a kernel to \(n\)-component vector of kernels:
-\begin{equation*}
-    K(f): \mathbb{K} \rightarrow \mathbb{K}^n
-    \qquad
-    \mathbb{K}^n = \left\{ f: \mathbb{K} \rightarrow \mathbb{K}^n \right\}.
-\end{equation*}
-Special kernel \(\mathbb{O}: \mathbb{K} \rightarrow \mathbb{K}^0\) is used to stop
-the recursion and is passed as an argument to the main kernel. An argument to a
-kernel is interpreted as follows.
-- If a kernel is a newly created kernel, then its argument is its parent kernel.
-- In other cases the argument is an arbitrary kernel (often a child of the
-  current kernel).
-
-Kernels are processed in a loop which starts with executing the main kernel,
-then inside the main kernel other kernels are created and executed
-asynchronously. The loop continues until some kernel returns \(\mathbb{O}\).
-Since kernel may return multiple kernels they are executed in parallel, which
-quickly fills kernel pool. Since kernels from the pool may be executed in
-unspecified order, several concurrent threads retrieve kernels from the pool and
-may send the remaining kernels to neighbouring cluster nodes if the pool
-overflows.
-
-Kernels are implemented as closures (functors in C++)\nbsp{}--- function objects
-containing all their arguments, a reference to parent kernel and application
-domain data. The data is either processed upon kernel call, or subordinate
-kernels are created to process it in parallel. When the processing is complete a
-parent kernel closure with its subordinate kernel as an argument is called to
-collect the resulting data from it.
+**** Definitions of hierarchies.
+To disambiguate hierarchical links between daemon processes and kernels and to
+simplify the discussion, we will use the following naming conventions throughout
+the text. If the link is between two daemon processes, the relationship is
+denoted as /master-slave/. If the link is between two kernels, then the
+relationship is denoted as either /principal-subordinate/ or /parent-child/. Two
+hierarchies are orthogonal to each other in a sense that no kernel may have a
+link to a daemon, and vice versa. Since daemon hierarchy is used to distribute
+the load on cluster nodes, kernel hierarchy is mapped onto it, and this mapping
+can be arbitrary: It is common to have principal kernel on a slave node with its
+subordinate kernels distributed evenly between all cluster nodes (including the
+node where the principal is located). Both hierarchies can be arbitrarily deep,
+but "shallow" ones are preferred for highly parallel programmes, as there are
+less number of hops when kernels are distributed between cluster nodes. Since
+there is one-to-one correspondence between daemons and cluster nodes, they are
+used interchangeably in the work.
 
 **** Handling nodes failures.
 Basic strategy to overcome a failure of a subordinate node is to restart
@@ -3434,7 +3465,8 @@ proved the impossibility of the distributed consensus with one faulty
 process\nbsp{}cite:fischer1985impossibility and impossibility of reliable
 communication in the presence of node
 failures\nbsp{}cite:fekete1993impossibility.
-** Comparison of the proposed approach to the current approaches
+
+*** Conclusions
 Current state-of-the-art approach to developing and running parallel programmes
 on the cluster is the use of MPI message passing library and job scheduler, and
 despite the fact that this approach is highly efficient in terms of parallel
