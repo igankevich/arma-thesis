@@ -3023,7 +3023,9 @@ proposals\nbsp{}cite:brunekreef1996design,aguilera2001stable,romano2014design.
   network, then there are multiple principal nodes in the cluster. If it is
   greater or equal to the number of IP-addresses in the network, then there is
   only one principal node. When some node fail, multi-level hierarchy changes
-  locally, only nodes adjacent to the failed one communicate.
+  locally, and only nodes that are adjacent to the failed one communicate.
+  However, node weight changes propagate to every node in the cluster via
+  hierarchical links.
 - *IP-address mapping.* Since hierarchy structure solely depends on the nodes'
   IP addresses, there is no election phase in the algorithm. To change the
   principal each node sends a message to the old principal and to the new one.
@@ -3040,40 +3042,45 @@ proposals\nbsp{}cite:brunekreef1996design,aguilera2001stable,romano2014design.
   to start the corresponding service on each node.
 To summarise, the advantage of the algorithm is that it
 - scales to a large number of nodes by means of hierarchy with multiple
-  principals,
-- does not constantly load the network with node state updates and heartbeat
-  packets,
-- does not require manual configuration to bootstrap a cluster.
+  principal nodes,
+- does not constantly load the network, as node state updates are sent only when
+  the state changes,
+- does not require manual configuration to bootstrap a cluster, other than
+  assigning an IP address to each cluster node.
 
 The disadvantage of the algorithm is that it requires IP-address to change
-infrequently. It is not suitable for cloud environments in which node DNS name
-is preserved, but IP-address may change over time. When IP-address changes,
-current connections may close, thus triggering node "failure" and rebuilding
-node hierarchy. So, environments where nodes are not identified by IP-addresses,
-are not suitable for the algorithm.
+infrequently, in order to be useful for load balancing. It is not suitable for
+cloud environments in which node DNS name is preserved, but IP-address may
+change over time. When IP-address changes, current connections may close, and
+node hierarchy is rebuilt. After each change in the hierarchy only newly created
+kernels are distributed using the new links, old kernels continue to execute on
+whatever nodes they were sent. So, environments where an IP address is not an
+unique identifier of the node are not suitable for the algorithm.
 
 The other disadvantage is that the algorithm creates artificial dependence of
-node rank on IP-address: it is difficult to substitute IP-address mapping with a
-more sophisticated one (e.g.\nbsp{}a mapping which uses current node and network
-load to infer node ranks) because measurement errors may result in unstable
-hierarchy, and the algorithm cease to be fully event-based.
+node rank on an IP-address: it is difficult to substitute IP-address mapping
+with a more sophisticated one. If the mapping uses current node and network load
+to infer node ranks, measurement errors may result in unstable hierarchy, and
+the algorithm cease to be fully event-based as metric need to be collected on
+every node and propagated to each node in the cluster.
 
 Node discovery algorithm is designed to balance the load on a cluster of compute
 nodes, its use in other applications is not studied here. When distributed or
-parallel programme starts on any of cluster nodes, its subtasks are distributed
+parallel programme starts on any of cluster nodes, its kernels are distributed
 to all adjacent nodes in the hierarchy (including principal node if applicable).
 To distribute the load evenly when the application is run on a subordinate node,
-each node maintains weight of each adjacent node in the hierarchy. The weight
-equals to the number of nodes in the tree "behind" the adjacent node. For
+each node maintains the weight of each adjacent node in the hierarchy. The
+weight equals to the number of nodes in the tree "behind" the adjacent node. For
 example, if the weight of the first adjacent node is 2, then round-robin load
-balancing algorithm distributes two subtasks to the first node before moving to
+balancing algorithm distributes two kernels to the first node before moving to
 the next one.
 
 To summarise, node discovery algorithm is
-- designed to ease load balancing on the cluster,
-- fully fault-tolerant the state of every node can be recomputed at any time,
-- fully event-based which means it does not load the network by periodically
-  sending messages.
+- designed to ease load balancing on the large number of cluster nodes,
+- fully fault-tolerant, because the state of every node can be recomputed at any
+  time,
+- fully event-based as it does not overload the network by periodically sending
+  state update messages.
 
 *** Fail over algorithm
 **** Checkpoints.
