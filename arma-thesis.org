@@ -2993,12 +2993,19 @@ finds its principal on the first try.
 
 The benchmark was run varying the number of daemons per cluster node. The
 experiment showed that discovery of up to 400 nodes each other takes no more
-than 2 seconds (fig.\nbsp{}[[fig-bootstrap-local]]). This value does not change
+than 2 seconds (fig.\nbsp{}[[fig-discovery-benchmark]]). This value does not change
 significantly with the increase in number of physical nodes.
 
-#+name: fig-bootstrap-local
-#+caption: Time to discover all daemon processes running on the cluster depending on the number of daemon processes.
-[[file:graphics/discovery.eps]]
+#+name: fig-discovery-benchmark
+#+begin_src R :file build/discovery-benchmark.pdf
+source(file.path("R", "discovery.R"))
+bscheduler.plot_discovery()
+#+end_src
+
+#+caption: Time to discover all daemon processes running on the cluster depending on the number of daemon processes. Dashed lines represent minimum and maximum values.
+#+name: fig-discovery-benchmark
+#+RESULTS: fig-discovery-benchmark
+[[file:build/discovery-benchmark.pdf]]
 
 **** Discussion.
 Node discovery scales to a large number of nodes, because in order to determine
