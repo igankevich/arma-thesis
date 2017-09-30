@@ -2972,32 +2972,34 @@ table\nbsp{}[[tab-cluster]].
 Similar approach was used in
 in\nbsp{}cite:lantz2010network,handigol2012reproducible,heller2013reproducible
 where the authors reproduce various real-world experiments using virtual
-clusters, based on Linux namespaces, and compare results to physical ones. The
-advantage of it is that the tests can be performed on a large virtual cluster
-using relatively small number of physical nodes. The advantage of our approach,
-which does not use Linux namespaces, is that it is more lightweight and larger
-number of daemon processes can be benchmarked on the same physical cluster.
+clusters, based on Linux namespaces, and compare the results to physical ones.
+The advantage of it is that the tests can be performed on a large virtual
+cluster using relatively small number of physical nodes. The advantage of our
+approach, which does not use Linux namespaces, is that it is more lightweight
+and larger number of daemon processes can be benchmarked on the same physical
+cluster.
 
 Node discovery performance was evaluated by measuring time needed for all nodes
 of the cluster to discover each other, i.e. the time needed for the tree
-hierarchy of nodes to reach stable state. Each change of the hierarchy (as seen
-by each node) was written to a log file and after 30 seconds all daemon
+hierarchy of nodes to reach stable state. Each change of the hierarchy, as seen
+by each node, was written to a log file and after 30 seconds all daemon
 processes (each of which models cluster node) were forcibly terminated. Each new
 daemon process was launched with a 100ms delay to ensure that principal nodes
 are always come online before subordinates and hierarchy does not change
-randomly as a result of different start time of each process. So, in ideal case
-adding a daemon process to the hierarchy adds 100ms to the total discovery time.
+randomly as a result of different start time of each process. This artificial
+delay was subsequently subtracted from the results. So, benchmark results
+represent discovery time in an "ideal" cluster, in which every daemon always
+finds its principal on the first try.
 
-Test runs showed that running more than ??? virtual nodes on one physical node
-simultaneously warp the results, thus additional physical nodes, each of which
-run ??? virtual nodes, were used for the experiment. The experiment showed that
-discovery of 100--400 nodes each other takes 1.5 seconds on average, and the
-value increases only slightly with increase in the number of nodes (see
-fig.\nbsp{}[[fig-bootstrap-local]]).
+The benchmark was run varying the number of daemons per cluster node. The
+experiment showed that discovery of up to 400 nodes each other takes no more
+than 2 seconds (fig.\nbsp{}[[fig-bootstrap-local]]). This value does not change
+significantly with the increase in number of physical nodes.
 
 #+name: fig-bootstrap-local
 #+caption: Time to discover all daemon processes running on the cluster depending on the number of daemon processes.
 [[file:graphics/discovery.eps]]
+
 **** Discussion.
 Node discovery scales to a large number of nodes, because in order to determine
 its principal, a node is required to communicate to a node address of which it
