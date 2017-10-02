@@ -2982,19 +2982,24 @@ cluster.
 Node discovery performance was evaluated by measuring time needed for all nodes
 of the cluster to discover each other, i.e. the time needed for the tree
 hierarchy of nodes to reach stable state. Each change of the hierarchy, as seen
-by each node, was written to a log file and after 30 seconds all daemon
-processes (each of which models cluster node) were forcibly terminated. Each new
-daemon process was launched with a 100ms delay to ensure that principal nodes
-are always come online before subordinates and hierarchy does not change
+by each node, was written to a log file and after a set amount of time all
+daemon processes (each of which models cluster node) were forcibly terminated.
+Each new daemon process was launched with a 100ms delay to ensure that principal
+nodes are always come online before subordinates and hierarchy does not change
 randomly as a result of different start time of each process. This artificial
 delay was subsequently subtracted from the results. So, benchmark results
 represent discovery time in an "ideal" cluster, in which every daemon always
 finds its principal on the first try.
 
 The benchmark was run varying the number of daemons per cluster node. The
-experiment showed that discovery of up to 400 nodes each other takes no more
-than 2 seconds (fig.\nbsp{}[[fig-discovery-benchmark]]). This value does not change
-significantly with the increase in number of physical nodes.
+experiment showed that discovery of up to 512 (8 nodes with 64 processes per
+node) nodes each other takes no more than 2 seconds
+(fig.\nbsp{}[[fig-discovery-benchmark]]). This value does not change significantly
+with the increase in the number of physical nodes. Using more than 8 nodes with
+64 processes per node causes large variation in discovery time due to a large
+total number of processes connecting simultaneously to one master process (a
+fan-out value of 10000 was used for all tests), so these results were excluded
+from the benchmark.
 
 #+name: fig-discovery-benchmark
 #+header: :width 8 :height 6
