@@ -2913,7 +2913,7 @@ having lesser position in IP address range. If none of the nodes respond, the
 base node becomes the principal node of the whole hierarchy, and the traversal
 repeats after a set period of time. An example of traversal order for a cluster
 of 11 nodes and a tree hierarchy with fan-out value of 2 is shown
-in\nbsp{}fig.[[fig-tree-hierarchy-11]].
+in\nbsp{}fig.\nbsp{}[[fig-tree-hierarchy-11]].
 
 #+name: fig-tree-hierarchy-11
 #+begin_src dot :exports results :file build/tree-hierarchy-11.pdf
@@ -3002,10 +3002,10 @@ fan-out value of 10000 was used for all tests), so these results were excluded
 from the benchmark.
 
 #+name: fig-discovery-benchmark
-#+header: :width 8 :height 6
+#+header: :width 7 :height 5
 #+begin_src R :file build/discovery-benchmark.pdf
 source(file.path("R", "discovery.R"))
-bscheduler.plot_discovery(xlabel="No. of physical nodes")
+bscheduler.plot_discovery(xlabel="No. of physical nodes",toplabel="ppn")
 #+end_src
 
 #+caption: Time to discover all daemon processes running on the cluster depending on the number of daemon processes. Dashed lines represent minimum and maximum values.
