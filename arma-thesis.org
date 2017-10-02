@@ -2997,9 +2997,10 @@ than 2 seconds (fig.\nbsp{}[[fig-discovery-benchmark]]). This value does not cha
 significantly with the increase in number of physical nodes.
 
 #+name: fig-discovery-benchmark
+#+header: :width 8 :height 6
 #+begin_src R :file build/discovery-benchmark.pdf
 source(file.path("R", "discovery.R"))
-bscheduler.plot_discovery()
+bscheduler.plot_discovery(xlabel="No. of physical nodes")
 #+end_src
 
 #+caption: Time to discover all daemon processes running on the cluster depending on the number of daemon processes. Dashed lines represent minimum and maximum values.

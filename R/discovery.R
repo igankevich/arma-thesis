@@ -75,30 +75,53 @@ bscheduler.load_node_discovery_data <- function () {
 		by=list(nodes=all_data$nodes, daemons=all_data$daemons),
 		FUN=max
 	)$x
+	# convert milliseconds to seconds
+	result$t_avg <- result$t_avg / 1000
+	result$t_min <- result$t_min / 1000
+	result$t_max <- result$t_max / 1000
 	result
 }
 
-bscheduler.plot_discovery <- function (xlabel='No. of daemon processes',
-                                       ylabel='Time, ms',
-                                       toplabel='processes per node') {
+bscheduler.plot_discovery <- function (xlabel='No. of physical nodes',
+                                       ylabel='Time, s',
+                                       toplabel='Processes per node') {
 	result <- bscheduler.load_node_discovery_data();
-	par(mfrow=c(2,2))
-	for (n in c(1, 8, 16, 32)) {
+	# consider only large number of nodes
+	result <- result[result$nodes>=5,]
+	params <- list(list(n=1, col='black'),
+				   list(n=8, col='#707070'),
+				   list(n=32, col='blue'),
+				   list(n=64, col='#c04040'))
+	
+	ltext <- sapply(params, function (p) {
+		paste(toplabel, p$n, sep=': ')
+	})
+	lcolors <- sapply(params, function (p) { p$col })
+	
+	#par(mfrow=c(3,2))
+	plot.new()
+	plot.window(
+		xlim=range(result$nodes),
+		ylim=range(result$t_min, result$t_max, 0.5, 2.0)
+	)
+	for (p in params) {
+		n <- p$n
 		res <- result[result$daemons==n,]
-		x <- res$nodes*n
-		plot.new()
-		plot.window(xlim=range(x), ylim=range(0, result$t_min, result$t_max))
-		points(x, res$t_avg, pch=19)
-		lines(x, res$t_min, lty='dashed')
-		lines(x, res$t_max, lty='dashed')
-		xlabels <- c(1:max(res$nodes))*n
-		axis(1, at=xlabels, labels=xlabels)
-		axis(2)
-		title(
-			paste(toplabel, n, sep=': '),
-			xlab=xlabel,
-			ylab=ylabel
-		)
-		box()
+		x <- res$nodes
+		lines(x, res$t_avg, col=p$col, lwd=2)
+		points(x, res$t_avg, col=p$col)
+		lines(x, res$t_min, lty='dashed', col=p$col)
+		lines(x, res$t_max, lty='dashed', col=p$col)
 	}
+	axis(1, at=c(1:max(result$nodes)))
+	axis(2, at=seq(0.5,2.0,0.5))
+	title(xlab=xlabel, ylab=ylabel)
+	legend(
+		'topright',
+		legend=ltext,
+		col=lcolors,
+		lty='solid',
+		lwd=2
+	)
+	box()
 }
