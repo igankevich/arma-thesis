@@ -1239,12 +1239,12 @@ fi
 cd $dir
 git checkout master
 git pull
-git checkout 1ed6679387f0b79d8495c8bf55a6b0b304347e48
+git checkout 82c6f79f6c7bab3d92672edf2cdc6ccec56eee6d
 #+end_src
 
 #+RESULTS:
 : Ваша ветка обновлена в соответствии с «origin/master».
-: Already up-to-date.
+: Уже обновлено.
 ** Download bscheduler-benchmarks data from repository
 #+begin_src sh :exports none :results verbatim
 set -e

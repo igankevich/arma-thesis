@@ -262,3 +262,84 @@ arma.print_table_for_realtime_data <- function (data, routine_names, column_name
   all_data <- setNames(all_data, column_names)
   ascii(all_data, include.rownames=FALSE, digits=4)
 }
+
+arma.load_bscheduler_data <- function () {
+	all_test_cases <- list(c("a9-single-node-direct", "openmp", "m1"),
+						   c("a9-single-node-direct", "bscheduler", "m1"),
+						   c("a9-two-nodes-direct", "bscheduler", "m1"))
+	all_data = data.frame(
+		framework=rep(NA,0),
+		size=rep(NA,0),
+		t=rep(NA,0)
+	)
+	row <- 1
+	for (size in seq(10000, 30000, 2500)) {
+		for (test_case in all_test_cases) {
+			attempt <- test_case[[1]]
+			framework <- test_case[[2]]
+			hostname <- test_case[[3]]
+			data <- arma.load_events(
+				file.path(
+					"build",
+					"arma-benchmarks",
+					"output",
+					hostname,
+					attempt,
+					size,
+					framework,
+					"ar"
+				),
+				c("programme")
+			)
+			ev_prog <- data[data$event == "programme",]
+			all_data[row, 'framework'] <- paste(attempt, framework, sep="-")
+			all_data[row, 'size'] <- size
+			all_data[row, 't'] <- mean(ev_prog$t1 - ev_prog$t0)*1e-6
+			row <- row + 1
+		}
+	}
+	all_data
+}
+
+arma.plot_bscheduler_data <- function (all_data, names) {
+	plot.new()
+	plot.window(xlim=range(all_data$size), ylim=range(0,all_data$t))
+	conf <- list(
+		a=list(
+			framework='a9-single-node-direct-openmp',
+			color='#000000',
+			lty="solid",
+			lwd=1,
+			name=names$openmp
+		),
+		b=list(
+			framework='a9-single-node-direct-bscheduler',
+			color='#000000',
+			lty="dashed",
+			lwd=1,
+			name=names$bsc1
+		),
+		c=list(
+			framework='a9-two-nodes-direct-bscheduler',
+			color='#000000',
+			lty="dotted",
+			lwd=1,
+			name=names$bsc2
+		)
+	)
+	for (c in conf) {
+		data <- all_data[all_data$framework==c$framework, ]
+		lines(data$size, data$t, col=c$color, lty=c$lty)
+		points(data$size, data$t, col=c$color)
+	}
+	legend(
+		"bottomright",
+		legend=sapply(conf, function (c) c$name),
+		col=sapply(conf, function (c) c$color),
+		lty=sapply(conf, function (c) c$lty),
+		lwd=sapply(conf, function (c) c$lwd)
+	)
+	axis(1)
+	axis(2)
+	box()
+}

@@ -2263,7 +2263,7 @@ execution time. If such formula was not available or did not have all integrals
 as Fourier transforms, performance of velocity potential computation would be
 much lower.
 
-** MPP implementation
+** Fault-tolerant batch job scheduler
 *** System architecture
 **** Physical layer.
 Consists of nodes and direct/routed physical network links. On this layer full
@@ -2967,7 +2967,16 @@ benchmark. Tree hierarchy traversal algorithm has low requirements for system
 resources (processor time and network throughput), so running multiple processes
 per physical core is feasible, in contrast to HPC codes, where oversubscribing
 generally leads to poor performance. Test platform configuration is shown in
-table\nbsp{}[[tab-cluster]].
+table\nbsp{}[[tab-ant]].
+
+#+name: tab-ant
+#+caption: Test platform configuration.
+#+attr_latex: :booktabs t
+| CPU                       | Intel Xeon E5440, 2.83GHz |
+| RAM                       | 4Gb                       |
+| HDD                       | ST3250310NS, 7200rpm      |
+| No. of nodes              | 12                        |
+| No. of CPU cores per node | 8                         |
 
 Similar approach was used in
 in\nbsp{}cite:lantz2010network,handigol2012reproducible,heller2013reproducible
@@ -3087,7 +3096,6 @@ To summarise, node discovery algorithm is
   time,
 - fully event-based as it does not overload the network by periodically sending
   state update messages.
-
 *** Fail over algorithm
 **** Checkpoints.
 Node failures in a distributed system are divided into two types: failure of a
@@ -3127,7 +3135,7 @@ which use node hierarchy to dynamically distribute the load and use their own
 hierarchy to restart kernels upon node failure.
 
 **** Dynamic role distribution.
-Fault tolerance of a parallel programme is one of the problems which should by
+Fault tolerance of a parallel programme is one of the problems which is being
 solved by big data and HPC job schedulers, however, most schedulers provide
 fault tolerance for subordinate nodes only. These types of failures are
 routinely handled by restarting the affected job (from a checkpoint) or its part
@@ -3149,13 +3157,14 @@ can be either principal or subordinate, rather than to think of a cluster as a
 whole with principal and subordinate roles being dynamically distributed between
 processes running on different nodes.
 
-Realisation of the fact that a cluster is also a computer allows to implement
-middleware that distributes principal and subordinate roles automatically and
-handles node failures in a generic way. This software provides an API to
-distribute kernels between currently available nodes. Using this API one can
-write a programme that runs on a cluster without knowing the exact number of
-working nodes. The middleware works as a cluster operating system in user space,
-allowing to write and execute distributed applications transparently.
+Realisation of the fact that a cluster is also a computer and nodes are compute
+elements allows to implement middleware that distributes principal and
+subordinate roles automatically and handles node failures in a generic way. This
+software provides an API to distribute kernels between currently available
+nodes. Using this API one can write a programme that runs on a cluster without
+knowing the exact number of working nodes. The middleware works as a cluster
+operating system in user space, allowing to write and execute distributed
+applications transparently.
 
 **** Symmetric architecture.
 Many distributed key-value stores and parallel file systems have symmetric
@@ -3181,23 +3190,23 @@ In\nbsp{}cite:uhlemann2006joshua,engelmann2006symmetric the authors replicate
 job scheduler state to a backup node to make the principal node highly
 available, but backup node role is assigned statically. This solution is close
 to symmetric architecture, because it does not involve external service to
-provide high availability, but far from ideal where backup node is dynamically
-chosen.
+provide high availability, but far from ideal in which backup node is
+dynamically chosen.
 
 Finally, the simplest principal node high availability is implemented in VRRP
 protocol (Virtual Router Redundancy
 Protocol)\nbsp{}cite:knight1998rfc2338,hinden2004virtual,nadas2010rfc5798.
-Although VRRP protocol does provide dynamic role distribution, but is designed
-to be used by routers and reverse proxy servers behind them. Such servers lack
-the state (a job queue) that needs to be restored upon node failure, so it is
-easier for them to provide high availability. In can be implemented even without
-routers using Keepalived daemon\nbsp{}cite:cassen2002keepalived instead.
+Although VRRP protocol does provide dynamic role distribution, it is designed to
+be used by routers and reverse proxy servers behind them. Such servers lack the
+state (a job queue) that needs to be restored upon node failure, so it is easier
+for them to provide high availability. The protocol can be implemented even
+without routers using Keepalived daemon\nbsp{}cite:cassen2002keepalived instead.
 
 Symmetric architecture is beneficial for job schedulers because it
 allows to
 - make physical nodes interchangeable,
 - implement dynamic distribution of principal and subordinate roles, and
-- implement automatic recovery after failure of any node.
+- implement automatic recovery after a failure of any node.
 The following sections will describe the components that are required to write
 parallel programme and job scheduler, that can tolerate failure of cluster
 nodes.
@@ -3238,7 +3247,7 @@ A possible way of handling failure of the main node (a node where the main
 kernel is executed) is to replicate the main kernel to a backup node, and make
 all updates to its state propagate to the backup node by means of a distributed
 transaction, but this approach does not correlate with asynchronous nature of
-kernels and to complex to implement. In practice, however, the main kernel
+kernels and too complex to implement. In practice, however, the main kernel
 usually does not perform operations in parallel, it is rather sequentially
 execution steps one by one, so it has only one subordinate at a time. (Each
 subordinate kernel represent sequential computational step which may or may not
@@ -3262,7 +3271,8 @@ This simple approach allows to tolerate at most one failure of /any/ cluster nod
 per computational step or arbitrary number of subordinate nodes at any time
 during programme execution.
 
-An example of fail over algorithm follows (fig.\nbsp{}[[fig-fail-over-example]]).
+The algorithm is best described by an example
+(fig.\nbsp{}[[fig-fail-over-example]]).
 1. Initial state. Initially, computer cluster does not need to be configured
    except setting up local network. The algorithm assumes full connectivity of
    cluster nodes, and works best with tree topologies in which several network
@@ -3310,8 +3320,8 @@ An example of fail over algorithm follows (fig.\nbsp{}[[fig-fail-over-example]])
 [[file:build/fail-over-example.pdf]]
 
 **** Evaluation results.
-Factory framework is evaluated on physical cluster (table\nbsp{}[[tab-cluster]]) on the
-example of HPC application, that generates sea wavy surface, which is
+Factory framework is evaluated on physical cluster (table\nbsp{}[[tab-ant]]) on
+the example of HPC application, that generates sea wavy surface, which is
 described in detail in section [[#sec:arma-algorithms]]. The application consists of
 a series of filters, each of which is applied to the result of the previous one.
 Some of the filters are computed in parallel, so the programme is written as a
@@ -3319,15 +3329,6 @@ sequence of steps, some if which are made internally parallel to get better
 performance. In the programme only the most compute-intensive step (the surface
 generation) is executed in parallel across all cluster nodes, and other steps
 are executed in parallel across all cores of the principal node.
-
-#+name: tab-cluster
-#+caption: Test platform configuration.
-#+attr_latex: :booktabs t
-| CPU                       | Intel Xeon E5440, 2.83GHz |
-| RAM                       | 4Gb                       |
-| HDD                       | ST3250310NS, 7200rpm      |
-| No. of nodes              | 12                        |
-| No. of CPU cores per node | 8                         |
 
 The application was rewritten for the fault-tolerant version of the framework
 which required only slight modifications to handle failure of a node with the
@@ -3352,8 +3353,7 @@ time after the programme start which is equivalent approximately to \(1/3\) of
 the total run time without failures on a single node. The application
 immediately recognised node as offline, because the corresponding connection was
 closed; in real-world scenario, however, the failure is detected after a
-configurable time-out. All relevant parameters are summarised in
-table\nbsp{}[[tab-benchmark]]. The results of these runs were compared to the run
+configurable time-out. The results of these runs were compared to the run
 without node failures (fig.\nbsp{}[[fig-benchmark]] and\nbsp{}[[fig-slowdown]]).
 
 There is considerable difference in overall application performance for
@@ -3373,15 +3373,6 @@ some additional fixed amount of data, whereas a backup node not only stores the
 copy of this data, but executes the step in parallel with other subordinate
 nodes. So, when a backup node fails, the principal node executes the whole step
 once again on arbitrarily chosen survived node.
-
-#+name: tab-benchmark
-#+caption: Benchmark parameters for experiments with fail over algorithm.
-#+attr_latex: :booktabs t
-| Experiment no. | Time to offline, s |
-|              1 |                    |
-|              2 |                 10 |
-|              3 |                 10 |
-|              4 |                 10 |
 
 To measure how much time is lost due to a node failure the total execution time
 with a failure was divided by the total execution time without the failure but
@@ -3453,10 +3444,10 @@ not justify loosing all the data when the long programme run is near completion.
 In general, the more sequential steps one has in a parallel programme the less
 time is lost in an event of a backup node failure, and the more parallel parts
 each sequential step has the less time is lost in case of a principal or
-subordinate node failure. In other words, the more scalable a programme is the
+subordinate node failure. In other words, the more nodes a programme uses the
 more resilient to cluster node failures it becomes.
 
-Although it is not shown in the experiments, Factory does not only provide
+Although it is not shown in the experiments, Bscheduler does not only provide
 tolerance to cluster node failures, but allows for new nodes to automatically
 join the cluster and receive their portion of kernels from the already running
 programmes. This is trivial process as it does not involve restarting failed
@@ -3577,6 +3568,27 @@ allow to simultaneously run multiple parallel programmes on all cluster nodes
 without idling in the job queue, and transform the cluster into a unified
 computer system which makes best effort to execute distributed applications
 without interruption.
+
+** MPP implementation
+**** Distributed AR model algorithm.
+**** Performance of distributed AR model implementation.
+#+begin_src R :file build/bscheduler-performance.pdf
+source(file.path("R", "benchmarks.R"))
+par(family="serif")
+data <- arma.load_bscheduler_data()
+arma.plot_bscheduler_data(
+  data,
+  list(
+    openmp="OpenMP",
+    bsc1="Bscheduler (single node)",
+    bsc2="Bscheduler (two nodes)"
+  )
+)
+title(xlab="Wavy surface size", ylab="Time, s")
+#+end_src
+
+#+RESULTS:
+[[file:build/bscheduler-performance.pdf]]
 
 * Conclusion
 **** Research results.
