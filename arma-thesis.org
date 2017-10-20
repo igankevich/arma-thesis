@@ -1833,6 +1833,7 @@ surface parts, whereas MA algorithm requires padding part with noughts to be
 able to compute them in parallel. In contrast to these models, LH model has no
 dependencies between parts computed in parallel, but requires more computational
 power (floating point operations per seconds).
+
 **** Performance of OpenMP and OpenCL implementations.
 :PROPERTIES:
 :header-args:R: :results output raw :exports results
@@ -3608,6 +3609,29 @@ one.
   the implementation works transparently on any number of nodes.
 
 **** Performance of distributed AR model implementation.
+Distributed AR model implementation was benchmarked on the two nodes of "ant"
+cluster (table\nbsp{}[[tab-ant]]). To optimise network throughput these nodes were
+directly connected to each other with Ethernet cable and maximum transmission
+unit (MTU) was set to 9200. Two cases were considered: with one Bscheduler
+daemon process running on the local node, and with two daemon processes running
+on each node. The performance of the programme was compared to the performance
+of OpenMP version running on single node.
+
+Bscheduler outperforms OpenMP implementation in both one and two nodes cases
+(fig.\nbsp{}[[fig-bscheduler-performance]]). In case of one node the advantage in
+performance is explained by the fact that Bscheduler does not scan the queue for
+wavy surface parts for which dependencies are ready (as in parallel version of
+the algorithm), but for each part updates a counter of completed parts on which
+it depends. The same approach can be used in OpenMP version, but was discovered
+only for newer Bscheduler version, as queue scanning can not be performed
+efficiently in this framework. In case of two nodes the advantage in performance
+is due to a greater total number of processor cores (16), high network
+throughput of the direct network link. So, Bscheduler implementation of AR model
+algorithm is faster on single node due to more efficient autoregressive
+dependencies handling and its performance scales to a larger number of cores due
+to small data transmission overhead of direct network link.
+
+#+name: fig-bscheduler-performance
 #+begin_src R :file build/bscheduler-performance.pdf
 source(file.path("R", "benchmarks.R"))
 par(family="serif")
@@ -3623,7 +3647,9 @@ arma.plot_bscheduler_data(
 title(xlab="Wavy surface size", ylab="Time, s")
 #+end_src
 
-#+RESULTS:
+#+name: fig-bscheduler-performance
+#+caption: Performance comparison of Bscheduler and OpenMP.
+#+RESULTS: fig-bscheduler-performance
 [[file:build/bscheduler-performance.pdf]]
 
 * Conclusion
