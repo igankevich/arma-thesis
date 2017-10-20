@@ -3571,6 +3571,42 @@ without interruption.
 
 ** MPP implementation
 **** Distributed AR model algorithm.
+This algorithm, unlike its parallel counterpart, employs copying of data to
+execute computation on a different cluster node, and since network bandwidth is
+much lower than memory bandwidth, the size of data that is sent over the network
+have to be optimised to get better performance than on SMP system. One way to
+accomplish this is to distribute them between cluster nodes copying in the
+coefficients and all the boundary points, and copying out generated wavy surface
+part. Autoregressive dependencies prevent from creating all the parts at once
+and statically distributing them between cluster nodes, so the parts are created
+dynamically on the first node, when dependent points become available. So,
+distributed AR model algorithm is a "master-slave" algorithm in which the master
+dynamically creates tasks for each wavy surface part taking into account
+autoregressive dependencies between points and sends them to slaves, and slaves
+compute each wavy surface part and send them back to the master.
+
+In MPP implementation each task is modelled by a kernel: there is a master
+kernel that creates slave kernels on demand, and a slave kernel that computes
+wavy surface part. In ~act~ method of master kernel a slave kernel for the first
+wavy surface part\nbsp{}--- a part that does not depend on any points\nbsp{}---
+is created. When this kernel returns, the master kernel in ~react~ method
+determines which parts can be computed in turn, creates a slave kernel for each
+part and sends them to the pipeline. In ~act~ method of slave kernel wavy
+surface part is generated and then the kernel sends itself back to the master.
+The ~react~ method of slave kernel is empty.
+
+Distributed AR algorithm implementation has several advantages over the parallel
+one.
+- Bscheduler pipelines automatically distribute slave kernels between available
+  cluster nodes, and the main programme does not have to deal with these
+  implementation details.
+- There is no need to implement minimalistic job scheduler, which determines
+  execution order of jobs (kernels) taking into account autoregressive
+  dependencies: the order is fully defined in ~react~ method of the master
+  kernel.
+- There is no need in separate version of the algorithm for single cluster node,
+  the implementation works transparently on any number of nodes.
+
 **** Performance of distributed AR model implementation.
 #+begin_src R :file build/bscheduler-performance.pdf
 source(file.path("R", "benchmarks.R"))
