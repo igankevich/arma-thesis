@@ -3341,7 +3341,7 @@ which only demands explicit marking of replicated kernels.
 
 In a series of experiments performance of the new version of the application in
 the presence of different types of failures was benchmarked (numbers correspond
-to the graphs in fig.\nbsp{}[[fig-benchmark]]):
+to the graphs in fig.\nbsp{}[[fig-master-slave-failure]]):
 1) no failures,
 2) failure of a subordinate node (a node where a part of wavy surface is
    generated),
@@ -3355,68 +3355,57 @@ the total run time without failures on a single node. The application
 immediately recognised node as offline, because the corresponding connection was
 closed; in real-world scenario, however, the failure is detected after a
 configurable time-out. The results of these runs were compared to the run
-without node failures (fig.\nbsp{}[[fig-benchmark]] and\nbsp{}[[fig-slowdown]]).
+without node failures (fig.\nbsp{}[[fig-master-slave-failure]]).
 
 There is considerable difference in overall application performance for
 different types of failures. Graphs\nbsp{}2 and\nbsp{}3 in
-fig.\nbsp{}[[fig-benchmark]] show that performance in case of principal and
-subordinate node failure is the same. In case of principal node failure a backup
-node stores a copy of the main kernel and uses this copy when it detects failure
-of the principal node. In case of subordinate node failure, the principal node
-redistributes the non-returning kernels between remaining subordinate nodes. In
-both cases the state of the main kernel is not lost and no time is spent to
-restore it, which explains similar performance.
+fig.\nbsp{}[[fig-master-slave-failure]] show that performance in case of principal
+and subordinate node failure is the same. In case of principal node failure a
+backup node stores a copy of the main kernel and uses this copy when it detects
+failure of the principal node. In case of subordinate node failure, the
+principal node redistributes the non-returning kernels between remaining
+subordinate nodes. In both cases the state of the main kernel is not lost and no
+time is spent to restore it, which explains similar performance.
 
-Graph\nbsp{}4 in fig.\nbsp{}[[fig-benchmark]] shows that performance in case of a
-backup node failure is much lower than in other cases. It happens because
-principal node stores only the state of the current step of the computation plus
-some additional fixed amount of data, whereas a backup node not only stores the
-copy of this data, but executes the step in parallel with other subordinate
-nodes. So, when a backup node fails, the principal node executes the whole step
-once again on arbitrarily chosen survived node.
+Graph\nbsp{}4 in fig.\nbsp{}[[fig-master-slave-failure]] shows that performance in
+case of a backup node failure is much lower than in other cases. It happens
+because principal node stores only the state of the current step of the
+computation plus some additional fixed amount of data, whereas a backup node not
+only stores the copy of this data, but executes the step in parallel with other
+subordinate nodes. So, when a backup node fails, the principal node executes the
+whole step once again on arbitrarily chosen survived node.
 
-To measure how much time is lost due to a node failure the total execution time
-with a failure was divided by the total execution time without the failure but
-with the number of nodes minus one. This relation is obtained from the same
-benchmark and presented in fig.\nbsp{}[[fig-slowdown]]. The difference in
-performance in case of principal and subordinate node failures lies within 5%
-margin, and in case of backup node failure within 50% margin for the number of
-node less than 6[fn::Measuring this margin for higher number of nodes does not
-make sense since time before failure is greater than total execution time with
-these numbers of nodes, and programme's execution finishes before a failure
-occurs.]. Increase in execution time of 50% is more than \(1/3\) of execution
-time after which a failure occurs, but backup node failure needs some time to be
-discovered: it is detected only when subordinate kernel carrying the copy of the
-main kernel finishes its execution and tries to reach its parent. Instant
-detection requires abrupt stopping of the subordinate kernel which may be
-inapplicable for programmes with complicated logic.
+Backup node failure needs some time to be discovered: it is detected only when
+subordinate kernel carrying the copy of the main kernel finishes its execution
+and tries to reach its parent. Instant detection requires abrupt stopping of the
+subordinate kernel which may be inapplicable for programmes with complicated
+logic.
 
-#+name: fig-benchmark
-#+begin_src R :file build/benchmark-xxx.pdf
-# TODO
-plot(c(1:10))
+#+name: fig-master-slave-failure
+#+begin_src R :file build/master-slave-failure.pdf
+source(file.path("R", "benchmarks.R"))
+par(family="serif")
+data <- arma.load_master_slave_failure_data()
+arma.plot_master_slave_failure_data(
+  data,
+  list(
+    master="Bscheduler (master failure)",
+    slave="Bscheduler (slave failure)",
+    nofailures="Bscheduler (no failures)"
+  )
+)
+title(xlab="Wavy surface size", ylab="Time, s")
 #+end_src
 
-#+caption: Performance of hydrodynamics HPC application in the presence of node failures.
-#+name: fig-benchmark
-#+RESULTS: fig-benchmark
-[[file:build/benchmark-xxx.pdf]]
+#+caption: Performance of AR model in the presence of node failures.
+#+name: fig-master-slave-failure
+#+RESULTS: fig-master-slave-failure
+[[file:build/master-slave-failure.pdf]]
 
 The results of the benchmark allows to conclude that no matter a principal or a
 subordinate node fails, the overall performance of a parallel programme roughly
 equals to the one without failures with the number of nodes minus one, however,
 when a backup node fails performance penalty is much higher.
-
-#+name: fig-slowdown
-#+begin_src R :file build/slowdown-xxx.pdf
-# TODO
-plot(c(1:10))
-#+end_src
-
-#+caption: Slowdown of the hydrodynamics HPC application in the presence of different types of node failures compared to execution without failures but with the number of nodes minus one.
-#+name: fig-slowdown
-#+RESULTS: fig-slowdown
-[[file:build/slowdown-xxx.pdf]]
 
 **** Discussion of test results.
 Fail over algorithm guarantees to handle one failure per sequential programme
@@ -3635,8 +3624,8 @@ to small data transmission overhead of direct network link.
 #+begin_src R :file build/bscheduler-performance.pdf
 source(file.path("R", "benchmarks.R"))
 par(family="serif")
-data <- arma.load_bscheduler_data()
-arma.plot_bscheduler_data(
+data <- arma.load_bscheduler_performance_data()
+arma.plot_bscheduler_performance_data(
   data,
   list(
     openmp="OpenMP",

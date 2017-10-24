@@ -1239,7 +1239,7 @@ fi
 cd $dir
 git checkout master
 git pull
-git checkout 82c6f79f6c7bab3d92672edf2cdc6ccec56eee6d
+git checkout e478211f2682faabf32cf7a95cf21fb361ddcd48
 #+end_src
 
 #+RESULTS:

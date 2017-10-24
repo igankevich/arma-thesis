@@ -263,10 +263,7 @@ arma.print_table_for_realtime_data <- function (data, routine_names, column_name
   ascii(all_data, include.rownames=FALSE, digits=4)
 }
 
-arma.load_bscheduler_data <- function () {
-	all_test_cases <- list(c("a9-single-node-direct", "openmp", "m1"),
-						   c("a9-single-node-direct", "bscheduler", "m1"),
-						   c("a9-two-nodes-direct", "bscheduler", "m1"))
+arma.load_bscheduler_data <- function (all_test_cases) {
 	all_data = data.frame(
 		framework=rep(NA,0),
 		size=rep(NA,0),
@@ -301,7 +298,21 @@ arma.load_bscheduler_data <- function () {
 	all_data
 }
 
-arma.plot_bscheduler_data <- function (all_data, names) {
+arma.load_bscheduler_performance_data <- function() {
+	all_test_cases <- list(c("a9-single-node-direct", "openmp", "m1"),
+						   c("a9-single-node-direct", "bscheduler", "m1"),
+						   c("a9-two-nodes-direct", "bscheduler", "m1"))
+	arma.load_bscheduler_data(all_test_cases)
+}
+
+arma.load_master_slave_failure_data <- function() {
+	all_test_cases <- list(c("a10-failure-direct-slave", "bscheduler", "m1"),
+						   c("a9-single-node-direct", "bscheduler", "m1"),
+						   c("a10-failure-direct-master", "bscheduler", "m1"))
+	arma.load_bscheduler_data(all_test_cases)
+}
+
+arma.plot_bscheduler_performance_data <- function (all_data, names) {
 	plot.new()
 	plot.window(xlim=range(all_data$size), ylim=range(0,all_data$t))
 	conf <- list(
@@ -325,6 +336,49 @@ arma.plot_bscheduler_data <- function (all_data, names) {
 			lty="dotted",
 			lwd=1,
 			name=names$bsc2
+		)
+	)
+	for (c in conf) {
+		data <- all_data[all_data$framework==c$framework, ]
+		lines(data$size, data$t, col=c$color, lty=c$lty)
+		points(data$size, data$t, col=c$color)
+	}
+	legend(
+		"bottomright",
+		legend=sapply(conf, function (c) c$name),
+		col=sapply(conf, function (c) c$color),
+		lty=sapply(conf, function (c) c$lty),
+		lwd=sapply(conf, function (c) c$lwd)
+	)
+	axis(1)
+	axis(2)
+	box()
+}
+
+arma.plot_master_slave_failure_data <- function (all_data, names) {
+	plot.new()
+	plot.window(xlim=range(all_data$size), ylim=range(0,all_data$t))
+	conf <- list(
+		a=list(
+			framework='a10-failure-direct-master-bscheduler',
+			color='#000000',
+			lty="solid",
+			lwd=1,
+			name=names$master
+		),
+		b=list(
+			framework='a10-failure-direct-slave-bscheduler',
+			color='#000000',
+			lty="dashed",
+			lwd=1,
+			name=names$slave
+		),
+		c=list(
+			framework='a9-single-node-direct-bscheduler',
+			color='#000000',
+			lty="dotted",
+			lwd=1,
+			name=names$nofailures
 		)
 	)
 	for (c in conf) {
