@@ -1,4 +1,4 @@
-#+TITLE: High-performance sea wave simulation model for studying marine object behaviour
+#+TITLE: High-performance sea wave simulation programme for studying marine object behaviour
 #+AUTHOR: Ivan Gankevich
 #+DATE: St. Petersburg, 2017
 #+LANGUAGE: en
