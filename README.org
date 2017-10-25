@@ -1,0 +1,3 @@
+This is a repository with my PhD thesis. In order to build and reproduce some of
+the results you need to execute every org-babel code block in ~setup.org~ and
+then build the main file.
