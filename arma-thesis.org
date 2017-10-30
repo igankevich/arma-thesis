@@ -3351,9 +3351,31 @@ failure was simulated by sending ~SIGKILL~ signal to the daemon process on the
 corresponding node right after the copy of the main kernel is made. The
 application immediately recognised node as offline, because the corresponding
 connection was closed; in real-world scenario, however, the failure is detected
-after a configurable TCP user timeout\nbsp{}cite:rfc5482. The run time of these
-runs were compared to the run without node failures, results are presented in
-fig.\nbsp{}[[fig-master-slave-failure]].
+after a configurable TCP user timeout\nbsp{}cite:rfc5482. The execution time of
+these runs were compared to the run without node failures, results are presented
+in fig.\nbsp{}[[fig-master-slave-failure]]. The diagram of how kernels are
+distributed between two nodes is shown in fig.\nbsp{}[[fig-master-slave-backup]].
+
+#+name: fig-master-slave-backup
+#+begin_src dot :exports results :file build/master-slave-backup.pdf
+digraph {
+
+  node [fontname="Old Standard",fontsize=14,margin="0.055,0.055",shape=box,style=rounded]
+  graph [nodesep="0.30",ranksep="0.30",rankdir="BT"]
+  edge [arrowsize=0.66]
+
+  m1 [label="{{<master>Master | 10.0.0.1} | {<main>M | <slave1>S₁ | <slave3>S₃}}",shape=record]
+  m2 [label="{{<slave>Slave | 10.0.0.2} | {M' | <step>N | <slave2>S₂ | <slave4>S₄}}",shape=record]
+
+  m2->m1
+
+}
+#+end_src
+
+#+name: fig-master-slave-backup
+#+caption: Master and slave nodes and mapping of main kernel \(M\), a copy of main kernel \(M'\), current step kernel \(N\) and subordinate kernels \(S_{1,2,3}\) on them in the benchmark.
+#+RESULTS: fig-master-slave-backup
+[[file:build/master-slave-backup.pdf]]
 
 As expected, there is considerable difference in application performance for
 different types of failures. In case of slave node failure the main kernel as
