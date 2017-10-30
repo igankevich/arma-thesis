@@ -3524,25 +3524,6 @@ approach is to give parallel programmes more flexibility:
   cluster.
 In this section advantages and disadvantages of this approach are discussed.
 
-In comparison to portable batch systems (PBS) the proposed approach uses
-lightweight control flow objects instead of heavy-weight parallel jobs to
-distribute the load on cluster nodes. First, this allows to have node object
-queues instead of several cluster-wide job queues. The granularity of control
-flow objects is much higher than the batch jobs, and despite the fact that their
-execution time cannot be reliably predicted (as is execution time of batch
-jobs), objects from multiple parallel programmes can be dynamically distributed
-between the same set of cluster nodes, thus making the load more even. The
-disadvantage is that this requires more RAM to execute many programmes on the
-same set of nodes, and execution of each programme may be longer because of the
-shared control flow object queues. Second, the proposed approach uses dynamic
-distribution of principal and subordinate roles between cluster nodes instead of
-their static assignment to the particular physical nodes. This makes nodes
-interchangeable, which is required to provide fault tolerance. So, simultaneous
-execution of multiple parallel programmes on the same set of nodes may increase
-throughput of the cluster, but may also decrease their performance taken
-separately, and dynamic role distribution is the base on which resilience to
-failures builds.
-
 In comparison to MPI the proposed approach uses lightweight control flow objects
 instead of heavy-weight processes to decompose the programme into individual
 entities. First, this allows to determine the number of entities computed in
@@ -3555,18 +3536,38 @@ time the number of parts should be larger than the number of processors to make
 the load on each processor more even. Considering these limits the optimal part
 size is determined at runtime, and, in general, is not equal the number of
 parallel processes. The disadvantage is that the more control flow objects there
-are in the programme, the more shared data structures are copied to the same
-node with subordinate objects; this problem is solved by introducing another
-intermediate layer of objects, which in turn adds more complexity to the
-programme. Second, hierarchy of control flow objects together with hierarchy of
-nodes allows for automatic recomputation of failed objects on surviving nodes in
-an event of hardware failures. It is possible because the state of the programme
-execution is stored in each object and not in global variables like in MPI
-programmes. By duplicating the state to a subordinate nodes, the system
-recomputes only objects from affected processes instead of the whole programme.
-So, transition from processes to control flow objects may increase performance
-of a parallel programme via dynamic load balancing, but inhibit its scalability
-for a large number of nodes due to duplication of execution state.
+are in the programme, the more shared data structures (e.g.\nbsp{}coefficients)
+are copied to the same node with subordinate objects; this problem is solved by
+introducing another intermediate layer of objects, which in turn adds more
+complexity to the programme. Second, hierarchy of control flow objects together
+with hierarchy of nodes allows for automatic recomputation of failed objects on
+surviving nodes in an event of hardware failures. It is possible because the
+state of the programme execution is stored in each object and not in global
+variables like in MPI programmes. By duplicating the state to a subordinate
+nodes, the system recomputes only objects from affected processes instead of the
+whole programme. So, transition from processes to control flow objects may
+increase performance of a parallel programme via dynamic load balancing, but
+inhibit its scalability for a large number of nodes and large amount of shared
+structures due to duplication of these structures.
+
+In comparison to portable batch systems (PBS) the proposed approach uses
+lightweight control flow objects instead of heavy-weight parallel jobs to
+distribute the load on cluster nodes. First, this allows to have node object
+queues instead of several cluster-wide job queues. The granularity of control
+flow objects is much higher than the batch jobs, and despite the fact that their
+execution time cannot be reliably predicted (as is execution time of batch
+jobs), objects from multiple parallel programmes can be dynamically distributed
+between the same set of cluster nodes, thus making the load more even. The
+disadvantage is that this requires more RAM to execute many programmes on the
+same set of nodes, and execution time of each programme may be greater because
+of the shared control flow object queues. Second, the proposed approach uses
+dynamic distribution of principal and subordinate roles between cluster nodes
+instead of their static assignment to the particular physical nodes. This makes
+nodes interchangeable, which is required to provide fault tolerance. So,
+simultaneous execution of multiple parallel programmes on the same set of nodes
+may increase throughput of the cluster, but may also decrease their performance
+taken separately, and dynamic role distribution is the base on which resilience
+to failures builds.
 
 It may seem as if three building blocks of the proposed approach\nbsp{}---
 control flow objects, pipelines and hierarchies\nbsp{}--- are orthogonal, but,
