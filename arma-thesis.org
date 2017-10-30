@@ -3321,63 +3321,56 @@ The algorithm is best described by an example
 [[file:build/fail-over-example.pdf]]
 
 **** Evaluation results.
-Factory framework is evaluated on physical cluster (table\nbsp{}[[tab-ant]]) on
-the example of HPC application, that generates sea wavy surface, which is
-described in detail in section [[#sec:arma-algorithms]]. The application consists of
-a series of filters, each of which is applied to the result of the previous one.
-Some of the filters are computed in parallel, so the programme is written as a
-sequence of steps, some if which are made internally parallel to get better
-performance. In the programme only the most compute-intensive step (the surface
-generation) is executed in parallel across all cluster nodes, and other steps
-are executed in parallel across all cores of the principal node.
+Fail over algorithm was evaluated on physical cluster (table\nbsp{}[[tab-ant]]) on
+the example of distributed AR model application, which is described in detail in
+section [[#sec:arma-mpp]]. The application consists of a series of functions, each
+of which is applied to the result of the previous one. Some of the functions are
+computed in parallel, so the programme is written as a sequence of steps, some
+if which are made internally parallel to get better performance. In the
+programme only the most compute-intensive step (the surface generation) is
+executed in parallel across all cluster nodes, and other steps are executed in
+parallel across all cores of the principal node.
 
-The application was rewritten for the fault-tolerant version of the framework
-which required only slight modifications to handle failure of a node with the
-main kernel. The kernel was marked so that the framework makes a replica and
-sends it to some subordinate node along with its subordinate kernel. Other code
-changes involved modifying some parts to match the new API. So, providing fault
+The application was rewritten for the distributed version of the framework which
+required adding marshalling methods to each kernel which is sent over the
+network and slight modifications to handle failure of a node with the main
+kernel. The kernel was marked so that the framework makes a replica and sends it
+to some subordinate node along with its subordinate kernel. Other code changes
+involved modifying some parts to match the new API. So, providing fault
 tolerance by means of kernel hierarchy is mostly transparent to the programmer
-which only demands explicit marking of replicated kernels.
+which only demands explicit marking of replicated kernels and adding code to
+read and write kernels to the byte buffer.
 
 In a series of experiments performance of the new version of the application in
-the presence of different types of failures was benchmarked (numbers correspond
-to the graphs in fig.\nbsp{}[[fig-master-slave-failure]]):
+the presence of different types of failures was benchmarked:
 1) no failures,
-2) failure of a subordinate node (a node where a part of wavy surface is
-   generated),
-3) failure of a principal node (a node where the main kernel is run),
-4) failure of a backup node (a node where a copy of the main kernel is stored).
-A tree hierarchy with fan-out value of 64 was chosen to make all subordinate
-cluster nodes connect directly to the one having the first IP-address in the
-network IP address range. A victim node was made offline after a fixed amount of
-time after the programme start which is equivalent approximately to \(1/3\) of
-the total run time without failures on a single node. The application
-immediately recognised node as offline, because the corresponding connection was
-closed; in real-world scenario, however, the failure is detected after a
-configurable time-out. The results of these runs were compared to the run
-without node failures (fig.\nbsp{}[[fig-master-slave-failure]]).
+2) failure of a slave node (a node where a copy of the main kernel is stored),
+3) failure of a master node (a node where the main kernel is run).
+Only two directly connected cluster nodes were used for the benchmark. Node
+failure was simulated by sending ~SIGKILL~ signal to the daemon process on the
+corresponding node right after the copy of the main kernel is made. The
+application immediately recognised node as offline, because the corresponding
+connection was closed; in real-world scenario, however, the failure is detected
+after a configurable TCP user timeout\nbsp{}cite:rfc5482. The run time of these
+runs were compared to the run without node failures, results are presented in
+fig.\nbsp{}[[fig-master-slave-failure]].
 
-There is considerable difference in overall application performance for
-different types of failures. Graphs\nbsp{}2 and\nbsp{}3 in
-fig.\nbsp{}[[fig-master-slave-failure]] show that performance in case of principal
-and subordinate node failure is the same. In case of principal node failure a
-backup node stores a copy of the main kernel and uses this copy when it detects
-failure of the principal node. In case of subordinate node failure, the
-principal node redistributes the non-returning kernels between remaining
-subordinate nodes. In both cases the state of the main kernel is not lost and no
-time is spent to restore it, which explains similar performance.
+As expected, there is considerable difference in application performance for
+different types of failures. In case of slave node failure the main kernel as
+well as some subordinate kernels (that were distributed to the slave node) are
+lost, but master node has a copy of the main kernel and uses it to continue the
+execution. So, in case of slave node failure nothing is lost except performance
+potential of the slave node. In case of master node failure, a copy of the main
+kernel as well as the subordinate kernel, which carried the copy, are lost, but
+slave node has the original main kernel and uses it to restart execution of the
+current sequential step, i.e. send the subordinate kernel to the available
+cluster nodes (in case of two directly connected, it sends the kernel to
+itself). So, application performance is different, because the amount of
+execution state that is lost as a result of a failure is different.
 
-Graph\nbsp{}4 in fig.\nbsp{}[[fig-master-slave-failure]] shows that performance in
-case of a backup node failure is much lower than in other cases. It happens
-because principal node stores only the state of the current step of the
-computation plus some additional fixed amount of data, whereas a backup node not
-only stores the copy of this data, but executes the step in parallel with other
-subordinate nodes. So, when a backup node fails, the principal node executes the
-whole step once again on arbitrarily chosen survived node.
-
-Backup node failure needs some time to be discovered: it is detected only when
-subordinate kernel carrying the copy of the main kernel finishes its execution
-and tries to reach its parent. Instant detection requires abrupt stopping of the
+Slave node failure needs some time to be discovered: it is detected only when
+subordinate kernel carrying a copy of the main kernel finishes its execution and
+tries to reach its parent. Instant detection requires abrupt stopping of the
 subordinate kernel which may be inapplicable for programmes with complicated
 logic.
 
@@ -3402,12 +3395,25 @@ title(xlab="Wavy surface size", ylab="Time, s")
 #+RESULTS: fig-master-slave-failure
 [[file:build/master-slave-failure.pdf]]
 
-The results of the benchmark allows to conclude that no matter a principal or a
-subordinate node fails, the overall performance of a parallel programme roughly
-equals to the one without failures with the number of nodes minus one, however,
-when a backup node fails performance penalty is much higher.
+To summarise, if failure occurs right after a copy if the main kernel is made,
+only a small fraction of performance is lost in case of master node failure, and
+more performance is lost in case of slave node failure.
 
 **** Discussion of test results.
+Since failure is simulated right after the first subordinate kernels reaches its
+destination (a node where it is supposed to be executed), slave node failure
+results in a loss of a small fraction of performance; in real-world scenario,
+where failure may occur in the middle of wavy surface generation, performance
+loss due to slave node failure (a node where a copy of the main kernel is
+located) would be higher. Similarly, in real-world scenario the number of
+cluster nodes is larger, and less amount of subordinate kernels is lost due to
+master node failure, hence performance penalty would be lower for this case. In
+the benchmark the penalty is higher for the slave node failure, which is the
+result of absence of parallelism in the beginning of AR model wavy surface
+generation: the first part is computed sequentially, and other parts are
+computed only when the first one is available. So, failure of the first
+subordinate kernels delays execution of every dependent kernel in the programme.
+
 Fail over algorithm guarantees to handle one failure per sequential programme
 step, more failures can be tolerated if they do not affect the principal node.
 The algorithm handles simultaneous failure of all subordinate nodes, however, if
@@ -3560,6 +3566,9 @@ computer system which makes best effort to execute distributed applications
 without interruption.
 
 ** MPP implementation
+:PROPERTIES:
+:CUSTOM_ID: sec:arma-mpp
+:END:
 **** Distributed AR model algorithm.
 This algorithm, unlike its parallel counterpart, employs copying of data to
 execute computation on a different cluster node, and since network bandwidth is
