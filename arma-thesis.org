@@ -3404,7 +3404,7 @@ Since failure is simulated right after the first subordinate kernels reaches its
 destination (a node where it is supposed to be executed), slave node failure
 results in a loss of a small fraction of performance; in real-world scenario,
 where failure may occur in the middle of wavy surface generation, performance
-loss due to slave node failure (a node where a copy of the main kernel is
+loss due to /backup/ node failure (a node where a copy of the main kernel is
 located) would be higher. Similarly, in real-world scenario the number of
 cluster nodes is larger, and less amount of subordinate kernels is lost due to
 master node failure, hence performance penalty would be lower for this case. In
@@ -3412,36 +3412,36 @@ the benchmark the penalty is higher for the slave node failure, which is the
 result of absence of parallelism in the beginning of AR model wavy surface
 generation: the first part is computed sequentially, and other parts are
 computed only when the first one is available. So, failure of the first
-subordinate kernels delays execution of every dependent kernel in the programme.
+subordinate kernel delays execution of every dependent kernel in the programme.
 
 Fail over algorithm guarantees to handle one failure per sequential programme
-step, more failures can be tolerated if they do not affect the principal node.
-The algorithm handles simultaneous failure of all subordinate nodes, however, if
-both principal and backup nodes fail, there is no chance for a programme to
-continue the work. In this case the state of the current computation step is
-lost, and the only way to restore it is to restart the application from the
-beginning.
+step, more failures can be tolerated if they do not affect the master node. The
+algorithm handles simultaneous failure of all subordinate nodes, however, if
+both master and backup node fail, there is no chance for a programme to continue
+the work. In this case the state of the current computation step is lost, and
+the only way to restore it is to restart the application from the beginning
+(which is currently not implemented in Bscheduler).
 
 Kernels are means of abstraction that decouple distributed application from
 physical hardware: it does not matter how many cluster nodes are currently
 available for a programme to run without interruption. Kernels eliminate the
-need to allocate a physical backup node to tolerate principal node failures: in
-the framework of kernel hierarchy any physical node (except the principal one)
-can act as a backup one. Finally, kernels allow to handle failures in a way that
-is transparent to a programmer, deriving the order of actions from the internal
+need to allocate a physical live spare node to tolerate master node failures: in
+the framework of kernel hierarchy any physical node (except master) can act as a
+live spare. Finally, kernels allow to handle failures in a way that is
+transparent to a programmer, deriving the order of actions from the internal
 state of a kernel.
 
 The experiments show that it is essential for a parallel programme to have
 multiple sequential steps to make it resilient to cluster node failures,
-otherwise failure of a backup node in fact triggers recovery of the initial
-state of the programme. Although, the probability of a principal node failure is
-lower than the probability of a failure of any of the subordinate nodes, it does
-not justify loosing all the data when the long programme run is near completion.
-In general, the more sequential steps one has in a parallel programme the less
-time is lost in an event of a backup node failure, and the more parallel parts
-each sequential step has the less time is lost in case of a principal or
-subordinate node failure. In other words, the more nodes a programme uses the
-more resilient to cluster node failures it becomes.
+otherwise failure of backup node, in fact triggers recovery of the initial state
+of the programme. Although, the probability of a master node failure is lower
+than the probability of a failure of any of the slave nodes, it does not justify
+loosing all the data when the long programme run is near completion. In general,
+the more sequential steps one has in a parallel programme the less time is lost
+in an event of a backup node failure, and the more parallel parts each
+sequential step has the less time is lost in case of a principal or subordinate
+node failure. In other words, the more nodes a programme uses the more resilient
+to cluster node failures it becomes.
 
 Although it is not shown in the experiments, Bscheduler does not only provide
 tolerance to cluster node failures, but allows for new nodes to automatically
@@ -3462,15 +3462,15 @@ which equals to the total amount of memory it occupies on each cluster node,
 which in turn would not make it more efficient than checkpoints.
 
 The weak point of the proposed algorithm is the period of time starting from a
-failure of principal node up to the moment when the failure is detected, the
-main kernel is restored and new subordinate kernel with the parent's copy is
-received by a subordinate node. If at any time during this period backup node
-fails, execution state of a programme is completely lost, and there is no way to
-recover it other than restarting the programme from the beginning. The duration
-of the dangerous period can be minimised, but the probability of an abrupt
-programme termination can not be fully eliminated. This result is consistent
-with the scrutiny of /impossibility theory/, in the framework of which it is
-proved the impossibility of the distributed consensus with one faulty
+failure of master node up to the moment when the failure is detected, the main
+kernel is restored and new subordinate kernel with the parent's copy is received
+by a slave node. If at any time during this period backup node fails, execution
+state of a programme is completely lost, and there is no way to recover it other
+than restarting the programme from the beginning. The duration of the dangerous
+period can be minimised, but the probability of an abrupt programme termination
+can not be fully eliminated. This result is consistent with the scrutiny of
+/impossibility theory/, in the framework of which it is proved the impossibility
+of the distributed consensus with one faulty
 process\nbsp{}cite:fischer1985impossibility and impossibility of reliable
 communication in the presence of node
 failures\nbsp{}cite:fekete1993impossibility.
