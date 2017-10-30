@@ -3682,11 +3682,15 @@ beyond linear wave theory the following main results were achieved.
   to the ones of a real sea surface.
 - New method was applied to compute velocity potentials under generated surface.
   The resulting velocity potential field was verified by comparing it to the one
-  given by formulae from linear wave theory for small-amplitude waves. For large
-  amplitude waves the new method gives a reasonably different field. The method
-  is computationally efficient because all the integrals in its formula are
-  written as Fourier transforms, for which there are high-performance
+  given by formulae from linear wave theory for small-amplitude waves. For
+  large-amplitude waves the new method gives a reasonably different field. The
+  method is computationally efficient because all the integrals in its formula
+  are written as Fourier transforms, for which there are high-performance
   implementations.
+- The model and the method were implemented for both SMP and MPP systems, and
+  showed near linear scalability for different number of cores in several
+  benchmarks. AR model is more computationally efficient on CPU than on GPU, and
+  outperforms linear LH model.
 
 **** Further research directions.
 One of the topic of future research is studying generation of wave of arbitrary
