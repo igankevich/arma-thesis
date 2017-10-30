@@ -3196,12 +3196,12 @@ dynamically chosen.
 
 Finally, the simplest principal node high availability is implemented in VRRP
 protocol (Virtual Router Redundancy
-Protocol)\nbsp{}cite:knight1998rfc2338,hinden2004virtual,nadas2010rfc5798.
-Although VRRP protocol does provide dynamic role distribution, it is designed to
-be used by routers and reverse proxy servers behind them. Such servers lack the
-state (a job queue) that needs to be restored upon node failure, so it is easier
-for them to provide high availability. The protocol can be implemented even
-without routers using Keepalived daemon\nbsp{}cite:cassen2002keepalived instead.
+Protocol)\nbsp{}cite:rfc2338,rfc3768,rfc5798. Although VRRP protocol does
+provide dynamic role distribution, it is designed to be used by routers and
+reverse proxy servers behind them. Such servers lack the state (a job queue)
+that needs to be restored upon node failure, so it is easier for them to provide
+high availability. The protocol can be implemented even without routers using
+Keepalived daemon\nbsp{}cite:cassen2002keepalived instead.
 
 Symmetric architecture is beneficial for job schedulers because it
 allows to
