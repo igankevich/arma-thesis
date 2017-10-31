@@ -1822,12 +1822,12 @@ between parts, but the size of the parts is greater than in AR model's
 algorithm.
 
 The distinct feature of LH model's algorithm is its simplicity: to make it
-parallel, the surface is partitioned into parts of equal sizes and each part is
-computed in parallel. There are no dependencies between parts, which makes this
-algorithm particularly suitable for computation on GPU: each hardware thread
-simply computes its own point. In addition, sine and cosine functions in the
-model's formula which are slow to compute on CPU, make GPU even more favourable
-choice.
+parallel, wavy surface is partitioned into parts of equal sizes and each part is
+generated in parallel. There are no information dependencies between parts,
+which makes this algorithm particularly suitable for computation on GPU: each
+hardware thread simply computes its own point. In addition, sine and cosine
+functions in the model's formula are slow to compute on CPU, which makes GPU
+even more favourable choice.
 
 To summarise, even though AR and MA models are part of the mixed ARMA model,
 their parallel algorithms are fundamentally different and are more complicated
