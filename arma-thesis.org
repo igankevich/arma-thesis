@@ -1793,7 +1793,7 @@ scheduler, in which
   completed and executes it.
 
 In contrast to AR model, MA model does not have autoregressive dependencies
-between points, instead, each surface points depends on previous in time and
+between points; instead, each surface point depends on previous in time and
 space white noise values. MA model's formula allows for rewriting it as a
 convolution of white noise with the coefficients as a kernel. Using convolution
 theorem, the convolution is rewritten as inverse Fourier transform of the
