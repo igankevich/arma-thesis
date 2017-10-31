@@ -1784,12 +1784,13 @@ the queue from different threads is synchronised by locks. The algorithm is
 suitable for SMP machines, for MPP all parts on which the current one depends,
 dependent parts needs to be copied to the node where computation is carried out.
 
-So, the AR model algorithm is made parallel by implementing minimalistic job
+So, parallel AR model algorithm reduces to implementing minimalistic job
 scheduler, in which
 - each job corresponds to a wavy surface part,
-- the order of execution of jobs is defined by autoregressive dependencies,
-- and jobs are executed by a simple thread pool in which each thread removes the
-  first job for which all dependent jobs have completed and executes it.
+- the order of execution of jobs is defined by autoregressive dependencies, and
+- job queue is processed by a simple thread pool in which each thread in a loop
+  removes from the queue the first job for which all dependent jobs have
+  completed and executes it.
 
 In contrast to AR model, MA model does not have autoregressive dependencies
 between points, instead, each surface points depends on previous in time and
