@@ -1874,15 +1874,16 @@ periodicity allows to use far fewer coefficients compared to LH model.
 | No. of CPU cores        | 4                             |
 | No. of threads per core | 2                             |
 
-ARMA implementation uses several libraries of mathematical functions, numerical
+ARMA programme uses several libraries of mathematical functions, numerical
 algorithms and visualisation primitives (listed in table\nbsp{}[[tab-arma-libs]]),
 and was implemented using several parallel programming technologies (OpenMP,
 OpenCL) to find the most efficient one. For each technology and each model an
 optimised wavy surface generation was implemented (except for MA model for which
 only OpenMP implementation was done). Velocity potential computation was done in
-OpenMP and was implemented in OpenCL only for real-time visualisation of the
+OpenMP and was implemented in OpenCL only for real-time visualisation of wavy
 surface. For each technology the programme was recompiled and run multiple times
 and performance of each top-level subroutine was measured using system clock.
+
 Results of benchmarks of the technologies are summarised in
 table\nbsp{}[[tab-arma-performance]]. All benchmarks were run on a machine equipped
 with a GPU, characteristics of which are summarised in table\nbsp{}[[tab-gpulab]].
@@ -1897,7 +1898,7 @@ time, whereas velocity potential calculation together with other subroutines
 only a small fraction of it.
 
 #+name: tab-arma-libs
-#+caption: A list of mathematical libraries used in ARMA model implementation.
+#+caption: A list of mathematical libraries used in ARMA programme.
 #+attr_latex: :booktabs t
 | Library                                                      | What it is used for             |
 |--------------------------------------------------------------+---------------------------------|
