@@ -1911,38 +1911,40 @@ only a small fraction of it.
 | GL, GLUT\nbsp{}cite:kilgard1996opengl                        | three-dimensional visualisation |
 | CGAL\nbsp{}cite:fabri2009cgal                                | wave numbers interpolation      |
 
-AR model exhibits the best performance in OpenMP and the worst performance in
-OpenCL implementations, which is also the best and the worst performance across
-all model and framework combinations. In the best model and framework
-combination AR performance is 4.5 times higher than MA performance, and 20 times
-higher than LH performance; in the worst combination\nbsp{}--- 137 times slower
-than MA and 2 times slower than LH. The ratio between the best (OpenMP) and the
-worst (OpenCL) AR model performance is several hundreds. This is explained by
-the fact that the model formula\nbsp{}eqref:eq-ar-process is efficiently mapped
-on the CPU architecture with caches, low-bandwidth memory and small number of
-floating point units:
-- it contains no transcendental mathematical functions (sines, cosines and
-  exponents),
+AR model exhibits the highest performance in OpenMP and the lowest performance
+in OpenCL implementations, which is also the best and the worst performance
+across all model and framework combinations. In the most optimal model and
+framework combination AR performance is 4.5 times higher than MA performance,
+and 20 times higher than LH performance; in the most suboptimal
+combination\nbsp{}--- 137 times slower than MA and two times slower than LH. The
+ratio between the best (OpenMP) and the worst (OpenCL) AR model performance is
+several hundreds. This is explained by the fact that the model
+formula\nbsp{}eqref:eq-ar-process is efficiently mapped on the CPU architecture,
+which is distinguished from GPU architecture by having multiple caches,
+low-bandwidth memory and small number of floating point units compared to GPU.
+- This formula does not contain transcendental mathematical functions (sines,
+  cosines and exponents),
 - all of the multiplications and additions in the formula can be implemented
-  using FMA processor instructions,
-- and cache locality is achieved by using Blitz library which implements
-  optimised traversals for multidimensional arrays based on Hilbert
+  using FMA processor instructions, and
+- efficient use (locality) of cache is achieved by using Blitz library which
+  implements optimised traversals for multidimensional arrays based on Hilbert
   space-filling curve.
 In contrast to CPU, GPU has less number of caches, high-bandwidth memory and
 large number of floating point units, which is the worst case scenario for AR
 model:
-- there are no transcendental functions which compensate high memory latency,
-- there are FMA instructions but they do not improve performance due to high
+- there are no transcendental functions which could compensate high memory
   latency,
-- and optimal traversal was not used due to a lack of libraries implementing it
-  for a GPU.
-Finally, GPU does not have synchronisation primitives that allow to implement
-autoregressive dependencies between distinct wavy surface parts to compute them
-in parallel, and instead of this processor launches a separate OpenCL kernel for
-each part, controlling all the dependencies between them using CPU. So, for AR
-model CPU architecture is superior compared to GPU due to better handling of
-complex information dependencies, non-intensive calculations (multiplications
-and additions) and complex memory access patterns.
+- there are FMA instructions in GPU but they do not improve performance due to
+  high latency, and
+- optimal traversal of multidimensional arrays was not used due to a lack of
+  libraries implementing it for a GPU.
+Finally, GPU architecture does not contain synchronisation primitives that allow
+to implement autoregressive dependencies between distinct wavy surface parts;
+instead of this a separate OpenCL kernel is launched for each part, and
+dependency management between them is done on CPU side. So, in AR model case CPU
+architecture is superior compared to GPU due to better handling of complex
+information dependencies, simple calculations (multiplications and additions)
+and complex memory access patterns.
 
 #+header: :results output raw :exports results
 #+name: tab-arma-performance
