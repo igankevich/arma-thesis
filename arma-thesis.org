@@ -1829,14 +1829,15 @@ hardware thread simply computes its own point. In addition, sine and cosine
 functions in the model's formula are slow to compute on CPU, which makes GPU
 even more favourable choice.
 
-To summarise, even though AR and MA models are part of the mixed ARMA model,
-their parallel algorithms are fundamentally different and are more complicated
-than trivial parallel algorithm of LH model. Efficient AR algorithm requires
-specialised job scheduler to manage autoregressive dependencies between wavy
-surface parts, whereas MA algorithm requires padding part with noughts to be
-able to compute them in parallel. In contrast to these models, LH model has no
-dependencies between parts computed in parallel, but requires more computational
-power (floating point operations per seconds).
+To summarise, even though AR and MA models are part of the single mixed ARMA
+model, their parallel algorithms are fundamentally different and are more
+complicated than trivial parallel algorithm of LH model. Efficient
+implementation AR algorithm requires specialised job scheduler to manage
+autoregressive dependencies between wavy surface parts, whereas MA algorithm
+requires padding each part with noughts to be able to compute them in parallel.
+In contrast to these models, LH model has no information dependencies between
+parts, but requires more computational resources (floating point operations per
+seconds) to calculate transcendental functions in its formula.
 
 **** Performance of OpenMP and OpenCL implementations.
 :PROPERTIES:
