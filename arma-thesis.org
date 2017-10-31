@@ -1734,19 +1734,20 @@ work.
 * High-performance software implementation of sea wave simulation
 ** SMP implementation
 **** Parallel AR, MA and LH model algorithms.
-Although, AR and MA models are part of the mixed ARMA model they have completely
+Although, AR and MA models are part of the single mixed ARMA model they have
 disparate parallel algorithms, which are different from trivial one of LH model.
-AR algorithm is based on partitioning wavy surface into equal three-dimensional
-parts along each dimension and computing them in parallel taking into account
-causality constraints imposed by autoregressive dependencies between surface
-points. There are no autoregressive dependencies between points in MA model, its
-formula represents convolution of white noise with model coefficients, which is
-reduced to computation of three Fourier transforms via convolution theorem,
-which in turn have parallel implementations; so, MA algorithm is based on
-parallel FFT. Finally, LH algorithm is made parallel by simply computing each
-wavy surface point in parallel. So, parallel implementation of ARMA model
-consists of two parallel algorithms, one for each part of the model, which are
-more sophisticated than the one for LH model.
+AR algorithm consists in partitioning wavy surface into equally-sized
+three-dimensional parts in each dimension and computing them in parallel taking
+into account causal constraints imposed by autoregressive dependencies between
+surface points. There are no such dependencies between surface points in MA
+model, and its formula represents convolution of white noise with model
+coefficients, which is reduced to computation of three Fourier transforms via
+convolution theorem. So, MA algorithm consists in parallel computation of the
+convolution which is based on parallel FFT computation. Finally, LH algorithm is
+made parallel by simply computing each wavy surface point in parallel in several
+threads. So, parallel implementation of ARMA model consists of two parallel
+algorithms, one for each part of the model, which are more sophisticated than
+the one for LH model.
 
 AR model's formula main feature is autoregressive dependencies between wavy
 surface points along each dimension which prevent computing each surface point
