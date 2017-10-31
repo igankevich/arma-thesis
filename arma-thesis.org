@@ -1988,22 +1988,22 @@ arma.print_openmp_vs_opencl(model_names, row_names)
 
 In contrast to AR model, LH model exhibits the best performance on GPU and the
 worst performance on CPU. The reasons for that are
-- the large number of transcendental functions in its formula which help offset
-  high memory latency,
-- linear memory access pattern which help vectorise calculations and coalesce
-  memory accesses by different hardware threads,
-- and no information dependencies between output grid points.
-Despite the fact that GPU on the test platform is more performant than CPU (in
+- the large number of transcendental functions in its formula which offset high
+  memory latency,
+- linear memory access pattern which allows to vectorise calculations and
+  coalesce memory accesses by different hardware threads, and
+- no information dependencies between wavy surface points.
+Despite the fact that GPU on the test system is more performant than CPU (in
 terms of floating point operations per second), the overall performance of LH
 model compared to AR model is lower. The reason for that is slow data transfer
 between GPU and CPU memory.
 
-The last MA model is faster than LH and slower than AR. As the convolution in
+MA model is faster than LH model and slower than AR model. As the convolution in
 its formula is implemented using FFT, its performance depends on the performance
-of underlying FFT implementation: GSL for CPU and clFFT for GPU. In this work
+of FFT implementation: библиотека GSL for CPU and clFFT for GPU. In this work
 performance of MA model on GPU was not tested due to unavailability of the
-three-dimensional transform in clFFT library; if the transform was available, it
-could made the model even faster than AR.
+three-dimensional FFT in clFFT library; if the transform was available, it could
+made the model even faster than AR.
 
 NIT takes less time on GPU and more time on CPU, but taking data transfer
 between CPU and GPU into consideration makes their execution time comparable.
