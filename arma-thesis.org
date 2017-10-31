@@ -3497,7 +3497,7 @@ process\nbsp{}cite:fischer1985impossibility and impossibility of reliable
 communication in the presence of node
 failures\nbsp{}cite:fekete1993impossibility.
 
-*** Conclusions
+*** Comparison of the proposed approach with state-of-the-art approaches
 Current state-of-the-art approach to developing and running parallel programmes
 on the cluster is the use of MPI message passing library and job scheduler, and
 despite the fact that this approach is highly efficient in terms of parallel
@@ -3790,7 +3790,7 @@ equations\nbsp{}eqref:eq-problem is written as
     & \zeta(x,t) = -\frac{1}{g} \phi_t, & \text{на }z=\zeta(x,t),
 \end{align*}
 where \(\frac{p}{\rho}\) includes \(\phi_t\). The solution to the Laplace
-equation is sought in a form of Fourier series cite:kochin1966theoretical:
+equation is sought in a form of Fourier series\nbsp{}cite:kochin1966theoretical:
 \begin{equation*}
     \phi(x,z,t) = \int\limits_{0}^{\infty} e^{k z}
     \left[ A(k, t) \cos(k x) + B(k, t) \sin(k x) \right] dk.
@@ -3802,8 +3802,9 @@ Plugging it in the boundary condition yields
     &= -\frac{1}{g} \int\limits_{0}^{\infty} C_t(k, t) \cos(kx + \epsilon(k, t)).
 \end{align*}
 Here \(\epsilon\) is white noise and \(C_t\) includes \(dk\). Substituting
-integral with infinite sum yields two-dimensional form of
-eq.\nbsp{}[[eq-longuet-higgins]].
+integral with infinite sum yields two-dimensional form
+of\nbsp{}eqref:eq-longuet-higgins.
+
 ** Derivative in the direction of the surface normal
 :PROPERTIES:
 :CUSTOM_ID: directional-derivative
