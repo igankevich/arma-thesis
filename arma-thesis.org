@@ -1780,9 +1780,9 @@ that parallel threads start, each thread finds the first part for which all
 dependencies are satisfied (by checking the completion status of each part),
 removes the part from the queue, generates wavy surface for this part and sets
 completion status. The algorithm ends when the queue becomes empty. Access to
-the queue is synchronised by locks. The algorithm is suitable for SMP machines,
-for MPP the copying of dependent parts needs to be done prior to computation of
-each part.
+the queue from different threads is synchronised by locks. The algorithm is
+suitable for SMP machines, for MPP all parts on which the current one depends,
+dependent parts needs to be copied to the node where computation is carried out.
 
 So, the AR model algorithm is made parallel by implementing minimalistic job
 scheduler, in which
