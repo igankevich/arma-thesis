@@ -1848,24 +1848,23 @@ Differences in models' parallel algorithms make them efficient on different
 processor architectures, and to find the most efficient one all the models were
 benchmarked in both CPU and GPU.
 
-ARMA model does not require highly optimised software implementation to be
-efficient, its performance is high even without use of co-processors; there are
-two main causes of that. First, ARMA model itself does not use transcendental
-functions (sines, cosines and exponents) as opposed to LH model. All
-calculations (except model coefficients) are done via polynomials, which can be
-efficiently computed on modern processors using a series of FMA instructions.
-Second, pressure computation is done via explicit analytic formula using nested
-FFTs. Since two-dimensional FFT of the same size is repeatedly applied to every
-time slice, its coefficients (complex exponents) are pre-computed for all
-slices, and computations are performed with only a few transcendental functions.
-In case of MA model, performance is also increased by doing convolution with FFT
-transforms. So, high performance of ARMA model is due to scarce use of
-transcendental functions and heavy use of FFT, not to mention that high
-convergence rate and non-existence of periodicity allows to use far fewer
-coefficients compared to LH model.
+ARMA model does not require highly optimised codes to be efficient, its
+performance is high even without use of co-processors; there are two main causes
+of that. First, ARMA model itself does not use transcendental functions (sines,
+cosines and exponents) as opposed to LH model. All calculations (except model
+coefficients) are done via polynomials, which can be efficiently computed on
+modern processors using a series of FMA instructions. Second, pressure
+computation is done via explicit analytic formula using nested FFTs. Since
+two-dimensional FFT of the same size is repeatedly applied to every time slice,
+its coefficients (complex exponents) are pre-computed one time for all slices,
+and further computations involve only a few transcendental functions. In case of
+MA model, performance is also increased by doing convolution with FFT. So, high
+performance of ARMA model is due to scarce use of transcendental functions and
+heavy use of FFT, not to mention that high convergence rate and non-existence of
+periodicity allows to use far fewer coefficients compared to LH model.
 
 #+name: tab-gpulab
-#+caption: "Gpulab" test platform configuration.
+#+caption: "Gpulab" system configuration.
 #+attr_latex: :booktabs t
 | CPU                     | AMD FX-8370                   |
 | RAM                     | 16Gb                          |
