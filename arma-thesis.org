@@ -1812,13 +1812,14 @@ algorithm is commonly known in signal processing as
 prevent aliasing errors: without it the result would be circular convolution.
 
 Despite the fact that MA model algorithm partitions the surface into the same
-parts (but possible of different sizes), the vicinity of autoregressive
-dependencies between them allows to compute them in parallel without the use of
-specialised job scheduler. However, it requires padding with noughts to make the
-result correspond to the original MA model's formula. So, MA model's algorithm
-is more scalable to a large number of nodes as it has less dependencies between
-parts computed in parallel, but the size of the parts is greater than in AR
-model, so they are slower to compute.
+parts (but possibly of different sizes) as AR model algorithm, the vicinity of
+autoregressive dependencies between them allows to compute them in parallel
+without the use of specialised job scheduler. However, this algorithm requires
+padding parts with noughts to make the result of calculations correspond to the
+result obtained with original MA model's formula. So, MA model's algorithm is
+more scalable to a large number of nodes as it has no information dependencies
+between parts, but the size of the parts is greater than in AR model's
+algorithm.
 
 The distinct feature of LH model's algorithm is its simplicity: to make it
 parallel, the surface is partitioned into parts of equal sizes and each part is
