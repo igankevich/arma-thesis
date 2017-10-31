@@ -2006,13 +2006,13 @@ three-dimensional FFT in clFFT library; if the transform was available, it could
 made the model even faster than AR.
 
 NIT takes less time on GPU and more time on CPU, but taking data transfer
-between CPU and GPU into consideration makes their execution time comparable.
-This is explained by the large amount of transcendental mathematical functions
-that need to be computed for each wavy surface point to transform distribution
-of its \(z\)-coordinates. For each point a non-linear transcendental
+between them into consideration makes their execution time comparable. This is
+explained by the large amount of transcendental functions that need to be
+computed for each wavy surface point to transform distribution of its
+\(z\)-coordinates. For each point a non-linear transcendental
 equation\nbsp{}eqref:eq-distribution-transformation is solved using bisection
 method. GPU performs this task several hundred times faster than CPU, but spends
-a lot of time to transfer the result back to the main memory. So, the only
+a lot of time to transfer the result back to the processor memory. So, the only
 possibility to optimise this routine is to use root finding method with
 quadratic convergence rate to reduce the number of transcendental functions that
 need to be computed.
