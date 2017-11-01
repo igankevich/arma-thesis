@@ -2062,6 +2062,58 @@ clFFT для видеокарты. В данной работе производ
 функций, которые необходимо вычислить.
 
 **** Производительность ввода-вывода.
+:PROPERTIES:
+:header-args:R: :results output raw :exports results
+:END:
+
+#+header :results output raw :exports results
+#+name: tab-arma-io-performance
+#+begin_src R
+source(file.path("R", "benchmarks.R"))
+suffix_names <- list(
+  xfs.x="XFS",
+  xfs.y="XFS",
+  nfs.x="NFS",
+  nfs.y="NFS",
+  gfs.x="GlusterFS",
+  gfs.y="GlusterFS",
+  Row.names="\\orgcmidrule{2-4}{5-7}Подпрограмма"
+)
+top_names <- c("Последовательная", "Параллельная")
+row_names <- list(
+  generate_surface="Генерация поверхности",
+  write_all="Запись вывода в файл"
+)
+arma.print_sync_vs_async_io(suffix_names, row_names, top_names)
+#+end_src
+
+#+name: tab-arma-io-performance
+#+caption: Время работы подпрограмм (сек.) при использовании файловых систем XFS, NFS и GlusterFS совместно с последовательным и параллельным выводом в файл.
+#+attr_latex: :booktabs t
+#+RESULTS: tab-arma-io-performance
+|                                    |      |      | Последовательная |      |      | Параллельная |
+| \orgcmidrule{2-4}{5-7}Подпрограмма |  XFS |  NFS |        GlusterFS |  XFS |  NFS |    GlusterFS |
+|------------------------------------+------+------+------------------+------+------+--------------|
+| Генерация поверхности              | 1.26 | 1.26 |             1.33 | 1.33 | 3.30 |        11.06 |
+| Запись вывода в файл               | 0.28 | 2.34 |            10.95 | 0.00 | 0.00 |         0.00 |
+
+#+name: fig-arma-io-events
+#+header: :width 6 :height 8 :results output graphics
+#+begin_src R :file build/arma-io-events-ru.pdf
+source(file.path("R", "benchmarks.R"))
+names <- list(
+  xlab="Время, сек.",
+  ylab="Поток"
+)
+par(mfrow=c(3,1), family="serif")
+arma.plot_io_events(names)
+#+end_src
+
+#+name: fig-arma-io-events
+#+caption: График событий для XFS, NFS и GlusterFS, показывающий временные интервалы для каждого из потоков, на протяжении которых производится запись в файл (красный) и вычисления (черный).
+#+RESULTS: fig-arma-io-events
+[[file:build/arma-io-events-ru.pdf]]
+
 **** Параллельное вычисление поля потенциала скорости.
 **** Производительность OpenCL-решателя, вычисляющего поле потенциала скорости.
 **** Заключение.

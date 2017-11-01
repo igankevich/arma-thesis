@@ -2058,7 +2058,7 @@ arma.print_sync_vs_async_io(suffix_names, row_names, top_names)
 #+end_src
 
 #+name: tab-arma-io-performance
-#+caption: Running time (s.) for XFS, NFS and GlusterFS with sequential and parallel I/O programme versions.
+#+caption: Running time of subroutines (s.) with the use of XFS, NFS and GlusterFS along with sequential and parallel file output.
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-io-performance
 |                                  |      |      | Sequential |      |      |  Parallel |
@@ -2068,20 +2068,19 @@ arma.print_sync_vs_async_io(suffix_names, row_names, top_names)
 | Write output to files            | 0.28 | 2.34 |      10.95 | 0.00 | 0.00 |      0.00 |
 
 #+name: fig-arma-io-events
-#+header: :width 6 :height 9 :results output graphics
+#+header: :width 6 :height 8 :results output graphics
 #+begin_src R :file build/arma-io-events.pdf
 source(file.path("R", "benchmarks.R"))
-fsnames <- list(
-  xfs="XFS",
-  nfs="NFS",
-  gfs="GlusterFS"
+names <- list(
+  xlab="Time, s",
+  ylab="Thread"
 )
 par(mfrow=c(3,1), family="serif")
-arma.plot_io_events(fsnames)
+arma.plot_io_events(names)
 #+end_src
 
 #+name: fig-arma-io-events
-#+caption: Event plot for XFS, NFS and GlusterFS that shows time intervals spent for I/O and computation by different threads.
+#+caption: Event graph for XFS, NFS and GlusterFS that shows time intervals spent for I/O and computation by different threads.
 #+RESULTS: fig-arma-io-events
 [[file:build/arma-io-events.pdf]]
 

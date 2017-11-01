@@ -102,7 +102,12 @@ arma.print_sync_vs_async_io <- function(suffix_names, row_names, top_names) {
   print(ascii(big_table, include.rownames=FALSE))
 }
 
-arma.plot_io_events <- function (fsnames) {
+arma.plot_io_events <- function (names) {
+  fsnames <- list(
+    xfs="XFS",
+    nfs="NFS",
+    gfs="GlusterFS"
+  )
   filesystems <- c("xfs", "nfs", "gfs")
   conf <- list(
     a=list(
@@ -156,8 +161,8 @@ arma.plot_io_events <- function (fsnames) {
       ), "io-0"),
       las=2
     )
-    mtext("Time, s", side=1, line=3)
-    mtext("Thread", side=2, line=4)
+    mtext(names$xlab, side=1, line=3)
+    mtext(names$ylab, side=2, line=4)
     title(fsnames[[fs]])
   }
   legend(
