@@ -2085,14 +2085,13 @@ arma.plot_io_events(names)
 **** Parallel velocity potential field computation.
 The benchmarks for AR, MA and LH models showed that velocity potential field
 computation consume only a fraction of total programme execution time, however,
-the absolute computation time over a large \(XY\) domain may still be high. One
-application where faster computation is needed is real-time simulation and
-visualisation of wavy surface. The purpose of real-time visualisation is
-two-fold:
-- it allows to adjust parameters of the model and ACF function in
-  real-time and see the result of the changes immediately, and
-- it allows to visually compare the size and the shape of regions where the most
-  wave energy is concentrated, which is valuable for education.
+the absolute computation time over a dense \(XY\) grid may be greater. One
+application where dense grid is used is real-time simulation and visualisation
+of wavy surface. Real-time visualisation allows to
+- adjust parameters of the model and ACF function, getting the result of the
+  changes immediately, and
+- visually compare the size and the shape of regions where the most wave energy
+  is concentrated, which for educational purposes.
 
 Since visualisation is done by GPU, doing velocity potential computation on CPU
 may cause a bottleneck in data transfer between RAM and GPU memory. To
