@@ -2102,7 +2102,7 @@ addition to this, three-dimensional velocity potential field
 formula\nbsp{}eqref:eq-phi-3d is particularly suitable for computation by GPUs:
 - it contains transcendental functions (hyperbolic cosines and complex
   exponents);
-- it is computed over large four-dimensional \(t,x,y,z\) region;
+- it is computed over large four-dimensional \((t,x,y,z)\) region;
 - it is explicit with no information dependencies between individual points in
   \(t\) and \(z\) dimensions.
 These considerations make velocity potential field computation on GPU
@@ -2123,11 +2123,11 @@ field computation, we benchmarked simplified version of\nbsp{}eqref:eq-phi-3d:
 Velocity potential computation code was rewritten in OpenCL and its performance
 was compared to an existing OpenMP implementation.
 
-For each implementation the overall performance of the solver for a particular
-time instant was measured. Velocity field was computed for one \(t\) point, for
-128 \(z\) points below wavy surface and for each \(x\) and \(y\) point of
-four-dimensional \((t,x,y,z)\) grid. The only parameter that was varied between
-subsequent programme runs is the size of the grid along \(x\) dimension.
+For each implementation running time of selected subroutines and time spent for
+data transfer between devices was measured. Velocity potential field was
+computed for one \(t\) point, for 128 \(z\) points below wavy surface and for
+each \(x\) and \(y\) point of four-dimensional \((t,x,y,z)\) grid. Between
+programme runs the size of the grid along \(x\) dimension was varied.
 
 A different FFT library was used for each version of the solver: GNU Scientific
 Library (GSL)\nbsp{}cite:galassi2015gnu for OpenMP and clFFT
