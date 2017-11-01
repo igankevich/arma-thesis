@@ -2129,24 +2129,17 @@ computed for one \(t\) point, for 128 \(z\) points below wavy surface and for
 each \(x\) and \(y\) point of four-dimensional \((t,x,y,z)\) grid. Between
 programme runs the size of the grid along \(x\) dimension was varied.
 
-A different FFT library was used for each version of the solver: GNU Scientific
-Library (GSL)\nbsp{}cite:galassi2015gnu for OpenMP and clFFT
-library\nbsp{}cite:clfft for OpenCL. There are two major differences in the
-routines from these libraries.
-- The order of frequencies in Fourier transforms is different and clFFT library
-  requires reordering the result of\nbsp{}eqref:eq-phi-linear whereas GSL does
-  not.
-- Discontinuity at \((x,y)=(0,0)\) of velocity potential field grid is handled
-  automatically by clFFT library, whereas GSL library produce skewed values at
-  this point.
-For GSL library an additional interpolation from neighbouring points was used to
-smooth velocity potential field at these points. We have not spotted other
-differences in FFT implementations that have impact on the overall performance.
-
-In the course of the numerical experiments we have measured how much time each
-solver's implementation spends in each computation stage to explain find out how
-efficient data copying between host and device is in OpenCL implementation, and
-how one implementation corresponds to the other in terms of performance.
+A different FFT library was used for each implementation: GNU Scientific Library
+(GSL)\nbsp{}cite:galassi2015gnu for OpenMP and clFFT\nbsp{}cite:clfft for
+OpenCL. FFT routines from these libraries are different:
+- The order of frequencies in FFT is different. In case of clFFT library
+  elements of the resulting array are additionally shifted to make it correspond
+  to the correct velocity potential field. In case of GSL no shift is needed.
+- Discontinuity at \((x,y)=(0,0)\) is handled automatically by clFFT library,
+  whereas GSL library produce skewed values at this point, thus in case of GSL
+  these points are interpolated.
+Other differences of FFT subroutines, that have impact on performance, were not
+found.
 
 **** Performance of velocity potential OpenCL solver.
 :PROPERTIES:
