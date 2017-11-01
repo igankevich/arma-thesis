@@ -2213,7 +2213,7 @@ arma.print_table_for_realtime_data(data, routine_names, column_names)
 #+end_src
 
 #+name: tab-arma-realtime
-#+caption: Running time of real-time velocity potential solver subroutines for wavy surface \(\text{size}=16384\).
+#+caption: Running time of real-time velocity potential solver subroutines for wavy surface (OX size equals 16384).
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-realtime
 | Subroutine         | OpenMP time, s | OpenCL time, s |
@@ -2230,8 +2230,8 @@ format, that OpenGL can operate on. Conversion to this format is fast, but
 requires more memory to store velocity potential field to be able to visualise
 it, since each point now is a vector with three components. The other
 disadvantage of using OpenCL and OpenGL together is the requirement for manual
-locking of shared objects: failure to do so results in screen artefacts which
-can be removed only by rebooting the computer.
+locking of shared buffer: failure to do so results in screen image artefacts
+which can be removed only by rebooting the computer.
 
 **** Conclusions.
 Performance benchmarks showed that GPU outperforms CPU in arithmetic intensive
