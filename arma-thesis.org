@@ -2189,13 +2189,12 @@ title(xlab="Wavy surface size", ylab="Time, s")
 
 The reason for different distribution of time between computation stages is the
 same as for different AR model performance on CPU and GPU: GPU has more floating
-point units and modules for transcendental mathematical functions, which are
-needed for computation of \(g_1\), but lacks caches which are needed to
-optimised irregular memory access pattern of \(g_2\). In contrast to AR model,
+point units and modules for transcendental mathematical functions, than CPU,
+which are needed for computation of \(g_1\), but lacks caches which are needed
+to optimise irregular memory access pattern of \(g_2\). In contrast to AR model,
 performance of multidimensional derivative computation on GPU is easier to
-improve, as there are no information dependencies between points:
-Multidimensional array library optimised for GPU may solve the problem, however,
-due to unavailability of such library it was not done in this work.
+improve, as there are no information dependencies between points: in this work
+optimisation was not done due to unavailability of existing implementation.
 Additionally, such library may allow to efficiently compute the non-simplified
 formula entirely on GPU, since omitted terms also contain derivatives.
 
