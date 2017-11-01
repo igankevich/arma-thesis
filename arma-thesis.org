@@ -2109,11 +2109,10 @@ These considerations make velocity potential field computation on GPU
 advantageous in the application to real-time simulation and visualisation of
 wavy surface.
 
-In order to investigate, how GPGPU computations can be used to speed-up velocity
-potential field computation, we benchmarked simplified version of
-eq.\nbsp{}eqref:eq-phi-3d:
+In order to investigate, how much the use of GPU can speed-up velocity potential
+field computation, we benchmarked simplified version of\nbsp{}eqref:eq-phi-3d:
 \begin{align}
-    \label{eq:phi-linear}
+    \label{eq-phi-linear}
     \phi(x,y,z,t) &= \InverseFourierY{
         \frac{ \Sinh{\smash{2\pi \Kveclen (z+h)}} }
         { 2\pi\Kveclen \Sinh{\smash{2\pi \Kveclen h}} }
@@ -2121,8 +2120,8 @@ eq.\nbsp{}eqref:eq-phi-3d:
     }{x,y}\nonumber \\
     &= \InverseFourierY{ g_1(u,v) \FourierY{ g_2(x,y) }{u,v} }{x,y}.
 \end{align}
-Velocity potential solver was rewritten in OpenCL and its performance was
-compared to an existing OpenMP implementation.
+Velocity potential computation code was rewritten in OpenCL and its performance
+was compared to an existing OpenMP implementation.
 
 For each implementation the overall performance of the solver for a particular
 time instant was measured. Velocity field was computed for one \(t\) point, for
@@ -2135,7 +2134,7 @@ Library (GSL)\nbsp{}cite:galassi2015gnu for OpenMP and clFFT
 library\nbsp{}cite:clfft for OpenCL. There are two major differences in the
 routines from these libraries.
 - The order of frequencies in Fourier transforms is different and clFFT library
-  requires reordering the result of\nbsp{}eqref:eq:phi-linear whereas GSL does
+  requires reordering the result of\nbsp{}eqref:eq-phi-linear whereas GSL does
   not.
 - Discontinuity at \((x,y)=(0,0)\) of velocity potential field grid is handled
   automatically by clFFT library, whereas GSL library produce skewed values at
