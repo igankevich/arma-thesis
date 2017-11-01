@@ -2190,6 +2190,57 @@ arma.plot_io_events(names)
 найдены.
 
 **** Производительность OpenCL-решателя, вычисляющего поле потенциала скорости.
+:PROPERTIES:
+:header-args:R: :results output raw :exports results
+:END:
+
+#+name: tab-storm
+#+caption: Конфигурация вычислительной системы "Storm".
+#+attr_latex: :booktabs t
+| CPU              | Intel Core 2 Quad Q9550     |
+| RAM              | 8Gb                         |
+| GPU              | AMD Radeon R7 360           |
+| GPU memory       | 2GB                         |
+| HDD              | Seagate Barracuda, 7200 rpm |
+| No. of CPU cores | 4                           |
+
+#+name: fig-arma-realtime-graph
+#+header: :results output graphics
+#+begin_src R :file build/realtime-performance-ru.pdf
+source(file.path("R", "benchmarks.R"))
+par(family="serif")
+data <- arma.load_realtime_data()
+arma.plot_realtime_data(data)
+title(xlab="Размер взволнованной поверхности по оси OX", ylab="Время, сек.")
+#+end_src
+
+#+name: fig-arma-realtime-graph
+#+caption: Сравнение производительности версий кода, вычисляющего поле потенциала скорости, для центрального процессора (OpenMP) и видеокарты (OpenCL).
+#+RESULTS: fig-arma-realtime-graph
+[[file:build/realtime-performance-ru.pdf]]
+
+#+name: tab-arma-realtime
+#+begin_src R
+source(file.path("R", "benchmarks.R"))
+routine_names <- list(
+  harts_g1="Функция \\(g_1\\)",
+  harts_g2="Функция \\(g_2\\)",
+  harts_fft="БПФ",
+  harts_copy_to_host="Копирование данных с видекарты"
+)
+column_names <- c("Подпрограмма", "Время OpenMP, сек.", "Время OpenCL, сек.")
+data <- arma.load_realtime_data()
+arma.print_table_for_realtime_data(data, routine_names, column_names)
+#+end_src
+
+#+RESULTS: tab-arma-realtime
+| Подпрограмма                   | Время OpenMP, сек. | Время OpenCL, сек. |
+|--------------------------------+--------------------+--------------------|
+| Функция \(g_1\)                |             4.6730 |             0.0038 |
+| Функция \(g_2\)                |             0.0002 |             0.8253 |
+| БПФ                            |             2.8560 |             0.3585 |
+| Копирование данных с видекарты |                    |             2.6357 |
+
 **** Заключение.
 **** Алгоритм распределения нагрузки.                           :noexport:
 Наиболее простым и широко применяемым подходом к распределению нагрузки на

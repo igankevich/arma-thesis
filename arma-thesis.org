@@ -2202,8 +2202,8 @@ formula entirely on GPU, since omitted terms also contain derivatives.
 #+begin_src R
 source(file.path("R", "benchmarks.R"))
 routine_names <- list(
-  harts_g1="\\(g_1\\)",
-  harts_g2="\\(g_2\\)",
+  harts_g1="\\(g_1\\) function",
+  harts_g2="\\(g_2\\) function",
   harts_fft="FFT",
   harts_copy_to_host="Copy data from GPU"
 )
@@ -2218,8 +2218,8 @@ arma.print_table_for_realtime_data(data, routine_names, column_names)
 #+RESULTS: tab-arma-realtime
 | Subroutine         | OpenMP time, s | OpenCL time, s |
 |--------------------+----------------+----------------|
-| \(g_1\)            |         4.6730 |         0.0038 |
-| \(g_2\)            |         0.0002 |         0.8253 |
+| \(g_1\) function   |         4.6730 |         0.0038 |
+| \(g_2\) function   |         0.0002 |         0.8253 |
 | FFT                |         2.8560 |         0.3585 |
 | Copy data from GPU |                |         2.6357 |
 
