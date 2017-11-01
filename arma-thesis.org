@@ -2147,18 +2147,19 @@ found.
 :END:
 
 The experiments showed that OpenCL outperforms OpenMP implementation by a factor
-of 10--15 (fig.\nbsp{}[[fig-arma-realtime-graph]]), however, distribution of time
-between computation stages is different for each implementation
-(table\nbsp{}[[tab-arma-realtime]]). The major time consumer on CPU is \(g_1\),
-whereas in GPU its running time is comparable to \(g_2\). Copying the resulting
-velocity potential field between CPU and GPU consumes \(\approx{}20\%\) of
-solver execution time. \(g_2\) consumes the most of the execution time for
-OpenCL solver, and \(g_1\) for OpenMP solver. In both implementations \(g_2\) is
-computed on CPU, but for GPU implementation the result is duplicated for each
-\(z\) grid point in order to perform multiplication of all \(XYZ\) planes along
-\(z\) dimension in single OpenCL kernel, and, subsequently copied to GPU memory
-which severely hinders the overall performance. All benchmarks were run on a
-machine equipped with a GPU, characteristics of which are summarised in
+of 10--15 (fig.\nbsp{}[[fig-arma-realtime-graph]]), however, distribution of running
+time between subroutines is different (table\nbsp{}[[tab-arma-realtime]]). For CPU
+the most of the time is spent to compute \(g_1\), whereas for GPU time spent to
+compute \(g_1\) is comparable to \(g_2\). Copying the resulting velocity
+potential field between CPU and GPU consumes \(\approx{}20\%\) of the total
+field computation time. Computing \(g_2\) consumes the most of the execution
+time for OpenCL and the least of the time for OpenMP. In both implementations
+\(g_2\) is computed on CPU, because subroutine for derivative computation in
+OpenCL was not found. For OpenCL the result is duplicated for each \(z\) grid
+point in order to perform multiplication of all \(XYZ\) planes along \(z\)
+dimension in single OpenCL kernel, and, subsequently copied to GPU memory which
+has negative impact on performance. All benchmarks were run on a machine
+equipped with a GPU, characteristics of which are summarised in
 table\nbsp{}[[tab-storm]].
 
 #+name: tab-storm
