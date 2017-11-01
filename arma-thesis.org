@@ -2094,17 +2094,17 @@ of wavy surface. Real-time visualisation allows to
   is concentrated, which for educational purposes.
 
 Since visualisation is done by GPU, doing velocity potential computation on CPU
-may cause a bottleneck in data transfer between RAM and GPU memory. To
-circumvent this, we use OpenCL/OpenGL interoperability API which allows creating
-buffers, that are shared between OpenCL and OpenGL contexts thus eliminating
-unnecessary copying of data. In addition to this, three-dimensional velocity
-potential field formula\nbsp{}eqref:eq-phi-3d is particularly suitable for
-computation by GPUs:
-- it contains transcendental mathematical functions (hyperbolic cosines and
-  complex exponents);
+may cause data transfer between memory of these two devices to become a
+bottleneck. To circumvent this, the programme uses OpenCL/OpenGL
+interoperability API which allows creating buffers, that are shared between
+OpenCL and OpenGL contexts thus eliminating copying of data between devices. In
+addition to this, three-dimensional velocity potential field
+formula\nbsp{}eqref:eq-phi-3d is particularly suitable for computation by GPUs:
+- it contains transcendental functions (hyperbolic cosines and complex
+  exponents);
 - it is computed over large four-dimensional \(t,x,y,z\) region;
-- it is analytic with no information dependencies between individual data points
-  in \(t\) and \(z\) dimensions.
+- it is explicit with no information dependencies between individual points in
+  \(t\) and \(z\) dimensions.
 These considerations make velocity potential field computation on GPU
 advantageous in the application to real-time simulation and visualisation of
 wavy surface.
