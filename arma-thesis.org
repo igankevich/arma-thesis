@@ -2022,19 +2022,17 @@ need to be computed.
 :header-args:R: :results output raw :exports results
 :END:
 
-Although, in the current benchmarks writing data to files does not consume much
-of the running time, the use of network-mounted file systems may slow down this
-stage. To optimise it wavy surface parts were written to file as soon as full
-time slice was available: all completed parts were grouped by time slices they
-belong to and subsequently written to file, as soon as the whole time slice is
-finished (fig.\nbsp{}[[fig-arma-io-events]]). That way a separate thread starts
-writing to files as soon as the first time slice is available and finishes it
-after the main thread group finishes the computation. The total time needed to
-perform I/O is slightly increased, but the I/O is done in parallel to
-computation so the total running time is decreased
-(table\nbsp{}[[tab-arma-io-performance]]). Using this approach with local file
-system has the same effect, but the total reduction in execution time is small,
-because local file system is more performant.
+Although, in the benchmarks from the previous section writing data to files does
+not consume much of the running time, the use of network-mounted file systems
+may slow down this stage of the programme. To optimise it wavy surface parts are
+written to a file as soon as generation of the whole time slice is completed
+(fig.\nbsp{}[[fig-arma-io-events]]): a separate thread starts writing to files as
+soon as the first time slice is available and finishes it after the main thread
+group finishes the computation. The total time spent to perform I/O is
+increased, but the total programme running time is decreased, because the I/O is
+done in parallel to computation (table\nbsp{}[[tab-arma-io-performance]]). Using
+this approach with local file system has the same effect, but performance gain
+is lower.
 
 #+header :results output raw :exports results
 #+name: tab-arma-io-performance
