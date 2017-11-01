@@ -2234,30 +2234,29 @@ locking of shared buffer: failure to do so results in screen image artefacts
 which can be removed only by rebooting the computer.
 
 **** Conclusions.
-Performance benchmarks showed that GPU outperforms CPU in arithmetic intensive
-tasks, i.e.\nbsp{}tasks requiring high number of floating point operations per
-second, however, its performance degrades when the volume of data that needs to
-be copied between CPU and GPU memory increases or when memory access pattern of
-the algorithm is non-linear. The first problem may be solved by using
-co-processors where high-bandwidth memory is located on the same die as the
+Benchmarks showed that GPU outperforms CPU in arithmetic intensive tasks,
+i.e.\nbsp{}tasks requiring high number of floating point operations per second,
+however, its performance degrades when the volume of data that needs to be
+copied between CPU and GPU memory increases or when memory access pattern
+differs from linear. The first problem may be solved by using a co-processor
+where high-bandwidth memory is located on the same die together with the
 processor and the main memory. This eliminates data transfer bottleneck, but may
 also increase execution time due to smaller number of floating point units. The
-second problem may be solved programmatically, by using OpenCL library that
-optimises multi-dimensional array traversals for GPUs; due to unavailability of
-such library this was not done in present work.
+second problem may be solved programmatically, if OpenCL library that computes
+multi-dimensional derivatives were available.
 
-ARMA model outperforms LH model in benchmarks and does not require GPU to do so.
-Its computational strengths are:
+AR and MA models outperforms LH model in benchmarks and does not require GPU to
+do so. From computational point of view their strengths are
 - vicinity of transcendental mathematical functions, and
 - simple algorithm for both AR and MA model, performance of which depends on the
   performance of multi-dimensional array library and FFT library.
-Providing main functionality via low-level libraries makes performance portable:
-support for new processor architectures can be added by substituting the
-libraries. Finally, using analytic formula for velocity potential field made
-velocity potential solver consume only a small fraction of total programme
-execution time. If such formula was not available or did not have all integrals
-as Fourier transforms, performance of velocity potential computation would be
-much lower.
+Providing main functionality via low-level libraries makes performance of the
+programme portable: support for new processor architectures can be added by
+substituting the libraries. Finally, using explicit formula for makes made
+velocity potential field computation consume only a small fraction of total
+programme execution time. If such formula did not exist or did not have all
+integrals as Fourier transforms, velocity potential field computation would
+consume much more time.
 
 ** Fault-tolerant batch job scheduler
 *** System architecture
