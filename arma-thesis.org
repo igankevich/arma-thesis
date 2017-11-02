@@ -2284,7 +2284,7 @@ The only purpose of tree hierarchy is to balance the load between cluster nodes.
 The load is distributed from the current node to its neighbours in the hierarchy
 by simply iterating over them. When new links appear in the hierarchy or old
 links change (due to new node joining the cluster or due to node failure),
-daemons exchange messages telling each other how many daemons are "behind" the
+daemons exchange messages telling each other how many daemons are /behind/ the
 corresponding link in the hierarchy. This information is used to distribute the
 load evenly, even if a distributed programme is launched on a slave node. In
 addition, this hierarchy reduces the number of simultaneous network connections
@@ -2292,23 +2292,21 @@ between nodes: only one network connection is established and maintained for
 each hierarchical link\nbsp{}--- this decreases probability of network
 congestion when there are large number of nodes in the cluster.
 
-Load balancing is implemented as follows. When daemon \(A\) tries to become a
-subordinate of daemon \(B\), it sends a message to a corresponding IP address
-telling how many daemons are already connected to it (including itself). If
-there are no connections, then it counts itself only. After all links between
-daemons in the cluster are established, every daemon has enough information to
-tell, how many nodes exist behind each link. If the link is between a slave and
-a master, and the slave wants to know, how many nodes are behind the master,
-then it simply subtracts the total number of nodes behind all of its slave nodes
-from the total number of nodes behind the master to get the correct amount. To
-distribute kernels across nodes we use simple round-robin algorithm,
-i.e.\nbsp{}iterate over all links of the current daemon (including the link to
-its master) taking into account how many nodes are behind each link: the pointer
-advances to a next link, only when enough number of kernels are sent through the
-current link. That way even if an application is launched on a slave node in the
-bottom of the hierarchy, the kernels will be distributed evenly across all
-cluster nodes. A kernel can not be sent through the link, from which it was
-received.
+Load balancing is implemented as follows. When node \(A\) tries to become a
+subordinate of node \(B\), it sends a message to a corresponding IP address
+telling how many daemons are already linked to it in the hierarchy (including
+itself). After all hierarchical links are established, every node has enough
+information to tell, how many nodes exist behind each link. If the link is
+between a slave and a master, and the slave wants to know, how many nodes are
+behind the link to the master, then it subtracts the total number of nodes
+behind all of its slave nodes from the total number of nodes behind the master
+to get the correct amount. To distribute kernels
+(see\nbsp{}sec.\nbsp{}[[#sec-kernel-layer]]) across nodes simple round-robin
+algorithm is used, i.e.\nbsp{}iterate over all links of the current node
+including the link to its master and taking into account the number of nodes
+behind each link. So, even if a programme is launched on a slave node in the
+bottom of the hierarchy, the kernels are distributed evenly between all cluster
+nodes.
 
 The advantage of this approach is that it can be extended to include
 sophisticated logic into load distribution policy. Any metric, that is required
@@ -2332,6 +2330,10 @@ the same daemon is run, and no configuration is needed to make a hierarchy of
 daemons\nbsp{}--- it happens automatically.
 
 **** Control flow objects layer.
+:PROPERTIES:
+:CUSTOM_ID: sec-kernel-layer
+:END:
+
 The key feature that is missing in the current parallel programming technologies
 is a possibility to specify hierarchical dependencies between parallel tasks.
 When one has such dependency, it is trivial to determine which task should be
