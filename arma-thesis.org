@@ -2341,15 +2341,15 @@ in parallel\nbsp{}cite:acun2014charmpp,islam2012oozie, but graphs are not
 suitable to determine principal-subordinate relationship between tasks, because
 a node in the graph may have multiple incoming edges (multiple principal nodes).
 
-The main purpose of the model is to simplify development of distributed batch
-processing applications and middleware. The main focus is to make application
-resilient to failures, i.e. make it fault tolerant and highly available, and do
-it transparently to a programmer. The implementation is divided into two layers:
-the lower layer consists of routines and classes for single node applications
-(with no network interactions), and the upper layer for applications that run on
-an arbitrary number of nodes. There are two kinds of tightly coupled entities in
-the model\nbsp{}--- /control flow objects/ (or /kernels/ for short) and
-/pipelines/\nbsp{}--- which are used together to compose a programme.
+The main purpose of the proposed approach is to simplify development of
+distributed batch processing applications and middleware. The main focus is to
+make application resilient to failures, i.e. make it fault tolerant on the
+lowest possible level. The implementation is divided into two layers: the lower
+layer consists of routines and classes for single node applications (with no
+network interactions), and the upper layer for applications that run on an
+arbitrary number of nodes. There are two kinds of tightly coupled
+entities\nbsp{}--- /control flow objects/ (or /kernels/ for short) and
+/pipelines/\nbsp{}--- which compose a programme base.
 
 Kernels implement control flow logic in theirs ~act~ and ~react~ methods and
 store the state of the current control flow branch. Both logic and state are
