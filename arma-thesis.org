@@ -2308,26 +2308,22 @@ behind each link. So, even if a programme is launched on a slave node in the
 bottom of the hierarchy, the kernels are distributed evenly between all cluster
 nodes.
 
-The advantage of this approach is that it can be extended to include
-sophisticated logic into load distribution policy. Any metric, that is required
-to implement such policy, can be sent from the directly linked daemon during the
-link initialisation. As of now, only the number of nodes behind the link is
-sent. The disadvantage of the approach is that an update of the metric happens
-only when a change in the hierarchy occurs: if a metric changes periodically,
-then periodically sending update messages is also required for implementing the
-policy, and too frequent updates may consume considerable amount of network
-bandwidth. The other disadvantage is that when reconfiguration of the hierarchy
-occurs due to a node failure or a new node joining the cluster, the kernels that
-are already executed on the nodes are not taken into account in the load
-distribution, so frequent updates to the hierarchy may cause uneven load
-distribution (which, however, balances over time). Uneven load distribution does
-not cause node overload, since there is a kernel pool on each node that queues
-the kernels prior to execution.
+The proposed approach can be extended to include sophisticated logic into load
+distribution algorithm. Along with the number of nodes behind the hierarchical
+link, any metric, that is required to implement this logic, can be sent.
+However, if an update of the metric happens more frequently, than a change in
+the hierarchy occurs, or it changes periodically, then update messages will be
+also sent more frequently. To ensure that this transfers do not affect
+programmes' performance, a separate physical network may be used to transmit the
+messages. The other disadvantage is that when reconfiguration of the hierarchy
+occurs, the kernels that are already sent to the nodes are not taken into
+account in the load distribution, so frequent hierarchy changes may cause uneven
+load on cluster nodes (which, however, balances over time).
 
-Dynamic master/slave role distribution coupled with kernel distribution makes
-overall system architecture homogeneous within single cluster. On every node
-the same daemon is run, and no configuration is needed to make a hierarchy of
-daemons\nbsp{}--- it happens automatically.
+Dynamic master/slave role assignment coupled with kernel distribution makes
+overall system architecture homogeneous within single cluster. On every node the
+same daemon is run, and no prior configuration is needed to construct a
+hierarchy of daemons processes.
 
 **** Control flow objects layer.
 :PROPERTIES:
