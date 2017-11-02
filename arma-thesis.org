@@ -2262,21 +2262,23 @@ consume much more time.
 *** System architecture
 **** Physical layer.
 Consists of nodes and direct/routed physical network links. On this layer full
-network connectivity, i.e. an ability to send packet from one cluster node to
-any other, is assumed.
+network connectivity, i.e.\nbsp{}an ability to send network packet between any
+pair of cluster nodes.
 
 **** Daemon process layer.
 Consists of daemon processes residing on cluster nodes and hierarchical
-(master/slave) logical links between them. Master and slave roles are
-dynamically assigned to daemon processes, i.e.~any physical cluster node may
-become a master or a slave. Dynamic reassignment uses leader election algorithm
-that does not require periodic broadcasting of messages, and the role is derived
-from node's IP address. Detailed explanation of the algorithm is provided
-in\nbsp{}[[#sec:node-discovery]]. Its strengths are scalability to a large number of
-nodes and low overhead, which are essential for large-scale high-performance
-computations, and its weakness is in artificial dependence of node's position in
-the hierarchy on its IP address, which may not desirable in virtual
-environments, where nodes' IP addresses may change without a notice.
+(master/slave) logical links between them. Only one daemon process is launched
+per node, so these terms are use interchangeably in this work. Master and slave
+roles are dynamically assigned to daemon processes, i.e.\nbsp{}any physical
+cluster node may become a master or a slave, or both simultaneously. Dynamic
+reassignment uses leader election algorithm that does not require periodic
+broadcasting of messages to all cluster nodes, instead the role is determined by
+node's IP address. Detailed explanation of the algorithm is provided
+in\nbsp{}[[#sec-node-discovery]]. Its strengths are scalability to a large number of
+nodes and low overhead, which makes it suitable for large-scale high-performance
+computations; its weakness is in artificial dependence of node's position in the
+hierarchy on its IP address, which makes it unsuitable for virtual environments,
+where nodes' IP addresses may change dynamically.
 
 The only purpose of tree hierarchy is to provide load balancing and
 automatically reconfigurable logical tree hierarchy of cluster nodes. This
@@ -2787,6 +2789,10 @@ which maximises efficiency of a programme.
 So, control flow objects (or kernels) possess properties of both cooperative
 routines and event handlers.
 *** Cluster node discovery algorithm
+:PROPERTIES:
+:CUSTOM_ID: sec-node-discovery
+:END:
+
 **** Leader election algorithms.
 Many batch job scheduling systems are built on the principle of /subordination/:
 there is principal node in each cluster which manages job queue, schedules job
