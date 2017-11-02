@@ -2339,7 +2339,7 @@ sent to a different node (see\nbsp{}sec.\nbsp{}[[#sec-fail-over]]). There exists
 number of systems that are capable of executing directed acyclic graphs of tasks
 in parallel\nbsp{}cite:acun2014charmpp,islam2012oozie, but graphs are not
 suitable to determine principal-subordinate relationship between tasks, because
-a node in the graph may have multiple parent nodes.
+a node in the graph may have multiple incoming edges (multiple principal nodes).
 
 The main purpose of the model is to simplify development of distributed batch
 processing applications and middleware. The main focus is to make application
