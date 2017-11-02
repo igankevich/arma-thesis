@@ -2280,16 +2280,17 @@ computations; its weakness is in artificial dependence of node's position in the
 hierarchy on its IP address, which makes it unsuitable for virtual environments,
 where nodes' IP addresses may change dynamically.
 
-The only purpose of tree hierarchy is to provide load balancing and
-automatically reconfigurable logical tree hierarchy of cluster nodes. This
-hierarchy is used to distribute the load from the current node to its neighbours
-by simply iterating over all directly connected daemons. Upon reconfiguration
-due to node failure or due to new node joining the cluster, daemons exchange
-messages telling each other how many daemons are "behind" the corresponding link
-in the hierarchy. This information is used to distribute the load evenly, even
-if a parallel programme is launched on a slave node. In addition, this topology
-reduces the number of simultaneous connections, thus preventing network
-overload.
+The only purpose of tree hierarchy is to balance the load between cluster nodes.
+The load is distributed from the current node to its neighbours in the hierarchy
+by simply iterating over them. When new links appear in the hierarchy or old
+links change (due to new node joining the cluster or due to node failure),
+daemons exchange messages telling each other how many daemons are "behind" the
+corresponding link in the hierarchy. This information is used to distribute the
+load evenly, even if a distributed programme is launched on a slave node. In
+addition, this hierarchy reduces the number of simultaneous network connections
+between nodes: only one network connection is established and maintained for
+each hierarchical link\nbsp{}--- this decreases probability of network
+congestion when there are large number of nodes in the cluster.
 
 Load balancing is implemented as follows. When daemon \(A\) tries to become a
 subordinate of daemon \(B\), it sends a message to a corresponding IP address
