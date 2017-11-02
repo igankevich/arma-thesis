@@ -2331,15 +2331,15 @@ hierarchy of daemons processes.
 :END:
 
 The key feature that is missing in the current parallel programming technologies
-is a possibility to specify hierarchical dependencies between parallel tasks.
-When one has such dependency, it is trivial to determine which task should be
-responsible for re-executing a failed task on one of the survived nodes. To
-re-execute the task on the top of the hierarchy, a backup task is created and
-executed on a different node. There exists a number of systems that are capable
-of executing directed acyclic graphs of tasks in
-parallel\nbsp{}cite:acun2014charmpp,islam2012oozie, but graphs are not suitable
-to infer principal-subordinate relationship between tasks, because a node in the
-graph may have multiple parent nodes.
+is a possibility to specify hierarchical dependencies between tasks executed in
+parallel. When such dependency exists, the principal task becomes responsible
+for re-executing a failed subordinate task on the survived cluster nodes. To
+re-execute a task which does not have a principal, a copy of it is created and
+sent to a different node (see\nbsp{}sec.\nbsp{}[[#sec-fail-over]]). There exists a
+number of systems that are capable of executing directed acyclic graphs of tasks
+in parallel\nbsp{}cite:acun2014charmpp,islam2012oozie, but graphs are not
+suitable to determine principal-subordinate relationship between tasks, because
+a node in the graph may have multiple parent nodes.
 
 The main purpose of the model is to simplify development of distributed batch
 processing applications and middleware. The main focus is to make application
@@ -3097,6 +3097,10 @@ To summarise, node discovery algorithm is
 - fully event-based as it does not overload the network by periodically sending
   state update messages.
 *** Fail over algorithm
+:PROPERTIES:
+:CUSTOM_ID: sec-fail-over
+:END:
+
 **** Checkpoints.
 Node failures in a distributed system are divided into two types: failure of a
 subordinate node and failure of a principal node. In order for a job running on
