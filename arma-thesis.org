@@ -2851,8 +2851,8 @@ guaranteed.
 
 Formula for computing distance can be made arbitrary complex (to account for
 network latency and throughput or geographical location of the node), however,
-for its simplest form it is more efficient to use node traversal algorithm
-instead. The traversal requires less memory as it does not store ranked list of
+for its simplest form it is more efficient to use node traversal algorithm. The
+algorithm requires less memory as there is no need to store ranked list of all
 nodes, but iterates over IP addresses of the network in the order defined by the
 fan-out value. The algorithm is as follows. First, the /base/ node (a node which
 searches for its principal) computes its potential principal address and tries
