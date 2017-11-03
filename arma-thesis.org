@@ -2502,9 +2502,8 @@ graph G {
 For efficiency reasons object pipeline and fault tolerance techniques (which
 will be described later) are implemented in the C++ framework: From the author's
 perspective C language is deemed low-level for distributed programmes, and Java
-incurs too much overhead and is not popular in HPC community. As of now, the
-framework runs in the same process as an parallel application that uses it. The
-framework is called Bscheduler, it is now in proof-of-concept development stage.
+incurs too much overhead and is not popular in HPC community. The framework is
+called Bscheduler, it is now in proof-of-concept development stage.
 
 **** Application programming interface.
 Each kernel has four types of fields (listed in table\nbsp{}[[tab-kernel-fields]]):
@@ -2555,24 +2554,23 @@ make it possible for a parent to collect the result of the execution.
 
 There is no way to provide fine-grained resilience to cluster node failures, if
 there are downstream kernels in the programme, except the ones returning to
-their parents. Instead, an exit code of the kernel is checked and a custom
-recovery code is executed. If there is no error checking, the system restarts
-execution from the first parent kernel, which did not produce any downstream
-kernels. This means, that if a problem being solved by the programme has
-information dependencies between parts that are computed in parallel, and a node
-failure occurs during computation of these parts, then this computation is
-restarted from the very beginning, discarding any already computed parts. This
-does not occur for embarrassingly parallel programmes, where parallel parts do
-not have such information dependencies between each other: in this case only
-parts from failed nodes are recomputed and all previously computed parts are
-retained.
+their parents. Instead, an exit code of the kernel is checked and a
+user-provided recovery subroutine is executed. If there is no error checking,
+the system restarts execution from the first parent kernel, which did not
+produce any downstream kernels. This means, that if a problem being solved by
+the programme has information dependencies between parts that are computed in
+parallel, and a node failure occurs during computation of these parts, then this
+computation is restarted from the very beginning, discarding any already
+computed parts. This does not occur for embarrassingly parallel programmes,
+where parallel parts do not have such information dependencies between each
+other: in this case only parts from failed nodes are recomputed and all
+previously computed parts are retained.
 
-Unlike ~main~ function in programmes based on message passing library, the first
-(the main) kernel is initially run only on one node, and remote nodes are used
-on-demand. This design choice allows to have arbitrary number of nodes throughout
-execution of a programme, and use more nodes for highly parallel parts of the
-code. Similar choice is made in the design of big data
-frameworks\nbsp{}cite:dean2008mapreduce,vavilapalli2013yarn \nbsp{}--- a user
+Unlike ~main~ function in programmes based on MPI library, the first (the main)
+kernel is initially run only on one node, and other cluster nodes are used
+on-demand. This allows to use more nodes for highly parallel parts of the code,
+and less nodes for other parts. Similar choice is made in the design of big data
+frameworks\nbsp{}cite:dean2008mapreduce,vavilapalli2013yarn --- a user
 submitting a job does not specify the number of hosts to run its job on, and
 actual hosts are the hosts where input files are located.
 
