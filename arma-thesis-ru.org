@@ -1273,7 +1273,7 @@ legend(
 #+end_src
 
 #+caption: Вид плотности распределения eqref:eq-skew-normal-1 аппликат взволнованной морской поверхности при различных значениях асимметрии \(\gamma_1\) и эксцесса \(\gamma_2\).
-#+label: fig-skew-normal-1
+#+name: fig-skew-normal-1
 #+RESULTS: fig-skew-normal-1
 [[file:build/skew-normal-1-ru.pdf]]
 
@@ -1325,7 +1325,7 @@ legend(
 #+end_src
 
 #+caption: Вид плотности распределения eqref:eq-skew-normal-2 волновых аппликат при различных значениях коэффициента асимметрии \(\alpha\).
-#+label: fig-skew-normal-2
+#+name: fig-skew-normal-2
 #+RESULTS: fig-skew-normal-2
 [[file:build/skew-normal-2.pdf]]
 
@@ -1400,7 +1400,7 @@ arma.plot_ramp_up_interval(label="Интервал разгона")
 #+end_src
 
 #+caption: Интервал разгона в начале оси \(OX\) реализации.
-#+label: fig-ramp-up-interval
+#+name: fig-ramp-up-interval
 #+RESULTS: fig-ramp-up-interval
 [[file:build/ramp-up-interval-ru.pdf]]
 
@@ -1496,7 +1496,7 @@ arma.qqplot_grid(
 #+end_src
 
 #+caption: Спрямленные диаграммы для прогрессивных волн.
-#+label: propagating-wave-distributions
+#+name: propagating-wave-distributions
 #+RESULTS: propagating-wave-distributions
 [[file:build/propagating-wave-qqplots.pdf]]
 
@@ -1514,7 +1514,7 @@ arma.qqplot_grid(
 #+end_src
 
 #+caption: Спрямленные диаграммы для стоячих волн.
-#+label: standing-wave-distributions
+#+name: standing-wave-distributions
 #+RESULTS: standing-wave-distributions
 [[file:build/standing-wave-qqplots-ru.pdf]]
 
@@ -1532,7 +1532,7 @@ for (i in seq(0, 4)) {
 #+end_src
 
 #+caption: Временные срезы АКФ для стоячих (слева) и прогрессивных (справа) волн.
-#+label: acf-slices
+#+name: acf-slices
 #+RESULTS: acf-slices
 [[file:build/acf-slices-ru.pdf]]
 
@@ -1630,7 +1630,7 @@ arma.plot_velocity_potential_field_legend(
 )
 #+end_src
 
-#+label: fig-potential-field-nonlinear
+#+name: fig-potential-field-nonlinear
 #+caption: Поле потенциала скорости прогрессивной волны \(\zeta(x,y,t) = \cos(2\pi x - t/2)\). Поле, полученное по формуле eqref:eq-solution-2d-full (сверху) и по формуле линейной теории волн (снизу).
 #+attr_latex: :width \textwidth
 #+RESULTS: fig-potential-field-nonlinear
@@ -1674,7 +1674,7 @@ arma.plot_velocity(
 )
 #+end_src
 
-#+label: fig-velocity-field-2d
+#+name: fig-velocity-field-2d
 #+caption: Сравнение полей скоростей на поверхности моря, полученных по общей формуле (\(u_1\)) и формуле для волн малой амплитуды (\(u_2\)). Поле скоростей для поверхности волн малой амплитуды (сверху) и большой амплитуды (снизу).
 #+attr_latex: :width \textwidth
 #+RESULTS: fig-velocity-field-2d
@@ -1718,7 +1718,7 @@ args$title <- 'Стоячие волны'
 arma.plot_nonlinear(file.path("build", "nit-standing"), args)
 #+end_src
 
-#+label: fig-nit
+#+name: fig-nit
 #+caption: Срезы взволнованной поверхности с различными распределениями волновых аппликат (Гауссово, РГШ и асимметричное нормальное).
 #+RESULTS: fig-nit
 [[file:build/nit.pdf]]
@@ -2081,7 +2081,7 @@ clFFT для видеокарты. В данной работе производ
 (таб.\nbsp{}[[tab-arma-io-performance]]). Использование этого подхода для локальных
 систем имеет тот же эффект, но выигрыш в производительности меньше.
 
-#+header :results output raw :exports results
+#+header: :results output raw :exports results
 #+name: tab-arma-io-performance
 #+begin_src R
 source(file.path("R", "benchmarks.R"))
@@ -2373,7 +2373,7 @@ arma.plot_factory_vs_openmp(
 #+end_src
 
 #+caption: Сравнение производительности реализаций программы на OpenMP и Factory.
-#+label: fig-factory-performance
+#+name: fig-factory-performance
 #+RESULTS: fig-factory-performance
 [[file:build/factory-vs-openmp-ru.pdf]]
 
@@ -2390,7 +2390,7 @@ arma.plot_factory_vs_openmp_overlap(
 #+end_src
 
 #+caption: Наложение параллельных вычислений на \([G_0,G_1]\) и записи данных на диск на \([W_0,W_1]\). В реализации OpenMP наложение отсутствует.
-#+label: fig-factory-overlap
+#+name: fig-factory-overlap
 #+RESULTS: fig-factory-overlap
 [[file:build/factory-vs-openmp-overlap-ru.pdf]]
 
@@ -2863,7 +2863,7 @@ digraph {
 #+end_src
 
 #+caption: Схема конвейера обработки данных, реализующего генерацию взволнованной морской поверхности по АР модели.
-#+label: fig-pipeline
+#+name: fig-pipeline
 #+RESULTS: fig-pipeline
 [[file:build/pipeline-ru.pdf]]
 
@@ -3480,7 +3480,7 @@ Keepalived\nbsp{}cite:cassen2002keepalived.
 #+end_src
 
 #+caption: Пример работы алгоритма восстановления после сбоев.
-#+label: fig-fail-over-example
+#+name: fig-fail-over-example
 #+attr_latex: :width \textwidth
 #+RESULTS: fig-fail-over-example
 [[file:build/fail-over-example-ru.pdf]]
