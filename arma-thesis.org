@@ -2756,7 +2756,7 @@ Despite the fact that dynamic role assignment requires leader election
 algorithm, this approach becomes more and more popular as it does not require
 spare reserved nodes to recover from principal node
 failure\nbsp{}cite:hunt2010zookeeper,lakshman2010cassandra,divya2013elasticsearch
-and generally leads to a symmetric system\nbsp{}--- a system in which the same
+and generally leads to a symmetric system archiecture, in which the same
 software stack with the same configuration is installed on every
 node\nbsp{}cite:boyer2012glusterfs,ostrovsky2015couchbase.
 
