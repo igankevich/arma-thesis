@@ -1639,16 +1639,16 @@ model produce the same values for each realisation. There we two experiments:
 for standing and propagating waves with ACFs given by formulae from
 section\nbsp{}[[#sec-wave-acfs]].
 
-The results of the experiments are twofold: while the experiment showed that
-applying NIT with GCS-based distribution increases wave steepness, the same is
-not true for skew normal distribution (fig.\nbsp{}[[fig-nit]]). Using this
-distribution results in wavy surface each \(z\)-coordinate of which is always
-greater or equal to nought. So, skew normal distribution is unsuitable for NIT.
-NIT increases the wave height and steepness of both standing and propagating
-waves. Increasing either skewness or kurtosis parameter of GCS-based
-distribution increases both wave height and steepness. The error of ACF
-approximation (eq.\nbsp{}eqref:eq-nit-error) ranges from 0.20 for GCS-based
-distribution to 0.70 for skew normal distribution (table\nbsp{}[[tab-nit-error]]).
+While the experiment showed that applying NIT with GCS-based distribution
+increases wave steepness, the same is not true for skew normal distribution
+(fig.\nbsp{}[[fig-nit]]). Using this distribution results in wavy surface each
+\(z\)-coordinate of which is always greater or equal to nought. So, skew normal
+distribution is unsuitable for NIT.  NIT increases the wave height and
+steepness of both standing and propagating waves. Increasing either skewness or
+kurtosis parameter of GCS-based distribution increases both wave height and
+steepness. The error of ACF approximation (eq.\nbsp{}eqref:eq-nit-error) ranges
+from 0.20 for GCS-based distribution to 0.70 for skew normal distribution
+(table\nbsp{}[[tab-nit-error]]).
 
 #+name: fig-nit
 #+header: :width 7 :height 7
