@@ -564,8 +564,8 @@ use AR process for standing waves and MA process for progressive waves.
 
 The other problem is inability to automatically determine optimal number of
 coefficients for three-dimensional AR and MA processes. For one-dimensional
-processes this can be achieved via iterative methods\nbsp{}cite:box1976time, but they
-diverge in three-dimensional case.
+processes this can be achieved via iterative methods\nbsp{}cite:box1976time,
+but they diverge in three-dimensional case.
 
 The final problem, which is discussed in [[#sec:how-to-mix-ARMA]], is inability to
 "mix" AR and MA process in three dimensions.
@@ -1306,26 +1306,28 @@ transform ACF; relative error without interpolation is \(10^{-5}\).
 *** White noise generation algorithm
 In order to eliminate periodicity from generated wavy surface, it is imperative
 to use PRNG with sufficiently large period to generate white noise. Parallel
-Mersenne Twister\nbsp{}cite:matsumoto1998mersenne with a period of \(2^{19937}-1\) is
-used as a generator in this work. It allows to produce aperiodic sea wavy
-surface realisations in any practical usage scenarios.
+Mersenne Twister\nbsp{}cite:matsumoto1998mersenne with a period of
+\(2^{19937}-1\) is used as a generator in this work. It allows to produce
+aperiodic sea wavy surface realisations in any practical usage scenarios.
 
 There is no guarantee that multiple Mersenne Twisters executed in parallel
 threads with distinct initial states produce uncorrelated pseudo-random number
-sequences, however, algorithm of dynamic creation of Mersenne Twisters\nbsp{}cite:matsumoto1998dynamic may be used to provide such guarantee. The essence of
-the algorithm is to find matrices of initial generator states, that give
-maximally uncorrelated pseudo-random number sequences when Mersenne Twisters are
-executed in parallel with these initial states. Since finding such initial
-states consumes considerable amount of processor time, vector of initial states
-is created preliminary with knowingly larger number of parallel threads and
-saved to a file, which is then read before starting white noise generation.
+sequences, however, algorithm of dynamic creation of Mersenne
+Twisters\nbsp{}cite:matsumoto1998dynamic may be used to provide such guarantee.
+The essence of the algorithm is to find matrices of initial generator states,
+that give maximally uncorrelated pseudo-random number sequences when Mersenne
+Twisters are executed in parallel with these initial states. Since finding such
+initial states consumes considerable amount of processor time, vector of
+initial states is created preliminary with knowingly larger number of parallel
+threads and saved to a file, which is then read before starting white noise
+generation.
 
 *** Wavy surface generation algorithm
 In ARMA model value of wavy surface elevation at a particular point depends on
 previous in space and time points, as a result the so called /ramp-up interval/
-(see fig.\nbsp{}[[fig-ramp-up-interval]]), in which realisation does not correspond to
-specified ACF, forms in the beginning of the realisation. There are several
-solutions to this problem which depend on the simulation context.
+(see fig.\nbsp{}[[fig-ramp-up-interval]]), in which realisation does not
+correspond to specified ACF, forms in the beginning of the realisation. There
+are several solutions to this problem which depend on the simulation context.
 
 If realisation is used in the context of ship stability simulation without
 manoeuvring, ramp-up interval will not affect results of the simulation, because
@@ -1340,13 +1342,14 @@ LH model and generate the rest of the realisation with ARMA model.
 Algorithm of wavy surface generation is data-parallel: realisation is divided
 into equal parts each of which is generated independently, however, in the
 beginning of each realisation there is ramp-up interval. To eliminate it
-/overlap-add/ method\nbsp{}cite:oppenheim1989discrete,svoboda2011efficient,pavel2013algorithms (a popular
-method in signal processing) is used. The essence of the method is to add
-another interval, size of which is equal to the ramp-up interval size, to the
-end of each part. Then wavy surface is generated in each point of each part
-(including points from the added interval), the interval at the end of part \(N\)
-is superimposed on the ramp-up interval at the beginning of the part \(N+1\), and
-values in corresponding points are added.
+/overlap-add/
+method\nbsp{}cite:oppenheim1989discrete,svoboda2011efficient,pavel2013algorithms
+(a popular method in signal processing) is used. The essence of the method is
+to add another interval, size of which is equal to the ramp-up interval size,
+to the end of each part. Then wavy surface is generated in each point of each
+part (including points from the added interval), the interval at the end of
+part \(N\) is superimposed on the ramp-up interval at the beginning of the part
+\(N+1\), and values in corresponding points are added.
 
 #+name: fig-ramp-up-interval
 #+begin_src R :file build/ramp-up-interval.pdf
@@ -1407,9 +1410,9 @@ distributions of different wave characteristics.
 
 *** Verification of wavy surface integral characteristics
 In\nbsp{}cite:рожков1990вероятностные the authors show that several sea wave
-characteristics (listed in table\nbsp{}[[tab-weibull-shape]]) have Weibull distribution,
-and wavy surface elevation has Gaussian distribution. In order to verify that
-distributions corresponding to generated realisation are correct,
+characteristics (listed in table\nbsp{}[[tab-weibull-shape]]) have Weibull
+distribution, and wavy surface elevation has Gaussian distribution. In order to
+verify that distributions corresponding to generated realisation are correct,
 quantile-quantile plots are used (plots where analytic quantile values are used
 for \(OX\) axis and estimated quantile values for \(OY\) axis). If the estimated
 distribution matches analytic then the graph has the form of the straight line.
@@ -1497,17 +1500,18 @@ height. There is no algorithm that guarantees correct extraction of all waves,
 because they may and often overlap each other. Weibull distribution right tail
 represents infrequently occurring waves, so it deviates more than left tail.
 
-Correspondence rate for standing waves (fig.\nbsp{}[[standing-wave-distributions]])
-is lower for height and length, roughly the same for surface
-elevation and higher for wave period distribution tails. Lower correspondence
-degree for length and height may be attributed to the fact that Weibull
-distributions were obtained empirically for sea waves which are typically
-propagating, and distributions may be different for standings waves. Higher
-correspondence degree for wave periods is attributed to the fact that wave
-periods of standing waves are extracted more precisely as the waves do not move
-outside simulated wavy surface region. The same correspondence degree for wave elevation
-is obtained, because this is the characteristic of the wavy surface (and
-corresponding AR or MA process) and is not affected by the type of waves.
+Correspondence rate for standing waves
+(fig.\nbsp{}[[standing-wave-distributions]]) is lower for height and length,
+roughly the same for surface elevation and higher for wave period distribution
+tails. Lower correspondence degree for length and height may be attributed to
+the fact that Weibull distributions were obtained empirically for sea waves
+which are typically propagating, and distributions may be different for
+standings waves. Higher correspondence degree for wave periods is attributed to
+the fact that wave periods of standing waves are extracted more precisely as
+the waves do not move outside simulated wavy surface region. The same
+correspondence degree for wave elevation is obtained, because this is the
+characteristic of the wavy surface (and corresponding AR or MA process) and is
+not affected by the type of waves.
 
 *** Verification of velocity potential fields
 :PROPERTIES:
@@ -1516,10 +1520,11 @@ corresponding AR or MA process) and is not affected by the type of waves.
 
 Comparing obtained generic formulae eqref:eq-solution-2d and
 eqref:eq-solution-2d-full to the known formulae from linear wave theory allows
-to see the difference between velocity fields for both large and small amplitude
-waves. In general analytic formula for velocity potential in not known, even for
-plain waves, so comparison is done numerically. Taking into account conclusions
-of [[#sec:pressure-2d]], only finite depth formulae are compared.
+to see the difference between velocity fields for both large and small
+amplitude waves. In general analytic formula for velocity potential in not
+known, even for plain waves, so comparison is done numerically. Taking into
+account conclusions of [[#sec:pressure-2d]], only finite depth formulae are
+compared.
 
 **** The difference with linear wave theory formulae.
 In order to obtain velocity potential fields, sea wavy surface was generated
@@ -1531,14 +1536,15 @@ Experiments were conducted for waves of both small and large amplitudes.
 The experiment showed that velocity potential fields produced by formula
 eqref:eq-solution-2d-full for finite depth fluid and formula
 eqref:eq-solution-2d-linear from linear wave theory are qualitatively different
-(fig.\nbsp{}[[fig-potential-field-nonlinear]]). First, velocity potential contours
-have sinusoidal shape, which is different from oval shape described by linear
-wave theory. Second, velocity potential decays more rapidly than in linear wave
-theory as getting closer to the bottom, and the region where the majority of
-wave energy is concentrated is closer to the wave crest. Similar numerical
-experiment, in which all terms of eqref:eq-solution-2d-full that are neglected
-in the framework of linear wave theory are eliminated, shows no difference (as
-much as machine precision allows) in resulting velocity potential fields.
+(fig.\nbsp{}[[fig-potential-field-nonlinear]]). First, velocity potential
+contours have sinusoidal shape, which is different from oval shape described by
+linear wave theory. Second, velocity potential decays more rapidly than in
+linear wave theory as getting closer to the bottom, and the region where the
+majority of wave energy is concentrated is closer to the wave crest. Similar
+numerical experiment, in which all terms of eqref:eq-solution-2d-full that are
+neglected in the framework of linear wave theory are eliminated, shows no
+difference (as much as machine precision allows) in resulting velocity
+potential fields.
 
 #+name: fig-potential-field-nonlinear
 #+header: :width 8 :height 11
@@ -1634,7 +1640,7 @@ surface, three realisations were generated:
 - realisation with Gaussian distribution (without NIT),
 - realisation with Gram---Charlier series (GCS) based distribution, and
 - realisation with skew normal distribution.
-The seed of PRNG was set to be the same for all progrmme executions to make ARMA
+The seed of PRNG was set to be the same for all programme executions to make ARMA
 model produce the same values for each realisation. There we two experiments:
 for standing and propagating waves with ACFs given by formulae from
 section\nbsp{}[[#sec-wave-acfs]].
@@ -2000,7 +2006,7 @@ between GPU and CPU memory.
 
 MA model is faster than LH model and slower than AR model. As the convolution in
 its formula is implemented using FFT, its performance depends on the performance
-of FFT implementation: библиотека GSL for CPU and clFFT for GPU. In this work
+of FFT implementation: GSL for CPU and clFFT for GPU. In this work
 performance of MA model on GPU was not tested due to unavailability of the
 three-dimensional FFT in clFFT library; if the transform was available, it could
 made the model even faster than AR.
@@ -2756,7 +2762,7 @@ Despite the fact that dynamic role assignment requires leader election
 algorithm, this approach becomes more and more popular as it does not require
 spare reserved nodes to recover from principal node
 failure\nbsp{}cite:hunt2010zookeeper,lakshman2010cassandra,divya2013elasticsearch
-and generally leads to a symmetric system archiecture, in which the same
+and generally leads to a symmetric system architecture, in which the same
 software stack with the same configuration is installed on every
 node\nbsp{}cite:boyer2012glusterfs,ostrovsky2015couchbase.
 
@@ -2917,7 +2923,8 @@ bound to a particular physical core to reduce overhead of process migration
 between cores. Tree hierarchy traversal algorithm has low requirements for
 processor time and network throughput, so running multiple processes per
 physical core is feasible, in contrast to HPC codes, where it often leads to
-poor performance. Test platform configuration is shown in table\nbsp{}[[tab-ant]].
+poor performance. Test platform configuration is shown in
+table\nbsp{}[[tab-ant]].
 
 #+name: tab-ant
 #+caption: Test platform configuration.
@@ -3632,7 +3639,7 @@ title(xlab="Wavy surface size", ylab="Time, s")
 
 * Conclusion
 **** Research results.
-In the study of matheamtical apparatus for sea wave simulations which goes
+In the study of mathematical apparatus for sea wave simulations which goes
 beyond linear wave theory the following main results were achieved.
 - ARMA model was applied to simulation of sea waves of arbitrary amplitudes.
   Integral characteristics of generated wavy surface were verified by comparing
