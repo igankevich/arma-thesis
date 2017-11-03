@@ -3126,7 +3126,7 @@ architecture, in which principal and subordinate roles are dynamically
 distributed, so that any node can act as a principal when the current principal
 node
 fails\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra.
-however, this architecture is still not used in big data and HPC job schedulers.
+However, this architecture is still not used in big data and HPC job schedulers.
 For example, in YARN big data job scheduler\nbsp{}cite:vavilapalli2013yarn
 principal and subordinate roles are static. Failure of a subordinate node is
 tolerated by restarting a part of a job, that worked on it, on one of the
