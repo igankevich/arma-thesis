@@ -76,9 +76,9 @@ is still much work to be done to make it useful in practice.
    surface elevation).
 3. Develop a method to determine pressure field under discretely given wavy
    surface. Usually, such formulae are derived for a particular model by
-   substituting wave profile formula into the eq.\nbsp{}eqref:eq-problem, however,
-   ARMA process does not provide explicit wave profile formula, so this problem
-   has to be solved for general wavy surface (which is not defined by an
+   substituting wave profile formula into the eq.\nbsp{}eqref:eq-problem,
+   however, ARMA process does not provide explicit wave profile formula, so this
+   problem has to be solved for general wavy surface (which is not defined by an
    analytic formula), without linearisation of boundaries and assumption of
    small-amplitude waves.
 4. Verify wavy surface integral characteristics to match the ones of real sea
@@ -440,7 +440,8 @@ eliminated. Matrix \(\Gamma\) is block-toeplitz, positive definite and symmetric
 hence the system is efficiently solved by Cholesky decomposition, which is
 particularly suitable for these types of matrices.
 
-After solving this system of equations white noise variance is estimated from\nbsp{}eqref:eq-yule-walker by plugging \(\vec k = \vec 0\):
+After solving this system of equations white noise variance is estimated
+from\nbsp{}eqref:eq-yule-walker by plugging \(\vec k = \vec 0\):
 \begin{equation*}
     \Var{\epsilon} =
     \Var{\zeta}
@@ -630,10 +631,10 @@ the form of elliptic partial differential equation (PDE):
 The authors suggest transforming this equation to finite differences and solve
 it numerically.
 
-As will be shown in [[#sec:compare-formulae]] that\nbsp{}eqref:eq-old-sol-2d diverges when
-attempted to calculate velocity field for large-amplitude waves, and this is the
-reason that it can not be used together with ARMA model, that generates
-arbitrary-amplitude waves.
+As will be shown in [[#sec:compare-formulae]] that\nbsp{}eqref:eq-old-sol-2d
+diverges when attempted to calculate velocity field for large-amplitude waves,
+and this is the reason that it can not be used together with ARMA model, that
+generates arbitrary-amplitude waves.
 
 **** Linearisation of boundary condition.
 :PROPERTIES:
@@ -757,7 +758,8 @@ to both sides of this equation yields formula for coefficients \(E\):
     \FourierY{\Fun{z}}{u}
     }
 \end{equation*}
-Finally, substituting \(z\) for \(\zeta(x,t)\) and plugging resulting equation into\nbsp{}eqref:eq-guessed-sol-2d yields formula for \(\phi(x,z)\):
+Finally, substituting \(z\) for \(\zeta(x,t)\) and plugging resulting equation
+into\nbsp{}eqref:eq-guessed-sol-2d yields formula for \(\phi(x,z)\):
 \begin{equation}
     \label{eq-solution-2d}
     \boxed{
@@ -774,14 +776,14 @@ Finally, substituting \(z\) for \(\zeta(x,t)\) and plugging resulting equation i
     }
 \end{equation}
 
-Multiplier \(e^{2\pi{u}{z}}/(2\pi{u})\) makes graph of a function to which Fourier
-transform of which is applied asymmetric with respect to \(OY\) axis. This makes
-it difficult to apply FFT which expects periodic function with nought on both
-ends of the interval. Using numerical integration instead of FFT is not faster
-than solving the initial system of equations with numerical schemes. This
-problem is alleviated by using formula\nbsp{}eqref:eq-solution-2d-full for finite
-depth fluid with wittingly large depth \(h\). This formula is derived in the
-following section.
+Multiplier \(e^{2\pi{u}{z}}/(2\pi{u})\) makes graph of a function to which
+Fourier transform of which is applied asymmetric with respect to \(OY\) axis.
+This makes it difficult to apply FFT which expects periodic function with nought
+on both ends of the interval. Using numerical integration instead of FFT is not
+faster than solving the initial system of equations with numerical schemes. This
+problem is alleviated by using formula\nbsp{}eqref:eq-solution-2d-full for
+finite depth fluid with wittingly large depth \(h\). This formula is derived in
+the following section.
 
 **** Formula for finite depth fluid.
 On the sea bottom vertical fluid velocity component equals nought: \(\phi_z=0\) on
@@ -804,7 +806,8 @@ Plugging \(\phi\) into the boundary condition on the sea bottom yields
 hence \(C_1=\frac{1}{2}C{e}^{2\pi{u}{h}}\) and
 \(C_2=-\frac{1}{2}C{e}^{-2\pi{u}{h}}\). Constant \(C\) may take arbitrary value
 here, because after plugging it becomes part of unknown coefficients \(E(u)\).
-Plugging formulae for \(C_1\) and \(C_2\) into\nbsp{}eqref:eq-guessed-sol-2d-full yields
+Plugging formulae for \(C_1\) and \(C_2\)
+into\nbsp{}eqref:eq-guessed-sol-2d-full yields
 \begin{equation*}
     \phi(x,z) = \InverseFourierY{ \Sinh{2\pi u (z+h)} E(u) }{x}.
 \end{equation*}
@@ -839,9 +842,10 @@ where \(\FunSecond{z}\)\nbsp{}--- a function, form of which is defined in sectio
 **** Reducing to the formulae from linear wave theory.
 Check the validity of derived formulae by substituting \(\zeta(x,t)\) with known
 analytic formula for plain waves. Symbolic computation of Fourier transforms in
-this section were performed in Mathematica\nbsp{}cite:mathematica10. In the framework
-of linear wave theory assume that waves have small amplitude compared to their
-lengths, which allows us to simplify initial system of equations\nbsp{}eqref:eq-problem-2d to
+this section were performed in Mathematica\nbsp{}cite:mathematica10. In the
+framework of linear wave theory assume that waves have small amplitude compared
+to their lengths, which allows us to simplify initial system of
+equations\nbsp{}eqref:eq-problem-2d to
 \begin{align*}
     & \phi_{xx}+\phi_{zz}=0,\\
     & \zeta_t = -\phi_z & \text{на }z=\zeta(x,t),
@@ -856,17 +860,18 @@ solution to which is written as
     }{x}
     .
 \end{equation*}
-Propagating wave profile is defined as \(\zeta(x,t)=A\cos(2\pi(kx-t))\). Plugging
-this formula into\nbsp{}eqref:eq-solution-2d yields
-\(\phi(x,z,t)=-\frac{A}{k}\sin(2\pi(kx-t))\Sinh{2\pi{k}{z}}\). In order to reduce
-it to the formula from linear wave theory, rewrite hyperbolic sine in
-exponential form, discard the term containing \(e^{-2\pi{k}{z}}\) as contradicting
-condition \(\phi\underset{z\rightarrow-\infty}{\longrightarrow}0\). Taking real
-part of the resulting formula yields
+Propagating wave profile is defined as \(\zeta(x,t)=A\cos(2\pi(kx-t))\).
+Plugging this formula into\nbsp{}eqref:eq-solution-2d yields
+\(\phi(x,z,t)=-\frac{A}{k}\sin(2\pi(kx-t))\Sinh{2\pi{k}{z}}\). In order to
+reduce it to the formula from linear wave theory, rewrite hyperbolic sine in
+exponential form, discard the term containing \(e^{-2\pi{k}{z}}\) as
+contradicting condition
+\(\phi\underset{z\rightarrow-\infty}{\longrightarrow}0\). Taking real part of
+the resulting formula yields
 \(\phi(x,z,t)=\frac{A}{k}e^{2\pi{k}{z}}\sin(2\pi(kx-t))\), which corresponds to
 the known formula from linear wave theory. Similarly, under small-amplitude
-waves assumption the formula for finite depth fluid\nbsp{}eqref:eq-solution-2d-full is
-reduced to
+waves assumption the formula for finite depth
+fluid\nbsp{}eqref:eq-solution-2d-full is reduced to
 \begin{equation*}
     \phi(x,z,t)
     =
@@ -895,12 +900,13 @@ depth difference near free surface is negligible). So, for sufficiently large
 depth any function (\(\cosh\) or \(\sinh\)) may be used for velocity potential
 computation near free surface.
 
-Reducing\nbsp{}eqref:eq-solution-2d и\nbsp{}eqref:eq-solution-2d-full to the known formulae
-from linear wave theory shows, that formula for infinite depth\nbsp{}eqref:eq-solution-2d is not suitable to compute velocity potentials with Fourier
-method, because it does not have symmetry, which is required for Fourier
-transform. However, formula for finite depth can be used instead by setting \(h\)
-to some characteristic water depth. For standing wave reducing to linear wave
-theory formulae is made under the same assumptions.
+Reducing\nbsp{}eqref:eq-solution-2d и\nbsp{}eqref:eq-solution-2d-full to the
+known formulae from linear wave theory shows, that formula for infinite
+depth\nbsp{}eqref:eq-solution-2d is not suitable to compute velocity potentials
+with Fourier method, because it does not have symmetry, which is required for
+Fourier transform. However, formula for finite depth can be used instead by
+setting \(h\) to some characteristic water depth. For standing wave reducing to
+linear wave theory formulae is made under the same assumptions.
 
 *** Three-dimensional velocity field
 Three-dimensional version of\nbsp{}eqref:eq-problem is written as
@@ -1022,9 +1028,10 @@ where
   \int\limits_{0}^\infty
     f(y) H_m(y) \exp\left[ -\frac{y^2}{2} \right],
 \end{equation*}
-\(H_m\)\nbsp{}--- Hermite polynomial, and \(f(y)\)\nbsp{}--- solution to equation\nbsp{}eqref:eq-distribution-transformation. Plugging polynomial approximation
-\(f(y)\approx\sum\limits_{i}d_{i}y^i\) and analytic formulae for Hermite
-polynomial yields
+\(H_m\)\nbsp{}--- Hermite polynomial, and \(f(y)\)\nbsp{}--- solution to
+equation\nbsp{}eqref:eq-distribution-transformation. Plugging polynomial
+approximation \(f(y)\approx\sum\limits_{i}d_{i}y^i\) and analytic formulae for
+Hermite polynomial yields
 \begin{equation*}
     \frac{1}{\sqrt{2\pi}}
     \int\limits_\infty^\infty
@@ -1048,8 +1055,9 @@ In\nbsp{}cite:boukhanovsky1997thesis the author suggests using polynomial
 approximation \(f(y)\) also for wavy surface transformation, however, in
 practice sea surface realisation often contains points, where \(z\)-coordinate
 is beyond the limits of the approximation, which makes solution invalid. In
-these points it is more efficient to solve equation\nbsp{}eqref:eq-distribution-transformation by bisection method. Using the same
-approximation in Gram---Charlier series does not lead to such errors.
+these points it is more efficient to solve
+equation\nbsp{}eqref:eq-distribution-transformation by bisection method. Using
+the same approximation in Gram---Charlier series does not lead to such errors.
 
 * Numerical methods and experimental results
 ** The shape of ACF for different types of waves
@@ -1121,10 +1129,10 @@ at \((0,0,0)\) equals to the ARMA process variance, and if one used sines the
 value would be wrong.
 
 If one tries to replicate the same formula via empirical method, the usual way
-is to adapt\nbsp{}eqref:eq-decaying-standing-wave to match\nbsp{}eqref:eq-standing-wave-acf.
-This can be done either by changing the phase of the sine, or by substituting
-sine with cosine to move the maximum of the function to the origin of
-coordinates.
+is to adapt\nbsp{}eqref:eq-decaying-standing-wave to
+match\nbsp{}eqref:eq-standing-wave-acf. This can be done either by changing the
+phase of the sine, or by substituting sine with cosine to move the maximum of
+the function to the origin of coordinates.
 
 **** Propagating wave ACF.
 Three-dimensional profile of plain propagating wave is given by
@@ -1290,9 +1298,9 @@ distribution may be solved either in every point of generated wavy surface,
 which gives the most accurate results, or in every fixed grid point
 interpolating result via least-squares (LS) polynomial. In the second case
 precision is lower. For example, interpolating 12^th order polynomial on a fixed
-grid of 500 points on interval \(-5\sigma_z\leq{z}\leq{5}\sigma_z\) gives error of
-\(\approx{0.43}\cdot10^{-3}\). Increasing polynomial order leads to either numeric
-overflows during LS interpolation, or more coefficient close to nought;
+grid of 500 points on interval \(-5\sigma_z\leq{z}\leq{5}\sigma_z\) gives error
+of \(\approx{0.43}\cdot10^{-3}\). Increasing polynomial order leads to either
+numeric overflows during LS interpolation, or more coefficient close to nought;
 increasing the size of the grid has insignificant effect on the result. In the
 majority of cases three Gram---Charlier series coefficients is enough to
 transform ACF; relative error without interpolation is \(10^{-5}\).
@@ -1512,9 +1520,10 @@ not affected by the type of waves.
 :CUSTOM_ID: sec:compare-formulae
 :END:
 
-Comparing obtained generic formulae\nbsp{}eqref:eq-solution-2d and\nbsp{}eqref:eq-solution-2d-full to the known formulae from linear wave theory allows
-to see the difference between velocity fields for both large and small
-amplitude waves. In general analytic formula for velocity potential in not
+Comparing obtained generic formulae\nbsp{}eqref:eq-solution-2d
+and\nbsp{}eqref:eq-solution-2d-full to the known formulae from linear wave
+theory allows to see the difference between velocity fields for both large and
+small amplitude waves. In general analytic formula for velocity potential in not
 known, even for plain waves, so comparison is done numerically. Taking into
 account conclusions of [[#sec:pressure-2d]], only finite depth formulae are
 compared.
@@ -1526,16 +1535,18 @@ numbers in Fourier transforms were chosen on the interval from \(0\) to the
 maximal wave number determined numerically from the obtained wavy surface.
 Experiments were conducted for waves of both small and large amplitudes.
 
-The experiment showed that velocity potential fields produced by formula\nbsp{}eqref:eq-solution-2d-full for finite depth fluid and formula\nbsp{}eqref:eq-solution-2d-linear from linear wave theory are qualitatively different
-(fig.\nbsp{}[[fig-potential-field-nonlinear]]). First, velocity potential
-contours have sinusoidal shape, which is different from oval shape described by
-linear wave theory. Second, velocity potential decays more rapidly than in
-linear wave theory as getting closer to the bottom, and the region where the
-majority of wave energy is concentrated is closer to the wave crest. Similar
-numerical experiment, in which all terms of\nbsp{}eqref:eq-solution-2d-full that are
-neglected in the framework of linear wave theory are eliminated, shows no
-difference (as much as machine precision allows) in resulting velocity
-potential fields.
+The experiment showed that velocity potential fields produced by
+formula\nbsp{}eqref:eq-solution-2d-full for finite depth fluid and
+formula\nbsp{}eqref:eq-solution-2d-linear from linear wave theory are
+qualitatively different (fig.\nbsp{}[[fig-potential-field-nonlinear]]). First,
+velocity potential contours have sinusoidal shape, which is different from oval
+shape described by linear wave theory. Second, velocity potential decays more
+rapidly than in linear wave theory as getting closer to the bottom, and the
+region where the majority of wave energy is concentrated is closer to the wave
+crest. Similar numerical experiment, in which all terms
+of\nbsp{}eqref:eq-solution-2d-full that are neglected in the framework of linear
+wave theory are eliminated, shows no difference (as much as machine precision
+allows) in resulting velocity potential fields.
 
 #+name: fig-potential-field-nonlinear
 #+header: :width 8 :height 11
@@ -1586,15 +1597,17 @@ arma.plot_velocity_potential_field_legend(
 
 **** The difference with small-amplitude wave theory.
 The experiment, in which velocity fields produced numerically by different
-formulae were compared, shows that velocity fields produced by formula\nbsp{}eqref:eq-solution-2d-full and\nbsp{}eqref:eq-old-sol-2d correspond to each
-other for small-amplitude waves. Two sea wavy surface realisations were made by
-AR model: one containing small-amplitude waves, other containing
+formulae were compared, shows that velocity fields produced by
+formula\nbsp{}eqref:eq-solution-2d-full and\nbsp{}eqref:eq-old-sol-2d correspond
+to each other for small-amplitude waves. Two sea wavy surface realisations were
+made by AR model: one containing small-amplitude waves, other containing
 large-amplitude waves. Integration in formula\nbsp{}eqref:eq-solution-2d-full
 was done over wave numbers range extracted from the generated wavy surface. For
-small-amplitude waves both formulae showed comparable results (the difference
-in the velocity is attributed to the stochastic nature of AR model), whereas
-for large-amplitude waves stable velocity field was produced only by formula\nbsp{}eqref:eq-solution-2d-full (fig.\nbsp{}[[fig-velocity-field-2d]]). So,
-generic formula\nbsp{}eqref:eq-solution-2d-full gives satisfactory results
+small-amplitude waves both formulae showed comparable results (the difference in
+the velocity is attributed to the stochastic nature of AR model), whereas for
+large-amplitude waves stable velocity field was produced only by
+formula\nbsp{}eqref:eq-solution-2d-full (fig.\nbsp{}[[fig-velocity-field-2d]]).
+So, generic formula\nbsp{}eqref:eq-solution-2d-full gives satisfactory results
 without restriction on wave amplitudes.
 
 #+name: fig-velocity-field-2d
@@ -1638,11 +1651,11 @@ While the experiment showed that applying NIT with GCS-based distribution
 increases wave steepness, the same is not true for skew normal distribution
 (fig.\nbsp{}[[fig-nit]]). Using this distribution results in wavy surface each
 \(z\)-coordinate of which is always greater or equal to nought. So, skew normal
-distribution is unsuitable for NIT.  NIT increases the wave height and
-steepness of both standing and propagating waves. Increasing either skewness or
-kurtosis parameter of GCS-based distribution increases both wave height and
-steepness. The error of ACF approximation (eq.\nbsp{}eqref:eq-nit-error) ranges
-from 0.20 for GCS-based distribution to 0.70 for skew normal distribution
+distribution is unsuitable for NIT. NIT increases the wave height and steepness
+of both standing and propagating waves. Increasing either skewness or kurtosis
+parameter of GCS-based distribution increases both wave height and steepness.
+The error of ACF approximation (eq.\nbsp{}eqref:eq-nit-error) ranges from 0.20
+for GCS-based distribution to 0.70 for skew normal distribution
 (table\nbsp{}[[tab-nit-error]]).
 
 #+name: fig-nit
