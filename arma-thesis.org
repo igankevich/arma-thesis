@@ -3680,10 +3680,8 @@ which provides computing environment for reproducible research. This means that
 all graphs can be reproduced and corresponding statements verified by cloning
 thesis repository[fn:repo], installing Emacs and exporting the document.
 
-The research was carried out using computational resources of Resource Centre
-"Computational Centre of Saint Petersburg State University" (\mbox{T-EDGE96}
-\mbox{HPC-0011828-001}) within frameworks of grants of Russian Foundation for
-Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
+The research was carried out within frameworks of grants of Russian Foundation
+for Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
 \mbox{16-07-01113}).
 
 [fn:repo] [[https://github.com/igankevich/arma-thesis]]
@@ -3712,6 +3710,7 @@ Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
 - <<<CDF>>> :: cumulative distribution function.
 - <<<BSP>>> :: Bulk Synchronous Parallel.
 - <<<OpenCL>>> :: Open Computing Language.
+- <<<OpenGL>>> :: Open Graphics Library.
 - <<<OpenMP>>> :: Open Multi-Processing.
 - <<<MPI>>> :: Message Passing Interface.
 - <<<POSIX>>> :: Portable Operating System.
@@ -3724,8 +3723,8 @@ Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
 - <<<HPC>>> ::  High-performance computing.
 - <<<GCS>>> ::  Gram---Charlier series.
 - <<<SN>>> ::  Skew normal distribution.
-- Master/slave node ::
-- Principal/subordinate kernel ::
+- Transcendental functions :: non-algebraic mathematical functions
+     (i.e.\nbsp{}logarithmic, trigonometric etc.).
 
 #+begin_export latex
 \input{postamble}
