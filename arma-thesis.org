@@ -3563,15 +3563,15 @@ part taking into account autoregressive dependencies between points and sends
 them to slaves, and slaves compute each wavy surface part and send them back to
 the master.
 
-In MPP implementation each task is modelled by a kernel: there is a master
-kernel that creates slave kernels on demand, and a slave kernel that computes
-wavy surface part. In ~act~ method of master kernel a slave kernel for the first
-wavy surface part\nbsp{}--- a part that does not depend on any points\nbsp{}---
-is created. When this kernel returns, the master kernel in ~react~ method
-determines which parts can be computed in turn, creates a slave kernel for each
-part and sends them to the pipeline. In ~act~ method of slave kernel wavy
-surface part is generated and then the kernel sends itself back to the master.
-The ~react~ method of slave kernel is empty.
+In MPP implementation each task is modelled by a kernel: there is a principal
+kernel that creates subordinate kernels on demand, and a subordinate kernels
+that generate wavy surface part. In ~act~ method of principal kernel a
+subordinate kernel is created for the first part\nbsp{}--- a part that does not
+depend on any points. When this kernel returns, the principal kernel in ~react~
+method determines which parts can be computed in turn, creates a subordinate
+kernel for each part and sends them to the pipeline. In ~act~ method of
+subordinate kernel wavy surface part is generated and then the kernel sends
+itself back to the principal. The ~react~ method of subordinate kernel is empty.
 
 Distributed AR algorithm implementation has several advantages over the parallel
 one.
