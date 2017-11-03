@@ -2911,14 +2911,13 @@ digraph {
 
 **** Evaluation results.
 To benchmark performance of node discovery, several daemon processes were
-launched on each physical cluster node, each listening on its own IP address.
-The number of processes per physical core varied from 2 to 16. Each process was
-bound to a particular physical core to reduce process migration overhead on the
-benchmark. Tree hierarchy traversal algorithm has low requirements for system
-resources (processor time and network throughput), so running multiple processes
-per physical core is feasible, in contrast to HPC codes, where oversubscribing
-generally leads to poor performance. Test platform configuration is shown in
-table\nbsp{}[[tab-ant]].
+launched on each physical cluster node, each bound to its own IP address. The
+number of processes per physical core varied from 2 to 16. Each process was
+bound to a particular physical core to reduce overhead of process migration
+between cores. Tree hierarchy traversal algorithm has low requirements for
+processor time and network throughput, so running multiple processes per
+physical core is feasible, in contrast to HPC codes, where it often leads to
+poor performance. Test platform configuration is shown in table\nbsp{}[[tab-ant]].
 
 #+name: tab-ant
 #+caption: Test platform configuration.
@@ -2934,32 +2933,31 @@ in\nbsp{}cite:lantz2010network,handigol2012reproducible,heller2013reproducible
 where the authors reproduce various real-world experiments using virtual
 clusters, based on Linux namespaces, and compare the results to physical ones.
 The advantage of it is that the tests can be performed on a large virtual
-cluster using relatively small number of physical nodes. The advantage of our
-approach, which does not use Linux namespaces, is that it is more lightweight
-and larger number of daemon processes can be benchmarked on the same physical
-cluster.
+cluster using relatively small number of physical nodes. The advantage of the
+approach used in this work, which does not use Linux namespaces, is that it is
+more lightweight and larger number of daemon processes can be benchmarked on the
+same physical cluster.
 
 Node discovery performance was evaluated by measuring time needed for all nodes
-of the cluster to discover each other, i.e. the time needed for the tree
+of the cluster to discover each other, i.e.\nbsp{}the time needed for the tree
 hierarchy of nodes to reach stable state. Each change of the hierarchy, as seen
 by each node, was written to a log file and after a set amount of time all
 daemon processes (each of which models cluster node) were forcibly terminated.
-Each new daemon process was launched with a 100ms delay to ensure that principal
-nodes are always come online before subordinates and hierarchy does not change
-randomly as a result of different start time of each process. This artificial
-delay was subsequently subtracted from the results. So, benchmark results
-represent discovery time in an "ideal" cluster, in which every daemon always
-finds its principal on the first try.
+Daemon processes were launched sequentially with a 100ms delay to ensure that
+principal nodes are always come online before subordinates and hierarchy does
+not change randomly as a result of different start time of each process. This
+artificial delay was subsequently subtracted from the results. So, benchmark
+results represent discovery time in an "ideal" cluster, in which every daemon
+process always finds its principal on the first try.
 
-The benchmark was run varying the number of daemons per cluster node. The
-experiment showed that discovery of up to 512 (8 nodes with 64 processes per
-node) nodes each other takes no more than 2 seconds
+The benchmark was run multiple times varying the number of daemon processes per
+cluster node. The experiment showed that discovery of 512 nodes (8 physical
+nodes with 64 processes per node) each other takes no more than two seconds
 (fig.\nbsp{}[[fig-discovery-benchmark]]). This value does not change significantly
 with the increase in the number of physical nodes. Using more than 8 nodes with
 64 processes per node causes large variation in discovery time due to a large
 total number of processes connecting simultaneously to one master process (a
-fan-out value of 10000 was used for all tests), so these results were excluded
-from the benchmark.
+fan-out value of 10000 was used for all tests), so these results were excluded.
 
 #+name: fig-discovery-benchmark
 #+header: :width 7 :height 5
@@ -2968,7 +2966,7 @@ source(file.path("R", "discovery.R"))
 bscheduler.plot_discovery(xlabel="No. of physical nodes",toplabel="ppn")
 #+end_src
 
-#+caption: Time to discover all daemon processes running on the cluster depending on the number of daemon processes. Dashed lines represent minimum and maximum values.
+#+caption: Time to discover all daemon processes running on the cluster depending on the number of daemon processes. Dashed lines represent minimum and maximum values, "ppn" denotes the number of daemon processes per node.
 #+name: fig-discovery-benchmark
 #+RESULTS: fig-discovery-benchmark
 [[file:build/discovery-benchmark.pdf]]
@@ -2981,9 +2979,9 @@ principal node fails. So, if cluster nodes occupy contiguous addresses in
 network IP address range, each node connects only to its principal, and
 inefficient scan of the whole network by each node does not occur.
 
-The following key features distinguish this approach with respect to some
-existing
-proposals\nbsp{}cite:brunekreef1996design,aguilera2001stable,romano2014design.
+The following key features distinguish the proposed approach with respect to
+some existing
+approaches\nbsp{}cite:brunekreef1996design,aguilera2001stable,romano2014design.
 - *Multi-level hierarchy.* The number of principal nodes in a network depends on
   the fan-out value. If it is lesser than the number of IP-addresses in the
   network, then there are multiple principal nodes in the cluster. If it is
@@ -3047,6 +3045,7 @@ To summarise, node discovery algorithm is
   time,
 - fully event-based as it does not overload the network by periodically sending
   state update messages.
+
 *** Fail over algorithm
 :PROPERTIES:
 :CUSTOM_ID: sec-fail-over
