@@ -2738,53 +2738,6 @@ So, computational model with a pipeline can be seen as /bulk-asynchronous
 model/, because of the parallel nature of programme steps. This model is the
 basis of the fault-tolerance model which will be described later.
 
-*** Computational model                                          :noexport:
-**** Governing principles.
-Data processing pipeline model is based on the following principles, following
-which maximises efficiency of a programme.
-- There is no notion of a message in the model, a kernel is itself a message
-  that can be sent over network to another node and directly access any kernel
-  on the local node. Only programme logic may guarantee the existence of the
-  kernel.
-- A kernel is a /cooperative routine/, which is submitted to kernel pool upon the
-  call and is executed asynchronously by a scheduler. There can be any number of
-  calls to other subroutines inside routine body. Every call submits
-  corresponding subroutine to kernel pool and returns immediately. Kernels in the
-  pool can be executed in any order; this fact is used by a scheduler to exploit
-  parallelism offered by the computer by distributing kernels from the pool
-  across available cluster nodes and processor cores.
-- Asynchronous execution prevents the use of explicit synchronisation after the
-  call to subroutine is made; system scheduler returns control flow to the
-  routine each time one of its subroutine returns. Such cooperation transforms
-  each routine which calls subroutines into event handler, where each event is a
-  subroutine and the handler is the routine that called them.
-- The routine may communicate with any number of local kernels, addresses of
-  which it knows; communication with kernels which are not adjacent in the call
-  stack complexifies control flow and call stack looses its tree shape. Only
-  programme logic may guarantee presence of communicating kernels in memory. One
-  way to ensure this is to perform communication between subroutines which are
-  called from the same routine. Since such communication is possible within
-  hierarchy through parent routine, it may treated as an optimisation that
-  eliminates overhead of transferring data over intermediate node. The situation
-  is different for interactive or event-based programmes (e.g. servers and
-  programmes with graphical interface) in which this is primary type of
-  communication.
-- In addition to this, communication which does not occur along hierarchical
-  links and executed over cluster network complexify design of resiliency
-  algorithms. Since it is impossible to ensure that a kernel resides in memory
-  of a neighbour node, because a node may fail in the middle of its execution of
-  the corresponding routine. As a result, upon failure of a routine all of its
-  subroutines must be restarted. This encourages a programmer to construct
-  - deep tree hierarchies of tightly-coupled kernels (which communicate on the
-    same level of hierarchy) to reduce overhead of recomputation;
-  - fat tree hierarchies of loosely-coupled kernels, providing maximal degree of
-    parallelism.
-  Deep hierarchy is not only requirement of technology, it helps optimise
-  communication of large number of cluster nodes reducing it to communication of
-  adjacent nodes.
-
-So, control flow objects (or kernels) possess properties of both cooperative
-routines and event handlers.
 *** Cluster node discovery algorithm
 :PROPERTIES:
 :CUSTOM_ID: sec-node-discovery
