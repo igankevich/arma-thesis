@@ -3587,27 +3587,27 @@ one.
   scheduler is not running.
 
 **** Performance of distributed AR model implementation.
-Distributed AR model implementation was benchmarked on the two nodes of "ant"
-cluster (table\nbsp{}[[tab-ant]]). To optimise network throughput these nodes were
-directly connected to each other with Ethernet cable and maximum transmission
-unit (MTU) was set to 9200. Two cases were considered: with one Bscheduler
-daemon process running on the local node, and with two daemon processes running
-on each node. The performance of the programme was compared to the performance
-of OpenMP version running on single node.
+Distributed AR model implementation was benchmarked on the two nodes of Ant
+system (table\nbsp{}[[tab-ant]]). To increase network throughput these nodes were
+directly connected to each other and maximum transmission unit (MTU) was set to
+9200 bytes. Two cases were considered: with one Bscheduler daemon process
+running on the local node, and with two daemon processes running on each node.
+The performance of the programme was compared to the performance of OpenMP
+version running on single node.
 
-Bscheduler outperforms OpenMP implementation in both one and two nodes cases
-(fig.\nbsp{}[[fig-bscheduler-performance]]). In case of one node the advantage in
+Bscheduler outperforms OpenMP in both one and two nodes cases
+(fig.\nbsp{}[[fig-bscheduler-performance]]). In case of one node the higher
 performance is explained by the fact that Bscheduler does not scan the queue for
 wavy surface parts for which dependencies are ready (as in parallel version of
 the algorithm), but for each part updates a counter of completed parts on which
 it depends. The same approach can be used in OpenMP version, but was discovered
 only for newer Bscheduler version, as queue scanning can not be performed
-efficiently in this framework. In case of two nodes the advantage in performance
-is due to a greater total number of processor cores (16), high network
-throughput of the direct network link. So, Bscheduler implementation of AR model
-algorithm is faster on single node due to more efficient autoregressive
-dependencies handling and its performance scales to a larger number of cores due
-to small data transmission overhead of direct network link.
+efficiently in this framework. In case of two nodes the higher performance is
+explained by a greater total number of processor cores (16) and high network
+throughput of the direct network link. So, Bscheduler implementation of
+distributed AR model algorithm is faster on single node due to more efficient
+autoregressive dependencies handling and its performance scales to a larger
+number of cores due to small data transmission overhead of direct network link.
 
 #+name: fig-bscheduler-performance
 #+begin_src R :file build/bscheduler-performance.pdf
@@ -3647,7 +3647,7 @@ beyond linear wave theory the following main results were achieved.
 - The model and the method were implemented for both SMP and MPP systems, and
   showed near linear scalability for different number of cores in several
   benchmarks. AR model is more computationally efficient on CPU than on GPU, and
-  outperforms linear LH model.
+  outperforms LH model.
 
 **** Further research directions.
 One of the topic of future research is studying generation of wave of arbitrary
