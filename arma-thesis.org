@@ -3575,15 +3575,16 @@ itself back to the principal. The ~react~ method of subordinate kernel is empty.
 
 Distributed AR algorithm implementation has several advantages over the parallel
 one.
-- Bscheduler pipelines automatically distribute slave kernels between available
+- Pipelines automatically distribute subordinate kernels between available
   cluster nodes, and the main programme does not have to deal with these
   implementation details.
 - There is no need to implement minimalistic job scheduler, which determines
   execution order of jobs (kernels) taking into account autoregressive
-  dependencies: the order is fully defined in ~react~ method of the master
+  dependencies: the order is fully defined in ~react~ method of the principal
   kernel.
-- There is no need in separate version of the algorithm for single cluster node,
-  the implementation works transparently on any number of nodes.
+- There is no need in separate version of the programme for SMP machine, the
+  implementation works transparently on any number of nodes, even if job
+  scheduler is not running.
 
 **** Performance of distributed AR model implementation.
 Distributed AR model implementation was benchmarked on the two nodes of "ant"
