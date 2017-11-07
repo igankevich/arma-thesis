@@ -1759,35 +1759,34 @@ work.
 :CUSTOM_ID: sec-parallel
 :END:
 
-Although, AR and MA models are part of the single mixed ARMA model they have
+Although, AR and MA models are part of the single mixed model they have
 disparate parallel algorithms, which are different from trivial one of LH model.
 AR algorithm consists in partitioning wavy surface into equally-sized
 three-dimensional parts in each dimension and computing them in parallel taking
 into account causal constraints imposed by autoregressive dependencies between
-surface points. There are no such dependencies between surface points in MA
-model, and its formula represents convolution of white noise with model
-coefficients, which is reduced to computation of three Fourier transforms via
-convolution theorem. So, MA algorithm consists in parallel computation of the
-convolution which is based on parallel FFT computation. Finally, LH algorithm is
-made parallel by simply computing each wavy surface point in parallel in several
-threads. So, parallel implementation of ARMA model consists of two parallel
-algorithms, one for each part of the model, which are more sophisticated than
-the one for LH model.
+surface points. There are no such dependencies in MA model, and its formula
+represents convolution of white noise with model coefficients, which is reduced
+to computation of three Fourier transforms via convolution theorem. So, MA
+algorithm consists in parallel computation of the convolution which is based on
+FFT computation. Finally, LH algorithm is made parallel by simply computing each
+wavy surface point in parallel in several threads. So, parallel implementation
+of ARMA model consists of two parallel algorithms, one for each part of the
+model, which are more sophisticated than the one for LH model.
 
 AR model's formula main feature is autoregressive dependencies between wavy
 surface points in each dimension which prevent computing each surface point in
 parallel. Instead the surface is partitioned along each dimension into equal
 three-dimensional parts, and for each part information dependencies, which
 define computation order, are established. Figure\nbsp{}[[fig-ar-cubes]] shows these
-dependencies. Here arrow denotes dependency of one part on availability of
-another, i.e. computation of a part may start only when all parts on which it
-depends were computed. Here part \(A\) does not have dependencies, parts \(B\)
-and \(D\) depend only on \(A\), and part \(E\) depends on \(A\), \(B\) and
+dependencies. An arrow denotes dependency of one part on availability of
+another, i.e.\nbsp{}computation of a part may start only when all parts on which
+it depends were computed. Here part \(A\) does not have dependencies, parts
+\(B\) and \(D\) depend only on \(A\), and part \(E\) depends on \(A\), \(B\) and
 \(C\). In essence, each part depends on all parts that have previous index in at
 least one dimension (if such parts exist). The first part does not have any
-dependencies, and the size of each part along each dimension is made greater or
+dependencies; and the size of each part along each dimension is made greater or
 equal to the corresponding number of coefficients along the dimension to
-consider only adjacent parts.
+consider only adjacent parts in dependency resolution.
 
 #+name: fig-ar-cubes
 #+header: :width 5 :height 5
@@ -1806,7 +1805,7 @@ dependencies are satisfied (by checking the completion status of each part),
 removes the part from the queue, generates wavy surface for this part and sets
 completion status. The algorithm ends when the queue becomes empty. Access to
 the queue from different threads is synchronised by locks. The algorithm is
-suitable for SMP machines, for MPP all parts on which the current one depends,
+suitable for SMP machines; for MPP all parts on which the current one depends,
 dependent parts needs to be copied to the node where computation is carried out.
 
 So, parallel AR model algorithm reduces to implementing minimalistic job
@@ -1831,7 +1830,7 @@ match the number of the coefficients along each dimension multiplied by two.
 Then Fourier transform of each part is computed in parallel, multiplied by
 previously computed Fourier transform of the coefficients, and inverse Fourier
 transform of the result is computed. After that, each part is written to the
-output array with overlapping points (due to padding) added to each other. This
+output array with overlapping (due to padding) points added to each other. This
 algorithm is commonly known in signal processing as
 "overlap-add"\nbsp{}cite:svoboda2011efficient. Padding with noughts is needed to
 prevent aliasing errors: without it the result would be circular convolution.
@@ -1854,15 +1853,15 @@ hardware thread simply computes its own point. In addition, sine and cosine
 functions in the model's formula are slow to compute on CPU, which makes GPU
 even more favourable choice.
 
-To summarise, even though AR and MA models are part of the single mixed ARMA
-model, their parallel algorithms are fundamentally different and are more
-complicated than trivial parallel algorithm of LH model. Efficient
-implementation AR algorithm requires specialised job scheduler to manage
-autoregressive dependencies between wavy surface parts, whereas MA algorithm
-requires padding each part with noughts to be able to compute them in parallel.
-In contrast to these models, LH model has no information dependencies between
-parts, but requires more computational resources (floating point operations per
-seconds) to calculate transcendental functions in its formula.
+To summarise, even though AR and MA models are part of the single mixed model,
+their parallel algorithms are fundamentally different and are more complicated
+than trivial parallel algorithm of LH model. Efficient implementation AR
+algorithm requires specialised job scheduler to manage autoregressive
+dependencies between wavy surface parts, whereas MA algorithm requires padding
+each part with noughts to be able to compute them in parallel. In contrast to
+these models, LH model has no information dependencies between parts, but
+requires more computational resources (floating point operations per seconds)
+for transcendental functions in its formula.
 
 **** Performance of OpenMP and OpenCL implementations.
 :PROPERTIES:
@@ -1870,20 +1869,20 @@ seconds) to calculate transcendental functions in its formula.
 :END:
 
 Differences in models' parallel algorithms make them efficient on different
-processor architectures, and to find the most efficient one all the models were
+processor architectures, and to find the most efficient one, all the models were
 benchmarked in both CPU and GPU.
 
-ARMA model does not require highly optimised codes to be efficient, its
+AR and MA models do not require highly optimised codes to be efficient, their
 performance is high even without use of co-processors; there are two main causes
-of that. First, ARMA model itself does not use transcendental functions (sines,
-cosines and exponents) as opposed to LH model. All calculations (except model
+of that. First, these models do not use transcendental functions (sines, cosines
+and exponents) as opposed to LH model. All calculations (except model
 coefficients) are done via polynomials, which can be efficiently computed on
-modern processors using a series of FMA instructions. Second, pressure
-computation is done via explicit analytic formula using nested FFTs. Since
-two-dimensional FFT of the same size is repeatedly applied to every time slice,
-its coefficients (complex exponents) are pre-computed one time for all slices,
-and further computations involve only a few transcendental functions. In case of
-MA model, performance is also increased by doing convolution with FFT. So, high
+modern processors using FMA instructions. Second, pressure computation is done
+via explicit formula using a number of nested FFTs. Since two-dimensional FFT of
+the same size is repeatedly applied to every time slice, its coefficients
+(complex exponents) are pre-computed one time for all slices, and further
+computations involve only a few transcendental functions. In case of MA model,
+performance is also increased by doing convolution with FFT. So, high
 performance of ARMA model is due to scarce use of transcendental functions and
 heavy use of FFT, not to mention that high convergence rate and non-existence of
 periodicity allows to use far fewer coefficients compared to LH model.
@@ -1899,15 +1898,16 @@ periodicity allows to use far fewer coefficients compared to LH model.
 | No. of CPU cores        | 4                             |
 | No. of threads per core | 2                             |
 
-ARMA programme uses several libraries of mathematical functions, numerical
-algorithms and visualisation primitives (listed in table\nbsp{}[[tab-arma-libs]]),
-and was implemented using several parallel programming technologies (OpenMP,
-OpenCL) to find the most efficient one. For each technology and each model an
-optimised wavy surface generation was implemented (except for MA model for which
-only OpenMP implementation was done). Velocity potential computation was done in
-OpenMP and was implemented in OpenCL only for real-time visualisation of wavy
-surface. For each technology the programme was recompiled and run multiple times
-and performance of each top-level subroutine was measured using system clock.
+Software implementation uses several libraries of mathematical functions,
+numerical algorithms and visualisation primitives (listed in
+table\nbsp{}[[tab-arma-libs]]), and was implemented using several parallel
+programming technologies (OpenMP, OpenCL) to have a possibility to choose the
+most efficient one. For each technology and each model an optimised wavy surface
+generation was implemented (except for MA model for which only OpenMP
+implementation was done). Velocity potential computation was done in OpenMP and
+was implemented in OpenCL only for real-time visualisation of wavy surface. For
+each technology the programme was recompiled and run multiple times and
+performance of each top-level subroutine was measured using system clock.
 
 Results of benchmarks of the technologies are summarised in
 table\nbsp{}[[tab-arma-performance]]. All benchmarks were run on a machine equipped
@@ -1966,10 +1966,10 @@ model:
 Finally, GPU architecture does not contain synchronisation primitives that allow
 to implement autoregressive dependencies between distinct wavy surface parts;
 instead of this a separate OpenCL kernel is launched for each part, and
-dependency management between them is done on CPU side. So, in AR model case CPU
-architecture is superior compared to GPU due to better handling of complex
-information dependencies, simple calculations (multiplications and additions)
-and complex memory access patterns.
+information dependency management between them is done on CPU side. So, in AR
+model case CPU architecture is superior compared to GPU due to better handling
+of complex information dependencies, simple calculations (multiplications and
+additions) and complex memory access patterns.
 
 #+header: :results output raw :exports results
 #+name: tab-arma-performance
@@ -2148,10 +2148,10 @@ field computation, we benchmarked simplified version of\nbsp{}eqref:eq-phi-3d:
 Velocity potential computation code was rewritten in OpenCL and its performance
 was compared to an existing OpenMP implementation.
 
-For each implementation running time of selected subroutines and time spent for
-data transfer between devices was measured. Velocity potential field was
-computed for one \(t\) point, for 128 \(z\) points below wavy surface and for
-each \(x\) and \(y\) point of four-dimensional \((t,x,y,z)\) grid. Between
+For each implementation running time of the corresponding subroutines and time
+spent for data transfer between devices was measured. Velocity potential field
+was computed for one \(t\) point, for 128 \(z\) points below wavy surface and
+for each \(x\) and \(y\) point of four-dimensional \((t,x,y,z)\) grid. Between
 programme runs the size of the grid along \(x\) dimension was varied.
 
 A different FFT library was used for each implementation: GNU Scientific Library
@@ -2164,7 +2164,7 @@ OpenCL. FFT routines from these libraries are different:
   whereas GSL library produce skewed values at this point, thus in case of GSL
   these points are interpolated.
 Other differences of FFT subroutines, that have impact on performance, were not
-found.
+discovered.
 
 **** Performance of velocity potential OpenCL solver.
 :PROPERTIES:
@@ -2172,7 +2172,7 @@ found.
 :END:
 
 The experiments showed that OpenCL outperforms OpenMP implementation by a factor
-of 10--15 (fig.\nbsp{}[[fig-arma-realtime-graph]]), however, distribution of running
+of 2--6 (fig.\nbsp{}[[fig-arma-realtime-graph]]), however, distribution of running
 time between subroutines is different (table\nbsp{}[[tab-arma-realtime]]). For CPU
 the most of the time is spent to compute \(g_1\), whereas for GPU time spent to
 compute \(g_1\) is comparable to \(g_2\). Copying the resulting velocity
@@ -2255,8 +2255,8 @@ format, that OpenGL can operate on. Conversion to this format is fast, but
 requires more memory to store velocity potential field to be able to visualise
 it, since each point now is a vector with three components. The other
 disadvantage of using OpenCL and OpenGL together is the requirement for manual
-locking of shared buffer: failure to do so results in screen image artefacts
-which can be removed only by rebooting the computer.
+locking of shared buffer: failure to do so results in appearance of screen image
+artefacts which can be removed only by rebooting the computer.
 
 **** Conclusions.
 Benchmarks showed that GPU outperforms CPU in arithmetic intensive tasks,

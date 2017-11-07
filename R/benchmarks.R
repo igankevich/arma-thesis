@@ -219,7 +219,7 @@ arma.aggregate_by_size <- function (data, framework) {
 }
 
 arma.filter_copy_to_host <- function (data) {
-  data[data["routine"] == "harts_copy_to_host",]
+  data[data["routine"] != "harts_copy_to_host",]
 }
 
 arma.add_text <- function (data, str, pos=4, off=1) {
@@ -244,7 +244,7 @@ arma.plot_realtime_data <- function (data, ...) {
   box()
   arma.add_text(openmp, "OpenMP", pos=3, off=1.5)
   arma.add_text(opencl, "OpenCL", pos=3, off=1.5)
-  arma.add_text(opengl, "OpenCL/OpenGL")
+  arma.add_text(opengl, "OpenCL/OpenGL", pos=3, off=-1.5)
 }
 
 arma.filter_by_framework_and_size <- function (data, size, framework) {
