@@ -15,17 +15,19 @@
 Software programmes, which simulates vessel behaviour in sea waves, are widely
 used to model ship motion, estimate impact of external forces on floating
 platform or other marine object, and estimate capsize probability under given
-weather conditions; however, to model sea waves most of the simulation codes
-use linear wave theory\nbsp{}cite:shin2003nonlinear,van2007forensic,kat2001prediction,van2002development, in
-the framework of which it is difficult to reproduce certain peculiarities of
+weather conditions; however, to model sea waves most of the simulation codes use
+linear wave
+theory\nbsp{}cite:shin2003nonlinear,van2007forensic,kat2001prediction,van2002development,
+in the framework of which it is difficult to reproduce certain peculiarities of
 wind wave climate. Among them are transition between normal and storm weather,
-and sea composed of multiple wave systems\nbsp{}--- both wind waves and swell\nbsp{}---
-heading from multiple directions. Another shortcoming of linear wave theory is
-an assumption, that wave amplitude is small compared to wave length. This makes
-calculations imprecise when modelling ship motion in irregular waves, for which
-the assumption does not hold. So, studying new and more advanced models and
-methods for sea simulation software may increase number of its application
-scenarios and foster a study of ship motion in extreme conditions in particular.
+and sea composed of multiple wave systems\nbsp{}--- both wind waves and
+swell\nbsp{}--- heading from multiple directions. Another shortcoming of linear
+wave theory is an assumption, that wave amplitude is small compared to wave
+length. This makes calculations imprecise when modelling ship motion in
+irregular waves, for which the assumption does not hold. So, studying new and
+more advanced models and methods for sea simulation software may increase number
+of its application scenarios and foster a study of ship motion in extreme
+conditions in particular.
 
 **** State-of-the-art.
 Autoregressive moving average (ARMA) model emerged in response to difficulties
@@ -275,16 +277,16 @@ framework of linear wave theory, inefficient for long-time simulations, and
 difficult to use as a base for more advanced models.
 
 **** ARMA model
-In\nbsp{}cite:spanos1982arma ARMA model is used to generate time series spectrum of
-which is compatible with Pierson---Moskowitz (PM) approximation of sea wave
+In\nbsp{}cite:spanos1982arma ARMA model is used to generate time series spectrum
+of which is compatible with Pierson---Moskowitz (PM) approximation of sea wave
 spectrum. The authors carry out experiments for one-dimensional AR, MA and ARMA
 models. They mention excellent agreement between target and initial spectra and
 higher performance of ARMA model compared to models based on summing large
 number of harmonic components with random phases. The also mention that in order
 to reach agreement between target and initial spectrum MA model require lesser
-number of coefficients than AR model. In\nbsp{}cite:spanos1996efficient the authors
-generalise ARMA model coefficients determination formulae for multi-variate
-(vector) case.
+number of coefficients than AR model. In\nbsp{}cite:spanos1996efficient the
+authors generalise ARMA model coefficients determination formulae for
+multi-variate (vector) case.
 
 One thing that distinguishes present work with respect to afore-mentioned ones
 is the study of three-dimensional (2D in space and 1D in time) ARMA model, which
@@ -307,12 +309,12 @@ multi-dimensional stochastic process that is real only statistically.
 
 In\nbsp{}cite:fusco2010short AR model is used to predict swell waves to control
 wave-energy converters (WEC) in real-time. In order to make WEC more efficient
-its internal oscillator frequency should match the one of sea waves. The
-authors treat wave elevation as time series and compare performance of AR model,
-neural networks and cyclical models in forecasting time series future values. AR
-model gives the most accurate prediction of low-frequency swell waves for up to
-two typical wave periods. It is an example of successful application of AR
-process to sea wave modelling.
+its internal oscillator frequency should match the one of sea waves. The authors
+treat wave elevation as time series and compare performance of AR model, neural
+networks and cyclical models in forecasting time series future values. AR model
+gives the most accurate prediction of low-frequency swell waves for up to two
+typical wave periods. It is an example of successful application of AR process
+to sea wave modelling.
 
 ** Governing equations for 3-dimensional ARMA process
 ARMA sea simulation model defines sea wavy surface as three-dimensional (two
@@ -491,8 +493,8 @@ Here coefficients \(\Theta\) are calculated from back to front: from
     \Theta_{\vec j}^2
     }.
 \end{equation*}
-Authors of\nbsp{}cite:box1976time suggest using Newton---Raphson method to solve this
-equation with higher precision, however, this method does not work in three
+Authors of\nbsp{}cite:box1976time suggest using Newton---Raphson method to solve
+this equation with higher precision, however, this method does not work in three
 dimensions. Using slower method does not have dramatic effect on the overall
 programme performance, because the number of coefficients is small and most of
 the time is spent generating wavy surface.
@@ -536,10 +538,10 @@ Generally speaking, ARMA process is obtained by plugging MA generated wavy
 surface as random impulse to AR process, however, in order to get the process
 with desired ACF one should re-compute AR coefficients before plugging. There
 are several approaches to "mix" AR and MA processes.
-- The approach proposed in\nbsp{}cite:box1976time which involves dividing ACF into MA
-  and AR part along each dimension is not applicable here, because in three
-  dimensions such division is not possible: there always be parts of the ACF
-  that are not taken into account by AR and MA process.
+- The approach proposed in\nbsp{}cite:box1976time which involves dividing ACF
+  into MA and AR part along each dimension is not applicable here, because in
+  three dimensions such division is not possible: there always be parts of the
+  ACF that are not taken into account by AR and MA process.
 - The alternative approach is to use the same (undivided) ACF for both AR and MA
   processes but use different process order, however, then realisation
   characteristics (mean, variance etc.) become skewed: these are characteristics
@@ -564,23 +566,24 @@ use AR process for standing waves and MA process for progressive waves.
 
 The other problem is inability to automatically determine optimal number of
 coefficients for three-dimensional AR and MA processes. For one-dimensional
-processes this can be achieved via iterative methods\nbsp{}cite:box1976time,
-but they diverge in three-dimensional case.
+processes this can be achieved via iterative methods\nbsp{}cite:box1976time, but
+they diverge in three-dimensional case.
 
 The final problem, which is discussed in [[#sec:how-to-mix-ARMA]], is inability to
 "mix" AR and MA process in three dimensions.
 
-In practice some statements made for AR and MA processes in\nbsp{}cite:box1976time
-should be flipped for three-dimensional case. For example, the authors say that
-ACF of MA process cuts at \(q\) and ACF of AR process decays to nought infinitely,
-but in practice making ACF of 3-dimensional MA process not decay results in it
-being non-invertible and producing realisation that does not look like real
-sea waves, whereas doing the same for ACF of AR process results in stationary
-process and adequate realisation. Also, the authors say that one
-should allocate the first \(q\) points of ACF to MA process (as it often needed to
-describe the peaks in ACF) and leave the rest points to AR process, but in
-practice in case of ACF of a propagating wave AR process is stationary only for
-the first time slice of the ACF, and the rest is left to MA process.
+In practice some statements made for AR and MA processes
+in\nbsp{}cite:box1976time should be flipped for three-dimensional case. For
+example, the authors say that ACF of MA process cuts at \(q\) and ACF of AR
+process decays to nought infinitely, but in practice making ACF of 3-dimensional
+MA process not decay results in it being non-invertible and producing
+realisation that does not look like real sea waves, whereas doing the same for
+ACF of AR process results in stationary process and adequate realisation. Also,
+the authors say that one should allocate the first \(q\) points of ACF to MA
+process (as it often needed to describe the peaks in ACF) and leave the rest
+points to AR process, but in practice in case of ACF of a propagating wave AR
+process is stationary only for the first time slice of the ACF, and the rest is
+left to MA process.
 
 To summarise, the only established scenario of applying ARMA model to sea wave
 generation is to use AR process for standing waves and MA process for
@@ -1086,11 +1089,11 @@ looks like\nbsp{}cite:box1976time).
 However, for three-dimensional case there exists simpler empirical method which
 does not require sophisticated software to determine shape of the ACF. It is
 known that ACF represented by exponentially decaying cosines satisfies first
-order Stokes' equations for gravity waves\nbsp{}cite:boccotti1983wind. So, if the
-shape of the wave profile is the only concern in the simulation, then one can
-simply multiply it by a decaying exponent to get appropriate ACF. This ACF does
-not reflect other wave profile parameters, such as wave height and period, but
-opens possibility to simulate waves of a particular non-analytic shape by
+order Stokes' equations for gravity waves\nbsp{}cite:boccotti1983wind. So, if
+the shape of the wave profile is the only concern in the simulation, then one
+can simply multiply it by a decaying exponent to get appropriate ACF. This ACF
+does not reflect other wave profile parameters, such as wave height and period,
+but opens possibility to simulate waves of a particular non-analytic shape by
 "drawing" their profile, then multiplying it by an exponent and using the
 resulting function as ACF. So, this empirical method is imprecise but offers
 simpler alternative to Wiener---Khinchin theorem approach; it is mainly useful
@@ -1181,10 +1184,10 @@ function (PDF) of the surface elevation. This distribution is given by either
 polynomial approximation of /in situ/ data or analytic formula.
 
 **** Gram---Charlier series expansion.
-In\nbsp{}cite:huang1980experimental the authors experimentally show, that PDF of sea
-surface elevation is distinguished from normal distribution by non-nought
-kurtosis and skewness. In\nbsp{}cite:рожков1996теория the authors show, that this type
-of PDF expands in Gram---Charlier series:
+In\nbsp{}cite:huang1980experimental the authors experimentally show, that PDF of
+sea surface elevation is distinguished from normal distribution by non-nought
+kurtosis and skewness. In\nbsp{}cite:рожков1996теория the authors show, that
+this type of PDF expands in Gram---Charlier series:
 \begin{align}
     \label{eq-skew-normal-1}
     & F(z; \mu=0, \sigma=1, \gamma_1, \gamma_2) \approx
@@ -1204,10 +1207,10 @@ of PDF expands in Gram---Charlier series:
 where \(\Phi(z)\)\nbsp{}--- CDF of normal distribution, \(\phi\)\nbsp{}--- PDF
 of normal distribution, \(\gamma_1\)\nbsp{}--- skewness, \(\gamma_2\)\nbsp{}---
 kurtosis, \(f\)\nbsp{}--- PDF, \(F\)\nbsp{}--- cumulative distribution function
-(CDF). According to\nbsp{}cite:рожков1990вероятностные for sea waves skewness
-is selected from interval \(0.1\leq\gamma_1\leq{0.52}]\) and kurtosis from
-interval \(0.1\leq\gamma_2\leq{0.7}\). Family of probability density functions
-for different parameters is shown in fig.\nbsp{}[[fig-skew-normal-1]].
+(CDF). According to\nbsp{}cite:рожков1990вероятностные for sea waves skewness is
+selected from interval \(0.1\leq\gamma_1\leq{0.52}]\) and kurtosis from interval
+\(0.1\leq\gamma_2\leq{0.7}\). Family of probability density functions for
+different parameters is shown in fig.\nbsp{}[[fig-skew-normal-1]].
 
 #+NAME: fig-skew-normal-1
 #+begin_src R :file build/skew-normal-1.pdf
@@ -1250,12 +1253,12 @@ elevation by skew-normal distribution:
     f(z; \alpha) & = \frac{e^{-\frac{z^2}{2}}}{\sqrt{2 \pi }}
    \mathrm{erfc}\left[-\frac{\alpha z}{\sqrt{2}}\right],
 \end{align}
-where \(T\)\nbsp{}--- Owen \(T\)-function\nbsp{}cite:owen1956tables. Using this formula it is
-impossible to specify skewness and kurtosis separately\nbsp{}--- both values are
-adjusted via \(\alpha\) parameter. The only advantage of the formula is its
-relative computational simplicity: this function is available in some programmes
-and mathematical libraries. Its graph for different values of \(\alpha\) is shown
-in fig.\nbsp{}[[fig-skew-normal-2]].
+where \(T\)\nbsp{}--- Owen \(T\)-function\nbsp{}cite:owen1956tables. Using this
+formula it is impossible to specify skewness and kurtosis separately\nbsp{}---
+both values are adjusted via \(\alpha\) parameter. The only advantage of the
+formula is its relative computational simplicity: this function is available in
+some programmes and mathematical libraries. Its graph for different values of
+\(\alpha\) is shown in fig.\nbsp{}[[fig-skew-normal-2]].
 
 #+name: fig-skew-normal-2
 #+begin_src R :file build/skew-normal-2.pdf
@@ -1319,10 +1322,9 @@ Twisters\nbsp{}cite:matsumoto1998dynamic may be used to provide such guarantee.
 The essence of the algorithm is to find matrices of initial generator states,
 that give maximally uncorrelated pseudo-random number sequences when Mersenne
 Twisters are executed in parallel with these initial states. Since finding such
-initial states consumes considerable amount of processor time, vector of
-initial states is created preliminary with knowingly larger number of parallel
-threads and saved to a file, which is then read before starting white noise
-generation.
+initial states consumes considerable amount of processor time, vector of initial
+states is created preliminary with knowingly larger number of parallel threads
+and saved to a file, which is then read before starting white noise generation.
 
 *** Wavy surface generation algorithm
 In ARMA model value of wavy surface elevation at a particular point depends on
@@ -1346,11 +1348,11 @@ into equal parts each of which is generated independently, however, in the
 beginning of each realisation there is ramp-up interval. To eliminate it
 /overlap-add/
 method\nbsp{}cite:oppenheim1989discrete,svoboda2011efficient,pavel2013algorithms
-(a popular method in signal processing) is used. The essence of the method is
-to add another interval, size of which is equal to the ramp-up interval size,
-to the end of each part. Then wavy surface is generated in each point of each
-part (including points from the added interval), the interval at the end of
-part \(N\) is superimposed on the ramp-up interval at the beginning of the part
+(a popular method in signal processing) is used. The essence of the method is to
+add another interval, size of which is equal to the ramp-up interval size, to
+the end of each part. Then wavy surface is generated in each point of each part
+(including points from the added interval), the interval at the end of part
+\(N\) is superimposed on the ramp-up interval at the beginning of the part
 \(N+1\), and values in corresponding points are added.
 
 #+name: fig-ramp-up-interval
