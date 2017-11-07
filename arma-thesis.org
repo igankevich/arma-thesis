@@ -643,7 +643,7 @@ it numerically.
 
 As will be shown in [[#sec:compare-formulae]] that\nbsp{}eqref:eq-old-sol-2d
 diverges when attempted to calculate velocity field for large-amplitude waves,
-and this is the reason that it can not be used together with ARMA model, that
+and this is the reason that it can not be used in conjunction with a model, that
 generates arbitrary-amplitude waves.
 
 **** Linearisation of boundary condition.
@@ -659,51 +659,53 @@ kinematic boundary condition. Velocity potential formula is written as
      \sin(u_n x + v_n y - \omega_n t + \epsilon_n).
 \end{equation*}
 This formula is differentiated to obtain velocity potential derivatives, which
-are plugged to dynamic boundary condition to obtain pressures.
+are plugged to dynamic boundary condition to determine pressure field.
 
 ** Determining wave pressures for discretely given wavy surface
 Analytic solutions to boundary problems in classical equations are often used to
 study different properties of the solution, and for that purpose general
 solution formula is too difficult to study, as it contains integrals of unknown
 functions. Fourier method is one of the methods to find analytic solutions to
-PDE. It is based on application of Fourier transform to each part of PDE, which
-reduces the equation to algebraic, and the solution is written as inverse
-Fourier transform of some function (which may contain Fourier transforms of
-other functions). Since, it is not possible to write analytic forms of these
-Fourier transforms in all cases, unique solutions are found and their behaviour
-is studied in different domains instead. At the same time, computing discrete
+PDE. It is based on Fourier transform, applying of which to some PDEs reduces
+them to algebraic equations, and the solution is written as inverse Fourier
+transform of some function (which may contain Fourier transforms of other
+functions). Since, it is not possible to write analytic forms of these Fourier
+transforms in some cases, unique solutions are found and their behaviour is
+studied in different domains instead. At the same time, computing discrete
 Fourier transforms on the computer is possible for any discretely defined
 function and efficient when using FFT algorithms. These algorithms use symmetry
 of complex exponentials to decrease asymptotic complexity from
-\(\mathcal{O}(n^2)\) to \(\mathcal{O}(n\log_{2}n)\). So, even if general solution
-contains Fourier transforms of unknown functions, they still can be computed
-numerically, and FFT family of algorithms makes this approach efficient.
+\(\mathcal{O}(n^2)\) to \(\mathcal{O}(n\log_{2}n)\). So, even if general
+solution contains Fourier transforms of unknown functions, they still can be
+computed numerically, and FFT family of algorithms makes this approach
+efficient.
 
 Alternative approach to solve PDE is to reduce it to difference equations, which
 are solved by constructing various numerical schemes. This approach leads to
 approximate solution, and asymptotic complexity of corresponding algorithms is
 comparable to that of FFT. For example, stationary elliptic PDE transforms to
 implicit numerical scheme which is solved by iterative method on each step of
-which a tridiagonal of five-diagonal system of algebraic equations is solved by
+which a tridiagonal or five-diagonal system of algebraic equations is solved by
 Thomas algorithm. Asymptotic complexity of this approach is
-\(\mathcal{O}({n}{m})\), where \(n\)\nbsp{}--- number of wavy surface grid points, \(m\)\nbsp{}---
-number of iterations. Despite their wide spread, iterative algorithms are
-inefficient on parallel computer architectures; in particular, their mapping to
-co-processors may involve copying data in and out of the co-processor in each
-iteration, which negatively affects their performance. At the same time, high
-number of Fourier transforms in the solution is an advantage, rather than a
-disadvantage. First, solutions obtained by Fourier method are explicit, hence
-their implementations scales with the large number of parallel computer cores.
-Second, there are implementations of FFT optimised for different processor
-architectures as well as co-processors (GPU, MIC) which makes it easy to get
-high performance on any computing platform. These advantages substantiate the
-choice of Fourier method to obtain explicit analytic solution to the problem of
-determining pressures under wavy sea surface.
+\(\mathcal{O}({n}{m})\), where \(n\)\nbsp{}--- number of wavy surface grid
+points, \(m\)\nbsp{}--- number of iterations. Despite their wide spread,
+iterative algorithms are inefficient on parallel computer architectures; in
+particular, their mapping to co-processors may involve copying data in and out
+of the co-processor in each iteration, which negatively affects their
+performance. At the same time, high number of Fourier transforms in the solution
+is an advantage, rather than a disadvantage. First, solutions obtained by
+Fourier method are explicit, hence their implementations scales with the large
+number of parallel computer cores. Second, there are implementations of FFT
+optimised for different processor architectures as well as co-processors (GPU,
+MIC) which makes it easy to get high performance on any computing platform.
+These advantages substantiate the choice of Fourier method to obtain explicit
+solution to the problem of determining pressures under wavy sea surface.
 
 *** Two-dimensional velocity field
 :PROPERTIES:
 :CUSTOM_ID: sec:pressure-2d
 :END:
+
 **** Formula for infinite depth fluid.
 Two-dimensional Laplace equation with Robin boundary condition is written as
 \begin{align}
@@ -743,10 +745,10 @@ transforms, we rewrite\nbsp{}eqref:eq-guessed-sol-2d as a convolution:
     \ast
     \InverseFourierY{E(u)}{x},
 \end{equation*}
-where \(\Fun{z}\)\nbsp{}--- a function, form of which is defined in section
-[[#sec:compute-delta]] and which satisfies equation
-\(\FourierY{\Fun{z}}{u}=e^{2\pi{u}{z}}\). Plugging formula \(\phi\) into the boundary
-condition yields
+where \(\Fun{z}\)\nbsp{}--- a function, form of which is defined in
+section\nbsp{}[[#sec:compute-delta]] and which satisfies equation
+\(\FourierY{\Fun{z}}{u}=e^{2\pi{u}{z}}\). Plugging formula \(\phi\) into the
+boundary condition yields
 \begin{equation*}
     \zeta_t
     =
@@ -789,17 +791,17 @@ into\nbsp{}eqref:eq-guessed-sol-2d yields formula for \(\phi(x,z)\):
 Multiplier \(e^{2\pi{u}{z}}/(2\pi{u})\) makes graph of a function to which
 Fourier transform of which is applied asymmetric with respect to \(OY\) axis.
 This makes it difficult to apply FFT which expects periodic function with nought
-on both ends of the interval. Using numerical integration instead of FFT is not
-faster than solving the initial system of equations with numerical schemes. This
-problem is alleviated by using formula\nbsp{}eqref:eq-solution-2d-full for
-finite depth fluid with wittingly large depth \(h\). This formula is derived in
-the following section.
+on both ends of the interval. At the same time, using numerical integration
+instead of FFT is not faster than solving the initial system of equations with
+numerical schemes. This problem is alleviated by using
+formula\nbsp{}eqref:eq-solution-2d-full for finite depth fluid with wittingly
+large depth \(h\). This formula is derived in the following section.
 
 **** Formula for finite depth fluid.
-On the sea bottom vertical fluid velocity component equals nought: \(\phi_z=0\) on
-\(z=-h\), where \(h\)\nbsp{}--- water depth. In this case equation \(v=-{i}{u}\), which came
-from Laplace equation, can not be neglected, hence the solution is sought in the
-following form:
+On the sea bottom vertical fluid velocity component equals nought,
+i.e.\nbsp{}\(\phi_z=0\) on \(z=-h\), where \(h\)\nbsp{}--- water depth. In this
+case equation \(v=-{i}{u}\), which came from Laplace equation, can not be
+neglected, hence the solution is sought in the following form:
 \begin{equation}
     \phi(x,z)
     =
@@ -845,8 +847,8 @@ previous section transformations yields final formula for \(\phi(x,z)\):
 }
     \label{eq-solution-2d-full}
 \end{equation}
-where \(\FunSecond{z}\)\nbsp{}--- a function, form of which is defined in section
-[[#sec:compute-delta]] and which satisfies equation
+where \(\FunSecond{z}\)\nbsp{}--- a function, form of which is defined in
+section\nbsp{}[[#sec:compute-delta]] and which satisfies equation
 \(\FourierY{\FunSecond{z}}{u}=\Sinh{2\pi{u}{z}}\).
 
 **** Reducing to the formulae from linear wave theory.
@@ -967,17 +969,17 @@ Plugging \(\phi\) into the boundary condition on the free surface yields
 where \(f_1(x,y)={\zeta_x}/{\SqrtZeta{1+\zeta_x^2+\zeta_y^2}}-\zeta_x\) and
 \(f_2(x,y)={\zeta_y}/{\SqrtZeta{1+\zeta_x^2+\zeta_y^2}}-\zeta_y\).
 
-Like in Section\nbsp{}[[#sec:pressure-2d]] we assume that
+Like in section\nbsp{}[[#sec:pressure-2d]] we assume that
 \(\Sinh{2\pi{u}(z+h)}\approx\SinhX{2\pi{u}(z+h)}\) near free surface, but in
 three-dimensional case this is not enough to solve the problem. In order to get
-analytic formula for coefficients \(E\) we need to assume, that all Fourier
-transforms in the equation have radially symmetric kernels, i.e. replace \(u\)
-and \(v\) with \(\Kveclen\). There are two points supporting this assumption.
-First, in numerical implementation integration is done over positive wave
-numbers, so the sign of \(u\) and \(v\) does not affect the solution. Second,
-the rate growth of \(\cosh\) term of the integral kernel is much higher than the
-one of \(u\) or \(\Kveclen\), so the substitution has small effect on the
-magnitude of the solution. Despite these two points, a use of more
+explicit formula for coefficients \(E\) we need to assume, that all Fourier
+transforms in the equation have radially symmetric kernels, i.e.\nbsp{}replace
+\(u\) and \(v\) with \(\Kveclen\). There are two points supporting this
+assumption. First, in numerical implementation integration is done over positive
+wave numbers, so the sign of \(u\) and \(v\) does not affect the solution.
+Second, the rate growth of \(\cosh\) term of the integral kernel is much higher
+than the one of \(u\) or \(\Kveclen\), so the substitution has small effect on
+the magnitude of the solution. Despite these two points, a use of more
 mathematically rigorous approach would be preferable.
 
 Making the replacement, applying Fourier transform to both sides of the equation
@@ -994,9 +996,9 @@ and plugging the result into\nbsp{}eqref:eq-guessed-sol-3d yields formula for
 where \(\FourierY{\mathcal{D}_3\left(x,y,z\right)}{u,v}=\Sinh{\smash{2\pi\Kveclen{}z}}\).
 
 ** Modelling non-linearity of sea waves
-ARMA model allows to model asymmetry of wave elevation distribution, i.e.\nbsp{}
-generate sea waves, distribution of \(z\)-coordinate of which has non-nought
-kurtosis and asymmetry. Such distribution is inherent to real sea
+ARMA model allows to model asymmetry of wave elevation distribution,
+i.e.\nbsp{}generate sea waves, distribution of \(z\)-coordinate of which has
+non-nought kurtosis and asymmetry. Such distribution is inherent to real sea
 waves\nbsp{}cite:longuet1963nonlinear.
 
 Wave asymmetry is modelled by non-linear inertia-less transform (NIT) of
@@ -1074,6 +1076,7 @@ the same approximation in Gram---Charlier series does not lead to such errors.
 :PROPERTIES:
 :CUSTOM_ID: sec-wave-acfs
 :END:
+
 **** Analytic method of finding the ACF.
 The straightforward way to find ACF for a given sea wave profile is to apply
 Wiener---Khinchin theorem. According to this theorem the autocorrelation \(K\) of
