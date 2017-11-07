@@ -345,11 +345,11 @@ any scalar quantity can be a component (temperature, salinity, concentration of
 some substance in water etc.). Equation parameters are AR and MA process
 coefficients and order.
 
-Sea simulation model is derived to simulate realistic realisations of wind
-induced wave field and is suitable to use in ship dynamics calculations.
-Stationarity and invertibility properties are the main criteria for choosing one
-or another process to simulate waves with different profiles, which are
-discussed in sec.\nbsp{}[[#sec-process-selection]].
+Sea simulation model is used to simulate realistic realisations of wind induced
+wave field and is suitable to use in ship dynamics calculations. Stationarity
+and invertibility properties are the main criteria for choosing one or another
+process to simulate waves with different profiles, which are discussed in
+sec.\nbsp{}[[#sec-process-selection]].
 
 **** Autoregressive (AR) process.
 AR process is ARMA process with only one random impulse instead of theirs
@@ -440,9 +440,9 @@ where \(\vec N = \left( p_1, p_2, p_3 \right)\) and
     \right],
 \end{equation*}
 Since \(\Phi_{\vec 0}\equiv0\), the first row and column of \(\Gamma\) can be
-eliminated. Matrix \(\Gamma\) is block-toeplitz, positive definite and symmetric,
-hence the system is efficiently solved by Cholesky decomposition, which is
-particularly suitable for these types of matrices.
+eliminated. Matrix \(\Gamma\) is block-block-toeplitz, positive definite and
+symmetric, hence the system is efficiently solved by Cholesky decomposition,
+which is particularly suitable for these types of matrices.
 
 After solving this system of equations white noise variance is estimated
 from\nbsp{}eqref:eq-yule-walker by plugging \(\vec k = \vec 0\):
@@ -496,10 +496,10 @@ Here coefficients \(\Theta\) are calculated from back to front: from
     }.
 \end{equation*}
 Authors of\nbsp{}cite:box1976time suggest using Newton---Raphson method to solve
-this equation with higher precision, however, this method does not work in three
-dimensions. Using slower method does not have dramatic effect on the overall
-programme performance, because the number of coefficients is small and most of
-the time is spent generating wavy surface.
+this equation with higher precision, however, in this case it is difficult to
+generalise the method for three dimensions. Using slower method does not have
+dramatic effect on the overall programme performance, because the number of
+coefficients is small and most of the time is spent generating wavy surface.
 
 **** Stationarity and invertibility of AR and MA processes
 In order for modelled wavy surface to represent physical phenomena, the
@@ -534,8 +534,9 @@ section\nbsp{}[[#sec-process-selection]].
 
 **** Mixed autoregressive moving average (ARMA) process.
 :PROPERTIES:
-:CUSTOM_ID: sec:how-to-mix-ARMA
+:CUSTOM_ID: sec:how-to-mix-arma
 :END:
+
 Generally speaking, ARMA process is obtained by plugging MA generated wavy
 surface as random impulse to AR process, however, in order to get the process
 with desired ACF one should re-compute AR coefficients before plugging. There
@@ -566,13 +567,17 @@ sea waves. (The latter happens for non-invertible MA process, as it is always
 stationary.) So, the best way to apply ARMA model to sea wave generation is to
 use AR process for standing waves and MA process for progressive waves.
 
-The other problem is inability to automatically determine optimal number of
+The other problem is difficulty of determination of optimal number of
 coefficients for three-dimensional AR and MA processes. For one-dimensional
-processes this can be achieved via iterative methods\nbsp{}cite:box1976time, but
-they diverge in three-dimensional case.
-
-The final problem, which is discussed in [[#sec:how-to-mix-ARMA]], is inability to
-"mix" AR and MA process in three dimensions.
+processes there are easy to implement iterative methods\nbsp{}cite:box1976time,
+but for three-dimensional case there are analogous
+methods\nbsp{}cite:byoungseon1999arma3d,liew2005arma3d which are difficult to
+implement, hence they were not used in this work. Manual choice of model's order
+is trivial: choosing wittingly higher order than needed affects performance, but
+not realisation quality, because processes' periodicity does not depend on the
+number of coefficients. Software implementation of iterative methods of finding
+the optimal model order would improve automation level of wavy surface
+generator, but not the quality of the experiments being conducted.
 
 In practice some statements made for AR and MA processes
 in\nbsp{}cite:box1976time should be flipped for three-dimensional case. For
@@ -589,7 +594,7 @@ left to MA process.
 
 To summarise, the only established scenario of applying ARMA model to sea wave
 generation is to use AR process for standing waves and MA process for
-propagating waves. With new formulae for 3 dimensions a single mixed ARMA
+propagating waves. With new formulae for three dimensions a single mixed ARMA
 process might increase model precision, which is one of the objectives of the
 future research.
 
