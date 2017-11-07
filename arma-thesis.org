@@ -534,7 +534,7 @@ section\nbsp{}[[#sec-process-selection]].
 
 **** Mixed autoregressive moving average (ARMA) process.
 :PROPERTIES:
-:CUSTOM_ID: sec:how-to-mix-arma
+:CUSTOM_ID: sec-how-to-mix-arma
 :END:
 
 Generally speaking, ARMA process is obtained by plugging MA generated wavy
@@ -573,7 +573,7 @@ processes there are easy to implement iterative methods\nbsp{}cite:box1976time,
 but for three-dimensional case there are analogous
 methods\nbsp{}cite:byoungseon1999arma3d,liew2005arma3d which are difficult to
 implement, hence they were not used in this work. Manual choice of model's order
-is trivial: choosing wittingly higher order than needed affects performance, but
+is trivial: choosing knowingly higher order than needed affects performance, but
 not realisation quality, because processes' periodicity does not depend on the
 number of coefficients. Software implementation of iterative methods of finding
 the optimal model order would improve automation level of wavy surface
@@ -641,7 +641,7 @@ the form of elliptic partial differential equation (PDE):
 The authors suggest transforming this equation to finite differences and solve
 it numerically.
 
-As will be shown in [[#sec:compare-formulae]] that\nbsp{}eqref:eq-old-sol-2d
+As will be shown in [[#sec-compare-formulae]] that\nbsp{}eqref:eq-old-sol-2d
 diverges when attempted to calculate velocity field for large-amplitude waves,
 and this is the reason that it can not be used in conjunction with a model, that
 generates arbitrary-amplitude waves.
@@ -703,7 +703,7 @@ solution to the problem of determining pressures under wavy sea surface.
 
 *** Two-dimensional velocity field
 :PROPERTIES:
-:CUSTOM_ID: sec:pressure-2d
+:CUSTOM_ID: sec-pressure-2d
 :END:
 
 **** Formula for infinite depth fluid.
@@ -746,7 +746,7 @@ transforms, we rewrite\nbsp{}eqref:eq-guessed-sol-2d as a convolution:
     \InverseFourierY{E(u)}{x},
 \end{equation*}
 where \(\Fun{z}\)\nbsp{}--- a function, form of which is defined in
-section\nbsp{}[[#sec:compute-delta]] and which satisfies equation
+section\nbsp{}[[#sec-compute-delta]] and which satisfies equation
 \(\FourierY{\Fun{z}}{u}=e^{2\pi{u}{z}}\). Plugging formula \(\phi\) into the
 boundary condition yields
 \begin{equation*}
@@ -794,7 +794,7 @@ This makes it difficult to apply FFT which expects periodic function with nought
 on both ends of the interval. At the same time, using numerical integration
 instead of FFT is not faster than solving the initial system of equations with
 numerical schemes. This problem is alleviated by using
-formula\nbsp{}eqref:eq-solution-2d-full for finite depth fluid with wittingly
+formula\nbsp{}eqref:eq-solution-2d-full for finite depth fluid with knowingly
 large depth \(h\). This formula is derived in the following section.
 
 **** Formula for finite depth fluid.
@@ -848,7 +848,7 @@ previous section transformations yields final formula for \(\phi(x,z)\):
     \label{eq-solution-2d-full}
 \end{equation}
 where \(\FunSecond{z}\)\nbsp{}--- a function, form of which is defined in
-section\nbsp{}[[#sec:compute-delta]] and which satisfies equation
+section\nbsp{}[[#sec-compute-delta]] and which satisfies equation
 \(\FourierY{\FunSecond{z}}{u}=\Sinh{2\pi{u}{z}}\).
 
 **** Reducing to the formulae from linear wave theory.
@@ -969,7 +969,7 @@ Plugging \(\phi\) into the boundary condition on the free surface yields
 where \(f_1(x,y)={\zeta_x}/{\SqrtZeta{1+\zeta_x^2+\zeta_y^2}}-\zeta_x\) and
 \(f_2(x,y)={\zeta_y}/{\SqrtZeta{1+\zeta_x^2+\zeta_y^2}}-\zeta_y\).
 
-Like in section\nbsp{}[[#sec:pressure-2d]] we assume that
+Like in section\nbsp{}[[#sec-pressure-2d]] we assume that
 \(\Sinh{2\pi{u}(z+h)}\approx\SinhX{2\pi{u}(z+h)}\) near free surface, but in
 three-dimensional case this is not enough to solve the problem. In order to get
 explicit formula for coefficients \(E\) we need to assume, that all Fourier
@@ -1103,11 +1103,11 @@ order Stokes' equations for gravity waves\nbsp{}cite:boccotti1983wind. So, if
 the shape of the wave profile is the only concern in the simulation, then one
 can simply multiply it by a decaying exponent to get appropriate ACF. This ACF
 does not reflect other wave profile parameters, such as wave height and period,
-but opens possibility to simulate waves of a particular non-analytic shape by
-"drawing" their profile, then multiplying it by an exponent and using the
-resulting function as ACF. So, this empirical method is imprecise but offers
-simpler alternative to Wiener---Khinchin theorem approach; it is mainly useful
-to test ARMA model.
+but opens possibility to simulate waves of a particular shape by defining their
+profile with discretely given function, then multiplying it by an exponent and
+using the resulting function as ACF. So, this empirical method is imprecise but
+offers simpler alternative to Wiener---Khinchin theorem approach; it is mainly
+useful to test ARMA model.
 
 **** Standing wave ACF.
 For three-dimensional plain standing wave the profile is given by
@@ -1125,9 +1125,9 @@ Find ACF via analytic method. Multiplying the formula by a decaying exponent
   \sin (k_x x + k_y y) \sin (\sigma t).
   \label{eq-decaying-standing-wave}
 \end{equation}
-Then, apply 3D Fourier transform to both sides of the equation via symbolic
-computation programme, fit the resulting polynomial to the following
-approximation:
+Then, apply three-dimensional Fourier transform to both sides of the equation
+via symbolic computation programme, fit the resulting polynomial to the
+following approximation:
 \begin{equation}
   K(t,x,y) =
   \gamma
@@ -1186,8 +1186,9 @@ steps.
 
 ** Additional formulae, methods and algorithms for ARMA model
 :PROPERTIES:
-:CUSTOM_ID: sec:arma-algorithms
+:CUSTOM_ID: sec-arma-algorithms
 :END:
+
 *** Wave elevation distribution approximation
 One of the parameters of sea wavy surface generator is probability density
 function (PDF) of the surface elevation. This distribution is given by either
@@ -1214,11 +1215,12 @@ this type of PDF expands in Gram---Charlier series:
         + \frac{1}{4!} \gamma_2 H_4 \left(\frac{z-\mu}{\sigma}\right)
     \right],
 \end{align}
-where \(\Phi(z)\)\nbsp{}--- CDF of normal distribution, \(\phi\)\nbsp{}--- PDF
-of normal distribution, \(\gamma_1\)\nbsp{}--- skewness, \(\gamma_2\)\nbsp{}---
-kurtosis, \(f\)\nbsp{}--- PDF, \(F\)\nbsp{}--- cumulative distribution function
-(CDF). According to\nbsp{}cite:rozhkov1990stochastic for sea waves skewness is
-selected from interval \(0.1\leq\gamma_1\leq{0.52}]\) and kurtosis from interval
+where \(\Phi(z)\)\nbsp{}--- cumulative density function (CDF) of normal
+distribution, \(\phi\)\nbsp{}--- PDF of normal distribution,
+\(\gamma_1\)\nbsp{}--- skewness, \(\gamma_2\)\nbsp{}--- kurtosis,
+\(f\)\nbsp{}--- PDF, \(F\)\nbsp{}--- cumulative distribution function (CDF).
+According to\nbsp{}cite:rozhkov1990stochastic for sea waves skewness is selected
+from interval \(0.1\leq\gamma_1\leq{0.52}]\) and kurtosis from interval
 \(0.1\leq\gamma_2\leq{0.7}\). Family of probability density functions for
 different parameters is shown in fig.\nbsp{}[[fig-skew-normal-1]].
 
@@ -1305,7 +1307,7 @@ legend(
 #+RESULTS: fig-skew-normal-2
 [[file:build/skew-normal-2.pdf]]
 
-**** Evaluation.
+**** Evaluation.                                                :noexport:
 Equation\nbsp{}eqref:eq-distribution-transformation with selected wave elevation
 distribution may be solved either in every point of generated wavy surface,
 which gives the most accurate results, or in every fixed grid point
@@ -1319,18 +1321,18 @@ majority of cases three Gram---Charlier series coefficients is enough to
 transform ACF; relative error without interpolation is \(10^{-5}\).
 
 *** White noise generation algorithm
-In order to eliminate periodicity from generated wavy surface, it is imperative
-to use PRNG with sufficiently large period to generate white noise. Parallel
-Mersenne Twister\nbsp{}cite:matsumoto1998mersenne with a period of
-\(2^{19937}-1\) is used as a generator in this work. It allows to produce
+In order to eliminate periodicity from wavy surface generated by sea wave model,
+it is imperative to use PRNG with sufficiently large period to generate white
+noise. Parallel Mersenne Twister\nbsp{}cite:matsumoto1998mersenne with a period
+of \(2^{19937}-1\) is used as a generator in this work. It allows to produce
 aperiodic sea wavy surface realisations in any practical usage scenarios.
 
-There is no guarantee that multiple Mersenne Twisters executed in parallel
-threads with distinct initial states produce uncorrelated pseudo-random number
-sequences, however, algorithm of dynamic creation of Mersenne
-Twisters\nbsp{}cite:matsumoto1998dynamic may be used to provide such guarantee.
-The essence of the algorithm is to find matrices of initial generator states,
-that give maximally uncorrelated pseudo-random number sequences when Mersenne
+There is no guarantee that multiple PRNGs executed in parallel threads with
+distinct initial states produce uncorrelated pseudo-random number sequences, and
+algorithm of dynamic creation of Mersenne
+Twisters\nbsp{}cite:matsumoto1998dynamic is used to provide such guarantee. The
+essence of the algorithm is to find matrices of initial generator states, that
+give maximally uncorrelated pseudo-random number sequences when Mersenne
 Twisters are executed in parallel with these initial states. Since finding such
 initial states consumes considerable amount of processor time, vector of initial
 states is created preliminary with knowingly larger number of parallel threads
@@ -1339,9 +1341,9 @@ and saved to a file, which is then read before starting white noise generation.
 *** Wavy surface generation algorithm
 In ARMA model value of wavy surface elevation at a particular point depends on
 previous in space and time points, as a result the so called /ramp-up interval/
-(see fig.\nbsp{}[[fig-ramp-up-interval]]), in which realisation does not
-correspond to specified ACF, forms in the beginning of the realisation. There
-are several solutions to this problem which depend on the simulation context.
+(see fig.\nbsp{}[[fig-ramp-up-interval]]), in which realisation does not correspond
+to specified ACF, forms in the beginning of the realisation. There are several
+solutions to this problem which depend on the simulation context.
 
 If realisation is used in the context of ship stability simulation without
 manoeuvring, ramp-up interval will not affect results of the simulation, because
@@ -1349,13 +1351,13 @@ it is located on the border (too far away from the studied marine object). If
 ship stability with manoeuvring is studied, then the interval may be simply
 discarded from the realisation (the size of the interval approximately equals
 the number of AR coefficients in each dimension). However, this may lead to loss
-of a very large number of points, because discarding occurs for each dimension.
-Alternative approach is to generate sea wavy surface on ramp-up interval with
-LH model and generate the rest of the realisation with ARMA model.
+of a very large number of points, because discarding occurs for each of three
+dimensions. Alternative approach is to generate sea wavy surface on ramp-up
+interval with LH model and generate the rest of the realisation with ARMA model.
 
 Algorithm of wavy surface generation is data-parallel: realisation is divided
-into equal parts each of which is generated independently, however, in the
-beginning of each realisation there is ramp-up interval. To eliminate it
+into equal parts each of which is generated independently. For MA model there is
+ramp-up interval at the beginning of each realisation. To eliminate it
 /overlap-add/
 method\nbsp{}cite:oppenheim1989discrete,svoboda2011efficient,pavel2013algorithms
 (a popular method in signal processing) is used. The essence of the method is to
@@ -1363,7 +1365,10 @@ add another interval, size of which is equal to the ramp-up interval size, to
 the end of each part. Then wavy surface is generated in each point of each part
 (including points from the added interval), the interval at the end of part
 \(N\) is superimposed on the ramp-up interval at the beginning of the part
-\(N+1\), and values in corresponding points are added.
+\(N+1\), and values in corresponding points are added. For AR model, parts are
+generated taking into account autoregressive dependencies between them. Detailed
+explanation of parallel and distributed algorithms is given in
+sections\nbsp{}[[#sec-parallel]] and\nbsp{}[[#sec-distributed]].
 
 #+name: fig-ramp-up-interval
 #+begin_src R :file build/ramp-up-interval.pdf
@@ -1378,7 +1383,7 @@ arma.plot_ramp_up_interval()
 
 *** Velocity potential normalisation formulae
 :PROPERTIES:
-:CUSTOM_ID: sec:compute-delta
+:CUSTOM_ID: sec-compute-delta
 :END:
 
 In solutions\nbsp{}eqref:eq-solution-2d and\nbsp{}eqref:eq-solution-2d-full to
@@ -1401,7 +1406,7 @@ from linear wave theory, in which terms with \(\zeta\) are omitted. As a result,
 the formula for three-dimensional case was not derived.
 
 #+name: tab-delta-functions
-#+caption: Formulae for computing \(\Fun{z}\) and \(\FunSecond{z}\) from [[#sec:pressure-2d]], that use normalisation to eliminate uncertainty from definition of Dirac delta function of complex argument.
+#+caption: Formulae for computing \(\Fun{z}\) and \(\FunSecond{z}\) from [[#sec-pressure-2d]], that use normalisation to eliminate uncertainty from definition of Dirac delta function of complex argument.
 #+attr_latex: :booktabs t
 | Function          | Without normalisation                                        | Normalised                                                                                                                             |
 |-------------------+--------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------|
@@ -1410,7 +1415,7 @@ the formula for three-dimensional case was not derived.
 
 ** ARMA model verification
 :PROPERTIES:
-:CUSTOM_ID: sec:verification
+:CUSTOM_ID: sec-verification
 :END:
 
 In\nbsp{}cite:degtyarev2011modelling,degtyarev2013synoptic,boukhanovsky1997thesis
@@ -1431,22 +1436,20 @@ quantile-quantile plots are used (plots where analytic quantile values are used
 for \(OX\) axis and estimated quantile values for \(OY\) axis). If the estimated
 distribution matches analytic then the graph has the form of the straight line.
 Tails of the graph may diverge from the straight line, because they can not be
-reliably estimated from the finite-size realisation. Different methods of
-extracting waves from realisation produce variations in quantile function tails,
-it is probably impractical to extract every possible wave from realisation since
-they may (and often) overlap.
+reliably estimated from the finite-size realisation.
 
 #+name: tab-weibull-shape
 #+caption: Values of Weibull shape parameter for different wave characteristics.
 #+attr_latex: :booktabs t
 | Characteristic       | Weibull shape (\(k\)) |
 |----------------------+-----------------------|
-| Wave height          |                     2 |
-| Wave length          |                   2.3 |
-| Crest length         |                   2.3 |
-| Wave period          |                     3 |
-| Wave slope           |                   2.5 |
-| Three-dimensionality |                   2.5 |
+|                      | <l>                   |
+| Wave height          | 2                     |
+| Wave length          | 2.3                   |
+| Crest length         | 2.3                   |
+| Wave period          | 3                     |
+| Wave slope           | 2.5                   |
+| Three-dimensionality | 2.5                   |
 
 Verification was performed for standing and propagating waves. The corresponding
 ACFs and quantile-quantile plots of wave characteristics distributions are shown
@@ -1514,22 +1517,21 @@ height. There is no algorithm that guarantees correct extraction of all waves,
 because they may and often overlap each other. Weibull distribution right tail
 represents infrequently occurring waves, so it deviates more than left tail.
 
-Correspondence rate for standing waves
-(fig.\nbsp{}[[standing-wave-distributions]]) is lower for height and length,
-roughly the same for surface elevation and higher for wave period distribution
-tails. Lower correspondence degree for length and height may be attributed to
-the fact that Weibull distributions were obtained empirically for sea waves
-which are typically propagating, and distributions may be different for
-standings waves. Higher correspondence degree for wave periods is attributed to
-the fact that wave periods of standing waves are extracted more precisely as
-the waves do not move outside simulated wavy surface region. The same
-correspondence degree for wave elevation is obtained, because this is the
-characteristic of the wavy surface (and corresponding AR or MA process) and is
-not affected by the type of waves.
+Correspondence rate for standing waves (fig.\nbsp{}[[standing-wave-distributions]])
+is lower for height and length, roughly the same for surface elevation and
+higher for wave period distribution tails. Lower correspondence degree for
+length and height may be attributed to the fact that Weibull distributions were
+obtained empirically for sea waves which are typically propagating, and
+distributions may be different for standings waves. Higher correspondence degree
+for wave periods is attributed to the fact that wave periods of standing waves
+are extracted more precisely as the waves do not move outside simulated wavy
+surface region. The same correspondence degree for wave elevation is obtained,
+because this is the characteristic of the wavy surface (and corresponding AR or
+MA process) and is not affected by the type of waves.
 
 *** Verification of velocity potential fields
 :PROPERTIES:
-:CUSTOM_ID: sec:compare-formulae
+:CUSTOM_ID: sec-compare-formulae
 :END:
 
 Comparing obtained generic formulae\nbsp{}eqref:eq-solution-2d
@@ -1537,8 +1539,8 @@ and\nbsp{}eqref:eq-solution-2d-full to the known formulae from linear wave
 theory allows to see the difference between velocity fields for both large and
 small amplitude waves. In general analytic formula for velocity potential in not
 known, even for plain waves, so comparison is done numerically. Taking into
-account conclusions of [[#sec:pressure-2d]], only finite depth formulae are
-compared.
+account conclusions of section\nbsp{}[[#sec-pressure-2d]], only finite depth
+formulae are compared.
 
 **** The difference with linear wave theory formulae.
 In order to obtain velocity potential fields, sea wavy surface was generated
@@ -1665,10 +1667,9 @@ increases wave steepness, the same is not true for skew normal distribution
 \(z\)-coordinate of which is always greater or equal to nought. So, skew normal
 distribution is unsuitable for NIT. NIT increases the wave height and steepness
 of both standing and propagating waves. Increasing either skewness or kurtosis
-parameter of GCS-based distribution increases both wave height and steepness.
-The error of ACF approximation (eq.\nbsp{}eqref:eq-nit-error) ranges from 0.20
-for GCS-based distribution to 0.70 for skew normal distribution
-(table\nbsp{}[[tab-nit-error]]).
+of GCS-based distribution increases both wave height and steepness. The error of
+ACF approximation (eq.\nbsp{}eqref:eq-nit-error) ranges from 0.20 for GCS-based
+distribution to 0.70 for skew normal distribution (table\nbsp{}[[tab-nit-error]]).
 
 #+name: fig-nit
 #+header: :width 7 :height 7
@@ -1706,8 +1707,8 @@ To summarise, the only test case that showed acceptable results is realisation
 with GCS-based distribution for both standing and propagating waves. Skew normal
 distribution warps wavy surface for both types of waves. GCS-based realisations
 have large error of ACF approximation, which results in increase of wave height.
-The reason for the large error is that approximations Gram---Charlier series are
-not accurate as they do not converge for all possible
+The reason for the large error is that GCS approximations are not accurate as
+they do not converge for all possible
 functions\nbsp{}cite:wallace1958asymptotic. Despite the large error, the change
 in wave height is small (table\nbsp{}[[tab-nit-error]]).
 
@@ -1754,6 +1755,10 @@ work.
 * High-performance software implementation of sea wave simulation
 ** SMP implementation
 **** Parallel AR, MA and LH model algorithms.
+:PROPERTIES:
+:CUSTOM_ID: sec-parallel
+:END:
+
 Although, AR and MA models are part of the single mixed ARMA model they have
 disparate parallel algorithms, which are different from trivial one of LH model.
 AR algorithm consists in partitioning wavy surface into equally-sized
@@ -3297,7 +3302,7 @@ The algorithm is best described by an example
 **** Evaluation results.
 Fail over algorithm was evaluated on physical cluster (table\nbsp{}[[tab-ant]]) on
 the example of distributed AR model application, which is described in detail in
-section [[#sec:arma-mpp]]. The application consists of a series of functions, each
+section [[#sec-arma-mpp]]. The application consists of a series of functions, each
 of which is applied to the result of the previous one. Some of the functions are
 computed in parallel, so the programme is written as a sequence of steps, some
 if which are made internally parallel to get better performance. In the
@@ -3565,10 +3570,14 @@ without interruption.
 
 ** MPP implementation
 :PROPERTIES:
-:CUSTOM_ID: sec:arma-mpp
+:CUSTOM_ID: sec-arma-mpp
 :END:
 
 **** Distributed AR model algorithm.
+:PROPERTIES:
+:CUSTOM_ID: sec-distributed
+:END:
+
 This algorithm, unlike its parallel counterpart, employs copying of data to
 execute computation on different cluster nodes, and since network throughput is
 much lower than memory bandwidth, the size of data that is sent over the network
