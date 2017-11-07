@@ -213,19 +213,19 @@ waves\nbsp{}cite:boukhanovsky1997thesis,degtyarev2011modelling.
 ** Sea wave models analysis
 Pressure computation is only possible when the shape of wavy surface is known.
 It is defined either at discrete grid points, or continuously via some analytic
-formula. As will be shown in section [[#linearisation]], such formula may simplify
-pressure computation by effectively reducing the task to pressure field
+formula. As will be shown in section\nbsp{}[[#linearisation]], such formula may
+simplify pressure computation by effectively reducing the task to pressure field
 generation, instead of wavy surface generation.
 
 **** Longuet---Higgins model.
 The simplest model, formula of which is derived in the framework of linear wave
-theory (see\nbsp{}section\nbsp{}[[#longuet-higgins-derivation]]), is
+theory (see\nbsp{}appendix\nbsp{}[[#longuet-higgins-derivation]]), is
 Longuet---Higgins (LH) model\nbsp{}cite:longuet1957statistical. In-depth
 comparative analysis of this model and ARMA model is done
 in\nbsp{}cite:degtyarev2011modelling,boukhanovsky1997thesis.
 
 LH model represents sea wavy surface as a superposition of
-sine waves with random amplitudes \(c_n\) and phases \(\epsilon_n\), continuously
+sine waves with random amplitudes \(c_n\) and phases \(\epsilon_n\), uniformly
 distributed on interval \([0,2\pi]\). Wavy surface elevation (\(z\) coordinate) is
 defined by
 #+name: eq-longuet-higgins
@@ -233,12 +233,12 @@ defined by
     \zeta(x,y,t) = \sum\limits_n c_n \cos(u_n x + v_n y - \omega_n t + \epsilon_n).
 \end{equation}
 Here wave numbers \((u_n,v_n)\) are continuously distributed on plane \((u,v)\),
-i.e. area \(du \times dv\) contains infinite quantity of wave numbers. Frequency
-is related to wave numbers via dispersion relation \(\omega_n=\omega(u_n,v_n)\).
-Function \(\zeta(x,y,t)\) is a three-dimensional ergodic stationary homogeneous
-Gaussian process defined by
+i.e.\nbsp{}area \(du\times{}dv\) contains infinite quantity of wave numbers.
+Frequency is related to wave numbers via dispersion relation
+\(\omega_n=\omega(u_n,v_n)\). Function \(\zeta(x,y,t)\) is a three-dimensional
+ergodic stationary homogeneous Gaussian process defined by
 \begin{equation*}
-    2E_\zeta(u,v)\, du\,  dv = \sum\limits_n c_n^2,
+    2E_\zeta(u,v)\, du\, dv = \sum\limits_n c_n^2,
 \end{equation*}
 where \(E_\zeta(u,v)\)\nbsp{}--- two-dimensional wave energy spectral density.
 Coefficients \(c_n\) are derived from wave energy spectrum \(S(\omega)\) via
@@ -249,7 +249,6 @@ Coefficients \(c_n\) are derived from wave energy spectrum \(S(\omega)\) via
 **** Disadvantages of Longuet-Higgins model.
 Although LH model is simple and easy to understand, there are shortcomings that
 appear in practice.
-
 1. The model simulates only stationary Gaussian process. This is consequence of
    central limit theorem (CLT): sum of large number of sines with random
    amplitudes and phases has normal distribution, no matter what spectrum is
@@ -267,18 +266,19 @@ appear in practice.
    simulations.
 3. Finally, there are peculiarities which make LH model unsuitable base for
    building more advanced simulation models.
-   - In software implementation convergence rate of eq.\nbsp{}[[eq-longuet-higgins]]
+   - In software implementation convergence rate of \nbsp{}[[eq-longuet-higgins]]
      may be low due to randomness of phases \(\epsilon_n\).
    - It is difficult to generalise LH model for non-Gaussian processes as it
      involves incorporating non-linear terms in eq.\nbsp{}[[eq-longuet-higgins]] for
      which there is no known formula to determine
      coefficients\nbsp{}cite:rozhkov1990stochastic.
 
-To summarise, LH model is applicable to generating sea wavy surface in the
-framework of linear wave theory, inefficient for long-time simulations, and
-difficult to use as a base for more advanced models.
+To summarise, LH model is applicable to generating sea wavy surface only in the
+framework of linear wave theory, inefficient for long-time simulations, and has
+a number of deficiencies which do not allow to use it as a base for more
+advanced models.
 
-**** ARMA model
+**** ARMA model.
 In\nbsp{}cite:spanos1982arma ARMA model is used to generate time series spectrum
 of which is compatible with Pierson---Moskowitz (PM) approximation of sea wave
 spectrum. The authors carry out experiments for one-dimensional AR, MA and ARMA
