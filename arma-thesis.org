@@ -255,7 +255,7 @@ appear in practice.
    problem, but also make realisation period smaller. So, using LH model to
    simulate waves with non-Gaussian distribution of elevation\nbsp{}--- a
    distribution which real sea waves
-   have\nbsp{}cite:huang1980experimental,рожков1996теория \nbsp{}--- is
+   have\nbsp{}cite:huang1980experimental,rozhkov1996theory \nbsp{}--- is
    impractical.
 2. From computational point of view, the deficiency of the model is non-linear
    increase of wavy surface generation time with the increase of realisation
@@ -270,7 +270,7 @@ appear in practice.
    - It is difficult to generalise LH model for non-Gaussian processes as it
      involves incorporating non-linear terms in eq.\nbsp{}[[eq-longuet-higgins]] for
      which there is no known formula to determine
-     coefficients\nbsp{}cite:рожков1990вероятностные.
+     coefficients\nbsp{}cite:rozhkov1990stochastic.
 
 To summarise, LH model is applicable to generating sea wavy surface in the
 framework of linear wave theory, inefficient for long-time simulations, and
@@ -593,18 +593,18 @@ future research.
 
 ** Known pressure field determination formulae
 **** Small amplitude waves theory.
-In\nbsp{}cite:stab2012,детярев1998моделирование,degtyarev1997analysis the
-authors propose a solution for inverse problem of hydrodynamics of potential
-flow in the framework of small-amplitude wave theory (under assumption that wave
-length is much larger than height: \(\lambda \gg h\)). In that case inverse
-problem is linear and reduces to Laplace equation with mixed boundary
-conditions, and equation of motion is solely used to determine pressures for
-calculated velocity potential derivatives. The assumption of small amplitudes
-means the slow decay of wind wave coherence function, i.e. small change of local
-wave number in time and space compared to the wavy surface elevation (\(z\)
-coordinate). This assumption allows to calculate elevation \(z\) derivative as
-\(\zeta_z=k\zeta\), where \(k\) is wave number. In two-dimensional case the
-solution is written explicitly as
+In\nbsp{}cite:stab2012,degtyarev1998modelling,degtyarev1997analysis the authors
+propose a solution for inverse problem of hydrodynamics of potential flow in the
+framework of small-amplitude wave theory (under assumption that wave length is
+much larger than height: \(\lambda \gg h\)). In that case inverse problem is
+linear and reduces to Laplace equation with mixed boundary conditions, and
+equation of motion is solely used to determine pressures for calculated velocity
+potential derivatives. The assumption of small amplitudes means the slow decay
+of wind wave coherence function, i.e. small change of local wave number in time
+and space compared to the wavy surface elevation (\(z\) coordinate). This
+assumption allows to calculate elevation \(z\) derivative as \(\zeta_z=k\zeta\),
+where \(k\) is wave number. In two-dimensional case the solution is written
+explicitly as
 \begin{align}
     \left.\frac{\partial\phi}{\partial x}\right|_{x,t}= &
         -\frac{1}{\sqrt{1+\alpha^{2}}}e^{-I(x)}
@@ -1186,7 +1186,7 @@ polynomial approximation of /in situ/ data or analytic formula.
 **** Gram---Charlier series expansion.
 In\nbsp{}cite:huang1980experimental the authors experimentally show, that PDF of
 sea surface elevation is distinguished from normal distribution by non-nought
-kurtosis and skewness. In\nbsp{}cite:рожков1996теория the authors show, that
+kurtosis and skewness. In\nbsp{}cite:rozhkov1996theory the authors show, that
 this type of PDF expands in Gram---Charlier series:
 \begin{align}
     \label{eq-skew-normal-1}
@@ -1207,7 +1207,7 @@ this type of PDF expands in Gram---Charlier series:
 where \(\Phi(z)\)\nbsp{}--- CDF of normal distribution, \(\phi\)\nbsp{}--- PDF
 of normal distribution, \(\gamma_1\)\nbsp{}--- skewness, \(\gamma_2\)\nbsp{}---
 kurtosis, \(f\)\nbsp{}--- PDF, \(F\)\nbsp{}--- cumulative distribution function
-(CDF). According to\nbsp{}cite:рожков1990вероятностные for sea waves skewness is
+(CDF). According to\nbsp{}cite:rozhkov1990stochastic for sea waves skewness is
 selected from interval \(0.1\leq\gamma_1\leq{0.52}]\) and kurtosis from interval
 \(0.1\leq\gamma_2\leq{0.7}\). Family of probability density functions for
 different parameters is shown in fig.\nbsp{}[[fig-skew-normal-1]].
@@ -1413,7 +1413,7 @@ In this work both AR and MA model are verified by comparing probability
 distributions of different wave characteristics.
 
 *** Verification of wavy surface integral characteristics
-In\nbsp{}cite:рожков1990вероятностные the authors show that several sea wave
+In\nbsp{}cite:rozhkov1990stochastic the authors show that several sea wave
 characteristics (listed in table\nbsp{}[[tab-weibull-shape]]) have Weibull
 distribution, and wavy surface elevation has Gaussian distribution. In order to
 verify that distributions corresponding to generated realisation are correct,
