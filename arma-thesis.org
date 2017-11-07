@@ -164,15 +164,16 @@ Numerical experiments showed higher computational efficiency of ARMA model.
 
 * Problem statement
 The aim of the study reported here is to investigate possibilities of applying
-ARMA process mathematical apparatus to sea wave modelling and to derive formula
-for pressure field under generated wavy surface without assumptions of linear
-wave theory.
-- In case of small-amplitude waves resulting formula must correspond to the
-  one from linear wave theory; in all other cases the formula must not diverge.
+ARMA process mathematical apparatus to sea wave modelling and to develop a
+method to compute pressure field under generated wavy surface for inviscid
+incompressible fluid without assumptions of linear wave theory.
+- In case of small-amplitude waves the resulting pressure field must correspond
+  to the one obtained via formula from linear wave theory; in all other cases
+  field values must not tend to infinity.
 - Integral characteristics of generated wavy surface must match the ones of real
   sea waves.
-- Software implementation of ARMA model and pressure field formula must work on
-  shared memory (SMP) and distributed memory (MPP) systems.
+- Software implementation of ARMA model and pressure field computation method
+  must work on shared memory (SMP) and distributed memory (MPP) systems.
 
 **** Pressure field formula.
 The problem of finding pressure field under wavy sea surface represents inverse
