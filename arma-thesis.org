@@ -349,7 +349,7 @@ Sea simulation model is used to simulate realistic realisations of wind induced
 wave field and is suitable to use in ship dynamics calculations. Stationarity
 and invertibility properties are the main criteria for choosing one or another
 process to simulate waves with different profiles, which are discussed in
-sec.\nbsp{}[[#sec-process-selection]].
+section\nbsp{}[[#sec-process-selection]].
 
 **** Autoregressive (AR) process.
 AR process is ARMA process with only one random impulse instead of theirs
@@ -3060,16 +3060,17 @@ to infer node ranks, measurement errors may result in unstable hierarchy, and
 the algorithm cease to be fully event-based as metric need to be collected on
 every node and propagated to each node in the cluster.
 
-Node discovery algorithm is designed to balance the load on a cluster of compute
-nodes (see sec.\nbsp{}[[#sec-daemon-layer]]), its use in other applications is not
-studied here. When distributed or parallel programme starts on any of cluster
-nodes, its kernels are distributed to all adjacent nodes in the hierarchy
-(including master node if applicable). To distribute the load evenly when the
-application is run on a subordinate node, each node maintains the weight of each
-adjacent node in the hierarchy. The weight equals to the number of nodes in the
-tree "behind" the adjacent node. For example, if the weight of the first
-adjacent node is 2, then round-robin load balancing algorithm distributes two
-kernels to the first node before moving to the next one.
+Node discovery algorithm is designed to balance the load on a cluster of
+compute nodes (see\nbsp{}sec.\nbsp{}[[#sec-daemon-layer]]), its use in other
+applications is not studied here. When distributed or parallel programme starts
+on any of cluster nodes, its kernels are distributed to all adjacent nodes in
+the hierarchy (including master node if applicable). To distribute the load
+evenly when the application is run on a subordinate node, each node maintains
+the weight of each adjacent node in the hierarchy. The weight equals to the
+number of nodes in the tree "behind" the adjacent node. For example, if the
+weight of the first adjacent node is 2, then round-robin load balancing
+algorithm distributes two kernels to the first node before moving to the next
+one.
 
 To summarise, node discovery algorithm is
 - designed to ease load balancing on the large number of cluster nodes,
@@ -3753,9 +3754,9 @@ for Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
 - <<<BLAS>>> :: Basic Linear Algebra Sub-programmes.
 - <<<LAPACK>>> :: Linear Algebra Package.
 - <<<DNS>>> :: Dynamic name resolution.
-- <<<HPC>>> ::  High-performance computing.
-- <<<GCS>>> ::  Gram---Charlier series.
-- <<<SN>>> ::  Skew normal distribution.
+- <<<HPC>>> :: High-performance computing.
+- <<<GCS>>> :: Gram---Charlier series.
+- <<<SN>>> :: Skew normal distribution.
 - <<<PBS>>> :: Portable batch system.
 - Transcendental functions :: non-algebraic mathematical functions
      (i.e.\nbsp{}logarithmic, trigonometric etc.).
