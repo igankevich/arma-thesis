@@ -2292,6 +2292,10 @@ network connectivity, i.e.\nbsp{}an ability to send network packet between any
 pair of cluster nodes.
 
 **** Daemon process layer.
+:PROPERTIES:
+:CUSTOM_ID: sec-daemon-layer
+:END:
+
 Consists of daemon processes running on cluster nodes and hierarchical
 (master/slave) logical links between them. Only one daemon process is launched
 per node, so these terms are use interchangeably in this work. Master and slave
@@ -2766,23 +2770,23 @@ So, computational model with a pipeline can be seen as /bulk-asynchronous
 model/, because of the parallel nature of programme steps. This model is the
 basis of the fault-tolerance model which will be described later.
 
-*** Cluster node discovery algorithm
+*** Cluster node discovery
 :PROPERTIES:
 :CUSTOM_ID: sec-node-discovery
 :END:
 
 **** Leader election algorithms.
 Many batch job scheduling systems are built on the principle of /subordination/:
-there is principal node in each cluster which manages job queue, schedules job
-execution on subordinate nodes and monitors their state. Principal role is
-assigned either /statically/ by an administrator to a particular physical node,
-or /dynamically/ by periodically electing one of the cluster nodes as principal.
-In the former case fault tolerance is provided by reserving additional spare
-node which takes principal role when current principal fails. In the latter case
-fault tolerance is provided by electing new principal node from survived nodes.
-Despite the fact that dynamic role assignment requires leader election
-algorithm, this approach becomes more and more popular as it does not require
-spare reserved nodes to recover from principal node
+there is master node in each cluster which manages job queue, schedules job
+execution on subordinate nodes and monitors their state. Master role is assigned
+either /statically/ by an administrator to a particular physical node, or
+/dynamically/ by periodically electing one of the cluster nodes as master. In
+the former case fault tolerance is provided by reserving additional spare node
+which takes master role when current master fails. In the latter case fault
+tolerance is provided by electing new master node from survived nodes. Despite
+the fact that dynamic role assignment requires leader election algorithm, this
+approach becomes more and more popular as it does not require spare reserved
+nodes to recover from master node
 failure\nbsp{}cite:hunt2010zookeeper,lakshman2010cassandra,divya2013elasticsearch
 and generally leads to a symmetric system architecture, in which the same
 software stack with the same configuration is installed on every
@@ -2802,24 +2806,23 @@ is unaffected by some nodes going on-line and off-line.
 The approach for cluster node discovery does not use wave algorithms, and hence
 does not require communicating with each node of the cluster to determine a
 leader. Instead, each node enumerates all nodes in the network it is part of,
-and converts this list to a /tree hierarchy/ with a user-defined maximal fan-out
-value (maximal number of subordinate nodes a node may have). Then the node
-determines its hierarchy level and tries to communicate with nodes from higher
-levels to become their subordinate. First, it checks the closest ones and then
-goes all the way to the top. If there is no top-level nodes or the node cannot
-connect to them, then the node itself becomes the principal of the whole
-hierarchy.
+and converts this list to a /tree hierarchy/ with a user-defined fan-out value
+(maximal number of subordinate nodes a node may have). Then the node determines
+its hierarchy level and tries to communicate with nodes from higher levels to
+become their subordinate. First, it checks the closest ones and then goes all
+the way to the top. If there is no top-level nodes or the node cannot connect to
+them, then the node itself becomes the master of the whole hierarchy.
 
 Tree hierarchy of all hosts in a network defines strict total order on a set of
 cluster nodes. Although, technically any function can be chosen to map a node to
 a number, in practise this function should be sufficiently smooth along the time
 axis and may have infrequent jumps: high-frequency oscillations (which are often
-caused by measurement errors) may result in constant passing of principal role
-from one node to another, which makes the hierarchy unusable for load balancing.
-The simplest such function is the position of an IP address in network IP
-address range.
+caused by measurement errors) may result in constant passing of master role from
+one node to another, which makes the hierarchy unusable for load balancing. The
+simplest such function is the position of an IP address in network IP address
+range.
 
-**** Tree hierarchy traversal algorithm.
+**** Tree hierarchy creation algorithm.
 Strict total order on the set \(\mathcal{N}\) of cluster nodes connected to a
 network is defined as
 \begin{equation*}
@@ -2832,12 +2835,12 @@ order on \(\mathcal{R}^n\). Function \(f\) defines node's sequential number, and
 \(<\) makes this number unique.
 
 The simplest function \(f\) maps each node to its IP address position in network
-IP address range. A node with the lowest position in this range becomes the
-principal of the whole hierarchy. If IP-address of a node occupies the first
-position in the range, then there is no principal for it, and it continues to be
-at the top of the hierarchy until it fails. Although, IP address mapping is
-simple to implement, it introduces artificial dependence of the principal role
-on the address of a node. Still, it is useful for initial configuration of a
+IP address range. Without the use of tree hierarchy a node with the lowest
+position in this range becomes the master. If IP-address of a node occupies the
+first position in the range, then there is no master for it, and it continues to
+be at the top of the hierarchy until it fails. Although, IP address mapping is
+simple to implement, it introduces artificial dependence of the master role on
+the address of a node. Still, it is useful for initial configuration of a
 cluster when more complex mappings are not applicable.
 
 To make node discovery scale to a large number of nodes, IP address range is
@@ -2854,7 +2857,7 @@ computed from the following optimisation problem.
 \end{align*}
 where \(n\) is the position of node's IP address in network IP address range and
 \(p\) is fan-out value (the maximal number of subordinates, a node can have).
-The principal of a node with level \(l\) and offset \(o\) has level \(l-1\) and
+The master of a node with level \(l\) and offset \(o\) has level \(l-1\) and
 offset \(\lfloor{o/p}\rfloor\). The distance between any two nodes in the tree
 hierarchy with network positions \(i\) and \(j\) is computed as
 \begin{align*}
@@ -2870,29 +2873,29 @@ hierarchy with network positions \(i\) and \(j\) is computed as
 \end{align*}
 The distance is compound to account for level in the first place.
 
-To determine its principal each node ranks all nodes in the network according to
+To determine its master each node ranks all nodes in the network according to
 their position \(\langle{l(n),o(n)}\rangle\), and using distance formula chooses
-the node which is closest to potential principal position and has lower level.
+the node which is closest to potential master position and has lower level.
 That way IP addresses of offline nodes are skipped, however, for sparse networks
 (in which nodes occupy non-contiguous IP addresses) perfect tree is not
 guaranteed.
 
 Formula for computing distance can be made arbitrary complex (to account for
 network latency and throughput or geographical location of the node), however,
-for its simplest form it is more efficient to use node traversal algorithm. The
-algorithm requires less memory as there is no need to store ranked list of all
-nodes, but iterates over IP addresses of the network in the order defined by the
-fan-out value. The algorithm is as follows. First, the /base/ node (a node which
-searches for its principal) computes its potential principal address and tries
-to connect to this node. If the connection fails, the base node sequentially
-tries to connect to each node from the higher hierarchy levels, until it reaches
-the top of the hierarchy (the root of the tree). If none of the connections
-succeeds, the base node sequentially connects to all nodes on its own level
-having lesser position in IP address range. If none of the nodes respond, the
-base node becomes the principal node of the whole hierarchy, and the traversal
-repeats after a set period of time. An example of traversal order for a cluster
-of 11 nodes and a tree hierarchy with fan-out value of 2 is shown
-in\nbsp{}fig.\nbsp{}[[fig-tree-hierarchy-11]].
+for its simplest form it is more efficient to use cluster node traversal
+algorithm. The algorithm requires less memory as there is no need to store
+ranked list of all nodes, but iterates over IP addresses of the network in the
+order defined by the fan-out value. The algorithm is as follows. First, the
+/base/ node (a node which searches for its master) computes its potential master
+address and tries to connect to this node. If the connection fails, the base
+node sequentially tries to connect to each node from the higher hierarchy
+levels, until it reaches the top of the hierarchy (the root of the tree). If
+none of the connections succeeds, the base node sequentially connects to all
+nodes on its own level having lesser position in IP address range. If none of
+the nodes respond, the base node becomes the master node of the whole hierarchy,
+and the traversal repeats after a set period of time. An example of traversal
+order for a cluster of 11 nodes and a tree hierarchy with fan-out value of 2 is
+shown in\nbsp{}fig.\nbsp{}[[fig-tree-hierarchy-11]].
 
 #+name: fig-tree-hierarchy-11
 #+begin_src dot :exports results :file build/tree-hierarchy-11.pdf
@@ -2944,12 +2947,11 @@ number of processes per physical core varied from 2 to 16. Each process was
 bound to a particular physical core to reduce overhead of process migration
 between cores. Tree hierarchy traversal algorithm has low requirements for
 processor time and network throughput, so running multiple processes per
-physical core is feasible, in contrast to HPC codes, where it often leads to
-poor performance. Test platform configuration is shown in
-table\nbsp{}[[tab-ant]].
+physical core is feasible, in contrast to HPC codes, where it often lowers
+performance. Test platform configuration is shown in table\nbsp{}[[tab-ant]].
 
 #+name: tab-ant
-#+caption: Test platform configuration.
+#+caption: "Ant" system configuration.
 #+attr_latex: :booktabs t
 | CPU                       | Intel Xeon E5440, 2.83GHz |
 | RAM                       | 4Gb                       |
@@ -2973,11 +2975,11 @@ hierarchy of nodes to reach stable state. Each change of the hierarchy, as seen
 by each node, was written to a log file and after a set amount of time all
 daemon processes (each of which models cluster node) were forcibly terminated.
 Daemon processes were launched sequentially with a 100ms delay to ensure that
-principal nodes are always come online before subordinates and hierarchy does
+master nodes are always come online before subordinates and hierarchy does
 not change randomly as a result of different start time of each process. This
 artificial delay was subsequently subtracted from the results. So, benchmark
 results represent discovery time in an "ideal" cluster, in which every daemon
-process always finds its principal on the first try.
+process always finds its master on the first try.
 
 The benchmark was run multiple times varying the number of daemon processes per
 cluster node. The experiment showed that discovery of 512 nodes (8 physical
@@ -2986,7 +2988,8 @@ nodes with 64 processes per node) each other takes no more than two seconds
 with the increase in the number of physical nodes. Using more than 8 nodes with
 64 processes per node causes large variation in discovery time due to a large
 total number of processes connecting simultaneously to one master process (a
-fan-out value of 10000 was used for all tests), so these results were excluded.
+fan-out value of 10000 was used for all tests), so these results were excluded
+from consideration.
 
 #+name: fig-discovery-benchmark
 #+header: :width 7 :height 5
@@ -3002,40 +3005,40 @@ bscheduler.plot_discovery(xlabel="No. of physical nodes",toplabel="ppn")
 
 **** Discussion.
 Node discovery scales to a large number of nodes, because in order to determine
-its principal, a node is required to communicate to a node address of which it
+its master, a node is required to communicate to a node address of which it
 knows beforehand. Communication with other nodes occurs only when the current
-principal node fails. So, if cluster nodes occupy contiguous addresses in
-network IP address range, each node connects only to its principal, and
+master node fails. So, if cluster nodes occupy contiguous addresses in
+network IP address range, each node connects only to its master, and
 inefficient scan of the whole network by each node does not occur.
 
 The following key features distinguish the proposed approach with respect to
 some existing
 approaches\nbsp{}cite:brunekreef1996design,aguilera2001stable,romano2014design.
-- *Multi-level hierarchy.* The number of principal nodes in a network depends on
+- *Multi-level hierarchy.* The number of master nodes in a network depends on
   the fan-out value. If it is lesser than the number of IP-addresses in the
-  network, then there are multiple principal nodes in the cluster. If it is
+  network, then there are multiple master nodes in the cluster. If it is
   greater or equal to the number of IP-addresses in the network, then there is
-  only one principal node. When some node fail, multi-level hierarchy changes
+  only one master node. When some node fail, multi-level hierarchy changes
   locally, and only nodes that are adjacent to the failed one communicate.
   However, node weight changes propagate to every node in the cluster via
   hierarchical links.
 - *IP-address mapping.* Since hierarchy structure solely depends on the nodes'
   IP addresses, there is no election phase in the algorithm. To change the
-  principal each node sends a message to the old principal and to the new one.
+  master each node sends a message to the old master and to the new one.
 - *Completely event-based.* The messages are sent only when some node fails, so
-  there is no constant load on the network. Since the algorithm allows
-  to tolerate failure of sending any message, there is no need in heartbeat
-  packets indicating presence of a node in the network; instead, all messages
-  play the role of heartbeats and packet send time-out is adjusted.
+  there is no constant load on the network. Since the algorithm allows to
+  tolerate failure of sending any message, there is no need in heartbeat packets
+  indicating node serviceability in the network; instead, all messages play the
+  role of heartbeats and packet send time-out is adjusted\nbsp{}cite:rfc5482.
 - *No manual configuration.* A node does not require any prior knowledge to find
-  the principal: it determines the network it is part of, calculates potential
-  principal IP-address and sends the message. If it fails, the process is
-  repeated for the next potential principal node. So the algorithm is suitable
+  the master: it determines the network it is part of, calculates potential
+  master IP-address and sends the message. If it fails, the process is
+  repeated for the next potential master node. So the algorithm is suitable
   to bootstrap a cluster without manual configuration, the only requirement is
   to start the corresponding service on each node.
 To summarise, the advantage of the algorithm is that it
 - scales to a large number of nodes by means of hierarchy with multiple
-  principal nodes,
+  master nodes,
 - does not constantly load the network, as node state updates are sent only when
   the state changes,
 - does not require manual configuration to bootstrap a cluster, other than
@@ -3058,15 +3061,15 @@ the algorithm cease to be fully event-based as metric need to be collected on
 every node and propagated to each node in the cluster.
 
 Node discovery algorithm is designed to balance the load on a cluster of compute
-nodes, its use in other applications is not studied here. When distributed or
-parallel programme starts on any of cluster nodes, its kernels are distributed
-to all adjacent nodes in the hierarchy (including principal node if applicable).
-To distribute the load evenly when the application is run on a subordinate node,
-each node maintains the weight of each adjacent node in the hierarchy. The
-weight equals to the number of nodes in the tree "behind" the adjacent node. For
-example, if the weight of the first adjacent node is 2, then round-robin load
-balancing algorithm distributes two kernels to the first node before moving to
-the next one.
+nodes (see sec.\nbsp{}[[#sec-daemon-layer]]), its use in other applications is not
+studied here. When distributed or parallel programme starts on any of cluster
+nodes, its kernels are distributed to all adjacent nodes in the hierarchy
+(including master node if applicable). To distribute the load evenly when the
+application is run on a subordinate node, each node maintains the weight of each
+adjacent node in the hierarchy. The weight equals to the number of nodes in the
+tree "behind" the adjacent node. For example, if the weight of the first
+adjacent node is 2, then round-robin load balancing algorithm distributes two
+kernels to the first node before moving to the next one.
 
 To summarise, node discovery algorithm is
 - designed to ease load balancing on the large number of cluster nodes,
