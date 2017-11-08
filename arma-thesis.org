@@ -3629,9 +3629,10 @@ only for newer Bscheduler version, as queue scanning can not be performed
 efficiently in this framework. In case of two nodes the higher performance is
 explained by a greater total number of processor cores (16) and high network
 throughput of the direct network link. So, Bscheduler implementation of
-distributed AR model algorithm is faster on single node due to more efficient
-autoregressive dependencies handling and its performance scales to a larger
-number of cores due to small data transmission overhead of direct network link.
+distributed AR model algorithm is faster on shared memory system due to more
+efficient autoregressive dependencies handling and its performance on
+distributed memory system scales to a larger number of cores due to small data
+transmission overhead of direct network link.
 
 #+name: fig-bscheduler-performance
 #+begin_src R :file build/bscheduler-performance.pdf
@@ -3658,20 +3659,19 @@ title(xlab="Wavy surface size", ylab="Time, s")
 **** Research results.
 In the study of mathematical apparatus for sea wave simulations which goes
 beyond linear wave theory the following main results were achieved.
-- ARMA model was applied to simulation of sea waves of arbitrary amplitudes.
-  Integral characteristics of generated wavy surface were verified by comparing
-  to the ones of a real sea surface.
+- AR and MA models were applied to simulation of sea waves of arbitrary
+  amplitudes. Integral characteristics of generated wavy surface were verified
+  by comparing to the ones of a real sea surface.
 - New method was applied to compute velocity potentials under generated surface.
-  The resulting velocity potential field was verified by comparing it to the one
-  given by formulae from linear wave theory for small-amplitude waves. For
-  large-amplitude waves the new method gives a reasonably different field. The
-  method is computationally efficient because all the integrals in its formula
-  are written as Fourier transforms, for which there are high-performance
-  implementations.
-- The model and the method were implemented for both SMP and MPP systems, and
-  showed near linear scalability for different number of cores in several
-  benchmarks. AR model is more computationally efficient on CPU than on GPU, and
-  outperforms LH model.
+  The resulting field was verified by comparing it to the one given by formulae
+  from linear wave theory for small-amplitude waves. For large-amplitude waves
+  the new method gives a reasonably different field. The method is
+  computationally efficient because all the integrals in its formula are written
+  as Fourier transforms, for which there are high-performance implementations.
+- The model and the method were implemented for both shared and distributed
+  memory systems, and showed near linear scalability for different number of
+  cores in several benchmarks. AR model is more computationally efficient on CPU
+  than on GPU, and outperforms LH model.
 
 **** Further research directions.
 One of the topic of future research is studying generation of wave of arbitrary
