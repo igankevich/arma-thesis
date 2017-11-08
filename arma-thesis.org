@@ -3085,15 +3085,15 @@ To summarise, node discovery algorithm is
 
 **** Checkpoints.
 Node failures in a distributed system are divided into two types: failure of a
-subordinate node and failure of a principal node. In order for a job running on
-the cluster to survive subordinate node failure, job scheduler periodically
-creates checkpoints and writes them to a stable storage. In order to create the
+slave node and failure of a master node. In order for a job running on the
+cluster to survive slave node failure, job scheduler periodically creates
+checkpoints and writes them to a stable storage. In order to create the
 checkpoint, the scheduler temporarily suspends all parallel processes of the
 job, copies all memory pages and all internal operating system kernel structures
 allocated for these processes to disk, and resumes execution of the job. In
-order to survive principal node failure, job scheduler server process continuously
-copies its internal state to a backup node, which becomes the principal after
-the failure.
+order to survive master node failure, job scheduler daemon process continuously
+copies its internal state to a backup node, which becomes the master after the
+failure.
 
 There are many works dedicated to improving performance of
 checkpoints\nbsp{}cite:egwutuoha2013survey, and alternative approaches do not
@@ -3112,18 +3112,18 @@ number to be constant. So, there is no reliable way to provide fault tolerance
 in message passing library other than restarting all parallel processes from a
 checkpoint.
 
-There is, however, a possibility to continue execution of a job on lesser number
-of nodes than it was initially requested by implementing fault tolerance on
-application level. In this case principal and subordinate roles are dynamically
-distributed between job scheduler daemons running on each cluster node, forming
-a tree hierarchy of cluster nodes, and parallel programme consists of kernels
-which use node hierarchy to dynamically distribute the load and use their own
-hierarchy to restart kernels upon node failure.
+At the same time, there is a possibility to continue execution of a job on
+lesser number of nodes than it was initially requested by implementing fault
+tolerance on application level. In this case master and slave roles are
+dynamically distributed between job scheduler daemons running on each cluster
+node, forming a tree hierarchy of cluster nodes, and parallel programme consists
+of kernels which use node hierarchy to dynamically distribute the load and use
+their own hierarchy to restart kernels upon node failure.
 
 **** Dynamic role distribution.
 Fault tolerance of a parallel programme is one of the problems which is being
 solved by big data and HPC job schedulers, however, most schedulers provide
-fault tolerance for subordinate nodes only. These types of failures are
+fault tolerance for slave nodes only. These types of failures are
 routinely handled by restarting the affected job (from a checkpoint) or its part
 on the remaining nodes, and failure of a principal node is often considered
 either improbable, or too complicated to handle and configure on the target
@@ -3134,23 +3134,21 @@ technologies instead. All these alternatives complexify configuration and
 maintenance, and by decreasing probability of a machine failure resulting in a
 whole system failure, they increase probability of a human error.
 
-From such point of view it seems more practical to implement principal node
-fault tolerance at application level, but there is no proven generic solution.
-Most implementations are too tied to a particular application to become
-universally applicable. The author believes that this happens due to people's
-habit to think of a cluster as a collection of individual machines each of which
-can be either principal or subordinate, rather than to think of a cluster as a
-whole with principal and subordinate roles being dynamically distributed between
-processes running on different nodes.
-
-Realisation of the fact that a cluster is also a computer and nodes are compute
-elements allows to implement middleware that distributes principal and
-subordinate roles automatically and handles node failures in a generic way. This
-software provides an API to distribute kernels between currently available
-nodes. Using this API one can write a programme that runs on a cluster without
-knowing the exact number of working nodes. The middleware works as a cluster
-operating system in user space, allowing to write and execute distributed
-applications transparently.
+From such point of view it seems more practical to implement master node fault
+tolerance at application level, but there is no proven generic solution. Most
+implementations are too tied to a particular application to become universally
+applicable. Often a cluster is presented as a machine, which has a distinct
+control unit (master node) and a number of identical compute units (slave
+nodes). In practice, however, master and slave nodes are physically the same,
+and are distinguished only by batch job scheduler processes running on them.
+Realisation of the fact that cluster nodes are merely compute units allows to
+implement middleware that distributes master and slave roles automatically and
+handles node failures in a generic way. This software provides an API to
+distribute kernels between currently available nodes. Using this API one can
+write a programme that runs on a cluster without knowing the exact number of
+working nodes. The middleware works as a cluster operating system in user space,
+allowing to execute distributed applications transparently on any number of
+nodes.
 
 **** Symmetric architecture.
 Many distributed key-value stores and parallel file systems have symmetric
