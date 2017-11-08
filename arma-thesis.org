@@ -3152,32 +3152,30 @@ nodes.
 
 **** Symmetric architecture.
 Many distributed key-value stores and parallel file systems have symmetric
-architecture, in which principal and subordinate roles are dynamically
-distributed, so that any node can act as a principal when the current principal
-node
+architecture, in which master and slave roles are dynamically distributed, so
+that any node can act as a master when the current master node
 fails\nbsp{}cite:ostrovsky2015couchbase,divya2013elasticsearch,boyer2012glusterfs,anderson2010couchdb,lakshman2010cassandra.
 However, this architecture is still not used in big data and HPC job schedulers.
-For example, in YARN big data job scheduler\nbsp{}cite:vavilapalli2013yarn
-principal and subordinate roles are static. Failure of a subordinate node is
-tolerated by restarting a part of a job, that worked on it, on one of the
-surviving nodes, and failure of a principal node is tolerated by setting up
-standby principal node\nbsp{}cite:murthy2011architecture. Both principal nodes
-are coordinated by Zookeeper service which uses dynamic role assignment to
-ensure its own fault-tolerance\nbsp{}cite:okorafor2012zookeeper. So, the lack of
-dynamic role distribution in YARN scheduler complicates the whole cluster
-configuration: if dynamic roles were available, Zookeeper would be redundant in
-this configuration.
+For example, in YARN scheduler\nbsp{}cite:vavilapalli2013yarn master and slave
+roles are static. Failure of a slave node is tolerated by restarting a part of a
+job, that worked on it, on one of the surviving nodes, and failure of a master
+node is tolerated by setting up standby master
+node\nbsp{}cite:murthy2011architecture. Both master nodes are coordinated by
+Zookeeper service which uses dynamic role assignment to ensure its own
+fault-tolerance\nbsp{}cite:okorafor2012zookeeper. So, the lack of dynamic role
+distribution in YARN scheduler complicates the whole cluster configuration: if
+dynamic roles were available, Zookeeper would be redundant in this
+configuration.
 
-The same problem occurs in HPC job schedulers where principal node (where the
-main job scheduler process is run) is the single point of failure.
+The same problem occurs in HPC job schedulers where master node (where the main
+job scheduler process is run) is the single point of failure.
 In\nbsp{}cite:uhlemann2006joshua,engelmann2006symmetric the authors replicate
-job scheduler state to a backup node to make the principal node highly
-available, but backup node role is assigned statically. This solution is close
-to symmetric architecture, because it does not involve external service to
-provide high availability, but far from ideal in which backup node is
-dynamically chosen.
+job scheduler state to a backup node to make the master node highly available,
+but backup node role is assigned statically. This solution is close to symmetric
+architecture, because it does not involve external service to provide high
+availability, but far from ideal in which backup node is dynamically chosen.
 
-Finally, the simplest principal node high availability is implemented in VRRP
+Finally, the simplest master node high availability is implemented in VRRP
 protocol (Virtual Router Redundancy
 Protocol)\nbsp{}cite:rfc2338,rfc3768,rfc5798. Although VRRP protocol does
 provide dynamic role distribution, it is designed to be used by routers and
@@ -3189,7 +3187,7 @@ Keepalived daemon\nbsp{}cite:cassen2002keepalived instead.
 Symmetric architecture is beneficial for job schedulers because it
 allows to
 - make physical nodes interchangeable,
-- implement dynamic distribution of principal and subordinate roles, and
+- implement dynamic distribution of master and slave node roles, and
 - implement automatic recovery after a failure of any node.
 The following sections will describe the components that are required to write
 parallel programme and job scheduler, that can tolerate failure of cluster
@@ -3197,7 +3195,7 @@ nodes.
 
 **** Definitions of hierarchies.
 To disambiguate hierarchical links between daemon processes and kernels and to
-simplify the discussion, we will use the following naming conventions throughout
+simplify the discussion, the following naming conventions are used throughout
 the text. If the link is between two daemon processes, the relationship is
 denoted as /master-slave/. If the link is between two kernels, then the
 relationship is denoted as either /principal-subordinate/ or /parent-child/. Two
@@ -3259,19 +3257,19 @@ The algorithm is best described by an example
 (fig.\nbsp{}[[fig-fail-over-example]]).
 1. Initial state. Initially, computer cluster does not need to be configured
    except setting up local network. The algorithm assumes full connectivity of
-   cluster nodes, and works best with tree topologies in which several network
-   switches connect all cluster nodes.
+   cluster nodes, and works best with tree network topologies in which several
+   network switches connect all cluster nodes.
 2. Build node hierarchy. When the cluster is bootstrapped, daemon processes
    start on all cluster nodes and collectively build hierarchy of such processes
    superimposed on the topology of cluster network. Position of a daemon process
    in the hierarchy is defined by the position of its node IP address in the
    network IP address range. To establish hierarchical link each process
-   connects to its assumed principal process. The hierarchy is changed only when
+   connects to its assumed master process. The hierarchy is changed only when
    a new node joins the cluster or a node fails.
 3. Launch main kernel. The first kernel launches on one of the subordinate nodes
    (node \(B\)). Main kernel may have only one subordinate at a time, and backup
    copy of the main kernel is sent along with the subordinate kernel \(T_1\) to
-   the principal node \(A\). \(T_1\) represents one sequential step of a
+   the master node \(A\). \(T_1\) represents one sequential step of a
    programme. There can be any number of sequential steps in a programme, and
    when node \(A\) fails, the current step is restarted from the beginning.
 4. Launch subordinate kernels. Kernels \(S_1\), \(S_2\), \(S_3\) are launched on
@@ -3306,13 +3304,13 @@ The algorithm is best described by an example
 **** Evaluation results.
 Fail over algorithm was evaluated on physical cluster (table\nbsp{}[[tab-ant]]) on
 the example of distributed AR model application, which is described in detail in
-section [[#sec-arma-mpp]]. The application consists of a series of functions, each
+section\nbsp{}[[#sec-arma-mpp]]. The application consists of a series of functions, each
 of which is applied to the result of the previous one. Some of the functions are
 computed in parallel, so the programme is written as a sequence of steps, some
 if which are made internally parallel to get better performance. In the
 programme only the most compute-intensive step (the surface generation) is
 executed in parallel across all cluster nodes, and other steps are executed in
-parallel across all cores of the principal node.
+parallel across all cores of the master node.
 
 The application was rewritten for the distributed version of the framework which
 required adding read/write methods to each kernel which is sent over the network
@@ -3402,8 +3400,8 @@ title(xlab="Wavy surface size", ylab="Time, s")
 [[file:build/master-slave-failure.pdf]]
 
 To summarise, if failure occurs right after a copy if the main kernel is made,
-only a small fraction of performance is lost in case of master node failure, and
-more performance is lost in case of slave node failure.
+only a small fraction of performance is lost no matter whether the main kernel
+or its copy is lost.
 
 **** Discussion of test results.
 Since failure is simulated right after the first subordinate kernel reaches its
@@ -3445,9 +3443,9 @@ than the probability of a failure of any of the slave nodes, it does not justify
 loosing all the data when the long programme run is near completion. In general,
 the more sequential steps one has in a parallel programme the less time is lost
 in an event of a backup node failure, and the more parallel parts each
-sequential step has the less time is lost in case of a principal or subordinate
-node failure. In other words, the more nodes a programme uses the more resilient
-to cluster node failures it becomes.
+sequential step has the less time is lost in case of a master or slave node
+failure. In other words, the more nodes a programme uses the more resilient to
+their failures it becomes.
 
 Although it is not shown in the experiments, Bscheduler does not only provide
 tolerance to cluster node failures, but allows for new nodes to automatically
@@ -3545,32 +3543,24 @@ between the same set of cluster nodes, thus making the load more even. The
 disadvantage is that this requires more RAM to execute many programmes on the
 same set of nodes, and execution time of each programme may be greater because
 of the shared control flow object queues. Second, the proposed approach uses
-dynamic distribution of principal and subordinate roles between cluster nodes
-instead of their static assignment to the particular physical nodes. This makes
-nodes interchangeable, which is required to provide fault tolerance. So,
-simultaneous execution of multiple parallel programmes on the same set of nodes
-may increase throughput of the cluster, but may also decrease their performance
-taken separately, and dynamic role distribution is the base on which resilience
-to failures builds.
+dynamic distribution of master and slave roles between cluster nodes instead of
+their static assignment to the particular physical nodes. This makes nodes
+interchangeable, which is required to provide fault tolerance. So, simultaneous
+execution of multiple parallel programmes on the same set of nodes may increase
+throughput of the cluster, but may also decrease their performance taken
+separately, and dynamic role distribution is the base on which resilience to
+failures builds.
 
-It may seem as if three building blocks of the proposed approach\nbsp{}---
-control flow objects, pipelines and hierarchies\nbsp{}--- are orthogonal, but,
-in fact the complement each other. Without control flow objects carrying
-programme state it is impossible to recompute failed subordinate objects and
-provide fault tolerance. Without node hierarchy it is impossible to distribute
-the load between cluster nodes, because all nodes are equal without the
-hierarchy. Without pipelines for each device it is impossible to execute control
-flow objects asynchronously and implement dynamic load balancing. These three
-entities form a closed system with nothing to add and nothing to
-remove\nbsp{}--- a solid foundation for any distributed programme.
-
-To summarise, one can say that the control flow objects make parallel programmes
-more flexible: they balance the decrease in the performance due to shared object
-queues with the increase due to dynamic load balancing. Requiring more RAM, they
-allow to simultaneously run multiple parallel programmes on all cluster nodes
-without idling in the job queue, and transform the cluster into a unified
-computer system which makes best effort to execute distributed applications
-without interruption.
+Three building blocks of the proposed approach\nbsp{}--- control flow objects,
+pipelines and hierarchies\nbsp{}--- complement each other. Without control flow
+objects carrying programme state it is impossible to recompute failed
+subordinate objects and provide fault tolerance. Without node hierarchy it is
+impossible to distribute the load between cluster nodes, because all nodes are
+equal without the hierarchy. Without pipelines for each device it is impossible
+to execute control flow objects asynchronously and implement dynamic load
+balancing. These three entities form a closed system, in which programme logic
+is implemented in kernels or pipelines, failure recovery logic\nbsp{}--- in
+kernel hierarchy, and data transfer logic\nbsp{}--- in cluster node hierarchy.
 
 ** MPP implementation
 :PROPERTIES:
@@ -3757,6 +3747,7 @@ for Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
 - <<<HPC>>> ::  High-performance computing.
 - <<<GCS>>> ::  Gram---Charlier series.
 - <<<SN>>> ::  Skew normal distribution.
+- <<<PBS>>> :: Portable batch system.
 - Transcendental functions :: non-algebraic mathematical functions
      (i.e.\nbsp{}logarithmic, trigonometric etc.).
 
