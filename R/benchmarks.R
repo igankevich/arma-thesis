@@ -80,7 +80,7 @@ arma.load_io_benchmark_data <- function(attempt, filesystems, suffix, tags) {
   data
 }
 
-arma.print_sync_vs_async_io <- function(suffix_names, row_names, top_names) {
+arma.print_sync_vs_async_io <- function(suffix_names, row_names, top_names, mark=".") {
   options(asciiType="org")
   tags <- list("generate_surface", "write_all")
   filesystems <- c("xfs", "nfs", "gfs")
@@ -99,7 +99,7 @@ arma.print_sync_vs_async_io <- function(suffix_names, row_names, top_names) {
   big_table[,"Row.names"] <- sapply(big_table[,"Row.names"], function (c) get(c, row_names))
   colnames(big_table) <- sapply(colnames(big_table), function (c) get(c, suffix_names))
   print(ascii(c("", "", "", top_names[[1]], "", "",  top_names[[2]])))
-  print(ascii(big_table, include.rownames=FALSE))
+  print(ascii(big_table, include.rownames=FALSE, decimal.mark=mark))
 }
 
 arma.plot_io_events <- function (names) {

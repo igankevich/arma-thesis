@@ -1795,6 +1795,8 @@ source(file.path("R", "common.R"))
 arma.plot_ar_cubes_2d(3, 3, xlabel="Part index (X)", ylabel="Part index (Y)")
 #+end_src
 
+#+name: fig-ar-cubes
+#+caption: Autoregressive dependencies between wavy surface parts.
 #+RESULTS: fig-ar-cubes
 [[file:build/ar-cubes.pdf]]
 
@@ -2060,7 +2062,7 @@ done in parallel to computation (table\nbsp{}[[tab-arma-io-performance]]). Using
 this approach with local file system has the same effect, but performance gain
 is lower.
 
-#+header :results output raw :exports results
+#+header: :results output raw :exports results
 #+name: tab-arma-io-performance
 #+begin_src R
 source(file.path("R", "benchmarks.R"))
@@ -2073,26 +2075,26 @@ suffix_names <- list(
   gfs.y="GlusterFS",
   Row.names="\\orgcmidrule{2-4}{5-7}Subroutine"
 )
-top_names <- c("Sequential", "Parallel")
+top_names <- c("I", "II")
 row_names <- list(
   generate_surface="Generate wavy surface",
   write_all="Write output to files"
 )
-arma.print_sync_vs_async_io(suffix_names, row_names, top_names)
+arma.print_sync_vs_async_io(suffix_names, row_names, top_names, mark=".")
 #+end_src
 
 #+name: tab-arma-io-performance
-#+caption: Running time of subroutines (s.) with the use of XFS, NFS and GlusterFS along with sequential and parallel file output.
+#+caption: Running time of subroutines (s.) with the use of XFS, NFS and GlusterFS along with sequential (I) and parallel (II) file output.
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-io-performance
-|                                  |      |      | Sequential |      |      |  Parallel |
-| \orgcmidrule{2-4}{5-7}Subroutine |  XFS |  NFS |  GlusterFS |  XFS |  NFS | GlusterFS |
-|----------------------------------+------+------+------------+------+------+-----------|
-| Generate wavy surface            | 1.26 | 1.26 |       1.33 | 1.33 | 3.30 |     11.06 |
-| Write output to files            | 0.28 | 2.34 |      10.95 | 0.00 | 0.00 |      0.00 |
+|                                  |      |      |         I |      |      |        II |
+| \orgcmidrule{2-4}{5-7}Subroutine |  XFS |  NFS | GlusterFS |  XFS |  NFS | GlusterFS |
+|----------------------------------+------+------+-----------+------+------+-----------|
+| Generate wavy surface            | 1.26 | 1.26 |      1.33 | 1.33 | 3.30 |     11.06 |
+| Write output to files            | 0.28 | 2.34 |     10.95 | 0.00 | 0.00 |      0.00 |
 
 #+name: fig-arma-io-events
-#+header: :width 6 :height 8 :results output graphics
+#+header: :width 6 :height 7 :results output graphics
 #+begin_src R :file build/arma-io-events.pdf
 source(file.path("R", "benchmarks.R"))
 names <- list(
@@ -2995,6 +2997,7 @@ from consideration.
 #+header: :width 7 :height 5
 #+begin_src R :file build/discovery-benchmark.pdf
 source(file.path("R", "discovery.R"))
+par(family="serif")
 bscheduler.plot_discovery(xlabel="No. of physical nodes",toplabel="ppn")
 #+end_src
 

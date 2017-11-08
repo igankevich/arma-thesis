@@ -1832,6 +1832,8 @@ source(file.path("R", "common.R"))
 arma.plot_ar_cubes_2d(3, 3, xlabel="Индекс части (X)", ylabel="Индекс части (Y)")
 #+end_src
 
+#+name: fig-ar-cubes
+#+caption: Авторегрессионные зависимостями между частями взволнованной поверхности.
 #+RESULTS: fig-ar-cubes
 [[file:build/ar-cubes-ru.pdf]]
 
@@ -2126,26 +2128,26 @@ suffix_names <- list(
   gfs.y="GlusterFS",
   Row.names="\\orgcmidrule{2-4}{5-7}Подпрограмма"
 )
-top_names <- c("Последовательная", "Параллельная")
+top_names <- c("I", "II")
 row_names <- list(
   generate_surface="Генерация поверхности",
   write_all="Запись вывода в файл"
 )
-arma.print_sync_vs_async_io(suffix_names, row_names, top_names)
+arma.print_sync_vs_async_io(suffix_names, row_names, top_names, mark=",")
 #+end_src
 
 #+name: tab-arma-io-performance
-#+caption: Время работы подпрограмм (сек.) при использовании файловых систем XFS, NFS и GlusterFS совместно с последовательным и параллельным выводом в файл.
+#+caption: Время работы подпрограмм (сек.) при использовании файловых систем XFS, NFS и GlusterFS совместно с последовательным (I) и параллельным (II) выводом в файл.
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-io-performance
-|                                    |      |      | Последовательная |      |      | Параллельная |
-| \orgcmidrule{2-4}{5-7}Подпрограмма |  XFS |  NFS |        GlusterFS |  XFS |  NFS |    GlusterFS |
-|------------------------------------+------+------+------------------+------+------+--------------|
-| Генерация поверхности              | 1.26 | 1.26 |             1.33 | 1.33 | 3.30 |        11.06 |
-| Запись вывода в файл               | 0.28 | 2.34 |            10.95 | 0.00 | 0.00 |         0.00 |
+|                                    |      |      |         I |      |      |        II |
+| \orgcmidrule{2-4}{5-7}Подпрограмма |  XFS |  NFS | GlusterFS |  XFS |  NFS | GlusterFS |
+|------------------------------------+------+------+-----------+------+------+-----------|
+| Генерация поверхности              | 1.26 | 1.26 |      1.33 | 1.33 | 3.30 |     11.06 |
+| Запись вывода в файл               | 0.28 | 2.34 |     10.95 | 0.00 | 0.00 |      0.00 |
 
 #+name: fig-arma-io-events
-#+header: :width 6 :height 8 :results output graphics
+#+header: :width 5 :height 6 :results output graphics
 #+begin_src R :file build/arma-io-events-ru.pdf
 source(file.path("R", "benchmarks.R"))
 names <- list(
@@ -3097,6 +3099,7 @@ digraph {
 #+header: :width 7 :height 5
 #+begin_src R :file build/discovery-benchmark-ru.pdf
 source(file.path("R", "discovery.R"))
+par(family="serif")
 bscheduler.plot_discovery(
   xlabel="Количество физических узлов",
   ylabel="Время, сек.",
