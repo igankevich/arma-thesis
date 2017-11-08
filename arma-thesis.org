@@ -3680,20 +3680,29 @@ the developed model and pressure calculation method into existing application
 software packages.
 
 * Summary
-Research results allow to conclude that a problem of determining pressures under
-sea surface can be solved analytically without assumptions of linear and
-small-amplitude wave theories. This solution coupled with ARMA sea wave
-simulation model, capable of generating waves of arbitrary amplitudes, can be
-used to determine the impact of wave oscillations on the dynamic marine object
-in a sea way, and give more precise results than analogous solution for
-small-amplitude waves.
+A problem of determining pressures under sea surface is solved explicitly
+without assumptions of linear and small-amplitude wave theories. This solution
+coupled with AR and MA models, that generate sea waves of arbitrary amplitudes,
+can be used to determine the impact of wave oscillations on the dynamic marine
+object in a sea way, and in case of large-amplitude waves gives more accurate
+velocity potential field than analogous solutions obtained in the framework of
+linear wave theory and theory of small-amplitude waves.
 
-Results of the numerical experiments allow to conclude that wavy surface
-generation as well as pressure computation can be efficiently implemented via
-fast Fourier transforms, and long simulation session can be conducted.
+Numerical experiments show that wavy surface generation as well as pressure
+computation are efficiently implemented for both shared and distributed memory
+systems, without computing on GPU. High performance in case of wavy surface
+generation is provided by the use of specialised job scheduler and a library for
+multi-dimensional arrays, and in case of velocity potential
+computation\nbsp{}--- by the use of FFT algorithms for computing integrals.
 
 The developed mathematical apparatus and its numerical implementation can become
-a base of virtual testbed for marine objects dynamics studies.
+a base of virtual testbed for marine objects dynamics studies. The use of new
+models in virtual testbed would allow to
+- conduct long-time simulations without the loss of efficiency,
+- obtain more accurate pressure fields due to new velocity potential field
+  computation method, and
+- make software complex more robust due to high convergence rate of the models
+  and by using fault-tolerant batch job scheduler.
 
 * Acknowledgements
 The graphs in this work were prepared using R language for statistical
