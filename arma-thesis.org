@@ -162,17 +162,17 @@ programme\nbsp{}--- where they were compared to previously used LH model.
 Numerical experiments showed higher computational efficiency of ARMA model.
 
 * Problem statement
-The aim of the study reported here is to investigate possibilities of applying
-ARMA process mathematical apparatus to sea wave modelling and to develop a
-method to compute pressure field under generated wavy surface for inviscid
-incompressible fluid without assumptions of linear wave theory.
+The aim of the study reported here is to apply ARMA process mathematical
+apparatus to sea wave modelling and to develop a method to compute pressure
+field under discretely given wavy surface for inviscid incompressible fluid
+without assumptions of linear wave theory.
 - In case of small-amplitude waves the resulting pressure field must correspond
   to the one obtained via formula from linear wave theory; in all other cases
   field values must not tend to infinity.
 - Integral characteristics of generated wavy surface must match the ones of real
   sea waves.
 - Software implementation of ARMA model and pressure field computation method
-  must work on shared memory (SMP) and distributed memory (MPP) systems.
+  must work on shared and distributed memory systems.
 
 **** Pressure field formula.
 The problem of finding pressure field under wavy sea surface represents inverse
@@ -183,24 +183,23 @@ for it in general case is written as\nbsp{}cite:kochin1966theoretical
     & \phi_t+\frac{1}{2} |\vec{\upsilon}|^2 + g\zeta=-\frac{p}{\rho}, & \text{at }z=\zeta(x,y,t),\label{eq-problem}\\
     & D\zeta = \nabla \phi \cdot \vec{n}, & \text{at }z=\zeta(x,y,t),\nonumber
 \end{align}
-where \(\phi\)\nbsp{}--- velocity potential, \(\zeta\)\nbsp{}--- elevation
-(\(z\) coordinate) of wavy surface, \(p\)\nbsp{}--- wave pressure,
-\(\rho\)\nbsp{}--- fluid density,
-\(\vec{\upsilon}=(\phi_x,\phi_y,\phi_z)\)\nbsp{}--- velocity vector,
-\(g\)\nbsp{}--- acceleration of gravity, and \(D\)\nbsp{}--- substantial
+where \(\phi\) is velocity potential, \(\zeta\)\nbsp{}--- elevation (\(z\)
+coordinate) of wavy surface, \(p\)\nbsp{}--- wave pressure, \(\rho\)\nbsp{}---
+fluid density, \(\vec{\upsilon}=(\phi_x,\phi_y,\phi_z)\)\nbsp{}--- velocity
+vector, \(g\)\nbsp{}--- acceleration of gravity, and \(D\)\nbsp{}--- substantial
 (Lagrange) derivative. The first equation is called continuity (Laplace)
 equation, the second one is the conservation of momentum law (the so called
 dynamic boundary condition); the third one is kinematic boundary condition for
-free wavy surface, which states that rate of change of wavy surface elevation
-(\(D\zeta\)) equals to the change of velocity potential derivative along the
-wavy surface normal (\(\nabla\phi\cdot\vec{n}\), see
+free wavy surface, which states that a rate of change of wavy surface elevation
+(\(D\zeta\)) equals to the change of velocity potential derivative in the
+direction of wavy surface normal (\(\nabla\phi\cdot\vec{n}\), see
 section\nbsp{}[[#directional-derivative]]).
 
 Inverse problem of hydrodynamics consists in solving this system of equations
 for \(\phi\). In this formulation dynamic boundary condition becomes explicit
 formula to determine pressure field using velocity potential derivatives
-obtained from the remaining equations. So, from mathematical point of view
-inverse problem of hydrodynamics reduces to Laplace equation with mixed boundary
+obtained from the remaining equations. From mathematical point of view inverse
+problem of hydrodynamics reduces to Laplace equation with mixed boundary
 condition\nbsp{}--- Robin problem.
 
 Inverse problem is feasible because ARMA model generate hydrodynamically
