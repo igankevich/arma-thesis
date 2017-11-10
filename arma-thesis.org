@@ -245,29 +245,28 @@ Coefficients \(c_n\) are derived from wave energy spectrum \(S(\omega)\) via
 \end{equation*}
 
 **** Disadvantages of Longuet-Higgins model.
-Although LH model is simple and easy to understand, there are shortcomings that
-appear in practice.
-1. The model simulates only stationary Gaussian process. This is consequence of
+Despite simplicity of LH model numerical algorithm, in practice it has several
+disadvantages.
+1. The model simulates only stationary Gaussian field. This is a consequence of
    central limit theorem (CLT): sum of large number of sines with random
    amplitudes and phases has normal distribution, no matter what spectrum is
    used as the model input. Using lower number of coefficients may solve the
-   problem, but also make realisation period smaller. So, using LH model to
-   simulate waves with non-Gaussian distribution of elevation\nbsp{}--- a
-   distribution which real sea waves
-   have\nbsp{}cite:huang1980experimental,rozhkov1996theory \nbsp{}--- is
-   impractical.
+   problem, but also make realisation period smaller. Using LH model to simulate
+   waves with non-Gaussian distribution of elevation\nbsp{}--- a distribution
+   which real sea waves have\nbsp{}cite:huang1980experimental,rozhkov1996theory
+   \nbsp{}--- is impractical.
 2. From computational point of view, the deficiency of the model is non-linear
    increase of wavy surface generation time with the increase of realisation
    size. The larger the size of the realisation, the higher number of
    coefficients (discrete points of frequency-directional spectrum) is needed to
    eliminate periodicity. This makes LH model inefficient for long-time
    simulations.
-3. Finally, there are peculiarities which make LH model unsuitable base for
+3. Finally, there are peculiarities which make LH model unsuitable as a base for
    building more advanced simulation models.
-   - In software implementation convergence rate of \nbsp{}[[eq-longuet-higgins]]
-     may be low due to randomness of phases \(\epsilon_n\).
+   - In software implementation convergence rate of\nbsp{}[[eq-longuet-higgins]] is
+     low due to uniform distribution of phases \(\epsilon_n\).
    - It is difficult to generalise LH model for non-Gaussian processes as it
-     involves incorporating non-linear terms in eq.\nbsp{}[[eq-longuet-higgins]] for
+     involves incorporating non-linear terms in\nbsp{}[[eq-longuet-higgins]] for
      which there is no known formula to determine
      coefficients\nbsp{}cite:rozhkov1990stochastic.
 
@@ -278,7 +277,7 @@ advanced models.
 
 **** ARMA model.
 In\nbsp{}cite:spanos1982arma ARMA model is used to generate time series spectrum
-of which is compatible with Pierson---Moskowitz (PM) approximation of sea wave
+which is compatible with Pierson---Moskowitz (PM) approximation of sea wave
 spectrum. The authors carry out experiments for one-dimensional AR, MA and ARMA
 models. They mention excellent agreement between target and initial spectra and
 higher performance of ARMA model compared to models based on summing large
@@ -303,9 +302,10 @@ is mostly a different problem.
    of generated waves (lengths, heights, periods etc.).
 Multi-dimensionality of investigated model not only complexifies the task, but
 also allows to carry out visual validation of generated wavy surface. It is the
-opportunity to visualise output of the programme that allowed to ensure that
+opportunity to visualise output of the programme that allows to ensure that
 generated surface is compatible with real sea surface, and is not abstract
-multi-dimensional stochastic process that is real only statistically.
+multi-dimensional stochastic process that corresponds to the real one only
+statistically.
 
 In\nbsp{}cite:fusco2010short AR model is used to predict swell waves to control
 wave-energy converters (WEC) in real-time. In order to make WEC more efficient
@@ -363,9 +363,9 @@ weighted sum:
     \label{eq-ar-process}
 \end{equation}
 The coefficients \(\Phi\) are calculated from ACF via three-dimensional
-Yule---Walker equations, which are obtained after multiplying both parts of the
-previous equation by \(\zeta_{\vec{i}-\vec{k}}\) and computing the expected value.
-Generic form of YW equations is
+Yule---Walker (YW) equations, which are obtained after multiplying both parts of
+the previous equation by \(\zeta_{\vec{i}-\vec{k}}\) and computing the expected
+value. Generic form of YW equations is
 \begin{equation}
     \label{eq-yule-walker}
     \gamma_{\vec k}
@@ -499,11 +499,11 @@ generalise the method for three dimensions. Using slower method does not have
 dramatic effect on the overall programme performance, because the number of
 coefficients is small and most of the time is spent generating wavy surface.
 
-**** Stationarity and invertibility of AR and MA processes
+**** Stationarity and invertibility of AR and MA processes.
 In order for modelled wavy surface to represent physical phenomena, the
 corresponding process must be stationary and invertible. If the process is
-invertible, then there is a reasonable connection of current events with the
-events in the past, and if the process is stationary, the modelled physical
+/invertible/, then there is a reasonable connection of current events with the
+events in the past, and if the process is /stationary/, the modelled physical
 signal amplitude does not increase infinitely in time and space.
 
 AR process is always invertible, and for stationarity it is necessary for roots
@@ -547,9 +547,10 @@ are several approaches to "mix" AR and MA processes.
   processes but use different process order, however, then realisation
   characteristics (mean, variance etc.) become skewed: these are characteristics
   of the two overlapped processes.
-For the first approach there is a formula to re-compute ACF for AR process, but
-there is no such formula for the second approach. So, the best solution for now
-is to simply use AR and MA process exclusively.
+For the first approach the authors of\nbsp{}cite:box1976time propose a formula
+to correct AR process coefficients, but there is no such formula for the second
+approach. So, the only proven solution for now is to simply use AR and MA
+process exclusively.
 
 **** Process selection criteria for different wave profiles.
 :PROPERTIES:
@@ -592,9 +593,9 @@ left to MA process.
 
 To summarise, the only established scenario of applying ARMA model to sea wave
 generation is to use AR process for standing waves and MA process for
-propagating waves. With new formulae for three dimensions a single mixed ARMA
-process might increase model precision, which is one of the objectives of the
-future research.
+propagating waves. Using mixed ARMA process for both types of waves might
+increase model precision, given that coefficient correction formulae for three
+dimensions become available, which is the objective of the future research.
 
 ** Known pressure field determination formulae
 **** Small amplitude waves theory.
@@ -617,8 +618,8 @@ explicitly as
                 z+\alpha\dot{\alpha}}{\sqrt{1+\alpha^{2}}}e^{I(x)}dx,\label{eq-old-sol-2d}\\
     I(x)= & \int\limits_{0}^x\frac{\partial\alpha/\partial z}{1+\alpha^{2}}dx,\nonumber
 \end{align}
-where \(\alpha\) is wave slope. In three-dimensional case solution is written in
-the form of elliptic partial differential equation (PDE):
+where \(\alpha\) is wave slope. In three-dimensional case the solution is
+written in the form of elliptic partial differential equation (PDE):
 \begin{align*}
     & \frac{\partial^2 \phi}{\partial x^2} \left( 1 + \alpha_x^2 \right) +
     \frac{\partial^2 \phi}{\partial y^2} \left( 1 + \alpha_y^2 \right) +
@@ -639,10 +640,10 @@ the form of elliptic partial differential equation (PDE):
 The authors suggest transforming this equation to finite differences and solve
 it numerically.
 
-As will be shown in [[#sec-compare-formulae]] that\nbsp{}eqref:eq-old-sol-2d
-diverges when attempted to calculate velocity field for large-amplitude waves,
-and this is the reason that it can not be used in conjunction with a model, that
-generates arbitrary-amplitude waves.
+As will be shown in section\nbsp{}[[#sec-compare-formulae]],
+formula\nbsp{}eqref:eq-old-sol-2d diverges when attempted to calculate velocity
+field for large-amplitude waves, and this is the reason that it can not be used
+in conjunction with a model, that generates arbitrary-amplitude waves.
 
 **** Linearisation of boundary condition.
 :PROPERTIES:
@@ -667,32 +668,33 @@ functions. Fourier method is one of the methods to find analytic solutions to
 PDE. It is based on Fourier transform, applying of which to some PDEs reduces
 them to algebraic equations, and the solution is written as inverse Fourier
 transform of some function (which may contain Fourier transforms of other
-functions). Since, it is not possible to write analytic forms of these Fourier
+functions). Since it is not possible to write analytic forms of these Fourier
 transforms in some cases, unique solutions are found and their behaviour is
 studied in different domains instead. At the same time, computing discrete
-Fourier transforms on the computer is possible for any discretely defined
-function and efficient when using FFT algorithms. These algorithms use symmetry
-of complex exponentials to decrease asymptotic complexity from
-\(\mathcal{O}(n^2)\) to \(\mathcal{O}(n\log_{2}n)\). So, even if general
-solution contains Fourier transforms of unknown functions, they still can be
-computed numerically, and FFT family of algorithms makes this approach
-efficient.
+Fourier transforms numerically is possible for any discretely defined function
+using FFT algorithms. These algorithms use symmetry of complex exponentials to
+decrease asymptotic complexity from \(\mathcal{O}(n^2)\) to
+\(\mathcal{O}(n\log_{2}n)\). So, even if general solution contains Fourier
+transforms of unknown functions, they still can be computed numerically, and FFT
+family of algorithms makes this approach efficient.
 
-Alternative approach to solve PDE is to reduce it to difference equations, which
-are solved by constructing various numerical schemes. This approach leads to
-approximate solution, and asymptotic complexity of corresponding algorithms is
-comparable to that of FFT. For example, stationary elliptic PDE transforms to
-implicit numerical scheme which is solved by iterative method on each step of
-which a tridiagonal or five-diagonal system of algebraic equations is solved by
-Thomas algorithm. Asymptotic complexity of this approach is
-\(\mathcal{O}({n}{m})\), where \(n\)\nbsp{}--- number of wavy surface grid
-points, \(m\)\nbsp{}--- number of iterations. Despite their wide spread,
-iterative algorithms are inefficient on parallel computer architectures; in
-particular, their mapping to co-processors may involve copying data in and out
-of the co-processor in each iteration, which negatively affects their
-performance. At the same time, high number of Fourier transforms in the solution
-is an advantage, rather than a disadvantage. First, solutions obtained by
-Fourier method are explicit, hence their implementations scales with the large
+Alternative approach to solve PDEs is to reduce them to difference equations,
+which are solved by constructing various numerical schemes. This approach leads
+to approximate solution, and asymptotic complexity of corresponding algorithms
+is comparable to that of FFT. For example, for stationary elliptic PDE an
+implicit numerical scheme is constructed; the scheme is computed by iterative
+method on each step of which a tridiagonal or five-diagonal system of algebraic
+equations is solved by Thomas algorithm. Asymptotic complexity of this approach
+is \(\mathcal{O}({n}{m})\), where \(n\) is the number of wavy surface grid
+points and \(m\) is the number of iterations.
+
+Despite their wide spread, iterative algorithms are inefficient on parallel
+computer architectures due to inevitable process synchronisation after each
+iteration; in particular, their mapping to co-processors may involve copying
+data in and out of the co-processor on each iteration, which negatively affects
+their performance. At the same time, high number of Fourier transforms in the
+solution is an advantage, rather than a disadvantage. First, solutions obtained
+by Fourier method are explicit, hence their implementations scale with the large
 number of parallel computer cores. Second, there are implementations of FFT
 optimised for different processor architectures as well as co-processors (GPU,
 MIC) which makes it easy to get high performance on any computing platform.
@@ -717,8 +719,8 @@ sides of the equation yields
     -4 \pi^2 \left( u^2 + v^2 \right)
     \FourierY{\phi(x,z)}{u,v} = 0,
 \end{equation*}
-hence \(v = \pm i u\). Hereinafter we use the following symmetric form of Fourier
-transform:
+hence \(v = \pm i u\). Hereinafter we use the following symmetric form of
+Fourier transform:
 \begin{equation*}
     \FourierY{f(x,y)}{u,v} =
     \iint\limits_{-\infty}^{\phantom{--}\infty}
@@ -787,11 +789,11 @@ into\nbsp{}eqref:eq-guessed-sol-2d yields formula for \(\phi(x,z)\):
 \end{equation}
 
 Multiplier \(e^{2\pi{u}{z}}/(2\pi{u})\) makes graph of a function to which
-Fourier transform of which is applied asymmetric with respect to \(OY\) axis.
-This makes it difficult to apply FFT which expects periodic function with nought
-on both ends of the interval. At the same time, using numerical integration
-instead of FFT is not faster than solving the initial system of equations with
-numerical schemes. This problem is alleviated by using
+Fourier transform is applied asymmetric with respect to \(OY\) axis. This makes
+it difficult to use FFT, because it expects periodic function which takes nought
+values on both ends of the interval. At the same time, using numerical
+integration instead of FFT is not faster than solving the initial system of
+equations with numerical schemes. This problem is alleviated by using
 formula\nbsp{}eqref:eq-solution-2d-full for finite depth fluid with knowingly
 large depth \(h\). This formula is derived in the following section.
 
@@ -814,7 +816,7 @@ Plugging \(\phi\) into the boundary condition on the sea bottom yields
     C_1 e^{-2\pi u h} - C_2 e^{2\pi u h} = 0,
 \end{equation*}
 hence \(C_1=\frac{1}{2}C{e}^{2\pi{u}{h}}\) and
-\(C_2=-\frac{1}{2}C{e}^{-2\pi{u}{h}}\). Constant \(C\) may take arbitrary value
+\(C_2=-\frac{1}{2}C{e}^{-2\pi{u}{h}}\). Constant \(C\) may take arbitrary values
 here, because after plugging it becomes part of unknown coefficients \(E(u)\).
 Plugging formulae for \(C_1\) and \(C_2\)
 into\nbsp{}eqref:eq-guessed-sol-2d-full yields
@@ -845,11 +847,11 @@ previous section transformations yields final formula for \(\phi(x,z)\):
 }
     \label{eq-solution-2d-full}
 \end{equation}
-where \(\FunSecond{z}\)\nbsp{}--- a function, form of which is defined in
+where \(\FunSecond{z}\) is a function, a form of which is defined in
 section\nbsp{}[[#sec-compute-delta]] and which satisfies equation
 \(\FourierY{\FunSecond{z}}{u}=\Sinh{2\pi{u}{z}}\).
 
-**** Reducing to the formulae from linear wave theory.
+**** Reduction to the formulae from linear wave theory.
 Check the validity of derived formulae by substituting \(\zeta(x,t)\) with known
 analytic formula for plain waves. Symbolic computation of Fourier transforms in
 this section were performed in Mathematica\nbsp{}cite:mathematica10. In the
@@ -874,7 +876,7 @@ Propagating wave profile is defined as \(\zeta(x,t)=A\cos(2\pi(kx-t))\).
 Plugging this formula into\nbsp{}eqref:eq-solution-2d yields
 \(\phi(x,z,t)=-\frac{A}{k}\sin(2\pi(kx-t))\Sinh{2\pi{k}{z}}\). In order to
 reduce it to the formula from linear wave theory, rewrite hyperbolic sine in
-exponential form, discard the term containing \(e^{-2\pi{k}{z}}\) as
+exponential form and discard the term containing \(e^{-2\pi{k}{z}}\) as
 contradicting condition
 \(\phi\underset{z\rightarrow-\infty}{\longrightarrow}0\). Taking real part of
 the resulting formula yields
@@ -910,14 +912,13 @@ depth difference near free surface is negligible). So, for sufficiently large
 depth any function (\(\cosh\) or \(\sinh\)) may be used for velocity potential
 computation near free surface.
 
-Reducing\nbsp{}eqref:eq-solution-2d и\nbsp{}eqref:eq-solution-2d-full to the
+Reducing\nbsp{}eqref:eq-solution-2d and\nbsp{}eqref:eq-solution-2d-full to the
 known formulae from linear wave theory shows, that formula for infinite
 depth\nbsp{}eqref:eq-solution-2d is not suitable to compute velocity potentials
 with Fourier method, because it does not have symmetry, which is required for
 Fourier transform. However, formula for finite depth can be used instead by
 setting \(h\) to some characteristic water depth. For standing wave reducing to
 linear wave theory formulae is made under the same assumptions.
-
 *** Three-dimensional velocity field
 Three-dimensional version of\nbsp{}eqref:eq-problem is written as
 \begin{align}
@@ -975,7 +976,7 @@ transforms in the equation have radially symmetric kernels, i.e.\nbsp{}replace
 \(u\) and \(v\) with \(\Kveclen\). There are two points supporting this
 assumption. First, in numerical implementation integration is done over positive
 wave numbers, so the sign of \(u\) and \(v\) does not affect the solution.
-Second, the rate growth of \(\cosh\) term of the integral kernel is much higher
+Second, the growth rate of \(\cosh\) term of the integral kernel is much higher
 than the one of \(u\) or \(\Kveclen\), so the substitution has small effect on
 the magnitude of the solution. Despite these two points, a use of more
 mathematically rigorous approach would be preferable.
@@ -991,27 +992,33 @@ and plugging the result into\nbsp{}eqref:eq-guessed-sol-3d yields formula for
         { \FourierY{\mathcal{D}_3\left( x,y,\zeta\left(x,y\right) \right)}{u,v} }
     }{x,y},
 \end{equation}
-where \(\FourierY{\mathcal{D}_3\left(x,y,z\right)}{u,v}=\Sinh{\smash{2\pi\Kveclen{}z}}\).
+where
+\(\FourierY{\mathcal{D}_3\left(x,y,z\right)}{u,v}=\Sinh{\smash{2\pi\Kveclen{}z}}\).
+
+*** Conclusion
+Formulae derived in this section allow to numerically compute velocity potential
+field (and hence pressure field) near discretely or mathematically given wavy
+sea surface, bypassing assumptions of linear wavy theory and theory of small
+amplitude waves.
 
 ** Modelling non-linearity of sea waves
 ARMA model allows to model asymmetry of wave elevation distribution,
 i.e.\nbsp{}generate sea waves, distribution of \(z\)-coordinate of which has
 non-nought kurtosis and asymmetry. Such distribution is inherent to real sea
-waves\nbsp{}cite:longuet1963nonlinear.
-
-Wave asymmetry is modelled by non-linear inertia-less transform (NIT) of
-stochastic process, however, transforming resulting wavy surface means
-transforming initial ACF. In order to alleviate this, ACF must be preliminary
-transformed as shown in\nbsp{}cite:boukhanovsky1997thesis.
+waves\nbsp{}cite:longuet1963nonlinear. Wave asymmetry is modelled by non-linear
+inertia-less transform (NIT) of stochastic process, however, transforming
+resulting wavy surface means transforming initial ACF. In order to alleviate
+this, ACF must be preliminary transformed as shown
+in\nbsp{}cite:boukhanovsky1997thesis.
 
 **** Wavy surface transformation.
 Explicit formula \(z=f(y)\) that transforms wavy surface to desired
 one-dimensional distribution \(F(z)\) is the solution of non-linear
 transcendental equation \(F(z)=\Phi(y)\), where \(\Phi(y)\)\nbsp{}---
 one-dimensional Gaussian distribution. Since distribution of wave elevation is
-often given by some approximation based on field data, this equation is solved
-numerically with respect to \(z_k\) in each grid point \(y_k|_{k=0}^N\) of
-generated wavy surface. In this case equation is rewritten as
+often given by some approximation based on /in situ/ data, this equation is
+solved numerically with respect to \(z_k\) in each grid point \(y_k|_{k=0}^N\)
+of generated wavy surface. In this case equation is rewritten as
 \begin{equation}
     \label{eq-distribution-transformation}
     F(z_k)
@@ -1063,9 +1070,9 @@ fields become equal with desired accuracy \(\epsilon\):
 
 In\nbsp{}cite:boukhanovsky1997thesis the author suggests using polynomial
 approximation \(f(y)\) also for wavy surface transformation, however, in
-practice sea surface realisation often contains points, where \(z\)-coordinate
-is beyond the limits of the approximation, which makes solution invalid. In
-these points it is more efficient to solve
+practice sea surface realisation often contains points, in which
+\(z\)-coordinate is beyond the limits of the approximation, leading to sharp
+precision decrease. In these points it is more efficient to solve
 equation\nbsp{}eqref:eq-distribution-transformation by bisection method. Using
 the same approximation in Gram---Charlier series does not lead to such errors.
 
