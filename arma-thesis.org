@@ -3795,27 +3795,34 @@ for Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
 - <<<PRNG>>> :: pseudo-random number generator.
 - <<<BC>>> :: boundary condition.
 - <<<PDE>>> :: partial differential equation.
-- <<<NIT>>> :: non-linear inertia-less transform.
+- <<<NIT>>> :: non-linear inertialess transform which allows to specify
+               arbitrary distribution law for wavy surface elevation without
+               changing its original auto-covariate function.
 - AR :: auto-regressive process.
 - <<<ARMA>>> :: auto-regressive moving-average process.
 - MA :: moving average process.
-- LH :: Longuet---Higgins model.
+- LH :: Longuet---Higgins model, formula of which is derived in the framework of
+        linear wave theory.
 - <<<LAMP>>> :: Large Amplitude Motion Programme, a programme that simulates
                 ship behaviour in ocean waves.
 - <<<CLT>>> :: central limit theorem.
 - <<<PM>>> :: Pierson---Moskowitz ocean wave spectrum approximation.
-- <<<YW>>> :: Yule---Walker equations.
+- <<<YW>>> :: Yule---Walker equations which are used to determine autoregressive
+              model coefficients for a given auto-covariate function.
 - <<<LS>>> :: least squares.
 - PDF :: probability density function.
 - <<<CDF>>> :: cumulative distribution function.
 - <<<BSP>>> :: Bulk Synchronous Parallel.
-- OpenCL :: Open Computing Language.
+- OpenCL :: Open Computing Language, parallel programming technology for hybrid
+            systems with GPUs or other co-processors.
 - <<<OpenGL>>> :: Open Graphics Library.
-- OpenMP :: Open Multi-Processing.
+- OpenMP :: Open Multi-Processing, parallel programming technology for
+            multi-processor systems.
 - <<<MPI>>> :: Message Passing Interface.
-- <<<POSIX>>> :: Portable Operating System.
 - <<<FMA>>> :: Fused multiply-add.
-- <<<DCMT>>> :: Dynamic creation of Mersenne Twisters.
+- <<<DCMT>>> :: Dynamic creation of Mersenne Twisters, an algorithm for creating
+                pseudo-random number generators that produce uncorrelated
+                sequences when run in parallel.
 - <<<GSL>>> :: GNU Scientific Library.
 - <<<BLAS>>> :: Basic Linear Algebra Sub-programmes.
 - <<<LAPACK>>> :: Linear Algebra Package.
@@ -3823,9 +3830,10 @@ for Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
 - <<<HPC>>> :: High-performance computing.
 - GCS :: Gram---Charlier series.
 - SN :: Skew normal distribution.
-- <<<PBS>>> :: Portable batch system.
+- <<<PBS>>> :: Portable batch system, a system for allocating and distributing
+               cluster resources for parallel programmes.
 - Transcendental functions :: non-algebraic mathematical functions
-     (i.e.\nbsp{}logarithmic, trigonometric etc.).
+     (i.e.\nbsp{}logarithmic, trigonometric, exponential etc.).
 
 #+begin_export latex
 \input{postamble}
