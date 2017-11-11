@@ -217,18 +217,18 @@ generation, instead of wavy surface generation.
 
 **** Longuet---Higgins model.
 The simplest model, formula of which is derived in the framework of linear wave
-theory (see\nbsp{}appendix\nbsp{}[[#longuet-higgins-derivation]]), is
-Longuet---Higgins (LH) model\nbsp{}cite:longuet1957statistical. In-depth
-comparative analysis of this model and ARMA model is done
+theory (see\nbsp{}sec.\nbsp{}[[#longuet-higgins-derivation]]), is Longuet---Higgins
+(LH) model\nbsp{}cite:longuet1957statistical. In-depth comparative analysis of
+this model and ARMA model is done
 in\nbsp{}cite:degtyarev2011modelling,boukhanovsky1997thesis.
 
 LH model represents sea wavy surface as a superposition of
 sine waves with random amplitudes \(c_n\) and phases \(\epsilon_n\), uniformly
 distributed on interval \([0,2\pi]\). Wavy surface elevation (\(z\) coordinate) is
 defined by
-#+name: eq-longuet-higgins
 \begin{equation}
     \zeta(x,y,t) = \sum\limits_n c_n \cos(u_n x + v_n y - \omega_n t + \epsilon_n).
+    \label{eq-longuet-higgins}
 \end{equation}
 Here wave numbers \((u_n,v_n)\) are continuously distributed on plane \((u,v)\),
 i.e.\nbsp{}area \(du\times{}dv\) contains infinite quantity of wave numbers.
@@ -263,11 +263,12 @@ disadvantages.
    simulations.
 3. Finally, there are peculiarities which make LH model unsuitable as a base for
    building more advanced simulation models.
-   - In software implementation convergence rate of\nbsp{}[[eq-longuet-higgins]] is
-     low due to uniform distribution of phases \(\epsilon_n\).
+   - In software implementation convergence rate
+     of\nbsp{}[[eqref:eq-longuet-higgins]] is low due to uniform distribution of
+     phases \(\epsilon_n\).
    - It is difficult to generalise LH model for non-Gaussian processes as it
-     involves incorporating non-linear terms in\nbsp{}[[eq-longuet-higgins]] for
-     which there is no known formula to determine
+     involves incorporating non-linear terms in\nbsp{}[[eqref:eq-longuet-higgins]]
+     for which there is no known formula to determine
      coefficients\nbsp{}cite:rozhkov1990stochastic.
 
 To summarise, LH model is applicable to generating sea wavy surface only in the
@@ -1203,7 +1204,7 @@ polynomial approximation of /in situ/ data or analytic formula.
 In\nbsp{}cite:huang1980experimental the authors experimentally show, that PDF of
 sea surface elevation is distinguished from normal distribution by non-nought
 kurtosis and skewness. In\nbsp{}cite:rozhkov1996theory the authors show, that
-this type of PDF expands in Gram---Charlier series:
+this type of PDF expands in Gram---Charlier series (GCS):
 \begin{align}
     \label{eq-skew-normal-1}
     & F(z; \mu=0, \sigma=1, \gamma_1, \gamma_2) \approx
@@ -1255,14 +1256,14 @@ legend(
 )
 #+end_src
 
-#+caption: Probability density function\nbsp{}eqref:eq-skew-normal-1 of sea wavy surface elevation for different values of skewness \(\gamma_1\) and kurtosis \(\gamma_2\).
+#+caption[Graph of PDF of GCS-based distribution]: Graph of probability density function of GCS-based distribution law for different values of skewness \(\gamma_1\) and kurtosis \(\gamma_2\).
 #+name: fig-skew-normal-1
 #+RESULTS: fig-skew-normal-1
 [[file:build/skew-normal-1.pdf]]
 
 **** Skew-normal distribution.
 Alternative approach is to approximate distribution of sea wavy surface
-elevation by skew-normal distribution:
+elevation by skew-normal (SN) distribution:
 \begin{align}
     \label{eq-skew-normal-2}
     F(z; \alpha) & = \frac{1}{2}
@@ -1307,7 +1308,7 @@ legend(
 )
 #+end_src
 
-#+caption: Probability density function\nbsp{}eqref:eq-skew-normal-2 of sea wavy surface for different values of skewness coefficient \(\alpha\).
+#+caption[Graph of PDF of SN distribution]: Graph of PDF of skew-normal distribution for different values of skewness coefficient \(\alpha\).
 #+name: fig-skew-normal-2
 #+RESULTS: fig-skew-normal-2
 [[file:build/skew-normal-2.pdf]]
@@ -1381,7 +1382,8 @@ source(file.path("R", "common.R"))
 arma.plot_ramp_up_interval()
 #+end_src
 
-#+caption: Ramp-up interval at the beginning of the \(OX\) axis of the realisation.
+#+caption[Ramp-up interval at the beginning of the realisation]:
+#+caption: Ramp-up interval at the beginning of the realisation.
 #+name: fig-ramp-up-interval
 #+RESULTS: fig-ramp-up-interval
 [[file:build/ramp-up-interval.pdf]]
@@ -1411,7 +1413,10 @@ from linear wave theory, in which terms with \(\zeta\) are omitted. As a result,
 the formula for three-dimensional case was not derived.
 
 #+name: tab-delta-functions
-#+caption: Formulae for computing \(\Fun{z}\) and \(\FunSecond{z}\) from [[#sec-pressure-2d]], that use normalisation to eliminate uncertainty from definition of Dirac delta function of complex argument.
+#+caption[Formulae for computing \(\Fun{z}\) and \(\FunSecond{z}\)]:
+#+caption: Formulae for computing \(\Fun{z}\) and \(\FunSecond{z}\) from
+#+caption: sec.\nbsp{}[[#sec-pressure-2d]], that use normalisation to eliminate
+#+caption: uncertainty from definition of Dirac delta function of complex argument.
 #+attr_latex: :booktabs t
 | Function          | Without normalisation                                        | Normalised                                                                                                                             |
 |-------------------+--------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------|
@@ -1444,6 +1449,7 @@ Tails of the graph may diverge from the straight line, because they can not be
 reliably estimated from the finite-size realisation.
 
 #+name: tab-weibull-shape
+#+caption[Values of Weibull shape parameter]:
 #+caption: Values of Weibull shape parameter for different wave characteristics.
 #+attr_latex: :booktabs t
 | Characteristic       | Weibull shape (\(k\)) |
@@ -1474,6 +1480,7 @@ arma.qqplot_grid(
 )
 #+end_src
 
+#+caption[Quantile-quantile plots for propagating waves]:
 #+caption: Quantile-quantile plots for propagating waves.
 #+name: propagating-wave-distributions
 #+RESULTS: propagating-wave-distributions
@@ -1492,6 +1499,7 @@ arma.qqplot_grid(
 )
 #+end_src
 
+#+caption[Quantile-quantile plots for standing waves]:
 #+caption: Quantile-quantile plots for standing waves.
 #+name: standing-wave-distributions
 #+RESULTS: standing-wave-distributions
@@ -1510,7 +1518,9 @@ for (i in seq(0, 4)) {
 }
 #+end_src
 
-#+caption: Time slices of ACF for standing (left column) and propagating waves (right column).
+#+caption[ACF time slices for standing and propagating waves]:
+#+caption: ACF time slices for standing (left column) and propagating waves
+#+caption: (right column).
 #+name: acf-slices
 #+RESULTS: acf-slices
 [[file:build/acf-slices.pdf]]
@@ -1608,7 +1618,10 @@ arma.plot_velocity_potential_field_legend(
 )
 #+end_src
 
-#+caption: Velocity potential field of propagating wave \(\zeta(x,y,t) = \cos(2\pi x - t/2)\). Field produced by formula\nbsp{}eqref:eq-solution-2d-full (top) and linear wave theory formula (bottom).
+#+caption[Velocity potential fields for propagating wave]:
+#+caption: Comparison of velocity potential fields for propagating wave
+#+caption: \(\zeta(x,y,t) = \cos(2\pi x - t/2)\). Field produced by generic
+#+caption: formula (top) and linear wave theory formula (bottom).
 #+name: fig-potential-field-nonlinear
 #+attr_latex: :width \textwidth
 #+RESULTS: fig-potential-field-nonlinear
@@ -1650,7 +1663,11 @@ arma.plot_velocity(
 #+end_src
 
 #+name: fig-velocity-field-2d
-#+caption: Comparison of velocity field on the sea wavy surface obtained by generic formula (\(u_1\)) and formula for small-amplitude waves (\(u_2\)). Velocity field for realisations containing small-amplitude (top) and large-amplitude (bottom) waves.
+#+caption[Velocity potential fields for small and large amplitude waves]:
+#+caption: Comparison of velocity potential fields obtained by generic formula
+#+caption: (\(u_1\)) and formula for small-amplitude waves (\(u_2\)): velocity
+#+caption: field for realisations containing small-amplitude (top) and
+#+caption: large-amplitude (bottom) waves.
 #+attr_latex: :width \textwidth
 #+RESULTS: fig-velocity-field-2d
 [[file:build/large-and-small-amplitude-velocity-field-comparison.pdf]]
@@ -1692,12 +1709,17 @@ arma.plot_nonlinear(file.path("build", "nit-standing"), args)
 #+end_src
 
 #+name: fig-nit
-#+caption: Wavy surface slices with different distributions of wave elevation (Gaussian, Gram---Charlier series based and skew normal).
+#+caption[Wavy surface slices with different distributions]:
+#+caption: Wavy surface slices with different distributions
+#+caption: of wave elevation (Gaussian, GCS-based and SN).
 #+RESULTS: fig-nit
 [[file:build/nit.pdf]]
 
 #+name: tab-nit-error
-#+caption: Errors of ACF approximations (the difference of variances) for different wave elevation distributions. \(N\)\nbsp{}--- number of coefficients of ACF approximation.
+#+caption[Errors of ACF approximations]:
+#+caption: Errors of ACF approximations (the difference of variances) for
+#+caption: different wave elevation distributions. \(N\) is the number of
+#+caption: coefficients of ACF approximation.
 #+attr_latex: :booktabs t
 | Wave type   | Distribution | \(\gamma_1\) | \(\gamma_2\) | \(\alpha\) | Error | \(N\) | Wave height |
 |-------------+--------------+--------------+--------------+------------+-------+-------+-------------|
@@ -1801,6 +1823,7 @@ arma.plot_ar_cubes_2d(3, 3, xlabel="Part index (X)", ylabel="Part index (Y)")
 #+end_src
 
 #+name: fig-ar-cubes
+#+caption[Autoregressive dependencies between surface parts]:
 #+caption: Autoregressive dependencies between wavy surface parts.
 #+RESULTS: fig-ar-cubes
 [[file:build/ar-cubes.pdf]]
@@ -1895,6 +1918,7 @@ heavy use of FFT, not to mention that high convergence rate and non-existence of
 periodicity allows to use far fewer coefficients compared to LH model.
 
 #+name: tab-gpulab
+#+caption["Gpulab" system configuration]:
 #+caption: "Gpulab" system configuration.
 #+attr_latex: :booktabs t
 | CPU                     | AMD FX-8370                   |
@@ -1930,7 +1954,8 @@ time, whereas velocity potential calculation together with other subroutines
 only a small fraction of it.
 
 #+name: tab-arma-libs
-#+caption: A list of mathematical libraries used in ARMA programme.
+#+caption[A list of libraries used in software implementation]:
+#+caption: A list of libraries used in software implementation.
 #+attr_latex: :booktabs t
 | Library                                                      | What it is used for             |
 |--------------------------------------------------------------+---------------------------------|
@@ -2004,7 +2029,9 @@ arma.print_openmp_vs_opencl(model_names, row_names)
 #+end_src
 
 #+name: tab-arma-performance
-#+caption: Running time (s.) for OpenMP and OpenCL implementations of AR, MA and LH models.
+#+caption[Performance of OpenMP and OpenCL implementations]:
+#+caption: Running time (s.) for OpenMP and OpenCL implementations
+#+caption: of AR, MA and LH models.
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-performance
 |                                  |      |      | OpenMP |        | OpenCL |
@@ -2089,7 +2116,9 @@ arma.print_sync_vs_async_io(suffix_names, row_names, top_names, mark=".")
 #+end_src
 
 #+name: tab-arma-io-performance
-#+caption: Running time of subroutines (s.) with the use of XFS, NFS and GlusterFS along with sequential (I) and parallel (II) file output.
+#+caption[I/O performance for XFS, NFS and GlusterFS]:
+#+caption: Running time of subroutines (s.) with the use of XFS, NFS and
+#+caption: GlusterFS along with sequential (I) and parallel (II) file output.
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-io-performance
 |                                  |      |      |         I |      |      |        II |
@@ -2111,7 +2140,9 @@ arma.plot_io_events(names)
 #+end_src
 
 #+name: fig-arma-io-events
-#+caption: Event graph for XFS, NFS and GlusterFS that shows time intervals spent for I/O and computation by different threads.
+#+caption[Event graph for XFS, NFS and GlusterFS]:
+#+caption: Event graph for XFS, NFS and GlusterFS that shows time intervals
+#+caption: spent for I/O (red) and computation (black) by different threads.
 #+RESULTS: fig-arma-io-events
 [[file:build/arma-io-events.pdf]]
 
@@ -2196,7 +2227,8 @@ equipped with a GPU, characteristics of which are summarised in
 table\nbsp{}[[tab-storm]].
 
 #+name: tab-storm
-#+caption: "Storm" test platform configuration.
+#+caption["Storm" system configuration]:
+#+caption: "Storm" system configuration.
 #+attr_latex: :booktabs t
 | CPU              | Intel Core 2 Quad Q9550     |
 | RAM              | 8Gb                         |
@@ -2216,7 +2248,9 @@ title(xlab="Wavy surface size", ylab="Time, s")
 #+end_src
 
 #+name: fig-arma-realtime-graph
-#+caption: Performance comparison of CPU (OpenMP) and GPU (OpenCL) versions of velocity potential solver.
+#+caption[Performance of different versions of velocity potential code]:
+#+caption: Performance comparison of CPU (OpenMP) and GPU (OpenCL) versions of
+#+caption: velocity potential calculation code.
 #+RESULTS: fig-arma-realtime-graph
 [[file:build/realtime-performance.pdf]]
 
@@ -2246,7 +2280,9 @@ arma.print_table_for_realtime_data(data, routine_names, column_names)
 #+end_src
 
 #+name: tab-arma-realtime
-#+caption: Running time of real-time velocity potential solver subroutines for wavy surface (OX size equals 16384).
+#+caption[Performance velocity potential calculation]:
+#+caption: Running time of real-time velocity potential calculation subroutines
+#+caption: for wavy surface (OX size equals 16384).
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-realtime
 | Subroutine         | OpenMP time, s | OpenCL time, s |
@@ -2529,7 +2565,10 @@ graph G {
 }
 #+end_src
 
-#+caption: Mapping of parent and child process pipelines to compute devices. Solid lines denote aggregation, dashed lines denote mapping between logical and physical entities.
+#+caption[Process pipelines mapping to compute devices]:
+#+caption: Mapping of parent and child process pipelines to compute devices.
+#+caption: Solid lines denote aggregation, dashed lines\nbsp{}--- mapping between
+#+caption: logical and physical entities.
 #+attr_latex: :width \textwidth
 #+name: fig-subord-ppl
 #+RESULTS: fig-subord-ppl
@@ -2550,6 +2589,7 @@ Each kernel has four types of fields (listed in table\nbsp{}[[tab-kernel-fields]
 - fields defining the target location of the kernel.
 
 #+name: tab-kernel-fields
+#+caption[Description of kernel fields]:
 #+caption: Description of kernel fields.
 #+attr_latex: :booktabs t :align lp{0.7\textwidth}
 | Field             | Description                                                                                    |
@@ -2734,7 +2774,9 @@ digraph {
 }
 #+end_src
 
-#+caption: Diagram of data processing pipeline, that implements sea wavy surface generation via AR model.
+#+caption[Diagram of data processing pipeline]:
+#+caption: Diagram of data processing pipeline, that implements sea wavy
+#+caption: surface generation via AR model.
 #+name: fig-pipeline
 #+RESULTS: fig-pipeline
 [[file:build/pipeline.pdf]]
@@ -2942,7 +2984,10 @@ digraph {
 }
 #+end_src
 
-#+caption: Tree hierarchy for 11 nodes with fan-out equals 2. Red arrows denote hierarchy traversal order for a node with IP address 10.0.0.10.
+#+caption[Tree hierarchy for 11 nodes]:
+#+caption: Tree hierarchy for 11 nodes with fan-out of 2.
+#+caption: Red arrows denote hierarchy traversal order for a node
+#+caption: with IP address ~10.0.0.10~.
 #+name: fig-tree-hierarchy-11
 #+RESULTS: fig-tree-hierarchy-11
 [[file:build/tree-hierarchy-11.pdf]]
@@ -2958,6 +3003,7 @@ physical core is feasible, in contrast to HPC codes, where it often lowers
 performance. Test platform configuration is shown in table\nbsp{}[[tab-ant]].
 
 #+name: tab-ant
+#+caption["Ant" system configuration]:
 #+caption: "Ant" system configuration.
 #+attr_latex: :booktabs t
 | CPU                       | Intel Xeon E5440, 2.83GHz |
@@ -3006,7 +3052,11 @@ par(family="serif")
 bscheduler.plot_discovery(xlabel="No. of physical nodes",toplabel="ppn")
 #+end_src
 
-#+caption: Time to discover all daemon processes running on the cluster depending on the number of daemon processes. Dashed lines represent minimum and maximum values, "ppn" denotes the number of daemon processes per node.
+#+caption[Time needed to discover all daemon processes on the cluster]:
+#+caption: Time needed to discover all daemon processes running on the cluster
+#+caption: depending on the number of daemon processes. Dashed lines denote
+#+caption: minimum and maximum values, "ppn" is the number of daemon
+#+caption: processes per node.
 #+name: fig-discovery-benchmark
 #+RESULTS: fig-discovery-benchmark
 [[file:build/discovery-benchmark.pdf]]
@@ -3304,7 +3354,8 @@ The algorithm is best described by an example
 \spbuInsertFigure{tex/legend}
 #+end_src
 
-#+caption: An example of fail over algorithm in action.
+#+caption[Working scheme of fail over algorithm]:
+#+caption: Working scheme of fail over algorithm.
 #+name: fig-fail-over-example
 #+attr_latex: :width \textwidth
 #+RESULTS: fig-fail-over-example
@@ -3364,7 +3415,10 @@ digraph {
 #+end_src
 
 #+name: fig-master-slave-backup
-#+caption: Master and slave nodes and mapping of main kernel \(M\), a copy of main kernel \(M'\), current step kernel \(N\) and subordinate kernels \(S_{1,2,3}\) on them.
+#+caption[Mapping of kernels on master and slave nodes]:
+#+caption: Master and slave nodes and mapping of main kernel \(M\),
+#+caption: a copy of main kernel \(M'\), current step kernel \(N\)
+#+caption: and subordinate kernels \(S_{1,2,3}\) on them.
 #+RESULTS: fig-master-slave-backup
 [[file:build/master-slave-backup.pdf]]
 
@@ -3376,10 +3430,11 @@ execution. So, in case of slave node failure nothing is lost except performance
 potential of the slave node. In case of master node failure, a copy of the main
 kernel as well as the subordinate kernel, which carried the copy, are lost, but
 slave node has the original main kernel and uses it to restart execution of the
-current sequential step, i.e. send the subordinate kernel to one of the survived
-cluster nodes (in case of two directly connected, it sends the kernel to
-itself). So, application performance is different, because the number of kernels
-that are lost as a result of a failure as well as their roles are different.
+current sequential step, i.e.\nbsp{}send the subordinate kernel to one of the
+survived cluster nodes (in case of two directly connected, it sends the kernel
+to itself). So, application performance is different, because the number of
+kernels that are lost as a result of a failure as well as their roles are
+different.
 
 Slave node failure needs some time to be discovered: it is detected only when
 subordinate kernel carrying a copy of the main kernel finishes its execution and
@@ -3403,6 +3458,7 @@ arma.plot_master_slave_failure_data(
 title(xlab="Wavy surface size", ylab="Time, s")
 #+end_src
 
+#+caption[Performance of a programme in the presence of node failures]:
 #+caption: Performance of AR model in the presence of node failures.
 #+name: fig-master-slave-failure
 #+RESULTS: fig-master-slave-failure
@@ -3660,7 +3716,9 @@ title(xlab="Wavy surface size", ylab="Time, s")
 #+end_src
 
 #+name: fig-bscheduler-performance
-#+caption: Performance comparison of Bscheduler and OpenMP.
+#+caption[Performance of Bscheduler and OpenMP programme versions]:
+#+caption: Performance comparison of Bscheduler and OpenMP programme versions for
+#+caption: AR model.
 #+RESULTS: fig-bscheduler-performance
 [[file:build/bscheduler-performance.pdf]]
 
@@ -3732,28 +3790,28 @@ for Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
 - <<<MPP>>> :: Massively Parallel Processing, computers with distributed memory.
 - <<<SMP>>> :: Symmetric Multi-Processing, computers with shared memory.
 - <<<GPGPU>>> :: General-purpose computing on graphics processing units.
-- <<<ACF>>> :: auto-covariate function.
+- ACF :: auto-covariate function.
 - <<<FFT>>> :: fast Fourier transform.
 - <<<PRNG>>> :: pseudo-random number generator.
 - <<<BC>>> :: boundary condition.
 - <<<PDE>>> :: partial differential equation.
 - <<<NIT>>> :: non-linear inertia-less transform.
-- <<<AR>>> :: auto-regressive process.
+- AR :: auto-regressive process.
 - <<<ARMA>>> :: auto-regressive moving-average process.
-- <<<MA>>> :: moving average process.
-- <<<LH>>> :: Longuet---Higgins model.
+- MA :: moving average process.
+- LH :: Longuet---Higgins model.
 - <<<LAMP>>> :: Large Amplitude Motion Programme, a programme that simulates
                 ship behaviour in ocean waves.
 - <<<CLT>>> :: central limit theorem.
 - <<<PM>>> :: Pierson---Moskowitz ocean wave spectrum approximation.
 - <<<YW>>> :: Yule---Walker equations.
 - <<<LS>>> :: least squares.
-- <<<PDF>>> :: probability density function.
+- PDF :: probability density function.
 - <<<CDF>>> :: cumulative distribution function.
 - <<<BSP>>> :: Bulk Synchronous Parallel.
-- <<<OpenCL>>> :: Open Computing Language.
+- OpenCL :: Open Computing Language.
 - <<<OpenGL>>> :: Open Graphics Library.
-- <<<OpenMP>>> :: Open Multi-Processing.
+- OpenMP :: Open Multi-Processing.
 - <<<MPI>>> :: Message Passing Interface.
 - <<<POSIX>>> :: Portable Operating System.
 - <<<FMA>>> :: Fused multiply-add.
@@ -3763,8 +3821,8 @@ for Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
 - <<<LAPACK>>> :: Linear Algebra Package.
 - <<<DNS>>> :: Dynamic name resolution.
 - <<<HPC>>> :: High-performance computing.
-- <<<GCS>>> :: Gram---Charlier series.
-- <<<SN>>> :: Skew normal distribution.
+- GCS :: Gram---Charlier series.
+- SN :: Skew normal distribution.
 - <<<PBS>>> :: Portable batch system.
 - Transcendental functions :: non-algebraic mathematical functions
      (i.e.\nbsp{}logarithmic, trigonometric etc.).
