@@ -125,7 +125,7 @@ software.
 3. Since the formula which is used in the method is explicit, there is no need
    in data exchange between parallel processes, which allows to scale
    performance to a large number of processor cores.
-4. Finally, ARMA model is itself more efficient than LH model due to vicinity of
+4. Finally, ARMA model is itself more efficient than LH model due to absence of
    trigonometric functions in its formula: In fact, wavy surface is computed as
    a sum of large number of polynomials, for which there is low-level FMA (Fused
    Multiply-Add) assembly instruction, and memory access pattern allows for
@@ -2281,7 +2281,7 @@ multi-dimensional derivatives were available.
 
 AR and MA models outperforms LH model in benchmarks and does not require GPU to
 do so. From computational point of view their strengths are
-- vicinity of transcendental mathematical functions, and
+- absence of transcendental mathematical functions, and
 - simple algorithm for both AR and MA model, performance of which depends on the
   performance of multi-dimensional array library and FFT library.
 Providing main functionality via low-level libraries makes performance of the
