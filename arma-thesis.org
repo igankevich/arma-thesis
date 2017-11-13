@@ -3557,24 +3557,35 @@ increase performance of a parallel programme via dynamic load balancing, but
 inhibit its scalability for a large number of nodes and large amount of shared
 structures due to duplication of these structures.
 
+Decomposing parallel programme into individual entities is done in Charm++
+framework\nbsp{}cite:kale2012charm (with load
+balancing\nbsp{}cite:bhandarkar2001adaptive) and in actor
+model\nbsp{}cite:hewitt1973universal,agha1985actors, but none of the approaches
+uses hierarchical relationship to restart entity processing after a failure.
+Instead of using tree hierarchy of kernels, these approaches allow exchanging
+messages between any pair of entities. Such irregular message exchange pattern
+makes it impossible to decide which object is responsible for restarting a
+failed one, hence non-universal fault tolerance techniques are used
+instead\nbsp{}cite:lifflander2014scalable.
+
 In comparison to portable batch systems (PBS) the proposed approach uses
 lightweight control flow objects instead of heavy-weight parallel jobs to
 distribute the load on cluster nodes. First, this allows to have node object
 queues instead of several cluster-wide job queues. The granularity of control
 flow objects is much higher than the batch jobs, and despite the fact that their
 execution time cannot be reliably predicted (as is execution time of batch
-jobs), objects from multiple parallel programmes can be dynamically distributed
-between the same set of cluster nodes, thus making the load more even. The
-disadvantage is that this requires more RAM to execute many programmes on the
-same set of nodes, and execution time of each programme may be greater because
-of the shared control flow object queues. Second, the proposed approach uses
-dynamic distribution of master and slave roles between cluster nodes instead of
-their static assignment to the particular physical nodes. This makes nodes
-interchangeable, which is required to provide fault tolerance. So, simultaneous
-execution of multiple parallel programmes on the same set of nodes may increase
-throughput of the cluster, but may also decrease their performance taken
-separately, and dynamic role distribution is the base on which resilience to
-failures builds.
+jobs\nbsp{}cite:zotkin1999job), objects from multiple parallel programmes can be
+dynamically distributed between the same set of cluster nodes, thus making the
+load more even. The disadvantage is that this requires more RAM to execute many
+programmes on the same set of nodes, and execution time of each programme may be
+greater because of the shared control flow object queues. Second, the proposed
+approach uses dynamic distribution of master and slave roles between cluster
+nodes instead of their static assignment to the particular physical nodes. This
+makes nodes interchangeable, which is required to provide fault tolerance. So,
+simultaneous execution of multiple parallel programmes on the same set of nodes
+may increase throughput of the cluster, but may also decrease their performance
+taken separately, and dynamic role distribution is the base on which resilience
+to failures builds.
 
 Three building blocks of the proposed approach\nbsp{}--- control flow objects,
 pipelines and hierarchies\nbsp{}--- complement each other. Without control flow
@@ -3607,10 +3618,10 @@ generated wavy surface part. Autoregressive dependencies prevent from creating
 all the parts at once and statically distributing them between cluster nodes, so
 the parts are created dynamically on the first node, when points on which they
 depend become available. So, distributed AR model algorithm is a master-slave
-algorithm in which the master dynamically creates tasks for each wavy surface
-part taking into account autoregressive dependencies between points and sends
-them to slaves, and slaves compute each wavy surface part and send them back to
-the master.
+algorithm\nbsp{}cite:lusk2010more in which the master dynamically creates tasks
+for each wavy surface part taking into account autoregressive dependencies
+between points and sends them to slaves, and slaves compute each wavy surface
+part and send them back to the master.
 
 In MPP implementation each task is modelled by a kernel: there is a principal
 kernel that creates subordinate kernels on demand, and a subordinate kernels
@@ -3733,12 +3744,13 @@ models in virtual testbed would allow to
 
 * Acknowledgements
 The graphs in this work were prepared using R language for statistical
-computing\nbsp{}cite:rlang2016,Sarkar2008lattice and Graphviz
-software\nbsp{}cite:Gansner00anopen. The manuscript was prepared using
-Org-mode\nbsp{}cite:Schulte2011org2,Schulte2011org1,Dominik2010org for GNU Emacs
+computing\nbsp{}cite:rlang2016,sarkar2008lattice and Graphviz
+software\nbsp{}cite:gansner00anopen. The manuscript was prepared using
+Org-mode\nbsp{}cite:schulte2011org2,schulte2011org1,dominik2010org for GNU Emacs
 which provides computing environment for reproducible research. This means that
-all graphs can be reproduced and corresponding statements verified by cloning
-thesis repository[fn:repo], installing Emacs and exporting the document.
+all graphs can be reproduced and corresponding statements verified on different
+computer systems by cloning thesis repository[fn:repo], installing Emacs and
+exporting the document.
 
 The research was carried out within frameworks of grants of Russian Foundation
 for Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},

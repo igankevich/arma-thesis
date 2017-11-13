@@ -9,10 +9,16 @@ print.use.tab = off
 rewrite.rule {pages # "[ ]*pp[\. ]*\(.*\)" = "\1"}
 rewrite.rule {pages # "\([0-9]+\) *\(-\|---\) *\([0-9]+\)" = "\1--\3"}
 
+% superscripts for "th" suffix
+rewrite.rule {booktitle # "\(.*\)\([0-9]+\)\(th\|st|rd\)\b\(.*\)" = "\1\2\\textsuperscript{\3}\4"}
+
 % delete custom fields
 rewrite.rule {rawentry # ".*"}
 rewrite.rule {category # ".*"}
 rewrite.rule {abstract # ".*"}
+
+% delete keywords
+rewrite.rule {keywords # ".*"}
 
 % replace double quotes with curly braces
 rewrite.rule {"^\"{\(.*\)}\"$" "{\1}"}
@@ -21,3 +27,7 @@ rewrite.rule {"^\"\(.*\)\"$" "{\1}"}
 % delete empty fields
 rewrite.rule {"^\" *\"$"}
 rewrite.rule {"^{ *}$"}
+
+% sort by date
+sort = {on}
+sort.format = { %d(year) # %N(author) }

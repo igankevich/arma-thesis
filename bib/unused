@@ -1,0 +1,8 @@
+#!/bin/sh
+
+sed -rne 's/@.*\{\s*(.*),.*/\1/p' refs.bib |
+sort -u |
+while read label
+do
+	grep -E "\\b$label\\b" ../*.org >/dev/null || echo $label
+done
