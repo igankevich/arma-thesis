@@ -598,6 +598,536 @@ propagating waves. Using mixed ARMA process for both types of waves might
 increase model precision, given that coefficient correction formulae for three
 dimensions become available, which is the objective of the future research.
 
+** Modelling non-linearity of sea waves
+ARMA model allows to model asymmetry of wave elevation distribution,
+i.e.\nbsp{}generate sea waves, distribution of \(z\)-coordinate of which has
+non-nought kurtosis and asymmetry. Such distribution is inherent to real sea
+waves\nbsp{}cite:longuet1963nonlinear and given by either polynomial
+approximation of /in situ/ data or analytic formula. Wave asymmetry is modelled
+by non-linear inertia-less transform (NIT) of stochastic process, however,
+transforming resulting wavy surface means transforming initial ACF. In order to
+alleviate this, ACF must be preliminary transformed as shown
+in\nbsp{}cite:boukhanovsky1997thesis.
+
+**** Wavy surface transformation.
+Explicit formula \(z=f(y)\) that transforms wavy surface to desired
+one-dimensional distribution \(F(z)\) is the solution of non-linear
+transcendental equation \(F(z)=\Phi(y)\), where \(\Phi(y)\)\nbsp{}---
+one-dimensional Gaussian distribution. Since distribution of wave elevation is
+often given by some approximation based on /in situ/ data, this equation is
+solved numerically with respect to \(z_k\) in each grid point \(y_k|_{k=0}^N\)
+of generated wavy surface. In this case equation is rewritten as
+\begin{equation}
+    \label{eq-distribution-transformation}
+    F(z_k)
+    =
+    \frac{1}{\sqrt{2\pi}}
+    \int\limits_0^{y_k} \exp\left[ -\frac{t^2}{2} \right] dt
+    .
+\end{equation}
+Since, distribution functions are monotonic, the simplest interval halving
+(bisection) numerical method is used to solve this equation.
+
+**** Preliminary ACF transformation.
+In order to transform ACF \(\gamma_z\) of the process, it is expanded in series
+of Hermite polynomials (Gram---Charlier series)
+\begin{equation*}
+    \gamma_z \left( \vec u \right)
+    =
+    \sum\limits_{m=0}^{\infty}
+    C_m^2 \frac{\gamma_y^m \left( \vec u \right)}{m!},
+\end{equation*}
+where
+\begin{equation*}
+    C_m = \frac{1}{\sqrt{2\pi}}
+  \int\limits_{0}^\infty
+    f(y) H_m(y) \exp\left[ -\frac{y^2}{2} \right],
+\end{equation*}
+\(H_m\)\nbsp{}--- Hermite polynomial, and \(f(y)\)\nbsp{}--- solution to
+equation\nbsp{}eqref:eq-distribution-transformation. Plugging polynomial
+approximation \(f(y)\approx\sum\limits_{i}d_{i}y^i\) and analytic formulae for
+Hermite polynomial yields
+\begin{equation*}
+    \frac{1}{\sqrt{2\pi}}
+    \int\limits_\infty^\infty
+    y^k \exp\left[ -\frac{y^2}{2} \right]
+    =
+    \begin{cases}
+        (k-1)!! & \text{if }k\text{ is even},\\
+        0       & \text{if }k\text{ is odd},
+    \end{cases}
+\end{equation*}
+which simplifies the former equation. Optimal number of coefficients \(C_m\) is
+determined by computing them sequentially and stopping when variances of both
+fields become equal with desired accuracy \(\epsilon\):
+\begin{equation}
+    \label{eq-nit-error}
+    \left| \Var{z} - \sum\limits_{k=0}^m
+    \frac{C_k^2}{k!} \right| \leq \epsilon.
+\end{equation}
+
+In\nbsp{}cite:boukhanovsky1997thesis the author suggests using polynomial
+approximation \(f(y)\) also for wavy surface transformation, however, in
+practice sea surface realisation often contains points, in which
+\(z\)-coordinate is beyond the limits of the approximation, leading to sharp
+precision decrease. In these points it is more efficient to solve
+equation\nbsp{}eqref:eq-distribution-transformation by bisection method. Using
+the same approximation in Gram---Charlier series does not lead to such errors.
+
+**** Gram---Charlier series expansion.
+In\nbsp{}cite:huang1980experimental the authors experimentally show, that PDF of
+sea surface elevation is distinguished from normal distribution by non-nought
+kurtosis and skewness. In\nbsp{}cite:rozhkov1996theory the authors show, that
+this type of PDF expands in Gram---Charlier series (GCS):
+\begin{align}
+    \label{eq-skew-normal-1}
+    & F(z; \mu=0, \sigma=1, \gamma_1, \gamma_2) \approx
+    \Phi(z; \mu, \sigma) \frac{2 + \gamma_2}{2}
+    - \frac{2}{3} \phi(z; \mu, \sigma)
+    \left(\gamma_2 z^3+\gamma_1
+    \left(2 z^2+1\right)\right) \nonumber
+    \\
+    & f(z; \mu, \sigma, \gamma_1, \gamma_2) \approx
+    \phi(z; \mu, \sigma)
+    \left[
+        1+
+        \frac{1}{3!} \gamma_1 H_3 \left(\frac{z-\mu}{\sigma}\right)
+        + \frac{1}{4!} \gamma_2 H_4 \left(\frac{z-\mu}{\sigma}\right)
+    \right],
+\end{align}
+where \(\Phi(z)\)\nbsp{}--- cumulative density function (CDF) of normal
+distribution, \(\phi\)\nbsp{}--- PDF of normal distribution,
+\(\gamma_1\)\nbsp{}--- skewness, \(\gamma_2\)\nbsp{}--- kurtosis,
+\(f\)\nbsp{}--- PDF, \(F\)\nbsp{}--- cumulative distribution function (CDF).
+According to\nbsp{}cite:rozhkov1990stochastic for sea waves skewness is selected
+from interval \(0.1\leq\gamma_1\leq{0.52}]\) and kurtosis from interval
+\(0.1\leq\gamma_2\leq{0.7}\). Family of probability density functions for
+different parameters is shown in fig.\nbsp{}[[fig-skew-normal-1]].
+
+#+NAME: fig-skew-normal-1
+#+begin_src R :file build/skew-normal-1.pdf
+source(file.path("R", "common.R"))
+x <- seq(-3, 3, length.out=100)
+params <- data.frame(
+  skewness = c(0.00, 0.52, 0.00, 0.52),
+  kurtosis = c(0.00, 0.00, 0.70, 0.70),
+  linetypes = c("solid", "dashed", "dotdash", "dotted")
+)
+arma.skew_normal_1_plot(x, params)
+legend(
+  "topleft",
+  mapply(
+    function (s, k) {
+      as.expression(bquote(list(
+        gamma[1] == .(arma.fmt(s, 2)),
+        gamma[2] == .(arma.fmt(k, 2))
+      )))
+    },
+    params$skewness,
+    params$kurtosis
+  ),
+  lty = paste(params$linetypes)
+)
+#+end_src
+
+#+caption[Graph of PDF of GCS-based distribution]: Graph of probability density function of GCS-based distribution law for different values of skewness \(\gamma_1\) and kurtosis \(\gamma_2\).
+#+name: fig-skew-normal-1
+#+RESULTS: fig-skew-normal-1
+[[file:build/skew-normal-1.pdf]]
+
+**** Skew-normal distribution.
+Alternative approach is to approximate distribution of sea wavy surface
+elevation by skew-normal (SN) distribution:
+\begin{align}
+    \label{eq-skew-normal-2}
+    F(z; \alpha) & = \frac{1}{2}
+   \mathrm{erfc}\left[-\frac{z}{\sqrt{2}}\right]-2 T(z,\alpha ), \nonumber \\
+    f(z; \alpha) & = \frac{e^{-\frac{z^2}{2}}}{\sqrt{2 \pi }}
+   \mathrm{erfc}\left[-\frac{\alpha z}{\sqrt{2}}\right],
+\end{align}
+where \(T\)\nbsp{}--- Owen \(T\)-function\nbsp{}cite:owen1956tables. Using this
+formula it is impossible to specify skewness and kurtosis separately\nbsp{}---
+both values are adjusted via \(\alpha\) parameter. The only advantage of the
+formula is its relative computational simplicity: this function is available in
+some programmes and mathematical libraries. Its graph for different values of
+\(\alpha\) is shown in fig.\nbsp{}[[fig-skew-normal-2]].
+
+#+name: fig-skew-normal-2
+#+begin_src R :file build/skew-normal-2.pdf
+source(file.path("R", "common.R"))
+x <- seq(-3, 3, length.out=100)
+alpha <- c(0.00, 0.87, 2.25, 4.90)
+params <- data.frame(
+  alpha = alpha,
+  skewness = arma.bits.skewness_2(alpha),
+  kurtosis = arma.bits.kurtosis_2(alpha),
+  linetypes = c("solid", "dashed", "dotdash", "dotted")
+)
+arma.skew_normal_2_plot(x, params)
+legend(
+  "topleft",
+  mapply(
+    function (a, s, k) {
+      as.expression(bquote(list(
+        alpha == .(arma.fmt(a, 2)),
+        gamma[1] == .(arma.fmt(s, 2)),
+        gamma[2] == .(arma.fmt(k, 2))
+      )))
+    },
+    params$alpha,
+    params$skewness,
+    params$kurtosis
+  ),
+  lty = paste(params$linetypes)
+)
+#+end_src
+
+#+caption[Graph of PDF of SN distribution]: Graph of PDF of skew-normal distribution for different values of skewness coefficient \(\alpha\).
+#+name: fig-skew-normal-2
+#+RESULTS: fig-skew-normal-2
+[[file:build/skew-normal-2.pdf]]
+
+** The shape of ACF for different types of waves
+:PROPERTIES:
+:CUSTOM_ID: sec-wave-acfs
+:END:
+
+**** Analytic method of finding the ACF.
+The straightforward way to find ACF for a given sea wave profile is to apply
+Wiener---Khinchin theorem. According to this theorem the autocorrelation \(K\) of
+a function \(\zeta\) is given by the Fourier transform of the absolute square of
+the function:
+\begin{equation}
+  K(t) = \Fourier{\left| \zeta(t) \right|^2}.
+  \label{eq-wiener-khinchin}
+\end{equation}
+When \(\zeta\) is replaced with actual wave profile, this formula gives you
+analytic formula for the corresponding ACF.
+
+For three-dimensional wave profile (2D in space and 1D in time) analytic formula
+is a polynomial of high order and is best obtained via symbolic computation
+programme. Then for practical usage it can be approximated by superposition of
+exponentially decaying cosines (which is how ACF of a stationary ARMA process
+looks like\nbsp{}cite:box1976time).
+
+**** Empirical method of finding the ACF.
+However, for three-dimensional case there exists simpler empirical method which
+does not require sophisticated software to determine shape of the ACF. It is
+known that ACF represented by exponentially decaying cosines satisfies first
+order Stokes' equations for gravity waves\nbsp{}cite:boccotti1983wind. So, if
+the shape of the wave profile is the only concern in the simulation, then one
+can simply multiply it by a decaying exponent to get appropriate ACF. This ACF
+does not reflect other wave profile parameters, such as wave height and period,
+but opens possibility to simulate waves of a particular shape by defining their
+profile with discretely given function, then multiplying it by an exponent and
+using the resulting function as ACF. So, this empirical method is imprecise but
+offers simpler alternative to Wiener---Khinchin theorem approach; it is mainly
+useful to test ARMA model.
+
+**** Standing wave ACF.
+For three-dimensional plain standing wave the profile is given by
+\begin{equation}
+  \zeta(t, x, y) = A \sin (k_x x + k_y y) \sin (\sigma t).
+  \label{eq-standing-wave}
+\end{equation}
+Find ACF via analytic method. Multiplying the formula by a decaying exponent
+(because Fourier transform is defined for a function \(f\) that
+\(f\underset{x\rightarrow\pm\infty}{\longrightarrow}0\)) yields
+\begin{equation}
+  \zeta(t, x, y) =
+  A
+  \exp\left[-\alpha (|t|+|x|+|y|) \right]
+  \sin (k_x x + k_y y) \sin (\sigma t).
+  \label{eq-decaying-standing-wave}
+\end{equation}
+Then, apply three-dimensional Fourier transform to both sides of the equation
+via symbolic computation programme, fit the resulting polynomial to the
+following approximation:
+\begin{equation}
+  K(t,x,y) =
+  \gamma
+  \exp\left[-\alpha (|t|+|x|+|y|) \right]
+  \cos \beta t
+  \cos \left[ \beta x + \beta y \right].
+  \label{eq-standing-wave-acf}
+\end{equation}
+So, after applying Wiener---Khinchin theorem we get initial formula but with
+cosines instead of sines. This difference is important because the value of ACF
+at \((0,0,0)\) equals to the ARMA process variance, and if one used sines the
+value would be wrong.
+
+If one tries to replicate the same formula via empirical method, the usual way
+is to adapt\nbsp{}eqref:eq-decaying-standing-wave to
+match\nbsp{}eqref:eq-standing-wave-acf. This can be done either by changing the
+phase of the sine, or by substituting sine with cosine to move the maximum of
+the function to the origin of coordinates.
+
+**** Propagating wave ACF.
+Three-dimensional profile of plain propagating wave is given by
+\begin{equation}
+  \zeta(t, x, y) = A \cos (\sigma t + k_x x + k_y y).
+  \label{eq-propagating-wave}
+\end{equation}
+For the analytic method repeating steps from the previous two paragraphs yields
+\begin{equation}
+  K(t,x,y) =
+  \gamma
+  \exp\left[-\alpha (|t|+|x|+|y|) \right]
+  \cos\left[\beta (t+x+y) \right].
+  \label{eq-propagating-wave-acf}
+\end{equation}
+For the empirical method the wave profile is simply multiplied by a decaying
+exponent without need to adapt the maximum value of ACF (as it is required for
+standing wave).
+
+**** Comparison of studied methods.
+To summarise, the analytic method of finding sea wave's ACF reduces to the
+following steps.
+- Make wave profile decay when approaching \(\pm\infty\) by multiplying it by
+  a decaying exponent.
+- Apply Fourier transform to the absolute square of the resulting equation using
+  symbolic computation programme.
+- Fit the resulting polynomial to the appropriate ACF approximation.
+
+Two examples in this section showed that in case of standing and propagating
+waves their decaying profiles resemble the corresponding ACFs with the exception
+that the ACF's maximum should be moved to the origin to preserve simulated
+process variance. Empirical method of finding ACF reduces to the following
+steps.
+- Make wave profile decay when approaching \(\pm\infty\) by multiplying it by
+  a decaying exponent.
+- Move maximum value of the resulting function to the origin by using
+  trigonometric identities to shift the phase.
+
+** ARMA model verification
+:PROPERTIES:
+:CUSTOM_ID: sec-verification
+:END:
+
+In\nbsp{}cite:degtyarev2011modelling,degtyarev2013synoptic,boukhanovsky1997thesis
+AR model the following items are verified experimentally:
+- probability distributions of different wave characteristics (wave heights,
+  lengths, crests, periods, slopes, three-dimensionality),
+- dispersion relation,
+- retention of integral characteristics for mixed wave sea state.
+In this work both AR and MA model are verified by comparing probability
+distributions of different wave characteristics.
+
+*** Verification of wavy surface integral characteristics
+In\nbsp{}cite:rozhkov1990stochastic the authors show that several sea wave
+characteristics (listed in table\nbsp{}[[tab-weibull-shape]]) have Weibull
+distribution, and wavy surface elevation has Gaussian distribution. In order to
+verify that distributions corresponding to generated realisation are correct,
+quantile-quantile plots are used (plots where analytic quantile values are used
+for \(OX\) axis and estimated quantile values for \(OY\) axis). If the estimated
+distribution matches analytic then the graph has the form of the straight line.
+Tails of the graph may diverge from the straight line, because they can not be
+reliably estimated from the finite-size realisation.
+
+#+name: tab-weibull-shape
+#+caption[Values of Weibull shape parameter]:
+#+caption: Values of Weibull shape parameter for different wave characteristics.
+#+attr_latex: :booktabs t
+| Characteristic       | Weibull shape (\(k\)) |
+|----------------------+-----------------------|
+|                      | <l>                   |
+| Wave height          | 2                     |
+| Wave length          | 2.3                   |
+| Crest length         | 2.3                   |
+| Wave period          | 3                     |
+| Wave slope           | 2.5                   |
+| Three-dimensionality | 2.5                   |
+
+Verification was performed for standing and propagating waves. The corresponding
+ACFs and quantile-quantile plots of wave characteristics distributions are shown
+in
+fig.\nbsp{}[[propagating-wave-distributions]],\nbsp{}[[standing-wave-distributions]],\nbsp{}[[acf-slices]].
+
+#+name: propagating-wave-distributions
+#+begin_src R :file build/propagating-wave-qqplots.pdf
+source(file.path("R", "common.R"))
+par(pty="s", mfrow=c(2, 2))
+arma.qqplot_grid(
+  file.path("build", "propagating_wave"),
+  c("elevation", "heights_y", "lengths_y", "periods"),
+  c("elevation", "height Y", "length Y", "period"),
+  xlab="x",
+  ylab="y"
+)
+#+end_src
+
+#+caption[Quantile-quantile plots for propagating waves]:
+#+caption: Quantile-quantile plots for propagating waves.
+#+name: propagating-wave-distributions
+#+RESULTS: propagating-wave-distributions
+[[file:build/propagating-wave-qqplots.pdf]]
+
+#+name: standing-wave-distributions
+#+begin_src R :file build/standing-wave-qqplots.pdf
+source(file.path("R", "common.R"))
+par(pty="s", mfrow=c(2, 2))
+arma.qqplot_grid(
+  file.path("build", "standing_wave"),
+  c("elevation", "heights_y", "lengths_y", "periods"),
+  c("elevation", "height Y", "length Y", "period"),
+  xlab="x",
+  ylab="y"
+)
+#+end_src
+
+#+caption[Quantile-quantile plots for standing waves]:
+#+caption: Quantile-quantile plots for standing waves.
+#+name: standing-wave-distributions
+#+RESULTS: standing-wave-distributions
+[[file:build/standing-wave-qqplots.pdf]]
+
+#+name: acf-slices
+#+header: :width 6 :height 9
+#+begin_src R :file build/acf-slices.pdf
+source(file.path("R", "common.R"))
+propagating_acf <- read.csv(file.path("build", "propagating_wave", "acf.csv"))
+standing_acf <- read.csv(file.path("build", "standing_wave", "acf.csv"))
+par(mfrow=c(5, 2), mar=c(0,0,0,0))
+for (i in seq(0, 4)) {
+  arma.wavy_plot(standing_acf, i, zlim=c(-5,5))
+  arma.wavy_plot(propagating_acf, i, zlim=c(-5,5))
+}
+#+end_src
+
+#+caption[ACF time slices for standing and propagating waves]:
+#+caption: ACF time slices for standing (left column) and propagating waves
+#+caption: (right column).
+#+name: acf-slices
+#+RESULTS: acf-slices
+[[file:build/acf-slices.pdf]]
+
+Graph tails in fig.\nbsp{}[[propagating-wave-distributions]] deviate from original
+distribution for individual wave characteristics, because every wave have to be
+extracted from the resulting wavy surface to measure its length, period and
+height. There is no algorithm that guarantees correct extraction of all waves,
+because they may and often overlap each other. Weibull distribution right tail
+represents infrequently occurring waves, so it deviates more than left tail.
+
+Correspondence rate for standing waves (fig.\nbsp{}[[standing-wave-distributions]])
+is lower for height and length, roughly the same for surface elevation and
+higher for wave period distribution tails. Lower correspondence degree for
+length and height may be attributed to the fact that Weibull distributions were
+obtained empirically for sea waves which are typically propagating, and
+distributions may be different for standings waves. Higher correspondence degree
+for wave periods is attributed to the fact that wave periods of standing waves
+are extracted more precisely as the waves do not move outside simulated wavy
+surface region. The same correspondence degree for wave elevation is obtained,
+because this is the characteristic of the wavy surface (and corresponding AR or
+MA process) and is not affected by the type of waves.
+
+*** Verification of nonlinear inertialess transformation
+In order to measure the effect of NIT on the shape of the resulting wavy
+surface, three realisations were generated:
+- realisation with Gaussian distribution (without NIT),
+- realisation with Gram---Charlier series (GCS) based distribution, and
+- realisation with skew normal distribution.
+The seed of PRNG was set to be the same for all programme executions to make ARMA
+model produce the same values for each realisation. There we two experiments:
+for standing and propagating waves with ACFs given by formulae from
+section\nbsp{}[[#sec-wave-acfs]].
+
+While the experiment showed that applying NIT with GCS-based distribution
+increases wave steepness, the same is not true for skew normal distribution
+(fig.\nbsp{}[[fig-nit]]). Using this distribution results in wavy surface each
+\(z\)-coordinate of which is always greater or equal to nought. So, skew normal
+distribution is unsuitable for NIT. NIT increases the wave height and steepness
+of both standing and propagating waves. Increasing either skewness or kurtosis
+of GCS-based distribution increases both wave height and steepness. The error of
+ACF approximation (eq.\nbsp{}eqref:eq-nit-error) ranges from 0.20 for GCS-based
+distribution to 0.70 for skew normal distribution (table\nbsp{}[[tab-nit-error]]).
+
+#+name: fig-nit
+#+header: :width 7 :height 7
+#+begin_src R :file build/nit.pdf
+source(file.path("R", "nonlinear.R"))
+par(mfrow=c(2, 1), mar=c(4,4,4,0.5), family='serif')
+args <- list(
+  graphs=c('Gaussian', 'Gram—Charlier', 'Skew normal'),
+  linetypes=c('solid', 'dashed', 'dotted')
+)
+args$title <- 'Propagating waves'
+arma.plot_nonlinear(file.path("build", "nit-propagating"), args)
+args$title <- 'Standing waves'
+arma.plot_nonlinear(file.path("build", "nit-standing"), args)
+#+end_src
+
+#+name: fig-nit
+#+caption[Wavy surface slices with different distributions]:
+#+caption: Wavy surface slices with different distributions
+#+caption: of wave elevation (Gaussian, GCS-based and SN).
+#+RESULTS: fig-nit
+[[file:build/nit.pdf]]
+
+#+name: tab-nit-error
+#+caption[Errors of ACF approximations]:
+#+caption: Errors of ACF approximations (the difference of variances) for
+#+caption: different wave elevation distributions. \(N\) is the number of
+#+caption: coefficients of ACF approximation.
+#+attr_latex: :booktabs t
+| Wave type   | Distribution | \(\gamma_1\) | \(\gamma_2\) | \(\alpha\) | Error | \(N\) | Wave height |
+|-------------+--------------+--------------+--------------+------------+-------+-------+-------------|
+| propagating | Gaussian     |              |              |            |       |       |        2.41 |
+| propagating | GCS-based    |         2.25 |          0.4 |            |  0.20 |     2 |        2.75 |
+| propagating | skew normal  |              |              |          1 |  0.70 |     3 |        1.37 |
+| standing    | Gaussian     |              |              |            |       |       |        1.73 |
+| standing    | GCS-based    |         2.25 |          0.4 |            |  0.26 |     2 |        1.96 |
+| standing    | skew normal  |              |              |          1 |  0.70 |     3 |        0.94 |
+
+To summarise, the only test case that showed acceptable results is realisation
+with GCS-based distribution for both standing and propagating waves. Skew normal
+distribution warps wavy surface for both types of waves. GCS-based realisations
+have large error of ACF approximation, which results in increase of wave height.
+The reason for the large error is that GCS approximations are not accurate as
+they do not converge for all possible
+functions\nbsp{}cite:wallace1958asymptotic. Despite the large error, the change
+in wave height is small (table\nbsp{}[[tab-nit-error]]).
+
+**** Wave height                                                :noexport:
+:PROPERTIES:
+:header-args:R: :results output org
+:END:
+
+#+header:
+#+begin_src R :results output org
+source(file.path("R", "nonlinear.R"))
+propagating <- arma.print_wave_height(file.path("build", "nit-propagating"))
+standing <- arma.print_wave_height(file.path("build", "nit-standing"))
+result <- data.frame(
+  h1=c(propagating$h1, standing$h1),
+  h2=c(propagating$h2, standing$h2),
+  h3=c(propagating$h3, standing$h3)
+)
+rownames(result) <- c('propagating', 'standing')
+colnames(result) <- c('none', 'gcs', 'sn')
+ascii(result)
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC org
+|             | none |  gcs |   sn |
+|-------------+------+------+------|
+| propagating | 2.41 | 2.75 | 1.37 |
+| standing    | 1.73 | 1.96 | 0.94 |
+#+END_SRC
+
+*** Non-physical nature of ARMA model
+ARMA model, owing to its non-physical nature, does not have the notion of sea
+wave; it simulates wavy surface as a whole instead. Motions of individual waves
+and their shape are often rough, and the total number of waves can not be
+determined precisely. However, integral characteristics of wavy surface match
+the ones of real sea waves.
+
+Theoretically, sea waves themselves can be chosen as ACFs, the only
+pre-processing step is to make them decay exponentially. This may allow
+to generate waves of arbitrary profiles, and is one of the directions of future
+work.
+
+* Pressure field under discretely given wavy surface
 ** Known pressure field determination formulae
 **** Small amplitude waves theory.
 In\nbsp{}cite:stab2012,degtyarev1998modelling,degtyarev1997analysis the authors
@@ -996,398 +1526,6 @@ and plugging the result into\nbsp{}eqref:eq-guessed-sol-3d yields formula for
 where
 \(\FourierY{\mathcal{D}_3\left(x,y,z\right)}{u,v}=\Sinh{\smash{2\pi\Kveclen{}z}}\).
 
-*** Conclusion
-Formulae derived in this section allow to numerically compute velocity potential
-field (and hence pressure field) near discretely or mathematically given wavy
-sea surface, bypassing assumptions of linear wavy theory and theory of small
-amplitude waves.
-
-** Modelling non-linearity of sea waves
-ARMA model allows to model asymmetry of wave elevation distribution,
-i.e.\nbsp{}generate sea waves, distribution of \(z\)-coordinate of which has
-non-nought kurtosis and asymmetry. Such distribution is inherent to real sea
-waves\nbsp{}cite:longuet1963nonlinear. Wave asymmetry is modelled by non-linear
-inertia-less transform (NIT) of stochastic process, however, transforming
-resulting wavy surface means transforming initial ACF. In order to alleviate
-this, ACF must be preliminary transformed as shown
-in\nbsp{}cite:boukhanovsky1997thesis.
-
-**** Wavy surface transformation.
-Explicit formula \(z=f(y)\) that transforms wavy surface to desired
-one-dimensional distribution \(F(z)\) is the solution of non-linear
-transcendental equation \(F(z)=\Phi(y)\), where \(\Phi(y)\)\nbsp{}---
-one-dimensional Gaussian distribution. Since distribution of wave elevation is
-often given by some approximation based on /in situ/ data, this equation is
-solved numerically with respect to \(z_k\) in each grid point \(y_k|_{k=0}^N\)
-of generated wavy surface. In this case equation is rewritten as
-\begin{equation}
-    \label{eq-distribution-transformation}
-    F(z_k)
-    =
-    \frac{1}{\sqrt{2\pi}}
-    \int\limits_0^{y_k} \exp\left[ -\frac{t^2}{2} \right] dt
-    .
-\end{equation}
-Since, distribution functions are monotonic, the simplest interval halving
-(bisection) numerical method is used to solve this equation.
-
-**** Preliminary ACF transformation.
-In order to transform ACF \(\gamma_z\) of the process, it is expanded in series
-of Hermite polynomials (Gram---Charlier series)
-\begin{equation*}
-    \gamma_z \left( \vec u \right)
-    =
-    \sum\limits_{m=0}^{\infty}
-    C_m^2 \frac{\gamma_y^m \left( \vec u \right)}{m!},
-\end{equation*}
-where
-\begin{equation*}
-    C_m = \frac{1}{\sqrt{2\pi}}
-  \int\limits_{0}^\infty
-    f(y) H_m(y) \exp\left[ -\frac{y^2}{2} \right],
-\end{equation*}
-\(H_m\)\nbsp{}--- Hermite polynomial, and \(f(y)\)\nbsp{}--- solution to
-equation\nbsp{}eqref:eq-distribution-transformation. Plugging polynomial
-approximation \(f(y)\approx\sum\limits_{i}d_{i}y^i\) and analytic formulae for
-Hermite polynomial yields
-\begin{equation*}
-    \frac{1}{\sqrt{2\pi}}
-    \int\limits_\infty^\infty
-    y^k \exp\left[ -\frac{y^2}{2} \right]
-    =
-    \begin{cases}
-        (k-1)!! & \text{if }k\text{ is even},\\
-        0       & \text{if }k\text{ is odd},
-    \end{cases}
-\end{equation*}
-which simplifies the former equation. Optimal number of coefficients \(C_m\) is
-determined by computing them sequentially and stopping when variances of both
-fields become equal with desired accuracy \(\epsilon\):
-\begin{equation}
-    \label{eq-nit-error}
-    \left| \Var{z} - \sum\limits_{k=0}^m
-    \frac{C_k^2}{k!} \right| \leq \epsilon.
-\end{equation}
-
-In\nbsp{}cite:boukhanovsky1997thesis the author suggests using polynomial
-approximation \(f(y)\) also for wavy surface transformation, however, in
-practice sea surface realisation often contains points, in which
-\(z\)-coordinate is beyond the limits of the approximation, leading to sharp
-precision decrease. In these points it is more efficient to solve
-equation\nbsp{}eqref:eq-distribution-transformation by bisection method. Using
-the same approximation in Gram---Charlier series does not lead to such errors.
-
-* Numerical methods and experimental results
-** The shape of ACF for different types of waves
-:PROPERTIES:
-:CUSTOM_ID: sec-wave-acfs
-:END:
-
-**** Analytic method of finding the ACF.
-The straightforward way to find ACF for a given sea wave profile is to apply
-Wiener---Khinchin theorem. According to this theorem the autocorrelation \(K\) of
-a function \(\zeta\) is given by the Fourier transform of the absolute square of
-the function:
-\begin{equation}
-  K(t) = \Fourier{\left| \zeta(t) \right|^2}.
-  \label{eq-wiener-khinchin}
-\end{equation}
-When \(\zeta\) is replaced with actual wave profile, this formula gives you
-analytic formula for the corresponding ACF.
-
-For three-dimensional wave profile (2D in space and 1D in time) analytic formula
-is a polynomial of high order and is best obtained via symbolic computation
-programme. Then for practical usage it can be approximated by superposition of
-exponentially decaying cosines (which is how ACF of a stationary ARMA process
-looks like\nbsp{}cite:box1976time).
-
-**** Empirical method of finding the ACF.
-However, for three-dimensional case there exists simpler empirical method which
-does not require sophisticated software to determine shape of the ACF. It is
-known that ACF represented by exponentially decaying cosines satisfies first
-order Stokes' equations for gravity waves\nbsp{}cite:boccotti1983wind. So, if
-the shape of the wave profile is the only concern in the simulation, then one
-can simply multiply it by a decaying exponent to get appropriate ACF. This ACF
-does not reflect other wave profile parameters, such as wave height and period,
-but opens possibility to simulate waves of a particular shape by defining their
-profile with discretely given function, then multiplying it by an exponent and
-using the resulting function as ACF. So, this empirical method is imprecise but
-offers simpler alternative to Wiener---Khinchin theorem approach; it is mainly
-useful to test ARMA model.
-
-**** Standing wave ACF.
-For three-dimensional plain standing wave the profile is given by
-\begin{equation}
-  \zeta(t, x, y) = A \sin (k_x x + k_y y) \sin (\sigma t).
-  \label{eq-standing-wave}
-\end{equation}
-Find ACF via analytic method. Multiplying the formula by a decaying exponent
-(because Fourier transform is defined for a function \(f\) that
-\(f\underset{x\rightarrow\pm\infty}{\longrightarrow}0\)) yields
-\begin{equation}
-  \zeta(t, x, y) =
-  A
-  \exp\left[-\alpha (|t|+|x|+|y|) \right]
-  \sin (k_x x + k_y y) \sin (\sigma t).
-  \label{eq-decaying-standing-wave}
-\end{equation}
-Then, apply three-dimensional Fourier transform to both sides of the equation
-via symbolic computation programme, fit the resulting polynomial to the
-following approximation:
-\begin{equation}
-  K(t,x,y) =
-  \gamma
-  \exp\left[-\alpha (|t|+|x|+|y|) \right]
-  \cos \beta t
-  \cos \left[ \beta x + \beta y \right].
-  \label{eq-standing-wave-acf}
-\end{equation}
-So, after applying Wiener---Khinchin theorem we get initial formula but with
-cosines instead of sines. This difference is important because the value of ACF
-at \((0,0,0)\) equals to the ARMA process variance, and if one used sines the
-value would be wrong.
-
-If one tries to replicate the same formula via empirical method, the usual way
-is to adapt\nbsp{}eqref:eq-decaying-standing-wave to
-match\nbsp{}eqref:eq-standing-wave-acf. This can be done either by changing the
-phase of the sine, or by substituting sine with cosine to move the maximum of
-the function to the origin of coordinates.
-
-**** Propagating wave ACF.
-Three-dimensional profile of plain propagating wave is given by
-\begin{equation}
-  \zeta(t, x, y) = A \cos (\sigma t + k_x x + k_y y).
-  \label{eq-propagating-wave}
-\end{equation}
-For the analytic method repeating steps from the previous two paragraphs yields
-\begin{equation}
-  K(t,x,y) =
-  \gamma
-  \exp\left[-\alpha (|t|+|x|+|y|) \right]
-  \cos\left[\beta (t+x+y) \right].
-  \label{eq-propagating-wave-acf}
-\end{equation}
-For the empirical method the wave profile is simply multiplied by a decaying
-exponent without need to adapt the maximum value of ACF (as it is required for
-standing wave).
-
-**** Comparison of studied methods.
-To summarise, the analytic method of finding sea wave's ACF reduces to the
-following steps.
-- Make wave profile decay when approaching \(\pm\infty\) by multiplying it by
-  a decaying exponent.
-- Apply Fourier transform to the absolute square of the resulting equation using
-  symbolic computation programme.
-- Fit the resulting polynomial to the appropriate ACF approximation.
-
-Two examples in this section showed that in case of standing and propagating
-waves their decaying profiles resemble the corresponding ACFs with the exception
-that the ACF's maximum should be moved to the origin to preserve simulated
-process variance. Empirical method of finding ACF reduces to the following
-steps.
-- Make wave profile decay when approaching \(\pm\infty\) by multiplying it by
-  a decaying exponent.
-- Move maximum value of the resulting function to the origin by using
-  trigonometric identities to shift the phase.
-
-** Additional formulae, methods and algorithms for ARMA model
-:PROPERTIES:
-:CUSTOM_ID: sec-arma-algorithms
-:END:
-
-*** Wave elevation distribution approximation
-One of the parameters of sea wavy surface generator is probability density
-function (PDF) of the surface elevation. This distribution is given by either
-polynomial approximation of /in situ/ data or analytic formula.
-
-**** Gram---Charlier series expansion.
-In\nbsp{}cite:huang1980experimental the authors experimentally show, that PDF of
-sea surface elevation is distinguished from normal distribution by non-nought
-kurtosis and skewness. In\nbsp{}cite:rozhkov1996theory the authors show, that
-this type of PDF expands in Gram---Charlier series (GCS):
-\begin{align}
-    \label{eq-skew-normal-1}
-    & F(z; \mu=0, \sigma=1, \gamma_1, \gamma_2) \approx
-    \Phi(z; \mu, \sigma) \frac{2 + \gamma_2}{2}
-    - \frac{2}{3} \phi(z; \mu, \sigma)
-    \left(\gamma_2 z^3+\gamma_1
-    \left(2 z^2+1\right)\right) \nonumber
-    \\
-    & f(z; \mu, \sigma, \gamma_1, \gamma_2) \approx
-    \phi(z; \mu, \sigma)
-    \left[
-        1+
-        \frac{1}{3!} \gamma_1 H_3 \left(\frac{z-\mu}{\sigma}\right)
-        + \frac{1}{4!} \gamma_2 H_4 \left(\frac{z-\mu}{\sigma}\right)
-    \right],
-\end{align}
-where \(\Phi(z)\)\nbsp{}--- cumulative density function (CDF) of normal
-distribution, \(\phi\)\nbsp{}--- PDF of normal distribution,
-\(\gamma_1\)\nbsp{}--- skewness, \(\gamma_2\)\nbsp{}--- kurtosis,
-\(f\)\nbsp{}--- PDF, \(F\)\nbsp{}--- cumulative distribution function (CDF).
-According to\nbsp{}cite:rozhkov1990stochastic for sea waves skewness is selected
-from interval \(0.1\leq\gamma_1\leq{0.52}]\) and kurtosis from interval
-\(0.1\leq\gamma_2\leq{0.7}\). Family of probability density functions for
-different parameters is shown in fig.\nbsp{}[[fig-skew-normal-1]].
-
-#+NAME: fig-skew-normal-1
-#+begin_src R :file build/skew-normal-1.pdf
-source(file.path("R", "common.R"))
-x <- seq(-3, 3, length.out=100)
-params <- data.frame(
-  skewness = c(0.00, 0.52, 0.00, 0.52),
-  kurtosis = c(0.00, 0.00, 0.70, 0.70),
-  linetypes = c("solid", "dashed", "dotdash", "dotted")
-)
-arma.skew_normal_1_plot(x, params)
-legend(
-  "topleft",
-  mapply(
-    function (s, k) {
-      as.expression(bquote(list(
-        gamma[1] == .(arma.fmt(s, 2)),
-        gamma[2] == .(arma.fmt(k, 2))
-      )))
-    },
-    params$skewness,
-    params$kurtosis
-  ),
-  lty = paste(params$linetypes)
-)
-#+end_src
-
-#+caption[Graph of PDF of GCS-based distribution]: Graph of probability density function of GCS-based distribution law for different values of skewness \(\gamma_1\) and kurtosis \(\gamma_2\).
-#+name: fig-skew-normal-1
-#+RESULTS: fig-skew-normal-1
-[[file:build/skew-normal-1.pdf]]
-
-**** Skew-normal distribution.
-Alternative approach is to approximate distribution of sea wavy surface
-elevation by skew-normal (SN) distribution:
-\begin{align}
-    \label{eq-skew-normal-2}
-    F(z; \alpha) & = \frac{1}{2}
-   \mathrm{erfc}\left[-\frac{z}{\sqrt{2}}\right]-2 T(z,\alpha ), \nonumber \\
-    f(z; \alpha) & = \frac{e^{-\frac{z^2}{2}}}{\sqrt{2 \pi }}
-   \mathrm{erfc}\left[-\frac{\alpha z}{\sqrt{2}}\right],
-\end{align}
-where \(T\)\nbsp{}--- Owen \(T\)-function\nbsp{}cite:owen1956tables. Using this
-formula it is impossible to specify skewness and kurtosis separately\nbsp{}---
-both values are adjusted via \(\alpha\) parameter. The only advantage of the
-formula is its relative computational simplicity: this function is available in
-some programmes and mathematical libraries. Its graph for different values of
-\(\alpha\) is shown in fig.\nbsp{}[[fig-skew-normal-2]].
-
-#+name: fig-skew-normal-2
-#+begin_src R :file build/skew-normal-2.pdf
-source(file.path("R", "common.R"))
-x <- seq(-3, 3, length.out=100)
-alpha <- c(0.00, 0.87, 2.25, 4.90)
-params <- data.frame(
-  alpha = alpha,
-  skewness = arma.bits.skewness_2(alpha),
-  kurtosis = arma.bits.kurtosis_2(alpha),
-  linetypes = c("solid", "dashed", "dotdash", "dotted")
-)
-arma.skew_normal_2_plot(x, params)
-legend(
-  "topleft",
-  mapply(
-    function (a, s, k) {
-      as.expression(bquote(list(
-        alpha == .(arma.fmt(a, 2)),
-        gamma[1] == .(arma.fmt(s, 2)),
-        gamma[2] == .(arma.fmt(k, 2))
-      )))
-    },
-    params$alpha,
-    params$skewness,
-    params$kurtosis
-  ),
-  lty = paste(params$linetypes)
-)
-#+end_src
-
-#+caption[Graph of PDF of SN distribution]: Graph of PDF of skew-normal distribution for different values of skewness coefficient \(\alpha\).
-#+name: fig-skew-normal-2
-#+RESULTS: fig-skew-normal-2
-[[file:build/skew-normal-2.pdf]]
-
-**** Evaluation.                                                :noexport:
-Equation\nbsp{}eqref:eq-distribution-transformation with selected wave elevation
-distribution may be solved either in every point of generated wavy surface,
-which gives the most accurate results, or in every fixed grid point
-interpolating result via least-squares (LS) polynomial. In the second case
-precision is lower. For example, interpolating 12^th order polynomial on a fixed
-grid of 500 points on interval \(-5\sigma_z\leq{z}\leq{5}\sigma_z\) gives error
-of \(\approx{0.43}\cdot10^{-3}\). Increasing polynomial order leads to either
-numeric overflows during LS interpolation, or more coefficient close to nought;
-increasing the size of the grid has insignificant effect on the result. In the
-majority of cases three Gram---Charlier series coefficients is enough to
-transform ACF; relative error without interpolation is \(10^{-5}\).
-
-*** White noise generation algorithm
-In order to eliminate periodicity from wavy surface generated by sea wave model,
-it is imperative to use PRNG with sufficiently large period to generate white
-noise. Parallel Mersenne Twister\nbsp{}cite:matsumoto1998mersenne with a period
-of \(2^{19937}-1\) is used as a generator in this work. It allows to produce
-aperiodic sea wavy surface realisations in any practical usage scenarios.
-
-There is no guarantee that multiple PRNGs executed in parallel threads with
-distinct initial states produce uncorrelated pseudo-random number sequences, and
-algorithm of dynamic creation of Mersenne
-Twisters\nbsp{}cite:matsumoto1998dynamic is used to provide such guarantee. The
-essence of the algorithm is to find matrices of initial generator states, that
-give maximally uncorrelated pseudo-random number sequences when Mersenne
-Twisters are executed in parallel with these initial states. Since finding such
-initial states consumes considerable amount of processor time, vector of initial
-states is created preliminary with knowingly larger number of parallel threads
-and saved to a file, which is then read before starting white noise generation.
-
-*** Wavy surface generation algorithm
-In ARMA model value of wavy surface elevation at a particular point depends on
-previous in space and time points, as a result the so called /ramp-up interval/
-(see fig.\nbsp{}[[fig-ramp-up-interval]]), in which realisation does not correspond
-to specified ACF, forms in the beginning of the realisation. There are several
-solutions to this problem which depend on the simulation context.
-
-If realisation is used in the context of ship stability simulation without
-manoeuvring, ramp-up interval will not affect results of the simulation, because
-it is located on the border (too far away from the studied marine object). If
-ship stability with manoeuvring is studied, then the interval may be simply
-discarded from the realisation (the size of the interval approximately equals
-the number of AR coefficients in each dimension). However, this may lead to loss
-of a very large number of points, because discarding occurs for each of three
-dimensions. Alternative approach is to generate sea wavy surface on ramp-up
-interval with LH model and generate the rest of the realisation with ARMA model.
-
-Algorithm of wavy surface generation is data-parallel: realisation is divided
-into equal parts each of which is generated independently. For MA model there is
-ramp-up interval at the beginning of each realisation. To eliminate it
-/overlap-add/
-method\nbsp{}cite:oppenheim1989discrete,svoboda2011efficient,pavel2013algorithms
-(a popular method in signal processing) is used. The essence of the method is to
-add another interval, size of which is equal to the ramp-up interval size, to
-the end of each part. Then wavy surface is generated in each point of each part
-(including points from the added interval), the interval at the end of part
-\(N\) is superimposed on the ramp-up interval at the beginning of the part
-\(N+1\), and values in corresponding points are added. For AR model, parts are
-generated taking into account autoregressive dependencies between them. Detailed
-explanation of parallel and distributed algorithms is given in
-sections\nbsp{}[[#sec-parallel]] and\nbsp{}[[#sec-distributed]].
-
-#+name: fig-ramp-up-interval
-#+begin_src R :file build/ramp-up-interval.pdf
-source(file.path("R", "common.R"))
-arma.plot_ramp_up_interval()
-#+end_src
-
-#+caption[Ramp-up interval at the beginning of the realisation]:
-#+caption: Ramp-up interval at the beginning of the realisation.
-#+name: fig-ramp-up-interval
-#+RESULTS: fig-ramp-up-interval
-[[file:build/ramp-up-interval.pdf]]
-
 *** Velocity potential normalisation formulae
 :PROPERTIES:
 :CUSTOM_ID: sec-compute-delta
@@ -1423,128 +1561,13 @@ the formula for three-dimensional case was not derived.
 | \(\Fun{z}\)       | \(\delta (x+i z)\)                                           | \(\frac{1}{2 h}\mathrm{sech}\left(\frac{\pi  (x-i (h+z))}{2 h}\right)\)                                                                |
 | \(\FunSecond{z}\) | \(\frac{1}{2}\left[\delta (x-i z) + \delta (x+i z) \right]\) | \(\frac{1}{4 h}\left[\text{sech}\left(\frac{\pi  (x-i (h+z))}{2 h}\right)+\text{sech}\left(\frac{\pi  (x+i(h+z))}{2 h}\right)\right]\) |
 
-** ARMA model verification
-:PROPERTIES:
-:CUSTOM_ID: sec-verification
-:END:
+*** Conclusion
+Formulae derived in this section allow to numerically compute velocity potential
+field (and hence pressure field) near discretely or mathematically given wavy
+sea surface, bypassing assumptions of linear wavy theory and theory of small
+amplitude waves.
 
-In\nbsp{}cite:degtyarev2011modelling,degtyarev2013synoptic,boukhanovsky1997thesis
-AR model the following items are verified experimentally:
-- probability distributions of different wave characteristics (wave heights,
-  lengths, crests, periods, slopes, three-dimensionality),
-- dispersion relation,
-- retention of integral characteristics for mixed wave sea state.
-In this work both AR and MA model are verified by comparing probability
-distributions of different wave characteristics.
-
-*** Verification of wavy surface integral characteristics
-In\nbsp{}cite:rozhkov1990stochastic the authors show that several sea wave
-characteristics (listed in table\nbsp{}[[tab-weibull-shape]]) have Weibull
-distribution, and wavy surface elevation has Gaussian distribution. In order to
-verify that distributions corresponding to generated realisation are correct,
-quantile-quantile plots are used (plots where analytic quantile values are used
-for \(OX\) axis and estimated quantile values for \(OY\) axis). If the estimated
-distribution matches analytic then the graph has the form of the straight line.
-Tails of the graph may diverge from the straight line, because they can not be
-reliably estimated from the finite-size realisation.
-
-#+name: tab-weibull-shape
-#+caption[Values of Weibull shape parameter]:
-#+caption: Values of Weibull shape parameter for different wave characteristics.
-#+attr_latex: :booktabs t
-| Characteristic       | Weibull shape (\(k\)) |
-|----------------------+-----------------------|
-|                      | <l>                   |
-| Wave height          | 2                     |
-| Wave length          | 2.3                   |
-| Crest length         | 2.3                   |
-| Wave period          | 3                     |
-| Wave slope           | 2.5                   |
-| Three-dimensionality | 2.5                   |
-
-Verification was performed for standing and propagating waves. The corresponding
-ACFs and quantile-quantile plots of wave characteristics distributions are shown
-in
-fig.\nbsp{}[[propagating-wave-distributions]],\nbsp{}[[standing-wave-distributions]],\nbsp{}[[acf-slices]].
-
-#+name: propagating-wave-distributions
-#+begin_src R :file build/propagating-wave-qqplots.pdf
-source(file.path("R", "common.R"))
-par(pty="s", mfrow=c(2, 2))
-arma.qqplot_grid(
-  file.path("build", "propagating_wave"),
-  c("elevation", "heights_y", "lengths_y", "periods"),
-  c("elevation", "height Y", "length Y", "period"),
-  xlab="x",
-  ylab="y"
-)
-#+end_src
-
-#+caption[Quantile-quantile plots for propagating waves]:
-#+caption: Quantile-quantile plots for propagating waves.
-#+name: propagating-wave-distributions
-#+RESULTS: propagating-wave-distributions
-[[file:build/propagating-wave-qqplots.pdf]]
-
-#+name: standing-wave-distributions
-#+begin_src R :file build/standing-wave-qqplots.pdf
-source(file.path("R", "common.R"))
-par(pty="s", mfrow=c(2, 2))
-arma.qqplot_grid(
-  file.path("build", "standing_wave"),
-  c("elevation", "heights_y", "lengths_y", "periods"),
-  c("elevation", "height Y", "length Y", "period"),
-  xlab="x",
-  ylab="y"
-)
-#+end_src
-
-#+caption[Quantile-quantile plots for standing waves]:
-#+caption: Quantile-quantile plots for standing waves.
-#+name: standing-wave-distributions
-#+RESULTS: standing-wave-distributions
-[[file:build/standing-wave-qqplots.pdf]]
-
-#+name: acf-slices
-#+header: :width 6 :height 9
-#+begin_src R :file build/acf-slices.pdf
-source(file.path("R", "common.R"))
-propagating_acf <- read.csv(file.path("build", "propagating_wave", "acf.csv"))
-standing_acf <- read.csv(file.path("build", "standing_wave", "acf.csv"))
-par(mfrow=c(5, 2), mar=c(0,0,0,0))
-for (i in seq(0, 4)) {
-  arma.wavy_plot(standing_acf, i, zlim=c(-5,5))
-  arma.wavy_plot(propagating_acf, i, zlim=c(-5,5))
-}
-#+end_src
-
-#+caption[ACF time slices for standing and propagating waves]:
-#+caption: ACF time slices for standing (left column) and propagating waves
-#+caption: (right column).
-#+name: acf-slices
-#+RESULTS: acf-slices
-[[file:build/acf-slices.pdf]]
-
-Graph tails in fig.\nbsp{}[[propagating-wave-distributions]] deviate from original
-distribution for individual wave characteristics, because every wave have to be
-extracted from the resulting wavy surface to measure its length, period and
-height. There is no algorithm that guarantees correct extraction of all waves,
-because they may and often overlap each other. Weibull distribution right tail
-represents infrequently occurring waves, so it deviates more than left tail.
-
-Correspondence rate for standing waves (fig.\nbsp{}[[standing-wave-distributions]])
-is lower for height and length, roughly the same for surface elevation and
-higher for wave period distribution tails. Lower correspondence degree for
-length and height may be attributed to the fact that Weibull distributions were
-obtained empirically for sea waves which are typically propagating, and
-distributions may be different for standings waves. Higher correspondence degree
-for wave periods is attributed to the fact that wave periods of standing waves
-are extracted more precisely as the waves do not move outside simulated wavy
-surface region. The same correspondence degree for wave elevation is obtained,
-because this is the characteristic of the wavy surface (and corresponding AR or
-MA process) and is not affected by the type of waves.
-
-*** Verification of velocity potential fields
+** Verification of velocity potential fields
 :PROPERTIES:
 :CUSTOM_ID: sec-compare-formulae
 :END:
@@ -1557,7 +1580,7 @@ known, even for plain waves, so comparison is done numerically. Taking into
 account conclusions of section\nbsp{}[[#sec-pressure-2d]], only finite depth
 formulae are compared.
 
-**** The difference with linear wave theory formulae.
+*** The difference with linear wave theory formulae.
 In order to obtain velocity potential fields, sea wavy surface was generated
 by AR model with varying wave amplitude. In numerical implementation wave
 numbers in Fourier transforms were chosen on the interval from \(0\) to the
@@ -1627,7 +1650,7 @@ arma.plot_velocity_potential_field_legend(
 #+RESULTS: fig-potential-field-nonlinear
 [[file:build/plain-wave-velocity-field-comparison.pdf]]
 
-**** The difference with small-amplitude wave theory.
+*** The difference with small-amplitude wave theory.
 The experiment, in which velocity fields produced numerically by different
 formulae were compared, shows that velocity fields produced by
 formula\nbsp{}eqref:eq-solution-2d-full and\nbsp{}eqref:eq-old-sol-2d correspond
@@ -1671,113 +1694,6 @@ arma.plot_velocity(
 #+attr_latex: :width \textwidth
 #+RESULTS: fig-velocity-field-2d
 [[file:build/large-and-small-amplitude-velocity-field-comparison.pdf]]
-
-*** Verification of nonlinear inertialess transformation
-In order to measure the effect of NIT on the shape of the resulting wavy
-surface, three realisations were generated:
-- realisation with Gaussian distribution (without NIT),
-- realisation with Gram---Charlier series (GCS) based distribution, and
-- realisation with skew normal distribution.
-The seed of PRNG was set to be the same for all programme executions to make ARMA
-model produce the same values for each realisation. There we two experiments:
-for standing and propagating waves with ACFs given by formulae from
-section\nbsp{}[[#sec-wave-acfs]].
-
-While the experiment showed that applying NIT with GCS-based distribution
-increases wave steepness, the same is not true for skew normal distribution
-(fig.\nbsp{}[[fig-nit]]). Using this distribution results in wavy surface each
-\(z\)-coordinate of which is always greater or equal to nought. So, skew normal
-distribution is unsuitable for NIT. NIT increases the wave height and steepness
-of both standing and propagating waves. Increasing either skewness or kurtosis
-of GCS-based distribution increases both wave height and steepness. The error of
-ACF approximation (eq.\nbsp{}eqref:eq-nit-error) ranges from 0.20 for GCS-based
-distribution to 0.70 for skew normal distribution (table\nbsp{}[[tab-nit-error]]).
-
-#+name: fig-nit
-#+header: :width 7 :height 7
-#+begin_src R :file build/nit.pdf
-source(file.path("R", "nonlinear.R"))
-par(mfrow=c(2, 1), mar=c(4,4,4,0.5), family='serif')
-args <- list(
-  graphs=c('Gaussian', 'Gram—Charlier', 'Skew normal'),
-  linetypes=c('solid', 'dashed', 'dotted')
-)
-args$title <- 'Propagating waves'
-arma.plot_nonlinear(file.path("build", "nit-propagating"), args)
-args$title <- 'Standing waves'
-arma.plot_nonlinear(file.path("build", "nit-standing"), args)
-#+end_src
-
-#+name: fig-nit
-#+caption[Wavy surface slices with different distributions]:
-#+caption: Wavy surface slices with different distributions
-#+caption: of wave elevation (Gaussian, GCS-based and SN).
-#+RESULTS: fig-nit
-[[file:build/nit.pdf]]
-
-#+name: tab-nit-error
-#+caption[Errors of ACF approximations]:
-#+caption: Errors of ACF approximations (the difference of variances) for
-#+caption: different wave elevation distributions. \(N\) is the number of
-#+caption: coefficients of ACF approximation.
-#+attr_latex: :booktabs t
-| Wave type   | Distribution | \(\gamma_1\) | \(\gamma_2\) | \(\alpha\) | Error | \(N\) | Wave height |
-|-------------+--------------+--------------+--------------+------------+-------+-------+-------------|
-| propagating | Gaussian     |              |              |            |       |       |        2.41 |
-| propagating | GCS-based    |         2.25 |          0.4 |            |  0.20 |     2 |        2.75 |
-| propagating | skew normal  |              |              |          1 |  0.70 |     3 |        1.37 |
-| standing    | Gaussian     |              |              |            |       |       |        1.73 |
-| standing    | GCS-based    |         2.25 |          0.4 |            |  0.26 |     2 |        1.96 |
-| standing    | skew normal  |              |              |          1 |  0.70 |     3 |        0.94 |
-
-To summarise, the only test case that showed acceptable results is realisation
-with GCS-based distribution for both standing and propagating waves. Skew normal
-distribution warps wavy surface for both types of waves. GCS-based realisations
-have large error of ACF approximation, which results in increase of wave height.
-The reason for the large error is that GCS approximations are not accurate as
-they do not converge for all possible
-functions\nbsp{}cite:wallace1958asymptotic. Despite the large error, the change
-in wave height is small (table\nbsp{}[[tab-nit-error]]).
-
-**** Wave height                                                :noexport:
-:PROPERTIES:
-:header-args:R: :results output org
-:END:
-
-#+header: 
-#+begin_src R :results output org
-source(file.path("R", "nonlinear.R"))
-propagating <- arma.print_wave_height(file.path("build", "nit-propagating"))
-standing <- arma.print_wave_height(file.path("build", "nit-standing"))
-result <- data.frame(
-  h1=c(propagating$h1, standing$h1),
-  h2=c(propagating$h2, standing$h2),
-  h3=c(propagating$h3, standing$h3)
-)
-rownames(result) <- c('propagating', 'standing')
-colnames(result) <- c('none', 'gcs', 'sn')
-ascii(result)
-#+end_src
-
-#+RESULTS:
-#+BEGIN_SRC org
-|             | none |  gcs |   sn |
-|-------------+------+------+------|
-| propagating | 2.41 | 2.75 | 1.37 |
-| standing    | 1.73 | 1.96 | 0.94 |
-#+END_SRC
-
-*** Non-physical nature of ARMA model
-ARMA model, owing to its non-physical nature, does not have the notion of sea
-wave; it simulates wavy surface as a whole instead. Motions of individual waves
-and their shape are often rough, and the total number of waves can not be
-determined precisely. However, integral characteristics of wavy surface match
-the ones of real sea waves.
-
-Theoretically, sea waves themselves can be chosen as ACFs, the only
-pre-processing step is to make them decay exponentially. This may allow
-to generate waves of arbitrary profiles, and is one of the directions of future
-work.
 
 * High-performance software implementation of sea wave simulation
 ** SMP implementation
@@ -1862,8 +1778,9 @@ previously computed Fourier transform of the coefficients, and inverse Fourier
 transform of the result is computed. After that, each part is written to the
 output array with overlapping (due to padding) points added to each other. This
 algorithm is commonly known in signal processing as
-"overlap-add"\nbsp{}cite:svoboda2011efficient. Padding with noughts is needed to
-prevent aliasing errors: without it the result would be circular convolution.
+"overlap-add"\nbsp{}cite:oppenheim1989discrete,svoboda2011efficient,pavel2013algorithms.
+Padding with noughts is needed to prevent aliasing errors: without it the result
+would be circular convolution.
 
 Despite the fact that MA model algorithm partitions the surface into the same
 parts (but possibly of different sizes) as AR model algorithm, the vicinity of
@@ -2301,6 +2218,52 @@ it, since each point now is a vector with three components. The other
 disadvantage of using OpenCL and OpenGL together is the requirement for manual
 locking of shared buffer: failure to do so results in appearance of screen image
 artefacts which can be removed only by rebooting the computer.
+
+**** Parallel white noise generation algorithm.
+In order to eliminate periodicity from wavy surface generated by sea wave model,
+it is imperative to use PRNG with sufficiently large period to generate white
+noise. Parallel Mersenne Twister\nbsp{}cite:matsumoto1998mersenne with a period
+of \(2^{19937}-1\) is used as a generator in this work. It allows to produce
+aperiodic sea wavy surface realisations in any practical usage scenarios.
+
+There is no guarantee that multiple PRNGs executed in parallel threads with
+distinct initial states produce uncorrelated pseudo-random number sequences, and
+algorithm of dynamic creation of Mersenne
+Twisters\nbsp{}cite:matsumoto1998dynamic is used to provide such guarantee. The
+essence of the algorithm is to find matrices of initial generator states, that
+give maximally uncorrelated pseudo-random number sequences when Mersenne
+Twisters are executed in parallel with these initial states. Since finding such
+initial states consumes considerable amount of processor time, vector of initial
+states is created beforehand with knowingly larger number of parallel threads
+and saved to a file, which is then read before starting white noise generation.
+
+**** Ramp-up interval elimination.
+In AR model value of wavy surface elevation at a particular point depends on
+previous in space and time points, as a result the so called /ramp-up interval/
+(see fig.\nbsp{}[[fig-ramp-up-interval]]), in which realisation does not correspond
+to specified ACF, forms in the beginning of the realisation. There are several
+solutions to this problem which depend on the simulation context. If realisation
+is used in the context of ship stability simulation without manoeuvring, ramp-up
+interval will not affect results of the simulation, because it is located on the
+border (too far away from the studied marine object). Alternative approach is to
+generate sea wavy surface on ramp-up interval with LH model and generate the
+rest of the realisation with AR model. If ship stability with manoeuvring is
+studied, then the interval may be simply discarded from the realisation (the
+size of the interval approximately equals the number of AR coefficients in each
+dimension). However, this may lead to loss of a very large number of points,
+because discarding occurs for each of three dimensions.
+
+#+name: fig-ramp-up-interval
+#+begin_src R :file build/ramp-up-interval.pdf
+source(file.path("R", "common.R"))
+arma.plot_ramp_up_interval()
+#+end_src
+
+#+caption[Ramp-up interval at the beginning of AR process realisation]:
+#+caption: Ramp-up interval at the beginning of AR process realisation.
+#+name: fig-ramp-up-interval
+#+RESULTS: fig-ramp-up-interval
+[[file:build/ramp-up-interval.pdf]]
 
 **** Conclusions.
 Benchmarks showed that GPU outperforms CPU in arithmetic intensive tasks,
