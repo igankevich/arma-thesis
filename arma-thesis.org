@@ -28,7 +28,7 @@ more advanced models and methods for sea simulation software would increase
 number of its application scenarios and foster studying ship motion in extreme
 conditions in particular.
 
-**** State-of-the-art.
+**** State of the art.
 Autoregressive moving average (ARMA) model is a response to difficulties
 encountered by practitioners who used wave simulation models developed in the
 framework of linear wave theory. The problems they have encountered with
@@ -598,6 +598,122 @@ propagating waves. Using mixed ARMA process for both types of waves might
 increase model precision, given that coefficient correction formulae for three
 dimensions become available, which is the objective of the future research.
 
+**** Verification of wavy surface integral characteristics.
+In\nbsp{}cite:degtyarev2011modelling,degtyarev2013synoptic,boukhanovsky1997thesis
+AR model the following items are verified experimentally:
+- probability distributions of different wave characteristics (wave heights,
+  lengths, crests, periods, slopes, three-dimensionality),
+- dispersion relation,
+- retention of integral characteristics for mixed wave sea state.
+In this work both AR and MA model are verified by comparing probability
+distributions of different wave characteristics.
+
+In\nbsp{}cite:rozhkov1990stochastic the authors show that several sea wave
+characteristics (listed in table\nbsp{}[[tab-weibull-shape]]) have Weibull
+distribution, and wavy surface elevation has Gaussian distribution. In order to
+verify that distributions corresponding to generated realisation are correct,
+quantile-quantile plots are used (plots where analytic quantile values are used
+for \(OX\) axis and estimated quantile values for \(OY\) axis). If the estimated
+distribution matches analytic then the graph has the form of the straight line.
+Tails of the graph may diverge from the straight line, because they can not be
+reliably estimated from the finite-size realisation.
+
+#+name: tab-weibull-shape
+#+caption[Values of Weibull shape parameter]:
+#+caption: Values of Weibull shape parameter for different wave characteristics.
+#+attr_latex: :booktabs t
+| Characteristic       | Weibull shape (\(k\)) |
+|----------------------+-----------------------|
+|                      | <l>                   |
+| Wave height          | 2                     |
+| Wave length          | 2.3                   |
+| Crest length         | 2.3                   |
+| Wave period          | 3                     |
+| Wave slope           | 2.5                   |
+| Three-dimensionality | 2.5                   |
+
+Verification was performed for standing and propagating waves. The corresponding
+ACFs and quantile-quantile plots of wave characteristics distributions are shown
+in
+fig.\nbsp{}[[propagating-wave-distributions]],\nbsp{}[[standing-wave-distributions]],\nbsp{}[[acf-slices]].
+
+#+name: propagating-wave-distributions
+#+begin_src R :file build/propagating-wave-qqplots.pdf
+source(file.path("R", "common.R"))
+par(pty="s", mfrow=c(2, 2))
+arma.qqplot_grid(
+  file.path("build", "propagating_wave"),
+  c("elevation", "heights_y", "lengths_y", "periods"),
+  c("elevation", "height Y", "length Y", "period"),
+  xlab="x",
+  ylab="y"
+)
+#+end_src
+
+#+caption[Quantile-quantile plots for propagating waves]:
+#+caption: Quantile-quantile plots for propagating waves.
+#+name: propagating-wave-distributions
+#+RESULTS: propagating-wave-distributions
+[[file:build/propagating-wave-qqplots.pdf]]
+
+#+name: standing-wave-distributions
+#+begin_src R :file build/standing-wave-qqplots.pdf
+source(file.path("R", "common.R"))
+par(pty="s", mfrow=c(2, 2))
+arma.qqplot_grid(
+  file.path("build", "standing_wave"),
+  c("elevation", "heights_y", "lengths_y", "periods"),
+  c("elevation", "height Y", "length Y", "period"),
+  xlab="x",
+  ylab="y"
+)
+#+end_src
+
+#+caption[Quantile-quantile plots for standing waves]:
+#+caption: Quantile-quantile plots for standing waves.
+#+name: standing-wave-distributions
+#+RESULTS: standing-wave-distributions
+[[file:build/standing-wave-qqplots.pdf]]
+
+#+name: acf-slices
+#+header: :width 6 :height 9
+#+begin_src R :file build/acf-slices.pdf
+source(file.path("R", "common.R"))
+propagating_acf <- read.csv(file.path("build", "propagating_wave", "acf.csv"))
+standing_acf <- read.csv(file.path("build", "standing_wave", "acf.csv"))
+par(mfrow=c(5, 2), mar=c(0,0,0,0))
+for (i in seq(0, 4)) {
+  arma.wavy_plot(standing_acf, i, zlim=c(-5,5))
+  arma.wavy_plot(propagating_acf, i, zlim=c(-5,5))
+}
+#+end_src
+
+#+caption[ACF time slices for standing and propagating waves]:
+#+caption: ACF time slices for standing (left column) and propagating waves
+#+caption: (right column).
+#+name: acf-slices
+#+RESULTS: acf-slices
+[[file:build/acf-slices.pdf]]
+
+Graph tails in fig.\nbsp{}[[propagating-wave-distributions]] deviate from original
+distribution for individual wave characteristics, because every wave have to be
+extracted from the resulting wavy surface to measure its length, period and
+height. There is no algorithm that guarantees correct extraction of all waves,
+because they may and often overlap each other. Weibull distribution right tail
+represents infrequently occurring waves, so it deviates more than left tail.
+
+Correspondence rate for standing waves (fig.\nbsp{}[[standing-wave-distributions]])
+is lower for height and length, roughly the same for surface elevation and
+higher for wave period distribution tails. Lower correspondence degree for
+length and height may be attributed to the fact that Weibull distributions were
+obtained empirically for sea waves which are typically propagating, and
+distributions may be different for standings waves. Higher correspondence degree
+for wave periods is attributed to the fact that wave periods of standing waves
+are extracted more precisely as the waves do not move outside simulated wavy
+surface region. The same correspondence degree for wave elevation is obtained,
+because this is the characteristic of the wavy surface (and corresponding AR or
+MA process) and is not affected by the type of waves.
+
 ** Modelling non-linearity of sea waves
 ARMA model allows to model asymmetry of wave elevation distribution,
 i.e.\nbsp{}generate sea waves, distribution of \(z\)-coordinate of which has
@@ -629,8 +745,8 @@ Since, distribution functions are monotonic, the simplest interval halving
 (bisection) numerical method is used to solve this equation.
 
 **** Preliminary ACF transformation.
-In order to transform ACF \(\gamma_z\) of the process, it is expanded in series
-of Hermite polynomials (Gram---Charlier series)
+In order to transform ACF \(\gamma_z\) of the process, it is expanded as a
+series of Hermite polynomials (Gram---Charlier series)
 \begin{equation*}
     \gamma_z \left( \vec u \right)
     =
@@ -678,7 +794,7 @@ the same approximation in Gram---Charlier series does not lead to such errors.
 In\nbsp{}cite:huang1980experimental the authors experimentally show, that PDF of
 sea surface elevation is distinguished from normal distribution by non-nought
 kurtosis and skewness. In\nbsp{}cite:rozhkov1996theory the authors show, that
-this type of PDF expands in Gram---Charlier series (GCS):
+this type of PDF expands as a Gram---Charlier series (GCS):
 \begin{align}
     \label{eq-skew-normal-1}
     & F(z; \mu=0, \sigma=1, \gamma_1, \gamma_2) \approx
@@ -786,6 +902,101 @@ legend(
 #+name: fig-skew-normal-2
 #+RESULTS: fig-skew-normal-2
 [[file:build/skew-normal-2.pdf]]
+
+**** Evaluation.
+In order to measure the effect of NIT on the shape of the resulting wavy
+surface, three realisations were generated:
+- realisation with Gaussian distribution (without NIT),
+- realisation with Gram---Charlier series (GCS) based distribution, and
+- realisation with skew normal distribution.
+The seed of PRNG was set to be the same for all programme executions to make ARMA
+model produce the same values for each realisation. There we two experiments:
+for standing and propagating waves with ACFs given by formulae from
+section\nbsp{}[[#sec-wave-acfs]].
+
+While the experiment showed that applying NIT with GCS-based distribution
+increases wave steepness, the same is not true for skew normal distribution
+(fig.\nbsp{}[[fig-nit]]). Using this distribution results in wavy surface each
+\(z\)-coordinate of which is always greater or equal to nought. So, skew normal
+distribution is unsuitable for NIT. NIT increases the wave height and steepness
+of both standing and propagating waves. Increasing either skewness or kurtosis
+of GCS-based distribution increases both wave height and steepness. The error of
+ACF approximation (eq.\nbsp{}eqref:eq-nit-error) ranges from 0.20 for GCS-based
+distribution to 0.70 for skew normal distribution (table\nbsp{}[[tab-nit-error]]).
+
+#+name: fig-nit
+#+header: :width 7 :height 7
+#+begin_src R :file build/nit.pdf
+source(file.path("R", "nonlinear.R"))
+par(mfrow=c(2, 1), mar=c(4,4,4,0.5), family='serif')
+args <- list(
+  graphs=c('Gaussian', 'Gram—Charlier', 'Skew normal'),
+  linetypes=c('solid', 'dashed', 'dotted')
+)
+args$title <- 'Propagating waves'
+arma.plot_nonlinear(file.path("build", "nit-propagating"), args)
+args$title <- 'Standing waves'
+arma.plot_nonlinear(file.path("build", "nit-standing"), args)
+#+end_src
+
+#+name: fig-nit
+#+caption[Wavy surface slices with different distributions]:
+#+caption: Wavy surface slices with different distributions
+#+caption: of wave elevation (Gaussian, GCS-based and SN).
+#+RESULTS: fig-nit
+[[file:build/nit.pdf]]
+
+#+name: tab-nit-error
+#+caption[Errors of ACF approximations]:
+#+caption: Errors of ACF approximations (the difference of variances) for
+#+caption: different wave elevation distributions. \(N\) is the number of
+#+caption: coefficients of ACF approximation.
+#+attr_latex: :booktabs t
+| Wave type   | Distribution | \(\gamma_1\) | \(\gamma_2\) | \(\alpha\) | Error | \(N\) | Wave height |
+|-------------+--------------+--------------+--------------+------------+-------+-------+-------------|
+| propagating | Gaussian     |              |              |            |       |       |        2.41 |
+| propagating | GCS-based    |         2.25 |          0.4 |            |  0.20 |     2 |        2.75 |
+| propagating | skew normal  |              |              |          1 |  0.70 |     3 |        1.37 |
+| standing    | Gaussian     |              |              |            |       |       |        1.73 |
+| standing    | GCS-based    |         2.25 |          0.4 |            |  0.26 |     2 |        1.96 |
+| standing    | skew normal  |              |              |          1 |  0.70 |     3 |        0.94 |
+
+To summarise, the only test case that showed acceptable results is realisation
+with GCS-based distribution for both standing and propagating waves. Skew normal
+distribution warps wavy surface for both types of waves. GCS-based realisations
+have large error of ACF approximation, which results in increase of wave height.
+The reason for the large error is that GCS approximations are not accurate as
+they do not converge for all possible
+functions\nbsp{}cite:wallace1958asymptotic. Despite the large error, the change
+in wave height is small (table\nbsp{}[[tab-nit-error]]).
+
+***** Wave height                                              :noexport:
+:PROPERTIES:
+:header-args:R: :results output org
+:END:
+
+#+header:
+#+begin_src R :results output org
+source(file.path("R", "nonlinear.R"))
+propagating <- arma.print_wave_height(file.path("build", "nit-propagating"))
+standing <- arma.print_wave_height(file.path("build", "nit-standing"))
+result <- data.frame(
+  h1=c(propagating$h1, standing$h1),
+  h2=c(propagating$h2, standing$h2),
+  h3=c(propagating$h3, standing$h3)
+)
+rownames(result) <- c('propagating', 'standing')
+colnames(result) <- c('none', 'gcs', 'sn')
+ascii(result)
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC org
+|             | none |  gcs |   sn |
+|-------------+------+------+------|
+| propagating | 2.41 | 2.75 | 1.37 |
+| standing    | 1.73 | 1.96 | 0.94 |
+#+END_SRC
 
 ** The shape of ACF for different types of waves
 :PROPERTIES:
@@ -899,223 +1110,7 @@ steps.
 - Move maximum value of the resulting function to the origin by using
   trigonometric identities to shift the phase.
 
-** ARMA model verification
-:PROPERTIES:
-:CUSTOM_ID: sec-verification
-:END:
-
-In\nbsp{}cite:degtyarev2011modelling,degtyarev2013synoptic,boukhanovsky1997thesis
-AR model the following items are verified experimentally:
-- probability distributions of different wave characteristics (wave heights,
-  lengths, crests, periods, slopes, three-dimensionality),
-- dispersion relation,
-- retention of integral characteristics for mixed wave sea state.
-In this work both AR and MA model are verified by comparing probability
-distributions of different wave characteristics.
-
-*** Verification of wavy surface integral characteristics
-In\nbsp{}cite:rozhkov1990stochastic the authors show that several sea wave
-characteristics (listed in table\nbsp{}[[tab-weibull-shape]]) have Weibull
-distribution, and wavy surface elevation has Gaussian distribution. In order to
-verify that distributions corresponding to generated realisation are correct,
-quantile-quantile plots are used (plots where analytic quantile values are used
-for \(OX\) axis and estimated quantile values for \(OY\) axis). If the estimated
-distribution matches analytic then the graph has the form of the straight line.
-Tails of the graph may diverge from the straight line, because they can not be
-reliably estimated from the finite-size realisation.
-
-#+name: tab-weibull-shape
-#+caption[Values of Weibull shape parameter]:
-#+caption: Values of Weibull shape parameter for different wave characteristics.
-#+attr_latex: :booktabs t
-| Characteristic       | Weibull shape (\(k\)) |
-|----------------------+-----------------------|
-|                      | <l>                   |
-| Wave height          | 2                     |
-| Wave length          | 2.3                   |
-| Crest length         | 2.3                   |
-| Wave period          | 3                     |
-| Wave slope           | 2.5                   |
-| Three-dimensionality | 2.5                   |
-
-Verification was performed for standing and propagating waves. The corresponding
-ACFs and quantile-quantile plots of wave characteristics distributions are shown
-in
-fig.\nbsp{}[[propagating-wave-distributions]],\nbsp{}[[standing-wave-distributions]],\nbsp{}[[acf-slices]].
-
-#+name: propagating-wave-distributions
-#+begin_src R :file build/propagating-wave-qqplots.pdf
-source(file.path("R", "common.R"))
-par(pty="s", mfrow=c(2, 2))
-arma.qqplot_grid(
-  file.path("build", "propagating_wave"),
-  c("elevation", "heights_y", "lengths_y", "periods"),
-  c("elevation", "height Y", "length Y", "period"),
-  xlab="x",
-  ylab="y"
-)
-#+end_src
-
-#+caption[Quantile-quantile plots for propagating waves]:
-#+caption: Quantile-quantile plots for propagating waves.
-#+name: propagating-wave-distributions
-#+RESULTS: propagating-wave-distributions
-[[file:build/propagating-wave-qqplots.pdf]]
-
-#+name: standing-wave-distributions
-#+begin_src R :file build/standing-wave-qqplots.pdf
-source(file.path("R", "common.R"))
-par(pty="s", mfrow=c(2, 2))
-arma.qqplot_grid(
-  file.path("build", "standing_wave"),
-  c("elevation", "heights_y", "lengths_y", "periods"),
-  c("elevation", "height Y", "length Y", "period"),
-  xlab="x",
-  ylab="y"
-)
-#+end_src
-
-#+caption[Quantile-quantile plots for standing waves]:
-#+caption: Quantile-quantile plots for standing waves.
-#+name: standing-wave-distributions
-#+RESULTS: standing-wave-distributions
-[[file:build/standing-wave-qqplots.pdf]]
-
-#+name: acf-slices
-#+header: :width 6 :height 9
-#+begin_src R :file build/acf-slices.pdf
-source(file.path("R", "common.R"))
-propagating_acf <- read.csv(file.path("build", "propagating_wave", "acf.csv"))
-standing_acf <- read.csv(file.path("build", "standing_wave", "acf.csv"))
-par(mfrow=c(5, 2), mar=c(0,0,0,0))
-for (i in seq(0, 4)) {
-  arma.wavy_plot(standing_acf, i, zlim=c(-5,5))
-  arma.wavy_plot(propagating_acf, i, zlim=c(-5,5))
-}
-#+end_src
-
-#+caption[ACF time slices for standing and propagating waves]:
-#+caption: ACF time slices for standing (left column) and propagating waves
-#+caption: (right column).
-#+name: acf-slices
-#+RESULTS: acf-slices
-[[file:build/acf-slices.pdf]]
-
-Graph tails in fig.\nbsp{}[[propagating-wave-distributions]] deviate from original
-distribution for individual wave characteristics, because every wave have to be
-extracted from the resulting wavy surface to measure its length, period and
-height. There is no algorithm that guarantees correct extraction of all waves,
-because they may and often overlap each other. Weibull distribution right tail
-represents infrequently occurring waves, so it deviates more than left tail.
-
-Correspondence rate for standing waves (fig.\nbsp{}[[standing-wave-distributions]])
-is lower for height and length, roughly the same for surface elevation and
-higher for wave period distribution tails. Lower correspondence degree for
-length and height may be attributed to the fact that Weibull distributions were
-obtained empirically for sea waves which are typically propagating, and
-distributions may be different for standings waves. Higher correspondence degree
-for wave periods is attributed to the fact that wave periods of standing waves
-are extracted more precisely as the waves do not move outside simulated wavy
-surface region. The same correspondence degree for wave elevation is obtained,
-because this is the characteristic of the wavy surface (and corresponding AR or
-MA process) and is not affected by the type of waves.
-
-*** Verification of nonlinear inertialess transformation
-In order to measure the effect of NIT on the shape of the resulting wavy
-surface, three realisations were generated:
-- realisation with Gaussian distribution (without NIT),
-- realisation with Gram---Charlier series (GCS) based distribution, and
-- realisation with skew normal distribution.
-The seed of PRNG was set to be the same for all programme executions to make ARMA
-model produce the same values for each realisation. There we two experiments:
-for standing and propagating waves with ACFs given by formulae from
-section\nbsp{}[[#sec-wave-acfs]].
-
-While the experiment showed that applying NIT with GCS-based distribution
-increases wave steepness, the same is not true for skew normal distribution
-(fig.\nbsp{}[[fig-nit]]). Using this distribution results in wavy surface each
-\(z\)-coordinate of which is always greater or equal to nought. So, skew normal
-distribution is unsuitable for NIT. NIT increases the wave height and steepness
-of both standing and propagating waves. Increasing either skewness or kurtosis
-of GCS-based distribution increases both wave height and steepness. The error of
-ACF approximation (eq.\nbsp{}eqref:eq-nit-error) ranges from 0.20 for GCS-based
-distribution to 0.70 for skew normal distribution (table\nbsp{}[[tab-nit-error]]).
-
-#+name: fig-nit
-#+header: :width 7 :height 7
-#+begin_src R :file build/nit.pdf
-source(file.path("R", "nonlinear.R"))
-par(mfrow=c(2, 1), mar=c(4,4,4,0.5), family='serif')
-args <- list(
-  graphs=c('Gaussian', 'Gram—Charlier', 'Skew normal'),
-  linetypes=c('solid', 'dashed', 'dotted')
-)
-args$title <- 'Propagating waves'
-arma.plot_nonlinear(file.path("build", "nit-propagating"), args)
-args$title <- 'Standing waves'
-arma.plot_nonlinear(file.path("build", "nit-standing"), args)
-#+end_src
-
-#+name: fig-nit
-#+caption[Wavy surface slices with different distributions]:
-#+caption: Wavy surface slices with different distributions
-#+caption: of wave elevation (Gaussian, GCS-based and SN).
-#+RESULTS: fig-nit
-[[file:build/nit.pdf]]
-
-#+name: tab-nit-error
-#+caption[Errors of ACF approximations]:
-#+caption: Errors of ACF approximations (the difference of variances) for
-#+caption: different wave elevation distributions. \(N\) is the number of
-#+caption: coefficients of ACF approximation.
-#+attr_latex: :booktabs t
-| Wave type   | Distribution | \(\gamma_1\) | \(\gamma_2\) | \(\alpha\) | Error | \(N\) | Wave height |
-|-------------+--------------+--------------+--------------+------------+-------+-------+-------------|
-| propagating | Gaussian     |              |              |            |       |       |        2.41 |
-| propagating | GCS-based    |         2.25 |          0.4 |            |  0.20 |     2 |        2.75 |
-| propagating | skew normal  |              |              |          1 |  0.70 |     3 |        1.37 |
-| standing    | Gaussian     |              |              |            |       |       |        1.73 |
-| standing    | GCS-based    |         2.25 |          0.4 |            |  0.26 |     2 |        1.96 |
-| standing    | skew normal  |              |              |          1 |  0.70 |     3 |        0.94 |
-
-To summarise, the only test case that showed acceptable results is realisation
-with GCS-based distribution for both standing and propagating waves. Skew normal
-distribution warps wavy surface for both types of waves. GCS-based realisations
-have large error of ACF approximation, which results in increase of wave height.
-The reason for the large error is that GCS approximations are not accurate as
-they do not converge for all possible
-functions\nbsp{}cite:wallace1958asymptotic. Despite the large error, the change
-in wave height is small (table\nbsp{}[[tab-nit-error]]).
-
-**** Wave height                                                :noexport:
-:PROPERTIES:
-:header-args:R: :results output org
-:END:
-
-#+header:
-#+begin_src R :results output org
-source(file.path("R", "nonlinear.R"))
-propagating <- arma.print_wave_height(file.path("build", "nit-propagating"))
-standing <- arma.print_wave_height(file.path("build", "nit-standing"))
-result <- data.frame(
-  h1=c(propagating$h1, standing$h1),
-  h2=c(propagating$h2, standing$h2),
-  h3=c(propagating$h3, standing$h3)
-)
-rownames(result) <- c('propagating', 'standing')
-colnames(result) <- c('none', 'gcs', 'sn')
-ascii(result)
-#+end_src
-
-#+RESULTS:
-#+BEGIN_SRC org
-|             | none |  gcs |   sn |
-|-------------+------+------+------|
-| propagating | 2.41 | 2.75 | 1.37 |
-| standing    | 1.73 | 1.96 | 0.94 |
-#+END_SRC
-
-*** Non-physical nature of ARMA model
+** Summary
 ARMA model, owing to its non-physical nature, does not have the notion of sea
 wave; it simulates wavy surface as a whole instead. Motions of individual waves
 and their shape are often rough, and the total number of waves can not be
