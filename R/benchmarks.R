@@ -149,10 +149,10 @@ arma.plot_io_events <- function (names) {
         ev <- table[row,]
         ys <- rep(ev$thread_no, 2)
         xs <- c(ev$t0, ev$t1)/1000/1000
-    #		points(xs[[1]], ys[[1]], pch=19, cex=0.4)
-    #		arrows(xs[[1]], ys[[1]], xs[[2]], ys[[2]], angle=10, length=0.05)
-        #lines(xs, ys, lwd=3, col=c$color)
-        points(xs, ys, col=c$color)
+    	#points(xs[[1]], ys[[1]], pch=19, cex=0.4)
+    	#arrows(xs[[1]], ys[[1]], xs[[2]], ys[[2]], angle=10, length=0.05)
+        lines(xs, ys, lwd=1, col=c$color)
+        points(xs, ys, col=c$color, cex=0.4)
       }
     }
     axis(1, at=pretty(c(0,max_x)))
