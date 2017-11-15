@@ -1713,17 +1713,17 @@ where the majority of wave energy is concentrated closer to the wave crest.
 
 Although, AR and MA models are part of the single mixed model they have
 disparate parallel algorithms, which are different from trivial one of LH model.
-AR algorithm consists in partitioning wavy surface into equally-sized
-three-dimensional parts in each dimension and computing them in parallel taking
-into account causal constraints imposed by autoregressive dependencies between
-surface points. There are no such dependencies in MA model, and its formula
-represents convolution of white noise with model coefficients, which is reduced
-to computation of three Fourier transforms via convolution theorem. So, MA
-algorithm consists in parallel computation of the convolution which is based on
-FFT computation. Finally, LH algorithm is made parallel by simply computing each
-wavy surface point in parallel in several threads. So, parallel implementation
-of ARMA model consists of two parallel algorithms, one for each part of the
-model, which are more sophisticated than the one for LH model.
+AR algorithm consists in partitioning wavy surface into equally-sized parts in
+each dimension and computing them in parallel taking into account causal
+constraints imposed by autoregressive dependencies between surface points. There
+are no such dependencies in MA model, and its formula represents convolution of
+white noise with model coefficients, which is reduced to computation of three
+Fourier transforms via convolution theorem. So, MA algorithm consists in
+parallel computation of the convolution which is based on FFT computation.
+Finally, LH algorithm is made parallel by simply computing each wavy surface
+point in parallel in several threads. So, parallel implementation of ARMA model
+consists of two parallel algorithms, one for each part of the model, which are
+more sophisticated than the one for LH model.
 
 AR model's formula main feature is autoregressive dependencies between wavy
 surface points in each dimension which prevent computing each surface point in
@@ -1734,7 +1734,7 @@ dependencies. An arrow denotes dependency of one part on availability of
 another, i.e.\nbsp{}computation of a part may start only when all parts on which
 it depends were computed. Here part \(A\) does not have dependencies, parts
 \(B\) and \(D\) depend only on \(A\), and part \(E\) depends on \(A\), \(B\) and
-\(C\). In essence, each part depends on all parts that have previous index in at
+\(C\). In general, each part depends on all parts that have previous index in at
 least one dimension (if such parts exist). The first part does not have any
 dependencies; and the size of each part along each dimension is made greater or
 equal to the corresponding number of coefficients along the dimension to
@@ -1769,7 +1769,7 @@ scheduler, in which
 - each job corresponds to a wavy surface part,
 - the order of execution of jobs is defined by autoregressive dependencies, and
 - job queue is processed by a simple thread pool in which each thread in a loop
-  removes from the queue the first job for which all dependent jobs have
+  removes the first job from the queue for which all dependent jobs have
   completed and executes it.
 
 In contrast to AR model, MA model does not have autoregressive dependencies
@@ -1850,9 +1850,9 @@ border (too far away from the studied marine object). Alternative approach is to
 generate sea wavy surface on ramp-up interval with LH model and generate the
 rest of the realisation with AR model. If ship stability with manoeuvring is
 studied, then the interval may be simply discarded from the realisation (the
-size of the interval approximately equals the number of AR coefficients in each
-dimension). However, this may lead to loss of a very large number of points,
-because discarding occurs for each of three dimensions.
+size of the interval approximately equals the number of AR coefficients).
+However, this may lead to a loss of a very large number of points, because
+discarding occurs for each of three dimensions.
 
 #+name: fig-ramp-up-interval
 #+begin_src R :file build/ramp-up-interval.pdf
@@ -1887,9 +1887,10 @@ the same size is repeatedly applied to every time slice, its coefficients
 (complex exponents) are pre-computed one time for all slices, and further
 computations involve only a few transcendental functions. In case of MA model,
 performance is also increased by doing convolution with FFT. So, high
-performance of ARMA model is due to scarce use of transcendental functions and
-heavy use of FFT, not to mention that high convergence rate and non-existence of
-periodicity allows to use far fewer coefficients compared to LH model.
+performance of AR and MA models is due to scarce use of transcendental functions
+and heavy use of FFT, not to mention that high convergence rate and
+non-existence of periodicity allows to use far fewer coefficients compared to LH
+model.
 
 #+name: tab-gpulab
 #+caption["Gpulab" system configuration]:
@@ -2122,14 +2123,14 @@ arma.plot_io_events(names)
 *** Velocity potential field computation
 **** Parallel velocity potential field computation.
 The benchmarks for AR, MA and LH models showed that velocity potential field
-computation consume only a fraction of total programme execution time, however,
+computation consumes only a fraction of total programme execution time, however,
 the absolute computation time over a dense \(XY\) grid may be greater. One
 application where dense grid is used is real-time simulation and visualisation
 of wavy surface. Real-time visualisation allows to
 - adjust parameters of the model and ACF function, getting the result of the
   changes immediately, and
-- visually compare the size and the shape of regions where the most wave energy
-  is concentrated, which for educational purposes.
+- compare the size and the shape of regions where the most wave energy is
+  concentrated.
 
 Since visualisation is done by GPU, doing velocity potential computation on CPU
 may cause data transfer between memory of these two devices to become a
@@ -2169,7 +2170,7 @@ programme runs the size of the grid along \(x\) dimension was varied.
 
 A different FFT library was used for each implementation: GNU Scientific Library
 (GSL)\nbsp{}cite:galassi2015gnu for OpenMP and clFFT\nbsp{}cite:clfft for
-OpenCL. FFT routines from these libraries are different:
+OpenCL. FFT routines from these libraries have the following features:
 - The order of frequencies in FFT is different. In case of clFFT library
   elements of the resulting array are additionally shifted to make it correspond
   to the correct velocity potential field. In case of GSL no shift is needed.
@@ -2228,16 +2229,17 @@ title(xlab="Wavy surface size", ylab="Time, s")
 #+RESULTS: fig-arma-realtime-graph
 [[file:build/realtime-performance.pdf]]
 
-The reason for different distribution of time between computation stages is the
-same as for different AR model performance on CPU and GPU: GPU has more floating
-point units and modules for transcendental mathematical functions, than CPU,
-which are needed for computation of \(g_1\), but lacks caches which are needed
-to optimise irregular memory access pattern of \(g_2\). In contrast to AR model,
-performance of multidimensional derivative computation on GPU is easier to
-improve, as there are no information dependencies between points: in this work
-optimisation was not done due to unavailability of existing implementation.
-Additionally, such library may allow to efficiently compute the non-simplified
-formula entirely on GPU, since omitted terms also contain derivatives.
+The reason for different distribution of time between OpenCL and OpenMP
+subroutines is the same as for different AR model performance on CPU and GPU:
+GPU has more floating point units and modules for transcendental mathematical
+functions, than CPU, which are needed for computation of \(g_1\), but lacks
+caches which are needed to optimise irregular memory access pattern of \(g_2\).
+In contrast to AR model, performance of multidimensional derivative computation
+on GPU is easier to improve, as there are no information dependencies between
+points: in this work optimisation was not done due to unavailability of existing
+implementation. Additionally, such library may allow to efficiently compute the
+non-simplified formula entirely on GPU, since omitted terms also contain
+derivatives.
 
 #+name: tab-arma-realtime
 #+begin_src R
@@ -2270,16 +2272,16 @@ arma.print_table_for_realtime_data(data, routine_names, column_names)
 As expected, sharing the same buffer between OpenCL and OpenGL contexts
 increases overall solver performance by eliminating data transfer between CPU
 and GPU memory, but also requires for the data to be in vertex buffer object
-format, that OpenGL can operate on. Conversion to this format is fast, but
-requires more memory to store velocity potential field to be able to visualise
-it, since each point now is a vector with three components. The other
-disadvantage of using OpenCL and OpenGL together is the requirement for manual
-locking of shared buffer: failure to do so results in appearance of screen image
-artefacts which can be removed only by rebooting the computer.
+format, that OpenGL can operate on. Conversion to this format is fast, but the
+resulting array occupies more memory, since each point now is a vector with
+three components. The other disadvantage of using OpenCL and OpenGL together is
+the requirement for manual locking of shared buffer: failure to do so results in
+appearance of screen image artefacts which can be removed only by rebooting the
+computer.
 
 *** Summary
 Benchmarks showed that GPU outperforms CPU in arithmetic intensive tasks,
-i.e.\nbsp{}tasks requiring high number of floating point operations per second,
+i.e.\nbsp{}tasks requiring large number of floating point operations per second,
 however, its performance degrades when the volume of data that needs to be
 copied between CPU and GPU memory increases or when memory access pattern
 differs from linear. The first problem may be solved by using a co-processor
@@ -2289,18 +2291,18 @@ also increase execution time due to smaller number of floating point units. The
 second problem may be solved programmatically, if OpenCL library that computes
 multi-dimensional derivatives were available.
 
-AR and MA models outperforms LH model in benchmarks and does not require GPU to
+AR and MA models outperform LH model in benchmarks and does not require GPU to
 do so. From computational point of view their strengths are
 - absence of transcendental mathematical functions, and
 - simple algorithm for both AR and MA model, performance of which depends on the
   performance of multi-dimensional array library and FFT library.
 Providing main functionality via low-level libraries makes performance of the
 programme portable: support for new processor architectures can be added by
-substituting the libraries. Finally, using explicit formula for makes made
-velocity potential field computation consume only a small fraction of total
-programme execution time. If such formula did not exist or did not have all
-integrals as Fourier transforms, velocity potential field computation would
-consume much more time.
+substituting the libraries. Finally, using explicit formula makes velocity
+potential field computation consume only a small fraction of total programme
+execution time. If such formula did not exist or did not have all integrals as
+Fourier transforms, velocity potential field computation would consume much more
+time.
 
 ** Fault-tolerant batch job scheduler
 *** System architecture
