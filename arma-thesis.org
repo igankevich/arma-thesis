@@ -827,6 +827,7 @@ different parameters is shown in fig.\nbsp{}[[fig-skew-normal-1]].
 #+NAME: fig-skew-normal-1
 #+begin_src R :file build/skew-normal-1.pdf
 source(file.path("R", "common.R"))
+par(family="serif")
 x <- seq(-3, 3, length.out=100)
 params <- data.frame(
   skewness = c(0.00, 0.52, 0.00, 0.52),
@@ -875,6 +876,7 @@ some programmes and mathematical libraries. Its graph for different values of
 #+name: fig-skew-normal-2
 #+begin_src R :file build/skew-normal-2.pdf
 source(file.path("R", "common.R"))
+par(family="serif")
 x <- seq(-3, 3, length.out=100)
 alpha <- c(0.00, 0.87, 2.25, 4.90)
 params <- data.frame(
@@ -1742,6 +1744,7 @@ consider only adjacent parts in dependency resolution.
 #+header: :width 5 :height 5
 #+begin_src R :file build/ar-cubes.pdf
 source(file.path("R", "common.R"))
+par(family="serif")
 arma.plot_ar_cubes_2d(3, 3, xlabel="Part index (X)", ylabel="Part index (Y)")
 #+end_src
 
@@ -1854,6 +1857,7 @@ because discarding occurs for each of three dimensions.
 #+name: fig-ramp-up-interval
 #+begin_src R :file build/ramp-up-interval.pdf
 source(file.path("R", "common.R"))
+par(family="serif")
 arma.plot_ramp_up_interval()
 #+end_src
 

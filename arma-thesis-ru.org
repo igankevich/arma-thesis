@@ -868,6 +868,7 @@ for (i in seq(0, 4)) {
 #+name: fig-skew-normal-1
 #+begin_src R :file build/skew-normal-1-ru.pdf
 source(file.path("R", "common.R"))
+par(family="serif")
 x <- seq(-3, 3, length.out=100)
 params <- data.frame(
   skewness = c(0.00, 0.52, 0.00, 0.52),
@@ -919,6 +920,7 @@ legend(
 #+name: fig-skew-normal-2
 #+begin_src R :file build/skew-normal-2-ru.pdf
 source(file.path("R", "common.R"))
+par(family="serif")
 x <- seq(-3, 3, length.out=100)
 alpha <- c(0.00, 0.87, 2.25, 4.90)
 params <- data.frame(
@@ -951,7 +953,7 @@ legend(
 #+caption: асимметрии \(\alpha\).
 #+name: fig-skew-normal-2
 #+RESULTS: fig-skew-normal-2
-[[file:build/skew-normal-2.pdf]]
+[[file:build/skew-normal-2-ru.pdf]]
 
 **** Верификация нелинейного безынерционного преобразования
 Для того чтобы измерить влияние НБП на форму результирующей взволнованной
@@ -1782,6 +1784,7 @@ arma.plot_velocity(
 #+header: :width 5 :height 5
 #+begin_src R :file build/ar-cubes-ru.pdf
 source(file.path("R", "common.R"))
+par(family="serif")
 arma.plot_ar_cubes_2d(3, 3, xlabel="Индекс части (X)", ylabel="Индекс части (Y)")
 #+end_src
 
@@ -1902,6 +1905,7 @@ arma.plot_ar_cubes_2d(3, 3, xlabel="Индекс части (X)", ylabel="Инд
 #+name: fig-ramp-up-interval
 #+begin_src R :file build/ramp-up-interval-ru.pdf
 source(file.path("R", "common.R"))
+par(family="serif")
 arma.plot_ramp_up_interval(label="Интервал разгона")
 #+end_src
 
@@ -2161,6 +2165,7 @@ arma.print_sync_vs_async_io(suffix_names, row_names, top_names, mark=",")
 #+header: :width 5 :height 6 :results output graphics
 #+begin_src R :file build/arma-io-events-ru.pdf
 source(file.path("R", "benchmarks.R"))
+par(family="serif")
 names <- list(
   xlab="Время, сек.",
   ylab="Поток"
