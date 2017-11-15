@@ -1243,7 +1243,7 @@ Two-dimensional Laplace equation with Robin boundary condition is written as
 \begin{align}
     \label{eq-problem-2d}
     & \phi_{xx}+\phi_{zz}=0,\\
-    & \zeta_t + \zeta_x\phi_x = \frac{\zeta_x}{\sqrt{1 + \zeta_x^2}} \phi_x - \phi_z, & \text{на }z=\zeta(x,t).\nonumber
+    & \zeta_t + \zeta_x\phi_x = \frac{\zeta_x}{\sqrt{1 + \zeta_x^2}} \phi_x - \phi_z, & \text{at }z=\zeta(x,t).\nonumber
 \end{align}
 Use Fourier method to solve this problem. Applying Fourier transform to both
 sides of the equation yields
@@ -1392,7 +1392,7 @@ to their lengths, which allows us to simplify initial system of
 equations\nbsp{}eqref:eq-problem-2d to
 \begin{align*}
     & \phi_{xx}+\phi_{zz}=0,\\
-    & \zeta_t = -\phi_z & \text{на }z=\zeta(x,t),
+    & \zeta_t = -\phi_z & \text{at }z=\zeta(x,t),
 \end{align*}
 solution to which is written as
 \begin{equation*}
@@ -1460,7 +1460,7 @@ Three-dimensional version of\nbsp{}eqref:eq-problem is written as
     =
     \frac{\zeta_x}{\SqrtZeta{1 + \zeta_x^2 + \zeta_y^2}} \phi_x
     +\frac{\zeta_y}{\SqrtZeta{1 + \zeta_x^2 + \zeta_y^2}} \phi_y
-    - \phi_z, & \text{на }z=\zeta(x,y,t).\nonumber
+    - \phi_z, & \text{at }z=\zeta(x,y,t).\nonumber
 \end{align}
 Again, use Fourier method to solve it. Applying Fourier transform to both sides
 of Laplace equation yields
@@ -3839,7 +3839,7 @@ In the framework of linear wave theory two-dimensional system of
 equations\nbsp{}eqref:eq-problem is written as
 \begin{align*}
     & \phi_{xx} + \phi_{zz} = 0,\\
-    & \zeta(x,t) = -\frac{1}{g} \phi_t, & \text{на }z=\zeta(x,t),
+    & \zeta(x,t) = -\frac{1}{g} \phi_t, & \text{at }z=\zeta(x,t),
 \end{align*}
 where \(\frac{p}{\rho}\) includes \(\phi_t\). The solution to the Laplace
 equation is sought in a form of Fourier series\nbsp{}cite:kochin1966theoretical:
