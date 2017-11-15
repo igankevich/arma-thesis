@@ -2441,13 +2441,14 @@ methods by analysing their internal state.
 graph G {
 
   node [fontname="Old Standard",fontsize=14,margin="0.055,0",shape=box]
-  graph [nodesep="0.25",ranksep="0.25",rankdir="LR"]
+  graph [nodesep="0.25",ranksep="0.25",rankdir="LR",margin=0]
   edge [arrowsize=0.66]
 
   subgraph cluster_daemon {
     label="Daemon process"
     style=filled
     color=lightgrey
+    graph [margin=8]
 
     factory [label="Factory"]
     parallel_ppl [label="Parallel\npipeline"]
@@ -2470,6 +2471,7 @@ graph G {
     label="Compute devices"
     style=filled
     color=lightgrey
+    graph [margin=8]
 
     cpu [label="CPU"]
     core0 [label="Core 0"]

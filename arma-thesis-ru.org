@@ -955,7 +955,7 @@ legend(
 #+RESULTS: fig-skew-normal-2
 [[file:build/skew-normal-2-ru.pdf]]
 
-**** Верификация нелинейного безынерционного преобразования
+**** Тестирование.
 Для того чтобы измерить влияние НБП на форму результирующей взволнованной
 поверхности, было сгенерировано три реализации:
 - реализация с Гауссовым распределением (без НБП),
@@ -1259,6 +1259,7 @@ arma.plot_nonlinear(file.path("build", "nit-standing"), args)
 получения явного решения задачи определения давлений под взволнованной морской
 поверхностью.
 
+#+LATEX: \pagebreak
 *** Двухмерное поле потенциала скорости
 :PROPERTIES:
 :CUSTOM_ID: sec-pressure-2d
@@ -2529,13 +2530,14 @@ IP-адрес, передавая, сколько узлов уже связан
 graph G {
 
   node [fontname="Old Standard",fontsize=14,margin="0.055,0",shape=box]
-  graph [nodesep="0.25",ranksep="0.25",rankdir="LR"]
+  graph [nodesep="0.25",ranksep="0.25",rankdir="LR" margin=0]
   edge [arrowsize=0.66]
 
   subgraph cluster_daemon {
     label="Родительский процесс"
     style=filled
     color=lightgrey
+    graph [margin=8]
 
     factory [label="Фабрика"]
     parallel_ppl [label="Параллельный\nконвейер"]
@@ -2558,6 +2560,7 @@ graph G {
     label="Вычислительные устройства"
     style=filled
     color=lightgrey
+    graph [margin=8]
 
     cpu [label="CPU"]
     core0 [label="Ядро 0"]
