@@ -640,7 +640,7 @@ fig.\nbsp{}[[propagating-wave-distributions]],\nbsp{}[[standing-wave-distributio
 #+name: propagating-wave-distributions
 #+begin_src R :file build/propagating-wave-qqplots.pdf
 source(file.path("R", "common.R"))
-par(pty="s", mfrow=c(2, 2))
+par(pty="s", mfrow=c(2, 2), family="serif")
 arma.qqplot_grid(
   file.path("build", "propagating_wave"),
   c("elevation", "heights_y", "lengths_y", "periods"),
@@ -659,7 +659,7 @@ arma.qqplot_grid(
 #+name: standing-wave-distributions
 #+begin_src R :file build/standing-wave-qqplots.pdf
 source(file.path("R", "common.R"))
-par(pty="s", mfrow=c(2, 2))
+par(pty="s", mfrow=c(2, 2), family="serif")
 arma.qqplot_grid(
   file.path("build", "standing_wave"),
   c("elevation", "heights_y", "lengths_y", "periods"),
@@ -681,7 +681,7 @@ arma.qqplot_grid(
 source(file.path("R", "common.R"))
 propagating_acf <- read.csv(file.path("build", "propagating_wave", "acf.csv"))
 standing_acf <- read.csv(file.path("build", "standing_wave", "acf.csv"))
-par(mfrow=c(5, 2), mar=c(0,0,0,0))
+par(mfrow=c(5, 2), mar=c(0,0,0,0), family="serif")
 for (i in seq(0, 4)) {
   arma.wavy_plot(standing_acf, i, zlim=c(-5,5))
   arma.wavy_plot(propagating_acf, i, zlim=c(-5,5))
@@ -714,13 +714,17 @@ surface region. The same correspondence degree for wave elevation is obtained,
 because this is the characteristic of the wavy surface (and corresponding AR or
 MA process) and is not affected by the type of waves.
 
+To summarise, software implementation of AR and MA models (which is described in
+detail in sec.\nbsp{}[[#sec-hpc]]) generates wavy surface, distributions of
+individual waves' characteristics of which correspond to /in situ/ data.
+
 ** Modelling non-linearity of sea waves
 ARMA model allows to model asymmetry of wave elevation distribution,
 i.e.\nbsp{}generate sea waves, distribution of \(z\)-coordinate of which has
 non-nought kurtosis and asymmetry. Such distribution is inherent to real sea
 waves\nbsp{}cite:longuet1963nonlinear and given by either polynomial
 approximation of /in situ/ data or analytic formula. Wave asymmetry is modelled
-by non-linear inertia-less transform (NIT) of stochastic process, however,
+by non-linear inertialess transform (NIT) of stochastic process, however,
 transforming resulting wavy surface means transforming initial ACF. In order to
 alleviate this, ACF must be preliminary transformed as shown
 in\nbsp{}cite:boukhanovsky1997thesis.
@@ -1118,9 +1122,9 @@ determined precisely. However, integral characteristics of wavy surface match
 the ones of real sea waves.
 
 Theoretically, sea waves themselves can be chosen as ACFs, the only
-pre-processing step is to make them decay exponentially. This may allow
-to generate waves of arbitrary profiles, and is one of the directions of future
-work.
+pre-processing step is to make them decay exponentially. This may allow to
+generate waves of arbitrary profiles without using NIT, and is one of the
+directions of future work.
 
 * Pressure field under discretely given wavy surface
 ** Known pressure field determination formulae
@@ -1564,20 +1568,20 @@ the formula for three-dimensional case was not derived.
 Comparing obtained generic formulae\nbsp{}eqref:eq-solution-2d
 and\nbsp{}eqref:eq-solution-2d-full to the known formulae from linear wave
 theory allows to see the difference between velocity fields for both large and
-small amplitude waves. In general analytic formula for velocity potential in not
-known, even for plain waves, so comparison is done numerically. Taking into
-account conclusions of section\nbsp{}[[#sec-pressure-2d]], only finite depth
+small amplitude waves. In general case analytic formula for velocity potential
+in not known, even for plain waves, so comparison is done numerically. Taking
+into account conclusions of section\nbsp{}[[#sec-pressure-2d]], only finite depth
 formulae are compared.
 
 **** The difference with linear wave theory formulae.
-In order to obtain velocity potential fields, sea wavy surface was generated
-by AR model with varying wave amplitude. In numerical implementation wave
-numbers in Fourier transforms were chosen on the interval from \(0\) to the
-maximal wave number determined numerically from the obtained wavy surface.
-Experiments were conducted for waves of both small and large amplitudes.
+In order to obtain velocity potential fields, plain waves of varying amplitude
+were generated. Wave numbers in Fourier transforms were chosen on the interval
+from \(0\) to the maximal wave number determined numerically from the resulting
+wavy surface. Experiments were conducted for waves of both small and large
+amplitudes.
 
-The experiment showed that velocity potential fields produced by
-formula\nbsp{}eqref:eq-solution-2d-full for finite depth fluid and
+The experiment showed that velocity potential fields for large-amplitude waves
+produced by formula\nbsp{}eqref:eq-solution-2d-full for finite depth fluid and
 formula\nbsp{}eqref:eq-solution-2d-linear from linear wave theory are
 qualitatively different (fig.\nbsp{}[[fig-potential-field-nonlinear]]). First,
 velocity potential contours have sinusoidal shape, which is different from oval
@@ -1593,7 +1597,7 @@ allows) in resulting velocity potential fields.
 #+header: :width 8 :height 11
 #+begin_src R :file build/plain-wave-velocity-field-comparison.pdf
 source(file.path("R", "velocity-potentials.R"))
-par(pty="s")
+par(pty="s", family="serif")
 nlevels <- 41
 levels <- pretty(c(-200,200), nlevels)
 palette <- colorRampPalette(c("blue", "lightyellow", "red"))
@@ -1659,7 +1663,7 @@ without restriction on wave amplitudes.
 #+begin_src R :file build/large-and-small-amplitude-velocity-field-comparison.pdf
 source(file.path("R", "velocity-potentials.R"))
 linetypes = c("solid", "dashed")
-par(mfrow=c(2, 1))
+par(mfrow=c(2, 1), family="serif")
 arma.plot_velocity(
   file.path("data", "velocity", "low-amp"),
   file.path("data", "velocity", "low-amp-0"),
@@ -1688,9 +1692,16 @@ arma.plot_velocity(
 Formulae derived in this section allow to numerically compute velocity potential
 field (and hence pressure field) near discretely or mathematically given wavy
 sea surface, bypassing assumptions of linear wavy theory and theory of small
-amplitude waves.
+amplitude waves. For small amplitude waves new formulae produce the same
+velocity potential field, as formulae from linear wave theory. For
+large-amplitude waves the usage of new formulae results in a shift of a region
+where the majority of wave energy is concentrated closer to the wave crest.
 
 * High-performance software implementation of sea wave simulation
+:PROPERTIES:
+:CUSTOM_ID: sec-hpc
+:END:
+
 ** SMP implementation
 *** Wavy surface generation
 **** Parallel AR, MA and LH model algorithms.
