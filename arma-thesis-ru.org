@@ -2745,7 +2745,7 @@ downstream-объектов. Это означает, что если решае
 #+begin_src dot :exports results :file build/pipeline-ru.pdf
 digraph {
 
-  node [fontsize=14,margin="0.055,0"]
+  node [fontname="Old Standard"fontsize=14,margin="0.055,0"]
   graph [nodesep="0.25",ranksep="0.25",rankdir="TB"]
   edge [arrowsize=0.66]
 
