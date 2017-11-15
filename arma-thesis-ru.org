@@ -978,7 +978,7 @@ legend(
 
 #+name: fig-nit
 #+header: :width 7 :height 7
-#+begin_src R :file build/nit.pdf
+#+begin_src R :file build/nit-ru.pdf
 source(file.path("R", "nonlinear.R"))
 par(mfrow=c(2, 1), mar=c(4,4,4,0.5), family='serif')
 args <- list(
@@ -996,7 +996,7 @@ arma.plot_nonlinear(file.path("build", "nit-standing"), args)
 #+caption: Срезы взволнованной поверхности с различными распределениями
 #+caption: волновых аппликат (Гауссово, РГШ и асимметричное нормальное).
 #+RESULTS: fig-nit
-[[file:build/nit.pdf]]
+[[file:build/nit-ru.pdf]]
 
 #+name: tab-nit-error
 #+caption[Ошибки аппроксимации АКФ]:
@@ -1945,13 +1945,13 @@ arma.plot_ramp_up_interval(label="Интервал разгона")
 #+caption[Конфигурация системы "Gpulab"]:
 #+caption: Конфигурация системы "Gpulab".
 #+attr_latex: :booktabs t
-| Процессор                    | AMD FX-8370                        |
-| Память процессора            | 16ГБ                               |
-| Видеокарта                   | GeForce GTX 1060                   |
-| Память видеокарты            | 6ГБ                                |
-| Жесткий диск                 | WDC WD40EZRZ-00WN9B0, 5400об./мин. |
-| Количество процессорных ядер | 4                                  |
-| Количество потоков на ядро   | 2                                  |
+| Процессор                    | AMD FX-8370                |
+| Память процессора            | 16ГБ                       |
+| Видеокарта                   | GeForce GTX 1060           |
+| Память видеокарты            | 6ГБ                        |
+| Жесткий диск                 | WDC WD40EZRZ, 5400об./мин. |
+| Количество процессорных ядер | 4                          |
+| Количество потоков на ядро   | 2                          |
 
 Программная реализация использует несколько библиотек математических функций,
 численных алгоритмов и примитивов визуализации (перечисленных в
@@ -2162,7 +2162,7 @@ arma.print_sync_vs_async_io(suffix_names, row_names, top_names, mark=",")
 | Запись вывода в файл               | 0.28 | 2.34 |     10.95 | 0.00 | 0.00 |      0.00 |
 
 #+name: fig-arma-io-events
-#+header: :width 5 :height 6 :results output graphics
+#+header: :width 6 :height 7 :results output graphics
 #+begin_src R :file build/arma-io-events-ru.pdf
 source(file.path("R", "benchmarks.R"))
 par(family="serif")
@@ -2170,7 +2170,7 @@ names <- list(
   xlab="Время, сек.",
   ylab="Поток"
 )
-par(mfrow=c(3,1), family="serif")
+par(mfrow=c(3, 1), mar=c(4,4,4,0.5), family='serif')
 arma.plot_io_events(names)
 #+end_src
 
@@ -2316,24 +2316,24 @@ routine_names <- list(
   harts_fft="БПФ",
   harts_copy_to_host="Копирование данных с видекарты"
 )
-column_names <- c("Подпрограмма", "Время OpenMP, сек.", "Время OpenCL, сек.")
+column_names <- c("Подпрограмма", "OpenMP", "OpenCL")
 data <- arma.load_realtime_data()
 arma.print_table_for_realtime_data(data, routine_names, column_names)
 #+end_src
 
 #+name: tab-arma-realtime
 #+caption[Производительность вычисления поля потенциала скорости]:
-#+caption: Время работы подпрограмм вычисления поля потенциала скорости
+#+caption: Время работы (сек.) подпрограмм вычисления поля потенциала скорости
 #+caption: в реальном времени для взволнованной поверхности (размер по
 #+caption: \(OX\) равен 16384).
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-realtime
-| Подпрограмма                    | Время OpenMP, сек. | Время OpenCL, сек. |
-|---------------------------------+--------------------+--------------------|
-| Функция \(g_1\)                 |             4.6730 |             0.0038 |
-| Функция \(g_2\)                 |             0.0002 |             0.8253 |
-| БПФ                             |             2.8560 |             0.3585 |
-| Копирование данных с видеокарты |                    |             2.6357 |
+| Подпрограмма                   | OpenMP | OpenCL |
+|--------------------------------+--------+--------|
+| Функция \(g_1\)                | 4.6730 | 0.0038 |
+| Функция \(g_2\)                | 0.0002 | 0.8253 |
+| БПФ                            | 2.8560 | 0.3585 |
+| Копирование данных с видекарты |        | 2.6357 |
 
 Как и ожидалось, совместное использование одного буфера контекстами OpenCL и
 OpenGL увеличивает производительность путем исключения копирования данных между
@@ -2746,7 +2746,7 @@ downstream-объектов. Это означает, что если решае
 digraph {
 
   node [fontname="Old Standard"fontsize=14,margin="0.055,0"]
-  graph [nodesep="0.25",ranksep="0.25",rankdir="TB"]
+  graph [nodesep="0.25",ranksep="0.25",rankdir="TB",margin=0]
   edge [arrowsize=0.66]
 
   # data
@@ -2767,6 +2767,7 @@ digraph {
       labeljust=left
       style=filled
       color=lightgrey
+      graph [margin=8]
       acf2 [label="K*(i,j,k)",shape=box]
       transform_acf [label="Преобразование АКФ",shape=box,style=rounded]
     }
@@ -2813,6 +2814,7 @@ digraph {
       labeljust=right
       style=filled
       color=lightgrey
+      graph [margin=8]
       zeta3_parts [label="<g1> ζ₁|<g2> ζ₂|<g3> …|<g4> ζₙ|<gen> ζ(t,x,y)",shape=record]
       transform_zeta [label="<g1> g₁|<g2> g₂|<g3> …|<g4> gₙ|<gen> Преобразование за-\lкона распределения\lвзволнованной мор-\lской поверхности\l",shape=record,style=rounded]
     }
@@ -3070,7 +3072,7 @@ digraph {
 #+caption[Древовидная иерархия для кластера из 11 узлов]:
 #+caption: Древовидная иерархия для кластера из 11 узлов со
 #+caption: значением ветвления 2. Красными стрелками обозначен порядок
-#+caption: обхода иерархии узлом с IP-адресом ~10.0.0.10~.
+#+caption: обхода иерархии узлом с IP-адресом 10.0.0.10.
 #+name: fig-tree-hierarchy-11
 #+RESULTS: fig-tree-hierarchy-11
 [[file:build/tree-hierarchy-11-ru.pdf]]

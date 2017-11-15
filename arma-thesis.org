@@ -1895,13 +1895,13 @@ periodicity allows to use far fewer coefficients compared to LH model.
 #+caption["Gpulab" system configuration]:
 #+caption: "Gpulab" system configuration.
 #+attr_latex: :booktabs t
-| CPU                     | AMD FX-8370                   |
-| RAM                     | 16Gb                          |
-| GPU                     | GeForce GTX 1060              |
-| GPU memory              | 6GB                           |
-| HDD                     | WDC WD40EZRZ-00WN9B0, 5400rpm |
-| No. of CPU cores        | 4                             |
-| No. of threads per core | 2                             |
+| CPU                     | AMD FX-8370           |
+| RAM                     | 16Gb                  |
+| GPU                     | GeForce GTX 1060      |
+| GPU memory              | 6GB                   |
+| HDD                     | WDC WD40EZRZ, 5400rpm |
+| No. of CPU cores        | 4                     |
+| No. of threads per core | 2                     |
 
 Software implementation uses several libraries of mathematical functions,
 numerical algorithms and visualisation primitives (listed in
@@ -2109,7 +2109,7 @@ names <- list(
   xlab="Time, s",
   ylab="Thread"
 )
-par(mfrow=c(3,1), family="serif")
+par(mfrow=c(3, 1), mar=c(4,4,4,0.5), family='serif')
 arma.plot_io_events(names)
 #+end_src
 
@@ -2249,23 +2249,23 @@ routine_names <- list(
   harts_fft="FFT",
   harts_copy_to_host="Copy data from GPU"
 )
-column_names <- c("Subroutine", "OpenMP time, s", "OpenCL time, s")
+column_names <- c("Subroutine", "OpenMP", "OpenCL")
 data <- arma.load_realtime_data()
 arma.print_table_for_realtime_data(data, routine_names, column_names)
 #+end_src
 
 #+name: tab-arma-realtime
 #+caption[Velocity potential calculation performance]:
-#+caption: Running time of real-time velocity potential calculation subroutines
+#+caption: Running time (s.) of real-time velocity potential calculation subroutines
 #+caption: for wavy surface (OX size equals 16384).
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-realtime
-| Subroutine         | OpenMP time, s | OpenCL time, s |
-|--------------------+----------------+----------------|
-| \(g_1\) function   |         4.6730 |         0.0038 |
-| \(g_2\) function   |         0.0002 |         0.8253 |
-| FFT                |         2.8560 |         0.3585 |
-| Copy data from GPU |                |         2.6357 |
+| Subroutine         | OpenMP | OpenCL |
+|--------------------+--------+--------|
+| \(g_1\) function   | 4.6730 | 0.0038 |
+| \(g_2\) function   | 0.0002 | 0.8253 |
+| FFT                | 2.8560 | 0.3585 |
+| Copy data from GPU |        | 2.6357 |
 
 As expected, sharing the same buffer between OpenCL and OpenGL contexts
 increases overall solver performance by eliminating data transfer between CPU
@@ -2652,7 +2652,7 @@ which control objects flow.
 digraph {
 
   node [fontname="Old Standard",fontsize=14,margin="0.055,0"]
-  graph [nodesep="0.25",ranksep="0.25",rankdir="TB"]
+  graph [nodesep="0.25",ranksep="0.25",rankdir="TB",margin=0]
   edge [arrowsize=0.66]
 
   # data
@@ -2673,6 +2673,7 @@ digraph {
       labeljust=left
       style=filled
       color=lightgrey
+      graph [margin=8]
       acf2 [label="K*(i,j,k)",shape=box]
       transform_acf [label="Transform ACF",shape=box,style=rounded]
     }
@@ -2719,6 +2720,7 @@ digraph {
       labeljust=right
       style=filled
       color=lightgrey
+      graph [margin=8]
       zeta3_parts [label="<g1> ζ₁|<g2> ζ₂|<g3> …|<g4> ζₙ|<gen> ζ(t,x,y)",shape=record]
       transform_zeta [label="<g1> g₁|<g2> g₂|<g3> …|<g4> gₙ|<gen> Transform wavy\lsurface elevation\lprobability distribution\l",shape=record,style=rounded]
     }
@@ -2962,7 +2964,7 @@ digraph {
 #+caption[Tree hierarchy for 11 nodes]:
 #+caption: Tree hierarchy for 11 nodes with fan-out of 2.
 #+caption: Red arrows denote hierarchy traversal order for a node
-#+caption: with IP address ~10.0.0.10~.
+#+caption: with IP address 10.0.0.10.
 #+name: fig-tree-hierarchy-11
 #+RESULTS: fig-tree-hierarchy-11
 [[file:build/tree-hierarchy-11.pdf]]
