@@ -3,3 +3,4 @@ require("grDevices")
 pdf <- cairo_pdf
 library(ascii)
 options(asciiType="org")
+options(arma.mark=".")

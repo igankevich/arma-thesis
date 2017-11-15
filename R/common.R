@@ -270,3 +270,14 @@ arma.plot_factory_vs_openmp_overlap <- function(...) {
   text(factory_pts$t, factory_y, labels=factory_pts$mark, pos=c(3, 1, 3, 1))
   title(xlab=args$xlab)
 }
+
+# a workaround for a bug in ascii package
+# which does not honour "decimal.mark" argument
+arma.print_ascii <- function (obj) {
+	decimal.mark <- options("arma.mark")
+	if (is.null(decimal.mark)) {
+		decimal.mark <- "."
+	}
+	replacement <- paste('\\1', decimal.mark, '\\2', sep='')
+	cat(gsub('([0-9]+)\\.([0-9]+)', replacement, capture.output(obj$show.org())), sep="\n")
+}

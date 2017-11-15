@@ -1,5 +1,6 @@
 source(file.path("build", "arma-benchmarks", "R", "arma.load.R"))
 source(file.path("build", "arma-benchmarks", "R", "arma.load_events.R"))
+source(file.path("R", "common.R"))
 
 arma.load_benchmark_data <- function(attempt, framework, models, tags) {
 	data <- data.frame()
@@ -54,7 +55,8 @@ arma.print_openmp_vs_opencl <- function(model_names, row_names) {
   colnames(big_table) <- sapply(colnames(big_table), function (c) get(c, model_names))
 #  rownames(big_table) <- sapply(rownames(big_table), function (c) paste("~", c, "~", sep=""))
   print(ascii(c("", "", "", "OpenMP", "", "OpenCL")))
-  print(ascii(big_table, include.rownames=FALSE))
+  print(ascii(c("", "<r>", "<r>", "<r>", "<r>", "<r>")))
+  arma.print_ascii(ascii(big_table, include.rownames=FALSE))
 }
 
 arma.load_io_benchmark_data <- function(attempt, filesystems, suffix, tags) {
@@ -80,7 +82,7 @@ arma.load_io_benchmark_data <- function(attempt, filesystems, suffix, tags) {
   data
 }
 
-arma.print_sync_vs_async_io <- function(suffix_names, row_names, top_names, mark=".") {
+arma.print_sync_vs_async_io <- function(suffix_names, row_names, top_names) {
   options(asciiType="org")
   tags <- list("generate_surface", "write_all")
   filesystems <- c("xfs", "nfs", "gfs")
@@ -99,7 +101,8 @@ arma.print_sync_vs_async_io <- function(suffix_names, row_names, top_names, mark
   big_table[,"Row.names"] <- sapply(big_table[,"Row.names"], function (c) get(c, row_names))
   colnames(big_table) <- sapply(colnames(big_table), function (c) get(c, suffix_names))
   print(ascii(c("", "", "", top_names[[1]], "", "",  top_names[[2]])))
-  print(ascii(big_table, include.rownames=FALSE, decimal.mark=mark))
+  print(ascii(c("", "<r>", "<r>", "<r>", "<r>", "<r>",  "<r>")))
+  arma.print_ascii(ascii(big_table, include.rownames=FALSE))
 }
 
 arma.plot_io_events <- function (names) {
@@ -265,7 +268,8 @@ arma.print_table_for_realtime_data <- function (data, routine_names, column_name
   all_data[all_data$routine=="harts_copy_to_host", "openmp"] <- NA
   all_data$routine <- sapply(all_data$routine, function (c) get(c, routine_names))
   all_data <- setNames(all_data, column_names)
-  ascii(all_data, include.rownames=FALSE, digits=4)
+  print(ascii(c("", "<r>", "<r>")))
+  arma.print_ascii(ascii(all_data, include.rownames=FALSE, digits=4))
 }
 
 arma.load_bscheduler_data <- function (all_test_cases) {

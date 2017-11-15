@@ -2009,6 +2009,7 @@ arma.print_openmp_vs_opencl(model_names, row_names)
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-performance
 |                                  |      |      | OpenMP |        | OpenCL |
+|                                  |  <r> |  <r> |    <r> |    <r> |    <r> |
 | \orgcmidrule{2-4}{5-6}Subroutine |   AR |   MA |     LH |     AR |     LH |
 |----------------------------------+------+------+--------+--------+--------|
 | Determine coefficients           | 0.02 | 0.01 |   0.19 |   0.01 |   1.19 |
@@ -2086,7 +2087,7 @@ row_names <- list(
   generate_surface="Generate wavy surface",
   write_all="Write output to files"
 )
-arma.print_sync_vs_async_io(suffix_names, row_names, top_names, mark=".")
+arma.print_sync_vs_async_io(suffix_names, row_names, top_names)
 #+end_src
 
 #+name: tab-arma-io-performance
@@ -2096,6 +2097,7 @@ arma.print_sync_vs_async_io(suffix_names, row_names, top_names, mark=".")
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-io-performance
 |                                  |      |      |         I |      |      |        II |
+|                                  |  <r> |  <r> |       <r> |  <r> |  <r> |       <r> |
 | \orgcmidrule{2-4}{5-7}Subroutine |  XFS |  NFS | GlusterFS |  XFS |  NFS | GlusterFS |
 |----------------------------------+------+------+-----------+------+------+-----------|
 | Generate wavy surface            | 1.26 | 1.26 |      1.33 | 1.33 | 3.30 |     11.06 |
@@ -2260,6 +2262,7 @@ arma.print_table_for_realtime_data(data, routine_names, column_names)
 #+caption: for wavy surface (OX size equals 16384).
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-realtime
+|                    |    <r> |    <r> |
 | Subroutine         | OpenMP | OpenCL |
 |--------------------+--------+--------|
 | \(g_1\) function   | 4.6730 | 0.0038 |
