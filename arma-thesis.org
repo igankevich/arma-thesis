@@ -3128,8 +3128,8 @@ To summarise, traversal algorithm is
 Node failures in a distributed system are divided into two types: failure of a
 slave node and failure of a master node. In order for a job running on the
 cluster to survive slave node failure, job scheduler periodically creates
-checkpoints and writes them to a stable storage. In order to create the
-checkpoint, the scheduler temporarily suspends all parallel processes of the
+checkpoints and writes them to a stable (redundant) storage. In order to create
+the checkpoint, the scheduler temporarily suspends all parallel processes of the
 job, copies all memory pages and all internal operating system kernel structures
 allocated for these processes to disk, and resumes execution of the job. In
 order to survive master node failure, job scheduler daemon process continuously
@@ -3155,25 +3155,25 @@ checkpoint.
 
 At the same time, there is a possibility to continue execution of a job on
 lesser number of nodes than it was initially requested by implementing fault
-tolerance on application level. In this case master and slave roles are
-dynamically distributed between job scheduler daemons running on each cluster
-node, forming a tree hierarchy of cluster nodes, and parallel programme consists
-of kernels which use node hierarchy to dynamically distribute the load and use
-their own hierarchy to restart kernels upon node failure.
+tolerance on job scheduler level. In this case master and slave roles are
+dynamically distributed between scheduler's daemon processes running on each
+cluster node, forming a tree hierarchy of cluster nodes, and parallel programme
+consists of kernels which use node hierarchy to dynamically distribute the load
+and use their own hierarchy to restart kernels upon node failure.
 
 **** Dynamic role distribution.
-Fault tolerance of a parallel programme is one of the problems which is being
-solved by big data and HPC job schedulers, however, most schedulers provide
-fault tolerance for slave nodes only. These types of failures are
-routinely handled by restarting the affected job (from a checkpoint) or its part
-on the remaining nodes, and failure of a principal node is often considered
-either improbable, or too complicated to handle and configure on the target
-platform. System administrators often find alternatives to application level
-fault tolerance: they isolate principal process of the scheduler from the rest
-of the cluster nodes by placing it on a dedicated machine, or use virtualisation
-technologies instead. All these alternatives complexify configuration and
-maintenance, and by decreasing probability of a machine failure resulting in a
-whole system failure, they increase probability of a human error.
+Fault tolerance of a parallel programme is one of the problems which is solved
+by big data and HPC job schedulers, however, most schedulers provide fault
+tolerance for slave nodes only. These types of failures are routinely handled by
+restarting the affected job (from a checkpoint) or its part on the remaining
+nodes, and failure of a principal node is often considered either improbable, or
+too complicated to handle and configure on the target platform. System
+administrators often find alternatives to application level fault tolerance:
+they isolate principal process of the scheduler from the rest of the cluster
+nodes by placing it on a dedicated machine, or use virtualisation technologies
+instead. All these alternatives complexify configuration and maintenance, and by
+decreasing probability of a machine failure resulting in a whole system failure,
+they increase probability of a human error.
 
 From such point of view it seems more practical to implement master node fault
 tolerance at application level, but there is no proven generic solution. Most
@@ -3225,12 +3225,11 @@ that needs to be restored upon node failure, so it is easier for them to provide
 high availability. The protocol can be implemented even without routers using
 Keepalived daemon\nbsp{}cite:cassen2002keepalived instead.
 
-Symmetric architecture is beneficial for job schedulers because it
-allows to
+Symmetric architecture is beneficial for job schedulers because it allows to
 - make physical nodes interchangeable,
 - implement dynamic distribution of master and slave node roles, and
 - implement automatic recovery after a failure of any node.
-The following sections will describe the components that are required to write
+The following sections describe the components that are required to write
 parallel programme and job scheduler, that can tolerate failure of cluster
 nodes.
 
@@ -3241,30 +3240,30 @@ the text. If the link is between two daemon processes, the relationship is
 denoted as /master-slave/. If the link is between two kernels, then the
 relationship is denoted as either /principal-subordinate/ or /parent-child/. Two
 hierarchies are orthogonal to each other in a sense that no kernel may have a
-link to a daemon, and vice versa. Since daemon hierarchy is used to distribute
-the load on cluster nodes, kernel hierarchy is mapped onto it, and this mapping
-can be arbitrary: It is common to have principal kernel on a slave node with its
-subordinate kernels distributed evenly between all cluster nodes (including the
-node where the principal is located). Both hierarchies can be arbitrarily deep,
-but "shallow" ones are preferred for highly parallel programmes, as there are
-less number of hops when kernels are distributed between cluster nodes. Since
-there is one-to-one correspondence between daemons and cluster nodes, they are
-used interchangeably in the work.
+link to a daemon, and vice versa. Since daemon process hierarchy is used to
+distribute the load on cluster nodes, kernel hierarchy is mapped onto it, and
+this mapping can be arbitrary: It is common to have principal kernel on a slave
+node with its subordinate kernels distributed evenly between all cluster nodes
+(including the node where the principal is located). Both hierarchies can be
+arbitrarily deep, but "shallow" ones are preferred for highly parallel
+programmes, as there are less number of hops when kernels are distributed
+between cluster nodes. Since there is one-to-one correspondence between daemons
+and cluster nodes, they are used interchangeably in the text.
 
 **** Handling nodes failures.
-Basic strategy to overcome a failure of a subordinate node is to restart
-corresponding kernels on a healthy node\nbsp{}--- a strategy employed by Erlang
-language to restart failed subordinate processes\nbsp{}cite:armstrong2003thesis.
-In order to implement this method in the framework of kernel hierarchy, sender
-node saves every kernel that is sent to remote cluster nodes, and in an event of
-a failure of any number of nodes, where kernels were sent, their copies are
-redistributed between the remaining nodes without custom handling by a
-programmer. If there are no nodes to sent kernels to, they are executed locally.
-So, in contrast to "heavy-weight" checkpoint/restart machinery employed by HPC
-cluster job schedulers, tree hierarchy of nodes coupled with hierarchy of
-kernels allow to automatically and transparently handle of any number of
-subordinate node failures without restarting any processes of a parallel
-programme.
+Basic method to overcome a failure of a subordinate node is to restart
+corresponding kernels on a healthy node (Erlang language uses the same method to
+restart failed subordinate processes\nbsp{}cite:armstrong2003thesis). In order
+to implement this method in the framework of kernel hierarchy, sender node saves
+every kernel that is sent to remote cluster nodes, and in an event of a failure
+of any number of nodes, where kernels were sent, their copies are redistributed
+between the remaining nodes without custom handling by a programmer. If there
+are no nodes to sent kernels to, they are executed locally. In contrast to
+"heavy-weight" checkpoint/restart machinery employed by HPC cluster job
+schedulers, tree hierarchy of nodes coupled with hierarchy of kernels allows to
+automatically and transparently handle any number of subordinate node failures
+without restarting any processes of a parallel programme, and processes act as
+resource allocation units.
 
 A possible way of handling failure of the main node (a node where the main
 kernel is executed) is to replicate the main kernel to a backup node, and make
@@ -3272,52 +3271,52 @@ all updates to its state propagate to the backup node by means of a distributed
 transaction, but this approach does not correlate with asynchronous nature of
 kernels and too complex to implement. In practice, however, the main kernel
 usually does not perform operations in parallel, it is rather sequentially
-execution steps one by one, so it has only one subordinate at a time. (Each
-subordinate kernel represent sequential computational step which may or may not
-be internally parallel.) Keeping this in mind, one can simplify synchronisation
-of the main kernel state: send the main kernel along with its subordinate to the
-subordinate node. Then if the main node fails, the copy of the main kernel
-receives its subordinate (because both of them are on the same node) and no time
-is spent on recovery. When the subordinate node, to which subordinate kernel
-together with the copy of the main kernel was sent, fails, the subordinate
-kernel is sent to some other node, and in the worst case the current
-computational step is executed again.
+executes programme steps one by one, hence it has only one subordinate at a
+time. (Each subordinate kernel represents sequential computational step which
+may or may not be internally parallel.) Keeping this in mind, one can simplify
+synchronisation of the main kernel state: send the main kernel along with its
+subordinate to the subordinate node. Then if the main node fails, the copy of
+the main kernel receives its subordinate (because both of them are on the same
+node) and no time is spent on recovery. When the subordinate node, to which
+subordinate kernel together with the copy of the main kernel was sent, fails,
+the subordinate kernel is sent to a survived node, and in the worst case the
+current computational step is executed again.
 
 The approach described above is designed for kernels that do not have a parent
 and have only one subordinate at a time, which means that it functions as
 checkpoint mechanism. The advantage of this approach is that it
-- saves results after each sequential step, when memory footprint of a programme
-  is low,
+- saves programme state after each sequential step, when memory footprint of a
+  programme is low,
 - saves only relevant data, and
 - uses memory of a subordinate node rather than disk storage.
 This simple approach allows to tolerate at most one failure of /any/ cluster node
 per computational step or arbitrary number of subordinate nodes at any time
 during programme execution.
 
-The algorithm is best described by an example
+An example of failure recovery algorithm in action follows
 (fig.\nbsp{}[[fig-fail-over-example]]).
-1. Initial state. Initially, computer cluster does not need to be configured
+1. *Initial state.* Initially, computer cluster does not need to be configured
    except setting up local network. The algorithm assumes full connectivity of
    cluster nodes, and works best with tree network topologies in which several
    network switches connect all cluster nodes.
-2. Build node hierarchy. When the cluster is bootstrapped, daemon processes
-   start on all cluster nodes and collectively build hierarchy of such processes
+2. *Build node hierarchy.* When the cluster is bootstrapped, daemon processes
+   start on all cluster nodes and collectively build their hierarchy
    superimposed on the topology of cluster network. Position of a daemon process
    in the hierarchy is defined by the position of its node IP address in the
    network IP address range. To establish hierarchical link each process
-   connects to its assumed master process. The hierarchy is changed only when
-   a new node joins the cluster or a node fails.
-3. Launch main kernel. The first kernel launches on one of the subordinate nodes
-   (node \(B\)). Main kernel may have only one subordinate at a time, and backup
-   copy of the main kernel is sent along with the subordinate kernel \(T_1\) to
-   the master node \(A\). \(T_1\) represents one sequential step of a
+   connects to its assumed master process. The hierarchy is changed only when a
+   new node joins the cluster or an existing node fails.
+3. *Launch main kernel.* The first kernel launches on one of the subordinate
+   nodes (node \(B\)). Main kernel may have only one subordinate at a time, and
+   backup copy of the main kernel is sent along with the subordinate kernel
+   \(T_1\) to master node \(A\). \(T_1\) represents one sequential step of a
    programme. There can be any number of sequential steps in a programme, and
    when node \(A\) fails, the current step is restarted from the beginning.
-4. Launch subordinate kernels. Kernels \(S_1\), \(S_2\), \(S_3\) are launched on
-   subordinate cluster nodes. When node \(B\), \(C\) or \(D\) fails,
+4. *Launch subordinate kernels.* Kernels \(S_1\), \(S_2\), \(S_3\) are launched
+   on subordinate cluster nodes. When node \(B\), \(C\) or \(D\) fails,
    corresponding main kernel restarts failed subordinates (\(T_1\) restarts
    \(S_1\), master kernel restarts \(T_1\) etc.). When node \(B\) fails, master
-   kernel is recovered from backup.
+   kernel is recovered from backup copy.
 
 #+name: fig-fail-over-example
 #+header: :headers '("\\input{preamble}")
@@ -3349,7 +3348,7 @@ the example of distributed AR model application, which is described in detail in
 section\nbsp{}[[#sec-arma-mpp]]. The application consists of a series of functions, each
 of which is applied to the result of the previous one. Some of the functions are
 computed in parallel, so the programme is written as a sequence of steps, some
-if which are made internally parallel to get better performance. In the
+of which are made internally parallel to get better performance. In the
 programme only the most compute-intensive step (the surface generation) is
 executed in parallel across all cluster nodes, and other steps are executed in
 parallel across all cores of the master node.
@@ -3360,9 +3359,9 @@ and slight modifications to handle failure of a node with the main kernel. The
 kernel was marked so that the framework makes a replica and sends it to some
 subordinate node along with its subordinate kernel. Other code changes involved
 modifying some parts to match the new API. So, providing fault tolerance by
-means of kernel hierarchy is mostly transparent to the programmer which only
-demands explicit marking of the main kernel and adding code to read and write
-kernels to the byte buffer.
+means of kernel hierarchy is mostly transparent to the programmer: it demands
+explicit marking of the main kernel and adding code to read and write kernels to
+the byte buffer.
 
 In a series of experiments performance of the new version of the application in
 the presence of different types of failures was benchmarked:
@@ -3413,9 +3412,9 @@ potential of the slave node. In case of master node failure, a copy of the main
 kernel as well as the subordinate kernel, which carried the copy, are lost, but
 slave node has the original main kernel and uses it to restart execution of the
 current sequential step, i.e.\nbsp{}send the subordinate kernel to one of the
-survived cluster nodes (in case of two directly connected, it sends the kernel
-to itself). So, application performance is different, because the number of
-kernels that are lost as a result of a failure as well as their roles are
+survived cluster nodes (in case of two directly connected nodes, it sends the
+kernel to itself). So, application performance is different, because the number
+of kernels that are lost as a result of a failure as well as their roles are
 different.
 
 Slave node failure needs some time to be discovered: it is detected only when
@@ -3487,9 +3486,9 @@ multiple sequential steps to make it resilient to cluster node failures,
 otherwise failure of backup node, in fact triggers recovery of the initial state
 of the programme. Although, the probability of a master node failure is lower
 than the probability of a failure of any of the slave nodes, it does not justify
-loosing all the data when the long programme run is near completion. In general,
-the more sequential steps one has in a parallel programme the less time is lost
-in an event of a backup node failure, and the more parallel parts each
+loosing all the data when the long-running programme is near completion. In
+general, the more sequential steps one has in a parallel programme the less time
+is lost in an event of a backup node failure, and the more parallel parts each
 sequential step has the less time is lost in case of a master or slave node
 failure. In other words, the more nodes a programme uses the more resilient to
 their failures it becomes.
@@ -3497,27 +3496,27 @@ their failures it becomes.
 Although it is not shown in the experiments, Bscheduler does not only provide
 tolerance to cluster node failures, but allows for new nodes to automatically
 join the cluster and receive their portion of kernels from the already running
-programmes. This is trivial process as it does not involve restarting failed
-kernels or copying their state, so it has not been studied experimentally in
-this work.
+programmes. This is trivial process in the context of the framework as it does
+not involve restarting failed kernels or copying their state, so it has not been
+studied experimentally in this work.
 
-Theoretically, fault tolerance based on a hierarchy of nodes and kernels can be
-implemented on top of the message-passing library without loss of generality.
-Although it would be complicated to reuse free nodes instead of failed ones in
-the framework of this library, as the number of nodes is often fixed in such
-libraries, allocating reasonably large number of nodes for the programme would
-be enough to make it fault-tolerant. At the same time, implementing
-hierarchy-based fault tolerance inside message-passing library itself is not
-practical, because it would require saving the state of a parallel programme
-which equals to the total amount of memory it occupies on each cluster node,
-which in turn would not make it more efficient than checkpoints.
+Theoretically, hierarchy-based fault tolerance based can be implemented on top
+of the message-passing library without loss of generality. Although it would be
+complicated to reuse free nodes instead of failed ones in the framework of this
+library, as the number of nodes is often fixed in such libraries, allocating
+reasonably large number of nodes for the programme would be enough to make it
+fault-tolerant. At the same time, implementing hierarchy-based fault tolerance
+inside message-passing library itself is not practical, because it would require
+saving the state of a parallel programme which equals to the total amount of
+memory it occupies on each cluster node, which in turn would not make it more
+efficient than checkpoints.
 
-The weak point of the proposed algorithm is the period of time starting from a
+The weak point of the proposed method is the period of time starting from a
 failure of master node up to the moment when the failure is detected, the main
 kernel is restored and new subordinate kernel with the parent's copy is received
-by a slave node. If at any time during this period backup node fails, execution
-state of a programme is completely lost, and there is no way to recover it other
-than restarting the programme from the beginning. The duration of the dangerous
+by a slave node. If backup node fails within this time frame, execution state of
+a programme is completely lost, and there is no way to recover it other than
+restarting the programme from the beginning. The duration of the dangerous
 period can be minimised, but the probability of an abrupt programme termination
 can not be fully eliminated. This result is consistent with the scrutiny of
 /impossibility theory/, in the framework of which it is proved the impossibility
@@ -3528,30 +3527,50 @@ failures\nbsp{}cite:fekete1993impossibility.
 
 *** Summary
 Current state-of-the-art approach to developing and running parallel programmes
-on the cluster is the use of MPI message passing library and job scheduler, and
+on the cluster is the use of message passing library and job scheduler, and
 despite the fact that this approach is highly efficient in terms of parallel
-computing, it is not flexible enough to accommodate dynamic load balancing and
-automatic fault-tolerance. Programmes written with MPI typically assume
+computation, it is not flexible enough to accommodate dynamic load balancing and
+automatic fault-tolerance. Programmes written with message passing library
+typically assume
 - equal load on each processor,
 - non-interruptible and reliable execution of batch jobs, and
 - constant number of parallel processes/threads throughout the execution which
   is equal to the total number of processors.
-The first assumption does not hold for sea wave simulation programme because
-AR model requires dynamic load balancing between processors to generate each
-part of the surface only when all dependent parts has already been generated.
-The last assumption also does not hold, because for the sake of efficiency each
-part is written to a file asynchronously by a separate thread. The remaining
+The first assumption does not hold for sea wave simulation programme because AR
+model requires dynamic load balancing between processors to generate each part
+of the surface only when all dependent parts have already been generated. The
+last assumption also does not hold, because for the sake of efficiency each part
+is written to a file asynchronously by a separate thread. The remaining
 assumption is not related to the programme itself, but to the job scheduler, and
 does not generally hold for very large computer clusters in which node failures
-occur regularly, and job scheduler slowly restores the failed job from the
-checkpoint severely hindering its performance. So, the idea of the proposed
-approach is to give parallel programmes more flexibility:
+occur regularly, and job scheduler restores the failed job from the checkpoint
+greatly increasing its running time. The idea of the proposed approach is to
+give parallel programmes more flexibility:
 - provide dynamic load balancing via pipelined execution of sequential,
   internally parallel programme steps,
 - restart only processes that were affected by node failure, and
 - execute the programme on as many compute nodes as are available in the
   cluster.
 In this section advantages and disadvantages of this approach are discussed.
+
+In comparison to portable batch systems (PBS) the proposed approach uses
+lightweight control flow objects instead of heavy-weight parallel jobs to
+distribute the load on cluster nodes. First, this allows to have per-node kernel
+queues instead of several cluster-wide job queues. The granularity of control
+flow objects is much higher than of the batch jobs, and despite the fact that
+their execution time cannot be reliably predicted (as is execution time of batch
+jobs\nbsp{}cite:zotkin1999job), objects from multiple parallel programmes can be
+dynamically distributed between the same set of cluster nodes, thus making the
+load more even. The disadvantage is that this requires more RAM to execute many
+programmes on the same set of nodes, and execution time of each programme may be
+greater because of the shared control flow object queues. Second, the proposed
+approach uses dynamic distribution of master and slave roles between cluster
+nodes instead of their static assignment to the particular physical nodes. This
+makes nodes interchangeable, which is required to provide fault tolerance.
+Simultaneous execution of multiple parallel programmes on the same set of nodes
+increases throughput of the cluster, but also decreases their performance taken
+separately; dynamic role distribution is the base on which resilience to
+failures builds.
 
 In comparison to MPI the proposed approach uses lightweight control flow objects
 instead of heavy-weight processes to decompose the programme into individual
@@ -3589,25 +3608,6 @@ messages between any pair of entities. Such irregular message exchange pattern
 makes it impossible to decide which object is responsible for restarting a
 failed one, hence non-universal fault tolerance techniques are used
 instead\nbsp{}cite:lifflander2014scalable.
-
-In comparison to portable batch systems (PBS) the proposed approach uses
-lightweight control flow objects instead of heavy-weight parallel jobs to
-distribute the load on cluster nodes. First, this allows to have node object
-queues instead of several cluster-wide job queues. The granularity of control
-flow objects is much higher than the batch jobs, and despite the fact that their
-execution time cannot be reliably predicted (as is execution time of batch
-jobs\nbsp{}cite:zotkin1999job), objects from multiple parallel programmes can be
-dynamically distributed between the same set of cluster nodes, thus making the
-load more even. The disadvantage is that this requires more RAM to execute many
-programmes on the same set of nodes, and execution time of each programme may be
-greater because of the shared control flow object queues. Second, the proposed
-approach uses dynamic distribution of master and slave roles between cluster
-nodes instead of their static assignment to the particular physical nodes. This
-makes nodes interchangeable, which is required to provide fault tolerance. So,
-simultaneous execution of multiple parallel programmes on the same set of nodes
-may increase throughput of the cluster, but may also decrease their performance
-taken separately, and dynamic role distribution is the base on which resilience
-to failures builds.
 
 Three building blocks of the proposed approach\nbsp{}--- control flow objects,
 pipelines and hierarchies\nbsp{}--- complement each other. Without control flow
