@@ -2837,7 +2837,7 @@ is unaffected by some nodes going on-line and off-line.
 The approach for cluster node discovery does not use wave algorithms, and hence
 does not require communicating with each node of the cluster to determine a
 leader. Instead, each node enumerates all nodes in the network it is part of,
-and converts this list to a /tree hierarchy/ with a user-defined fan-out value
+and converts this list to a /tree hierarchy/ with a user-defined /fan-out/ value
 (maximal number of subordinate nodes a node may have). Then the node determines
 its hierarchy level and tries to communicate with nodes from higher levels to
 become their subordinate. First, it checks the closest ones and then goes all
@@ -2904,29 +2904,28 @@ hierarchy with network positions \(i\) and \(j\) is computed as
 \end{align*}
 The distance is compound to account for level in the first place.
 
-To determine its master each node ranks all nodes in the network according to
+To determine its master, each node ranks all nodes in the network according to
 their position \(\langle{l(n),o(n)}\rangle\), and using distance formula chooses
-the node which is closest to potential master position and has lower level.
-That way IP addresses of offline nodes are skipped, however, for sparse networks
-(in which nodes occupy non-contiguous IP addresses) perfect tree is not
-guaranteed.
+the node which is closest to potential master position and has lower level. That
+way IP addresses of off-line nodes are skipped, however, for sparse networks (in
+which nodes occupy non-contiguous IP addresses) perfect tree is not guaranteed.
 
-Formula for computing distance can be made arbitrary complex (to account for
-network latency and throughput or geographical location of the node), however,
-for its simplest form it is more efficient to use cluster node traversal
-algorithm. The algorithm requires less memory as there is no need to store
-ranked list of all nodes, but iterates over IP addresses of the network in the
-order defined by the fan-out value. The algorithm is as follows. First, the
+Formula for computing distance can be made arbitrary complex (e.g.\nbsp{}to
+account for network latency and throughput or geographical location of the
+node), however, for its simplest form it is more efficient to use cluster node
+/traversal algorithm/. The algorithm requires less memory as there is no need to
+store ranked list of all nodes, but iterates over IP addresses of the network in
+the order defined by the fan-out value. The algorithm is as follows. First, the
 /base/ node (a node which searches for its master) computes its potential master
 address and tries to connect to this node. If the connection fails, the base
 node sequentially tries to connect to each node from the higher hierarchy
 levels, until it reaches the top of the hierarchy (the root of the tree). If
-none of the connections succeeds, the base node sequentially connects to all
-nodes on its own level having lesser position in IP address range. If none of
-the nodes respond, the base node becomes the master node of the whole hierarchy,
-and the traversal repeats after a set period of time. An example of traversal
-order for a cluster of 11 nodes and a tree hierarchy with fan-out value of 2 is
-shown in\nbsp{}fig.\nbsp{}[[fig-tree-hierarchy-11]].
+none of the connections succeed, the base node sequentially connects to all
+nodes on its own level having lower position in IP address range. If none of the
+nodes respond, the base node becomes the master node of the whole hierarchy, and
+the traversal repeats after a set period of time. An example of traversal order
+for a cluster of 11 nodes and a tree hierarchy with fan-out value of 2 is shown
+in\nbsp{}fig.\nbsp{}[[fig-tree-hierarchy-11]].
 
 #+name: fig-tree-hierarchy-11
 #+begin_src dot :exports results :file build/tree-hierarchy-11.pdf
@@ -2975,11 +2974,11 @@ digraph {
 [[file:build/tree-hierarchy-11.pdf]]
 
 **** Evaluation results.
-To benchmark performance of node discovery, several daemon processes were
-launched on each physical cluster node, each bound to its own IP address. The
-number of processes per physical core varied from 2 to 16. Each process was
-bound to a particular physical core to reduce overhead of process migration
-between cores. Tree hierarchy traversal algorithm has low requirements for
+To benchmark performance of traversal algorithm on large number of nodes,
+several daemon processes were launched on each physical cluster node, each bound
+to its own IP address. The number of processes per physical core varied from 2
+to 16. Each process was bound to a particular physical core to reduce overhead
+of process migration between cores. The algorithm has low requirements for
 processor time and network throughput, so running multiple processes per
 physical core is feasible, in contrast to HPC codes, where it often lowers
 performance. Test platform configuration is shown in table\nbsp{}[[tab-ant]].
@@ -3000,18 +2999,18 @@ where the authors reproduce various real-world experiments using virtual
 clusters, based on Linux namespaces, and compare the results to physical ones.
 The advantage of it is that the tests can be performed on a large virtual
 cluster using relatively small number of physical nodes. The advantage of the
-approach used in this work, which does not use Linux namespaces, is that it is
+approach used in this work (which does not use Linux namespaces) is that it is
 more lightweight and larger number of daemon processes can be benchmarked on the
 same physical cluster.
 
-Node discovery performance was evaluated by measuring time needed for all nodes
-of the cluster to discover each other, i.e.\nbsp{}the time needed for the tree
-hierarchy of nodes to reach stable state. Each change of the hierarchy, as seen
-by each node, was written to a log file and after a set amount of time all
+Traversal algorithm performance was evaluated by measuring time needed for all
+nodes of the cluster to discover each other, i.e.\nbsp{}the time needed for the
+tree hierarchy of nodes to reach stable state. Each change of the hierarchy, as
+seen by each node, was written to a log file and after a set amount of time all
 daemon processes (each of which models cluster node) were forcibly terminated.
 Daemon processes were launched sequentially with a 100ms delay to ensure that
-master nodes are always come online before subordinates and hierarchy does
-not change randomly as a result of different start time of each process. This
+master nodes are always come online before subordinates and hierarchy does not
+change randomly as a result of different start time of each process. This
 artificial delay was subsequently subtracted from the results. So, benchmark
 results represent discovery time in an "ideal" cluster, in which every daemon
 process always finds its master on the first try.
@@ -3044,12 +3043,12 @@ bscheduler.plot_discovery(xlabel="No. of physical nodes",toplabel="ppn")
 [[file:build/discovery-benchmark.pdf]]
 
 **** Discussion.
-Node discovery scales to a large number of nodes, because in order to determine
-its master, a node is required to communicate to a node address of which it
-knows beforehand. Communication with other nodes occurs only when the current
-master node fails. So, if cluster nodes occupy contiguous addresses in
-network IP address range, each node connects only to its master, and
-inefficient scan of the whole network by each node does not occur.
+Traversal algorithm scales to a large number of nodes, because in order to
+determine its master, a node is required to communicate to a node address of
+which it knows beforehand. Communication with other nodes occurs only when the
+current master node fails. So, if cluster nodes occupy contiguous addresses in
+network IP address range, each node connects only to its master, and inefficient
+scan of the whole network by each node does not occur.
 
 The following key features distinguish the proposed approach with respect to
 some existing
@@ -3065,24 +3064,25 @@ approaches\nbsp{}cite:brunekreef1996design,aguilera2001stable,romano2014design.
 - *IP-address mapping.* Since hierarchy structure solely depends on the nodes'
   IP addresses, there is no election phase in the algorithm. To change the
   master each node sends a message to the old master and to the new one.
-- *Completely event-based.* The messages are sent only when some node fails, so
-  there is no constant load on the network. Since the algorithm allows to
-  tolerate failure of sending any message, there is no need in heartbeat packets
-  indicating node serviceability in the network; instead, all messages play the
-  role of heartbeats and packet send time-out is adjusted\nbsp{}cite:rfc5482.
+- *Completely event-based.* The messages are sent only when some node joins the
+  cluster or fails, so there is no constant load on the network. Since the
+  algorithm allows to tolerate failure of sending any message, there is no need
+  in heartbeat packets indicating node serviceability in the network; instead,
+  all messages play the role of heartbeats and packet send time-out is
+  adjusted\nbsp{}cite:rfc5482.
 - *No manual configuration.* A node does not require any prior knowledge to find
   the master: it determines the network it is part of, calculates potential
-  master IP-address and sends the message. If it fails, the process is
-  repeated for the next potential master node. So the algorithm is suitable
-  to bootstrap a cluster without manual configuration, the only requirement is
-  to start the corresponding service on each node.
+  master IP-address and sends the message. If it fails, the process is repeated
+  for the next potential master node. So, the algorithm is able to bootstrap a
+  cluster (make all nodes aware of each other) without prior manual
+  configuration, the only requirement is to assign an IP address to each node
+  and start the daemon process on it.
 To summarise, the advantage of the algorithm is that it
 - scales to a large number of nodes by means of hierarchy with multiple
   master nodes,
-- does not constantly load the network, as node state updates are sent only when
-  the state changes,
-- does not require manual configuration to bootstrap a cluster, other than
-  assigning an IP address to each cluster node.
+- does not constantly load the network with node status messages and heartbeat
+  packets,
+- does not require manual configuration to bootstrap a cluster.
 
 The disadvantage of the algorithm is that it requires IP-address to change
 infrequently, in order to be useful for load balancing. It is not suitable for
@@ -3097,8 +3097,8 @@ The other disadvantage is that the algorithm creates artificial dependence of
 node rank on an IP-address: it is difficult to substitute IP-address mapping
 with a more sophisticated one. If the mapping uses current node and network load
 to infer node ranks, measurement errors may result in unstable hierarchy, and
-the algorithm cease to be fully event-based as metric need to be collected on
-every node and propagated to each node in the cluster.
+the algorithm cease to be fully event-based as load levels need to be periodically
+collected on every node and propagated to each node in the cluster.
 
 Node discovery algorithm is designed to balance the load on a cluster of
 compute nodes (see\nbsp{}sec.\nbsp{}[[#sec-daemon-layer]]), its use in other
@@ -3112,7 +3112,7 @@ weight of the first adjacent node is 2, then round-robin load balancing
 algorithm distributes two kernels to the first node before moving to the next
 one.
 
-To summarise, node discovery algorithm is
+To summarise, traversal algorithm is
 - designed to ease load balancing on the large number of cluster nodes,
 - fully fault-tolerant, because the state of every node can be recomputed at any
   time,
