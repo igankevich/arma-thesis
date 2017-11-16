@@ -2304,11 +2304,12 @@ execution time. If such formula did not exist or did not have all integrals as
 Fourier transforms, velocity potential field computation would consume much more
 time.
 
+#+LATEX: \pagebreak
 ** Fault-tolerant batch job scheduler
 *** System architecture
 **** Physical layer.
 Consists of nodes and direct/routed physical network links. On this layer full
-network connectivity, i.e.\nbsp{}an ability to send network packet between any
+network connectivity, i.e.\nbsp{}an ability to send network packets between any
 pair of cluster nodes.
 
 **** Daemon process layer.
@@ -2321,7 +2322,7 @@ Consists of daemon processes running on cluster nodes and hierarchical
 per node, so these terms are use interchangeably in this work. Master and slave
 roles are dynamically assigned to daemon processes, i.e.\nbsp{}any physical
 cluster node may become a master or a slave, or both simultaneously. Dynamic
-reassignment uses leader election algorithm that does not require periodic
+role assignment uses leader election algorithm that does not require periodic
 broadcasting of messages to all cluster nodes, instead the role is determined by
 node's IP address. Detailed explanation of the algorithm is provided
 in\nbsp{}[[#sec-node-discovery]]. Its strengths are scalability to a large number of
@@ -2334,20 +2335,20 @@ The only purpose of tree hierarchy is to balance the load between cluster nodes.
 The load is distributed from the current node to its neighbours in the hierarchy
 by simply iterating over them. When new links appear in the hierarchy or old
 links change (due to new node joining the cluster or due to node failure),
-daemons exchange messages telling each other how many daemons are /behind/ the
+daemon processes communicate each other the number of processes /behind/ the
 corresponding link in the hierarchy. This information is used to distribute the
-load evenly, even if a distributed programme is launched on a slave node. In
+load evenly, even if distributed programme is launched on slave node. In
 addition, this hierarchy reduces the number of simultaneous network connections
 between nodes: only one network connection is established and maintained for
 each hierarchical link\nbsp{}--- this decreases probability of network
-congestion when there are large number of nodes in the cluster.
+congestion when there is a large number of nodes in the cluster.
 
 Load balancing is implemented as follows. When node \(A\) tries to become a
 subordinate of node \(B\), it sends a message to a corresponding IP address
-telling how many daemons are already linked to it in the hierarchy (including
-itself). After all hierarchical links are established, every node has enough
-information to tell, how many nodes exist behind each link. If the link is
-between a slave and a master, and the slave wants to know, how many nodes are
+telling how many daemon processes are already linked to it in the hierarchy
+(including itself). After all hierarchical links are established, every node has
+enough information to tell, how many nodes exist behind each link. If the link
+is between a slave and a master, and the slave wants to know, how many nodes are
 behind the link to the master, then it subtracts the total number of nodes
 behind all of its slave nodes from the total number of nodes behind the master
 to get the correct amount. To distribute kernels
@@ -2362,7 +2363,7 @@ The proposed approach can be extended to include sophisticated logic into load
 distribution algorithm. Along with the number of nodes behind the hierarchical
 link, any metric, that is required to implement this logic, can be sent.
 However, if an update of the metric happens more frequently, than a change in
-the hierarchy occurs, or it changes periodically, then update messages will be
+the hierarchy occurs, or it changes periodically, then status messages will be
 also sent more frequently. To ensure that this transfers do not affect
 programmes' performance, a separate physical network may be used to transmit the
 messages. The other disadvantage is that when reconfiguration of the hierarchy
@@ -2371,9 +2372,9 @@ account in the load distribution, so frequent hierarchy changes may cause uneven
 load on cluster nodes (which, however, balances over time).
 
 Dynamic master/slave role assignment coupled with kernel distribution makes
-overall system architecture homogeneous within single cluster. On every node the
-same daemon is run, and no prior configuration is needed to construct a
-hierarchy of daemons processes.
+overall system architecture homogeneous within the framework of single cluster.
+On every node the same daemon is run, and no prior configuration is needed to
+construct a hierarchy of daemons processes running on different nodes.
 
 **** Control flow objects layer.
 :PROPERTIES:
@@ -2389,17 +2390,17 @@ sent to a different node (see\nbsp{}sec.\nbsp{}[[#sec-fail-over]]). There exists
 number of systems that are capable of executing directed acyclic graphs of tasks
 in parallel\nbsp{}cite:acun2014charmpp,islam2012oozie, but graphs are not
 suitable to determine principal-subordinate relationship between tasks, because
-a node in the graph may have multiple incoming edges (multiple principal nodes).
+a node in the graph may have multiple incoming edges (and hence multiple
+principal nodes).
 
 The main purpose of the proposed approach is to simplify development of
-distributed batch processing applications and middleware. The main focus is to
-make application resilient to failures, i.e. make it fault tolerant on the
-lowest possible level. The implementation is divided into two layers: the lower
-layer consists of routines and classes for single node applications (with no
-network interactions), and the upper layer for applications that run on an
-arbitrary number of nodes. There are two kinds of tightly coupled
-entities\nbsp{}--- /control flow objects/ (or /kernels/ for short) and
-/pipelines/\nbsp{}--- which compose a programme base.
+distributed batch processing applications and middleware. The idea is to provide
+resilience to failures on the lowest possible level. The implementation is
+divided into two layers: the lower layer consists of routines and classes for
+single node applications (with no network interactions), and the upper layer for
+applications that run on an arbitrary number of nodes. There are two kinds of
+tightly coupled entities\nbsp{}--- /control flow objects/ (or /kernels/ for
+short) and /pipelines/\nbsp{}--- which form a basis of the programme.
 
 Kernels implement control flow logic in theirs ~act~ and ~react~ methods and
 store the state of the current control flow branch. Both logic and state are
