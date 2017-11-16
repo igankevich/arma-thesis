@@ -2405,7 +2405,7 @@ short) and /pipelines/\nbsp{}--- which form a basis of the programme.
 Kernels implement control flow logic in theirs ~act~ and ~react~ methods and
 store the state of the current control flow branch. Both logic and state are
 implemented by a programmer. In ~act~ method some function is either directly
-computed or decomposed into nested functions (represented by a set of
+computed or decomposed into nested function calls (represented by a set of
 subordinate kernels) which are subsequently sent to a pipeline. In ~react~
 method subordinate kernels that returned from the pipeline are processed by
 their parent. Calls to ~act~ and ~react~ methods are asynchronous and are made
@@ -2427,14 +2427,14 @@ nodes (see fig.\nbsp{}[[fig-subord-ppl]]).
 
 In principle, kernels and pipelines machinery reflect the one of procedures and
 call stacks, with the advantage that kernel methods are called asynchronously
-and in parallel to each other (as much as programme logic allows). Kernel field
-is the stack, ~act~ method is a sequence of processor instructions before nested
-procedure call, and ~react~ method is a sequence of processor instructions after
-the call. Constructing and sending subordinate kernels to the pipeline is nested
-procedure call. Two methods are necessary to make calls asynchronous, and
-replace active wait for completion of subordinate kernels with passive one.
-Pipelines, in turn, allow to implement passive wait, and call correct kernel
-methods by analysing their internal state.
+and in parallel to each other (as much as programme logic allows). Kernel fields
+are stack local variables, ~act~ method is a sequence of processor instructions
+before nested procedure call, and ~react~ method is a sequence of processor
+instructions after the call. Constructing and sending subordinate kernels to the
+pipeline is nested procedure call. Two methods are necessary to make calls
+asynchronous, and replace active wait for completion of subordinate kernels with
+passive one. Pipelines, in turn, allow to implement passive wait, and call
+correct kernel methods by analysing their internal state.
 
 #+name: fig-subord-ppl
 #+begin_src dot :exports results :file build/subord-ppl.pdf
@@ -2558,8 +2558,8 @@ graph G {
 For efficiency reasons object pipeline and fault tolerance techniques (which
 will be described later) are implemented in the C++ framework: From the author's
 perspective C language is deemed low-level for distributed programmes, and Java
-incurs too much overhead and is not popular in HPC community. The framework is
-called Bscheduler, it is now in proof-of-concept development stage.
+incurs too much overhead and is not popular in HPC. The framework is called
+Bscheduler, it is now in proof-of-concept development stage.
 
 **** Application programming interface.
 Each kernel has four types of fields (listed in table\nbsp{}[[tab-kernel-fields]]):
@@ -2601,7 +2601,7 @@ be set, otherwise the system will not find the target kernel.
 When kernel execution completes (its ~act~ method finishes), the kernel is
 explicitly sent to some other kernel, this directive is explicitly called inside
 ~act~ method. Usually, after the execution completes a kernel is sent to its
-parent by setting principal field to the address/identifier of the parent,
+parent by setting ~principal~ field to the address/identifier of the parent,
 destination IP-address field to the source IP-address, and process identifier to
 the source process identifier. After that kernel becomes a downstream kernel and
 is sent by the system to the node, where its current principal is located
@@ -2787,15 +2787,15 @@ to run several computations on the same set of processes, and use all of the
 computer devices at maximal efficiency. For example, when one object writes data
 to a file, the other do computations on the processor in parallel. This
 minimises downtime of the processor and other computer devices and increases
-throughput of the computer cluster.
+overall throughput of the computer cluster.
 
 Pipelining of otherwise sequential steps is beneficial not only for code working
 with different devices, but for code different branches of which are suitable
 for execution by multiple hardware threads of the same processor core,
 i.e.\nbsp{}branches accessing different memory blocks or performing mixed
-arithmetic (integer and floating point). Code branches which use different
-modules of processor are good candidates to run in parallel on a processor core
-with multiple hardware threads.
+arithmetic (integer and floating point). Code branches which use different CPU
+modules are good candidates to run in parallel on a processor core with multiple
+hardware threads.
 
 So, computational model with a pipeline can be seen as /bulk-asynchronous
 model/, because of the parallel nature of programme steps. This model is the
