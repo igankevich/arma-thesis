@@ -1,3 +1,18 @@
-This is a repository with my PhD thesis. In order to build and reproduce some of
-the results you need to execute every org-babel code block in ~setup.org~ and
-then build the main file.
+This is a repository with *PhD thesis* "Simulation modelling of irregular waves
+for marine object dynamics programmes". The manuscript was prepared using
+[[http://orgmode.org/][Org-mode]] for GNU Emacs which provides computing environment for reproducible
+research. The text is available in [[http://igankevich.com/phd/arma-thesis.pdf][English]] and [[http://igankevich.com/phd/arma-thesis-ru.pdf][Russian]].
+
+All the *benchmarks* are contained in separate repositories:
+
+- [[https://github.com/igankevich/arma-benchmarks][ARMA benchmarks]],
+- [[https://github.com/igankevich/bscheduler-benchmarks][Bscheduler benchmarks]].
+
+All the *code* is contained in another set of repositories:
+
+- [[https://github.com/igankevich/arma][ARMA]],
+- [[https://github.com/igankevich/bscheduler][Bscheduler]],
+- [[https://github.com/igankevich/unistdx][Unistdx]].
+
+In order to *build* PDF you need to execute every code block in ~setup.org~,
+export the main file to LaTeX and compile it using ~make~.
