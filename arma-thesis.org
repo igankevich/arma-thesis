@@ -3575,28 +3575,28 @@ failures builds.
 In comparison to MPI the proposed approach uses lightweight control flow objects
 instead of heavy-weight processes to decompose the programme into individual
 entities. First, this allows to determine the number of entities computed in
-parallel by the problem being solved, not the computer or cluster architecture.
-A programmer is encouraged to create as many objects as needed, guided by the
-algorithm or restrictions on the size of data structures from the problem
-domain. In sea wave simulation programme the minimal size of each wavy surface
-part depends on the number of coefficients along each dimension, and at the same
-time the number of parts should be larger than the number of processors to make
-the load on each processor more even. Considering these limits the optimal part
-size is determined at runtime, and, in general, is not equal the number of
-parallel processes. The disadvantage is that the more control flow objects there
-are in the programme, the more shared data structures (e.g.\nbsp{}coefficients)
-are copied to the same node with subordinate objects; this problem is solved by
-introducing another intermediate layer of objects, which in turn adds more
-complexity to the programme. Second, hierarchy of control flow objects together
-with hierarchy of nodes allows for automatic recomputation of failed objects on
-surviving nodes in an event of hardware failures. It is possible because the
-state of the programme execution is stored in each object and not in global
-variables like in MPI programmes. By duplicating the state to a subordinate
-nodes, the system recomputes only objects from affected processes instead of the
-whole programme. So, transition from processes to control flow objects may
-increase performance of a parallel programme via dynamic load balancing, but
-inhibit its scalability for a large number of nodes and large amount of shared
-structures due to duplication of these structures.
+parallel based on the problem being solved, not the computer or cluster
+architecture. A programmer is encouraged to create as many objects as needed,
+guided by the algorithm or restrictions on the size of data structures from the
+problem domain. In sea wave simulation programme the minimal size of each wavy
+surface part depends on the number of coefficients along each dimension, and at
+the same time the number of parts should be larger than the number of processors
+to make the load on each processor more even. Considering these limits the
+optimal part size is determined at runtime, and, in general, is not equal the
+number of parallel processes. The disadvantage is that the more control flow
+objects there are in the programme, the more shared data structures
+(e.g.\nbsp{}coefficients) are copied to the same node with subordinate objects;
+this problem is solved by introducing another intermediate layer of objects,
+which in turn adds more complexity to the programme. Second, hierarchy of
+control flow objects together with hierarchy of nodes allows for automatic
+recomputation of failed objects on surviving nodes in an event of hardware
+failure. It is possible because the state of the programme execution is stored
+in objects and not in global variables like in MPI programmes. By duplicating
+the state to a subordinate node, the system recomputes only objects from
+affected processes instead of the whole programme. Transition from processes to
+control flow objects increases performance of a parallel programme via dynamic
+load balancing, but may inhibit its scalability for a large number of nodes and
+large amount of shared structures due to duplication of these structures.
 
 Decomposing parallel programme into individual entities is done in Charm++
 framework\nbsp{}cite:kale2012charm (with load
