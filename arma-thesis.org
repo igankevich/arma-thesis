@@ -3642,18 +3642,18 @@ the parts are created dynamically on the first node, when points on which they
 depend become available. So, distributed AR model algorithm is a master-slave
 algorithm\nbsp{}cite:lusk2010more in which the master dynamically creates tasks
 for each wavy surface part taking into account autoregressive dependencies
-between points and sends them to slaves, and slaves compute each wavy surface
-part and send them back to the master.
+between points and sends them to slaves, whereas slaves compute each wavy
+surface part and send them back to the master.
 
 In MPP implementation each task is modelled by a kernel: there is a principal
-kernel that creates subordinate kernels on demand, and a subordinate kernels
-that generate wavy surface part. In ~act~ method of principal kernel a
-subordinate kernel is created for the first part\nbsp{}--- a part that does not
-depend on any points. When this kernel returns, the principal kernel in ~react~
-method determines which parts can be computed in turn, creates a subordinate
-kernel for each part and sends them to the pipeline. In ~act~ method of
-subordinate kernel wavy surface part is generated and then the kernel sends
-itself back to the principal. The ~react~ method of subordinate kernel is empty.
+kernel that creates subordinate kernels on demand, and subordinate kernels that
+generate wavy surface parts. In ~act~ method of principal kernel a subordinate
+kernel is created for the first part\nbsp{}--- a part that does not depend on
+any points. When this kernel returns, the principal kernel in ~react~ method
+determines which parts can be computed in turn, creates a subordinate kernel for
+each part and sends them to the pipeline. In ~act~ method of subordinate kernel
+wavy surface part is generated and then the kernel sends itself back to the
+principal. The ~react~ method of subordinate kernel is empty.
 
 Distributed AR algorithm implementation has several advantages over the parallel
 one.
@@ -3669,7 +3669,7 @@ one.
   scheduler is not running.
 
 **** Performance of distributed AR model implementation.
-Distributed AR model implementation was benchmarked on the two nodes of Ant
+Distributed AR model implementation was benchmarked on the two nodes of "Ant"
 system (table\nbsp{}[[tab-ant]]). To increase network throughput these nodes were
 directly connected to each other and maximum transmission unit (MTU) was set to
 9200 bytes. Two cases were considered: with one Bscheduler daemon process
@@ -3685,7 +3685,7 @@ the algorithm), but for each part updates a counter of completed parts on which
 it depends. The same approach can be used in OpenMP version, but was discovered
 only for newer Bscheduler version, as queue scanning can not be performed
 efficiently in this framework. In case of two nodes the higher performance is
-explained by a greater total number of processor cores (16) and high network
+explained by greater total number of processor cores (16) and high network
 throughput of the direct network link. So, Bscheduler implementation of
 distributed AR model algorithm is faster on shared memory system due to more
 efficient autoregressive dependencies handling and its performance on
