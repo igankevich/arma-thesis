@@ -56,8 +56,9 @@ not based on linear wave theory, and ARMA process studies were found to have all
 the required mathematical apparatus.
 1. ARMA process takes auto-covariate function (ACF) as an input parameter, and
    this function can be directly obtained from wave energy or
-   frequency-directional spectrum (which is the input for Longuet---Higgins
-   model). So, inputs for one model can easily be converted to each other.
+   frequency-directional spectrum (which is the input parameter for
+   Longuet---Higgins model). So, inputs for one model can easily be converted to
+   each other.
 2. There is no small-amplitude waves assumption. Wave may have any amplitude,
    and can be generated as steep as it is possible with real sea wave ACF.
 3. Period of the realisation equals the period of PRNG, so generation time grows
@@ -103,10 +104,10 @@ The distinct feature of this work is
 - the use of /three-dimensional/ AR and MA models in all experiments,
 - the use of velocity potential field calculation method suitable for discretely
   given wavy surface, and
-- the development of software programme that
-  implements sea wavy surface generation and pressure field computation on both
-  shared memory (SMP) and distributed memory (MPP) computer systems, and also on
-  hybrid (GPGPU) systems using graphical coprocessors to accelerate computations.
+- the development of software programme that implements sea wavy surface
+  generation and pressure field computation on both shared memory (SMP) and
+  distributed memory (MPP) computer systems, but also hybrid systems (GPGPU)
+  which use graphical coprocessors to accelerate computations.
 
 **** Theoretical and practical significance.
 Implementing ARMA model, that does not use assumptions of linear wave theory,
@@ -278,15 +279,15 @@ advanced models.
 
 **** ARMA model.
 In\nbsp{}cite:spanos1982arma ARMA model is used to generate time series spectrum
-which is compatible with Pierson---Moskowitz (PM) approximation of sea wave
-spectrum. The authors carry out experiments for one-dimensional AR, MA and ARMA
-models. They mention excellent agreement between target and initial spectra and
-higher performance of ARMA model compared to models based on summing large
-number of harmonic components with random phases. The also mention that in order
-to reach agreement between target and initial spectrum MA model require lesser
-number of coefficients than AR model. In\nbsp{}cite:spanos1996efficient the
-authors generalise ARMA model coefficients determination formulae for
-multi-variate (vector) case.
+of which is compatible with Pierson---Moskowitz (PM) spectrum. The authors carry
+out experiments for one-dimensional AR, MA and ARMA models. They mention
+excellent agreement between target and initial spectra and higher performance of
+ARMA model compared to models based on summing large number of harmonic
+components with random phases. The also mention that in order to reach agreement
+between target and initial spectrum MA model require lesser number of
+coefficients than AR model. In\nbsp{}cite:spanos1996efficient the authors
+generalise ARMA model coefficients determination formulae for multi-variate
+(vector) case.
 
 One thing that distinguishes present work with respect to afore-mentioned ones
 is the study of three-dimensional (2D in space and 1D in time) ARMA model, which
@@ -553,7 +554,7 @@ to correct AR process coefficients, but there is no such formula for the second
 approach. So, the only proven solution for now is to simply use AR and MA
 process exclusively.
 
-**** Process selection criteria for different wave profiles.
+**** Process selection criteria.
 :PROPERTIES:
 :CUSTOM_ID: sec-process-selection
 :END:
@@ -601,8 +602,8 @@ dimensions become available, which is the objective of the future research.
 **** Verification of wavy surface integral characteristics.
 In\nbsp{}cite:degtyarev2011modelling,degtyarev2013synoptic,boukhanovsky1997thesis
 AR model the following items are verified experimentally:
-- probability distributions of different wave characteristics (wave heights,
-  lengths, crests, periods, slopes, three-dimensionality),
+- probability distributions of different wave characteristics (heights, lengths,
+  crests, periods, slopes, three-dimensionality),
 - dispersion relation,
 - retention of integral characteristics for mixed wave sea state.
 In this work both AR and MA model are verified by comparing probability
@@ -1407,7 +1408,7 @@ solution to which is written as
 Propagating wave profile is defined as \(\zeta(x,t)=A\cos(2\pi(kx-t))\).
 Plugging this formula into\nbsp{}eqref:eq-solution-2d yields
 \(\phi(x,z,t)=-\frac{A}{k}\sin(2\pi(kx-t))\Sinh{2\pi{k}{z}}\). In order to
-reduce it to the formula from linear wave theory, rewrite hyperbolic sine in
+reduce it to the formula from linear wave theory, rewrite hyperbolic cosine in
 exponential form and discard the term containing \(e^{-2\pi{k}{z}}\) as
 contradicting condition
 \(\phi\underset{z\rightarrow-\infty}{\longrightarrow}0\). Taking real part of
@@ -2180,7 +2181,7 @@ OpenCL. FFT routines from these libraries have the following features:
 Other differences of FFT subroutines, that have impact on performance, were not
 discovered.
 
-**** Performance of velocity potential OpenCL solver.
+**** Performance of velocity potential solver.
 :PROPERTIES:
 :header-args:R: :results output raw :exports results
 :END:
@@ -2304,7 +2305,6 @@ execution time. If such formula did not exist or did not have all integrals as
 Fourier transforms, velocity potential field computation would consume much more
 time.
 
-#+LATEX: \pagebreak
 ** Fault-tolerant batch job scheduler
 *** System architecture
 **** Physical layer.
@@ -2631,7 +2631,7 @@ frameworks\nbsp{}cite:dean2008mapreduce,vavilapalli2013yarn --- a user
 submitting a job does not specify the number of hosts to run its job on, and
 actual hosts are the hosts where input files are located.
 
-**** Wavy surface generation algorithm mapping on system architecture.
+**** Mapping of simulation models on system architecture.
 Software implementation of AR and MA models works as a computational pipeline,
 in which each joint applies some function to the output coming from the pipe of
 the previous joint. Joints are distributed across computer cluster nodes to
@@ -2763,7 +2763,7 @@ digraph {
 #+RESULTS: fig-pipeline
 [[file:build/pipeline.pdf]]
 
-Object pipeline may be seen as an improvement of BSP (Bulk Synchronous Parallel)
+Object pipeline may be seen as an improvement of Bulk Synchronous Parallel (BSP)
 model\nbsp{}cite:valiant1990bridging, which is used in graph
 processing\nbsp{}cite:malewicz2010pregel,seo2010hama. Pipeline eliminates global
 synchronisation (where it is possible) after each sequential computation step by
@@ -3136,7 +3136,7 @@ order to survive master node failure, job scheduler daemon process continuously
 copies its internal state to a backup node, which becomes the master after the
 failure.
 
-There are many works dedicated to improving performance of
+There are many works on improving performance of
 checkpoints\nbsp{}cite:egwutuoha2013survey, and alternative approaches do not
 receive much attention. Usually HPC applications use message passing for
 parallel processes communication and store their state in global memory space,
@@ -3293,8 +3293,8 @@ This simple approach allows to tolerate at most one failure of /any/ cluster nod
 per computational step or arbitrary number of subordinate nodes at any time
 during programme execution.
 
-An example of failure recovery algorithm in action follows
-(fig.\nbsp{}[[fig-fail-over-example]]).
+For a four-node cluster and a hypothetical parallel programme failure recovery
+algorithm works as follows (fig.\nbsp{}[[fig-fail-over-example]]).
 1. *Initial state.* Initially, computer cluster does not need to be configured
    except setting up local network. The algorithm assumes full connectivity of
    cluster nodes, and works best with tree network topologies in which several
@@ -3534,8 +3534,8 @@ automatic fault-tolerance. Programmes written with message passing library
 typically assume
 - equal load on each processor,
 - non-interruptible and reliable execution of batch jobs, and
-- constant number of parallel processes/threads throughout the execution which
-  is equal to the total number of processors.
+- constant number of parallel processes throughout the execution which is equal
+  to the total number of processors.
 The first assumption does not hold for sea wave simulation programme because AR
 model requires dynamic load balancing between processors to generate each part
 of the surface only when all dependent parts have already been generated. The
@@ -3598,8 +3598,8 @@ control flow objects increases performance of a parallel programme via dynamic
 load balancing, but may inhibit its scalability for a large number of nodes and
 large amount of shared structures due to duplication of these structures.
 
-Decomposing parallel programme into individual entities is done in Charm++
-framework\nbsp{}cite:kale2012charm (with load
+Decomposition of a parallel programme into individual entities is done in
+Charm++ framework\nbsp{}cite:kale2012charm (with load
 balancing\nbsp{}cite:bhandarkar2001adaptive) and in actor
 model\nbsp{}cite:hewitt1973universal,agha1985actors, but none of the approaches
 uses hierarchical relationship to restart entity processing after a failure.
@@ -3677,7 +3677,7 @@ running on the local node, and with two daemon processes running on each node.
 The performance of the programme was compared to the performance of OpenMP
 version running on single node.
 
-Bscheduler outperforms OpenMP in both one and two nodes cases
+Bscheduler outperforms OpenMP in both cases
 (fig.\nbsp{}[[fig-bscheduler-performance]]). In case of one node the higher
 performance is explained by the fact that Bscheduler does not scan the queue for
 wavy surface parts for which dependencies are ready (as in parallel version of
@@ -3719,8 +3719,8 @@ title(xlab="Wavy surface size", ylab="Time, s")
 In the study of mathematical apparatus for sea wave simulations which goes
 beyond linear wave theory the following main results were achieved.
 - AR and MA models were applied to simulation of sea waves of arbitrary
-  amplitudes. Integral characteristics of generated wavy surface were verified
-  by comparing to the ones of real sea surface.
+  amplitudes. Integral characteristics of wavy surface were verified by
+  comparing to the ones of real sea surface.
 - New method was applied to compute velocity potentials under generated surface.
   The resulting field was verified by comparing it to the one given by formulae
   from linear wave theory for small-amplitude waves. For large-amplitude waves
@@ -3771,10 +3771,6 @@ which provides computing environment for reproducible research. This means that
 all graphs can be reproduced and corresponding statements verified on different
 computer systems by cloning thesis repository[fn:repo], installing Emacs and
 exporting the document.
-
-The research was carried out within frameworks of grants of Russian Foundation
-for Basic Research (projects no.\nbsp{}\mbox{16-07-01111}, \mbox{16-07-00886},
-\mbox{16-07-01113}).
 
 [fn:repo] [[https://github.com/igankevich/arma-thesis]]
 
