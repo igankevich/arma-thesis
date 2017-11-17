@@ -3716,12 +3716,11 @@ title(xlab="Wavy surface size", ylab="Time, s")
 [[file:build/bscheduler-performance.pdf]]
 
 * Conclusion
-**** Research results.
 In the study of mathematical apparatus for sea wave simulations which goes
 beyond linear wave theory the following main results were achieved.
 - AR and MA models were applied to simulation of sea waves of arbitrary
   amplitudes. Integral characteristics of generated wavy surface were verified
-  by comparing to the ones of a real sea surface.
+  by comparing to the ones of real sea surface.
 - New method was applied to compute velocity potentials under generated surface.
   The resulting field was verified by comparing it to the one given by formulae
   from linear wave theory for small-amplitude waves. For large-amplitude waves
@@ -3733,8 +3732,7 @@ beyond linear wave theory the following main results were achieved.
   cores in several benchmarks. AR model is more computationally efficient on CPU
   than on GPU, and outperforms LH model.
 
-**** Further research directions.
-One of the topic of future research is studying generation of wave of arbitrary
+One of the topic of future research is studying generation of waves of arbitrary
 profiles on the basis of mixed ARMA process. Another direction is integration of
 the developed model and pressure calculation method into existing application
 software packages.
