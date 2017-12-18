@@ -4,11 +4,12 @@
 #+LANGUAGE: en
 #+SETUPFILE: setup.org
 #+LATEX_HEADER_EXTRA: \organization{Saint Petersburg State University}
-#+LATEX_HEADER_EXTRA: \manuscript{}
+#+LATEX_HEADER_EXTRA: \manuscript{a manuscript}
 #+LATEX_HEADER_EXTRA: \degree{thesis for candidate of sciences degree}
 #+LATEX_HEADER_EXTRA: \speciality{Speciality 05.13.18\\Mathematical modeling, numerical methods and programme complexes}
-#+LATEX_HEADER_EXTRA: \supervisor{Supervisor\\Alexander Degtyarev}
+#+LATEX_HEADER_EXTRA: \supervisor{Supervisor\\Alexander Degtyarev, ScD}
 #+LATEX_HEADER_EXTRA: \newcites{published}{Publications on the subject of thesis}
+#+LATEX_HEADER_EXTRA: \AtBeginDocument{\setcounter{page}{146}}
 
 * Introduction
 **** Topic relevance.
