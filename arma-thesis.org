@@ -3787,7 +3787,7 @@ exporting the document.
                arbitrary distribution law for wavy surface elevation without
                changing its original auto-covariate function.
 - AR :: auto-regressive process.
-- <<<ARMA>>> :: auto-regressive moving-average process.
+- ARMA :: auto-regressive moving-average process.
 - MA :: moving average process.
 - LH :: Longuet---Higgins model, formula of which is derived in the framework of
         linear wave theory.
