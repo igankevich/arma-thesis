@@ -75,14 +75,17 @@
   \centering%
   \begin{spacing}{1}%
     {\normalsize\@organization\hrule\par}\vspace{1cm}%
-    {\normalsize\itshape\@manuscript\par}\vspace{2cm}%
+    \begin{flushright}%
+	  {\normalsize\itshape\@manuscript\par}%
+    \end{flushright}%
+	\vspace{2cm}%
     {\large\@degree\par}\vspace{3cm}%
     {\huge\bfseries\@title\par}\vspace{1cm}%
     {\Large\@author\par}\vspace{3cm}%
-    \begin{flushleft}%
-      {\normalsize\@speciality\par}\vspace{1cm}%
+    {\normalsize\@speciality\par}\vspace{1cm}%
+    \begin{flushright}%
       {\normalsize\@supervisor\par}%
-    \end{flushleft}%
+    \end{flushright}%
     \vfill%
     {\normalsize\@date\par}%
   \end{spacing}%
