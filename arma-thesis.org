@@ -1,13 +1,13 @@
 #+TITLE: Simulation modelling of irregular waves for marine object dynamics programmes
-#+AUTHOR: Ivan Gankevich
+#+AUTHOR: Ivan Gennadevich Gankevich
 #+DATE: St. Petersburg, 2017
 #+LANGUAGE: en
 #+SETUPFILE: setup.org
 #+LATEX_HEADER_EXTRA: \organization{Saint Petersburg State University}
 #+LATEX_HEADER_EXTRA: \manuscript{a manuscript}
 #+LATEX_HEADER_EXTRA: \degree{thesis for candidate of sciences degree}
-#+LATEX_HEADER_EXTRA: \speciality{Speciality 05.13.18\\Mathematical modeling, numerical methods and programme complexes}
-#+LATEX_HEADER_EXTRA: \supervisor{Supervisor\\Alexander Degtyarev, ScD}
+#+LATEX_HEADER_EXTRA: \speciality{Speciality 05.13.18\\Mathematical modelling, numerical methods and programme complexes}
+#+LATEX_HEADER_EXTRA: \supervisor{Supervisor\\Alexander Borisovich Degtyarev, ScD}
 #+LATEX_HEADER_EXTRA: \newcites{published}{Publications on the subject of thesis}
 #+LATEX_HEADER_EXTRA: \AtBeginDocument{\setcounter{page}{146}}
 
