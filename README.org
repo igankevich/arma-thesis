@@ -16,3 +16,9 @@ All the *code* is contained in another set of repositories:
 
 In order to *build* PDF you need to execute every code block in ~setup.org~,
 export the main file to LaTeX and compile it using ~make~.
+
+ARMA thesis is *licensed* under a Creative Commons Attribution 4.0 International
+License.
+
+You should have received a copy of the license along with this work. If not, see
+<http://creativecommons.org/licenses/by/4.0/>.
