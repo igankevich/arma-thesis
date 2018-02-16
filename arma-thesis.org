@@ -434,7 +434,7 @@ where \(\vec N = \left( p_1, p_2, p_3 \right)\) and
     \left[
     \begin{array}{llll}
         \gamma_{i,j,0} & \gamma_{i,j,1} & \cdots & \gamma_{i,j,N_3} \\
-        \gamma_{i,j,1} & \gamma_{i,j,0} & \ddots &x \vdotswithin{\gamma_{i,j,0}} \\
+        \gamma_{i,j,1} & \gamma_{i,j,0} & \ddots & \vdotswithin{\gamma_{i,j,0}} \\
         \vdotswithin{\gamma_{i,j,0}} & \ddots & \ddots & \gamma_{i,j,1} \\
         \gamma_{i,j,N_3} & \cdots & \gamma_{i,j,1} & \gamma_{i,j,0}
     \end{array}
