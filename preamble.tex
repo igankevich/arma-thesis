@@ -63,6 +63,12 @@
 % properly aligned version of sqrt for \zeta_y^2
 \newcommand{\SqrtZeta}[1]{\sqrt{\vphantom{\zeta_x^2}\smash[b]{#1}}}
 
+% normalisation
+\newcommand{\SqrtZetaX}{\sqrt{1 + \zeta_x^2}}
+\newcommand{\SqrtZetaY}{\SqrtZeta{1 + \zeta_x^2 + \zeta_y^2}}
+\newcommand{\FracSqrtZetaX}[1]{\frac{#1}{\SqrtZetaX{}}}
+\newcommand{\FracSqrtZetaY}[1]{\frac{#1}{\SqrtZetaY{}}}
+
 % wave vector
 \newcommand{\Kvec}{\vec{k}}
 \newcommand{\Kveclen}{\lvert\smash[b]{\Kvec}\rvert}

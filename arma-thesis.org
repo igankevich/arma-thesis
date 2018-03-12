@@ -1245,7 +1245,10 @@ Two-dimensional Laplace equation with Robin boundary condition is written as
 \begin{align}
     \label{eq-problem-2d}
     & \phi_{xx}+\phi_{zz}=0,\\
-    & \zeta_t + \zeta_x\phi_x = \frac{\zeta_x}{\sqrt{1 + \zeta_x^2}} \phi_x - \phi_z, & \text{at }z=\zeta(x,t).\nonumber
+    & \zeta_t + \zeta_x\phi_x
+    = \FracSqrtZetaX{\zeta_x}\phi_x
+    - \FracSqrtZetaX{1}\phi_z,
+    & \text{at }z=\zeta(x,t).\nonumber
 \end{align}
 Use Fourier method to solve this problem. Applying Fourier transform to both
 sides of the equation yields
@@ -1286,7 +1289,7 @@ boundary condition yields
 \begin{equation*}
     \zeta_t
     =
-    \left( i f(x) - 1 \right)
+    \left( i f(x) - 1/\SqrtZetaX \right)
     \left[
         \Fun{z}
         \ast
@@ -1299,7 +1302,7 @@ to both sides of this equation yields formula for coefficients \(E\):
     E(u) =
     \frac{1}{2\pi u}
     \frac{
-    \FourierY{\zeta_t / \left(i f(x) - 1\right)}{u}
+    \FourierY{\zeta_t / \left(i f(x) - 1/\SqrtZetaX\right)}{u}
     }{
     \FourierY{\Fun{z}}{u}
     }
@@ -1314,7 +1317,7 @@ into\nbsp{}eqref:eq-guessed-sol-2d yields formula for \(\phi(x,z)\):
         \InverseFourierY{
             \frac{e^{2\pi u z}}{2\pi u}
             \frac{
-            \FourierY{ \zeta_t / \left(i f(x) - 1\right) }{u}
+            \FourierY{ \zeta_t / \left(i f(x) - 1/\SqrtZetaX\right) }{u}
             }{
             \FourierY{ \Fun{\zeta(x,t)} }{u}
             }
@@ -1358,10 +1361,11 @@ into\nbsp{}eqref:eq-guessed-sol-2d-full yields
     \phi(x,z) = \InverseFourierY{ \Sinh{2\pi u (z+h)} E(u) }{x}.
 \end{equation*}
 Plugging \(\phi\) into the boundary condition on the free surface yields
-\begin{equation*}
-    \zeta_t = f(x) \InverseFourierY{ 2\pi i u \Sinh{2\pi u (z+h)} E(u) }{x}
-            - \InverseFourierY{ 2\pi u \SinhX{2\pi u (z+h)} E(u) }{x}.
-\end{equation*}
+\begin{align*}
+    \zeta_t & = f(x) \InverseFourierY{ 2\pi i u \Sinh{2\pi u (z+h)} E(u) }{x} \\
+            & - \frac{1}{\SqrtZetaX}
+              \InverseFourierY{ 2\pi u \SinhX{2\pi u (z+h)} E(u) }{x}.
+\end{align*}
 Here \(\sinh\) and \(\cosh\) give similar results near free surface, and since this
 is the main area of interest in practical applications, we assume that
 \(\Sinh{2\pi{u}(z+h)}\approx\SinhX{2\pi{u}(z+h)}\). Performing analogous to the
@@ -1373,7 +1377,7 @@ previous section transformations yields final formula for \(\phi(x,z)\):
   \InverseFourierY{
         \frac{\Sinh{2\pi u (z+h)}}{2\pi u}
         \frac{
-            \FourierY{ \zeta_t / \left(i f(x) - 1\right) }{u}
+            \FourierY{ \zeta_t / \left(i f(x) - 1/\SqrtZetaX\right) }{u}
         }{
             \FourierY{ \FunSecond{\zeta(x,t)} }{u}
         }
@@ -1459,10 +1463,10 @@ Three-dimensional version of\nbsp{}eqref:eq-problem is written as
     \label{eq-problem-3d}
     & \phi_{xx} + \phi_{yy} + \phi_{zz} = 0,\\
     & \zeta_t + \zeta_x\phi_x + \zeta_y\phi_y
-    =
-    \frac{\zeta_x}{\SqrtZeta{1 + \zeta_x^2 + \zeta_y^2}} \phi_x
-    +\frac{\zeta_y}{\SqrtZeta{1 + \zeta_x^2 + \zeta_y^2}} \phi_y
-    - \phi_z, & \text{at }z=\zeta(x,y,t).\nonumber
+    = \FracSqrtZetaY{\zeta_x} \phi_x
+    + \FracSqrtZetaY{\zeta_y} \phi_y
+    - \FracSqrtZetaY{1} \phi_z, \nonumber\\
+    & \text{at }z=\zeta(x,y,t).\nonumber
 \end{align}
 Again, use Fourier method to solve it. Applying Fourier transform to both sides
 of Laplace equation yields
@@ -1496,11 +1500,11 @@ Plugging \(\phi\) into the boundary condition on the free surface yields
     \begin{array}{rl}
         \zeta_t = & i f_1(x,y) \InverseFourierY{2 \pi u \Sinh{2\pi \Kveclen (z+h)}E(u,v)}{x,y} \\
         + & i f_2(x,y) \InverseFourierY{2 \pi v \Sinh{2\pi \Kveclen (z+h)}E(u,v)}{x,y} \\
-        - & \InverseFourierY{2 \pi \Kveclen \SinhX{2\pi \Kveclen (z+h)}E(u,v)}{x,y}
+        - & f_3(x,y) \InverseFourierY{2 \pi \Kveclen \SinhX{2\pi \Kveclen (z+h)}E(u,v)}{x,y}
     \end{array}
 \end{equation*}
-where \(f_1(x,y)={\zeta_x}/{\SqrtZeta{1+\zeta_x^2+\zeta_y^2}}-\zeta_x\) and
-\(f_2(x,y)={\zeta_y}/{\SqrtZeta{1+\zeta_x^2+\zeta_y^2}}-\zeta_y\).
+where \(f_1(x,y)={\zeta_x}/{\SqrtZetaY}-\zeta_x\),
+\(f_2(x,y)={\zeta_y}/{\SqrtZetaY}-\zeta_y\) and \(f_3(x,y)=1/\SqrtZetaY\).
 
 Like in section\nbsp{}[[#sec-pressure-2d]] we assume that
 \(\Sinh{2\pi{u}(z+h)}\approx\SinhX{2\pi{u}(z+h)}\) near free surface, but in
@@ -1522,7 +1526,7 @@ and plugging the result into\nbsp{}eqref:eq-guessed-sol-3d yields formula for
     \label{eq-phi-3d}
     \phi(x,y,z,t) = \InverseFourierY{
         \frac{ \Sinh{\smash{2\pi \Kveclen (z+h)}} }{ 2\pi\Kveclen }
-        \frac{ \FourierY{ \zeta_t / \left( i f_1(x,y) + i f_2(x,y) - 1 \right)}{u,v} }
+        \frac{ \FourierY{ \zeta_t / \left( i f_1(x,y) + i f_2(x,y) - f_3(x,y) \right)}{u,v} }
         { \FourierY{\mathcal{D}_3\left( x,y,\zeta\left(x,y\right) \right)}{u,v} }
     }{x,y},
 \end{equation}
