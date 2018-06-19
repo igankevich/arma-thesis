@@ -290,15 +290,6 @@ arma.qqplot_grid_adj(
 #+RESULTS:
 [[file:build/propagating-wave-qqplots-slides.pdf]]
 
-** Взволнованная морская поверхность
-#+begin_export latex
-\begin{tikzpicture}[remember picture,overlay]
-  \node[inner sep=0pt,rectangle] at (current page.center){%
-    \includegraphics[width=0.95\paperwidth]{wavy}
-  };%
-\end{tikzpicture}
-#+end_export
-
 ** Нелинейное волнение
 
 #+begin_export latex
@@ -503,7 +494,7 @@ arma.qqplot_grid_adj(
 - волн произвольных амплитуд,
 - произвольной глубины $h=\text{const}$.
 
-* Программный комплекс
+* Программный комплекс							:noexport:
 ** Диаграмма
 :PROPERTIES:
 :BEAMER_ENV: fullframe
@@ -609,6 +600,11 @@ arma.qqplot_grid_adj(
 - эффективна и без использования GPU
 - и отказоустойчива.
 
+* Заключение
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
 ** Заключение
 - Изучена модель ветрового волнения для генерации волн произвольных амплитуд.
 - Разработан гибридный метод расчета давлений в двухмерной постановке.
@@ -616,10 +612,6 @@ arma.qqplot_grid_adj(
   количества преобразований Фурье.
 - Предварительная апробация модели и метода была произведена в пакете Large
   Amplitude Motion Program 4.
-
-#+begin_export latex
-\setbeamercolor{bgcolor}{fg=white,bg=black!50}
-#+end_export
 
 ** Апробация
 
@@ -664,18 +656,12 @@ arma.qqplot_grid_adj(
 
 #+latex: \setbeamerfont{block title}{size=\normalsize}
 
-** Спасибо за внимание							:noexport:
-:PROPERTIES:
-:BEAMER_ENV: fullframe
-:END:
-
+** Взволнованная морская поверхность					:noexport:
 #+begin_export latex
 \begin{tikzpicture}[remember picture,overlay]
-  \node[anchor=north west,xshift=-5,yshift=5] at (current page.north west) {%
-    \includegraphics[width=\paperwidth]{sea}
-  };
-  \node[anchor=center,fill=black,text=spbuWhite3,fill opacity=0.5,text opacity=1,yshift=1.5cm] at (current page.center) {%
-    \Large\textbf{Спасибо за внимание!}
-  };
+  \node[inner sep=0pt,rectangle] at (current page.center){%
+    \includegraphics[width=0.95\paperwidth]{wavy}
+  };%
 \end{tikzpicture}
 #+end_export
+
