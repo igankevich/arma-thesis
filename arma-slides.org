@@ -232,7 +232,7 @@ for (i in grid) {
 		df[nrow(df) + 1,] <- c(0,i,j,z)
 	}
 }
-arma.wavy_plot(df, 0, zlim=c(0,0.5), expand=0.5)
+arma.wavy_plot(df, 0, zlim=c(0,0.5), expand=0.5, border=NA)
 #+end_src
 
 #+caption: Плоская волна
@@ -242,7 +242,7 @@ arma.wavy_plot(df, 0, zlim=c(0,0.5), expand=0.5)
 
 **** Column 2
 :PROPERTIES:
-:BEAMER_col: 0.30
+:BEAMER_col: 0.35
 :END:
 
 #+latex: \vspace{-1cm}
@@ -264,7 +264,7 @@ for (i in grid) {
 		df[nrow(df) + 1,] <- c(0,i,j,z)
 	}
 }
-arma.wavy_plot(df, 0, zlim=c(-0.05,0.05), expand=0.5)
+arma.wavy_plot(df, 0, zlim=c(-0.05,0.05), expand=0.5, border=NA)
 #+end_src
 
 #+caption: Плоская стоячая волна
@@ -295,7 +295,7 @@ for (i in grid) {
 		df[nrow(df) + 1,] <- c(0,i,j,z)
 	}
 }
-arma.wavy_plot(df, 0, zlim=c(-0.05,0.05), expand=0.5)
+arma.wavy_plot(df, 0, zlim=c(-0.05,0.05), expand=0.5, border=NA)
 #+end_src
 
 #+caption: Волна Стокса
