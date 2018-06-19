@@ -4,10 +4,20 @@ source(file.path("R", "transform.R"))
 arma.qqplot_grid <- function (dir, params, titles, ...) {
   wave_params <- arma.load_wave_parameters(dir, params)
   i <- 1
-	for (name in names(wave_params)) {
+  for (name in names(wave_params)) {
     arma.qqplot(wave_params[[name]], 100, titles[[i]], ...)
     i <- i + 1
-	}
+  }
+}
+
+arma.qqplot_grid_adj <- function (dir, params, titles, adj, ...) {
+  wave_params <- arma.load_wave_parameters(dir, params)
+  i <- 1
+  for (name in names(wave_params)) {
+    ttl = list(title=titles[[i]], adjust=adj)
+    arma.qqplot(wave_params[[name]], 100, ttl, ...)
+    i <- i + 1
+  }
 }
 
 arma.wavy_plot <- function (data, t, ...) {

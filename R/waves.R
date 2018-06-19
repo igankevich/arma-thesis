@@ -20,7 +20,7 @@ arma.QFUNCTIONS <- list(
 
 arma.ALL_WAVE_CHARACTERISTICS <- list(
 	"elevation",
-  "heights_x",
+	"heights_x",
 	"heights_y",
 	"lengths_x",
 	"lengths_y",
@@ -54,11 +54,15 @@ arma.qqplot <- function (param, nsamples=100, ttl, ...) {
 		param$data,
 		asp=1,
 		xlim=c(param$min, param$max),
-    ylim=c(param$min, param$max),
-    ...
+		ylim=c(param$min, param$max),
+		...
   )
-  title(ttl, line=-2)
-	qqline(param$data, distribution=param$qfunc)
+  if (class(ttl) == 'character') {
+	title(ttl, line=-2)
+  } else {
+	title(ttl$title, line=-1, adj=ttl$adjust)
+  }
+  qqline(param$data, distribution=param$qfunc)
 }
 
 #wave_params <- arma.load_wave_parameters()
