@@ -49,14 +49,16 @@ arma.load_wave_parameters <- function (
 
 arma.qqplot <- function (param, nsamples=100, ttl, ...) {
   qdata <- param$qfunc(ppoints(nsamples))
-	qqplot(
+  qqplot(
 		qdata,
 		param$data,
 		asp=1,
 		xlim=c(param$min, param$max),
 		ylim=c(param$min, param$max),
+		bty='n',
 		...
   )
+  box(col='black')
   if (class(ttl) == 'character') {
 	title(ttl, line=-2)
   } else {
