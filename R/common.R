@@ -20,16 +20,7 @@ arma.qqplot_grid_adj <- function (dir, params, titles, adj, ...) {
   }
 }
 
-arma.wavy_plot <- function (data, t, ...) {
-	slice <- data[data$t == t,]
-	x <- unique(slice$x)
-	y <- unique(slice$y)
-	z <- with(slice, {
-		n <- sqrt(length(z))
-		out <- matrix(nrow=n, ncol=n)
-		out[cbind(x, y)] <- z
-		out
-	})
+arma.wavy_plot_matrix <- function (x, y, z, t, ...) {
 	nrz <- nrow(z)
 	ncz <- ncol(z)
 	# Create a function interpolating colors in the range of specified colors
@@ -42,6 +33,42 @@ arma.wavy_plot <- function (data, t, ...) {
 	# Recode facet z-values into color indices
 	facetcol <- cut(zfacet, nbcol)
 	persp(x, y, z, phi=30, theta=30, col=color[facetcol], ...)
+}
+
+arma.to_matrix <- function (data, t) {
+	slice <- data[data$t == t,]
+	x <- unique(slice$x)
+	y <- unique(slice$y)
+	z <- with(slice, {
+		n <- sqrt(length(z))
+		out <- matrix(nrow=n, ncol=n)
+		out[cbind(x, y)] <- z
+		out
+	})
+	list(x=x,y=y,z=z)
+}
+
+arma.wavy_plot <- function (data, t, ...) {
+	with(arma.to_matrix(data, t), arma.wavy_plot_matrix(x, y, z, ...))
+}
+
+arma.acf_plot <- function (data, t, ...) {
+	ifft <- function (arr) { fft(arr, inverse=TRUE) }
+	with(
+		arma.to_matrix(data, t),
+		function () {
+			# compute ACF using Wiener---Khinchin theorem
+			n <- nrow(z)*ncol(z)
+			z <- Re(ifft(abs(fft(z))^2))/n/n
+			# slice 1/4th of the matrix
+			n1 <- floor(nrow(z)/2)
+			n2 <- floor(ncol(z)/2)
+			x <- x[1:n1]
+			y <- y[1:n2]
+			z <- z[1:n1,1:n2]
+			arma.wavy_plot_matrix(x, y, z, ...)
+		}
+	)()
 }
 
 arma.skew_normal_1_plot <- function(x, params) {

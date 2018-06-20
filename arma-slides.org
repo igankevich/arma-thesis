@@ -282,20 +282,23 @@ arma.wavy_plot(df, 0, zlim=c(-0.05,0.05), expand=0.5, border=NA)
 source(file.path("R", "common.R"))
 par(mar=c(0,0.5,0,0))
 df <- data.frame(t=rep(NA,0), x=rep(NA,0), y=rep(NA,0), z=rep(NA,0))
-n <- 20
+n <- 40
+alpha <- 0.5
 grid <- seq(1, n)
-alpha <- 2.31906
-beta <- -5.49873
-gamm <- 0.0680413
+k <- 0.77341
+t <- 0
+omega <- 0.3
+a <- 1.5
 for (i in grid) {
 	for (j in grid) {
     x <- i/(n-1)
     y <- j/(n-1)
-		z <- gamm * exp(-alpha*(x+y)) * cos(beta*x) * cos(beta*y)
+    theta <- k*(x + y) - omega*t
+		z <- a * exp(-alpha*(x+y)) * (cos(theta) + 0.5*k*a*cos(2*theta) + (3/8)*(k*a*k*a)*cos(3*theta))
 		df[nrow(df) + 1,] <- c(0,i,j,z)
 	}
 }
-arma.wavy_plot(df, 0, zlim=c(-0.05,0.05), expand=0.5, border=NA)
+arma.acf_plot(df, 0, zlim=c(0,1.0), expand=0.5, border=NA)
 #+end_src
 
 #+caption: Волна Стокса
