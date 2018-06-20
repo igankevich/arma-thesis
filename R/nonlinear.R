@@ -29,15 +29,23 @@ arma.plot_nonlinear <- function (dirname, args) {
   aspect_ratio <- 1
   plot.new()
   plot.window(xlim=rx, ylim=rz, asp=1)
-  axis(1)
-  axis(2)
+  axis_args <- list()
+  if ("axis" %in% names(args)) {
+     axis_args <- args$axis
+  }
+  do.call(axis, c(list(side=1), axis_args))
+  do.call(axis, c(list(side=2), axis_args))
   lines(zeta_none$x, zeta_none$z, lty='solid')
   lines(zeta_gcs$x, zeta_gcs$z, lty='dashed')
   lines(zeta_sn$x, zeta_sn$z, lty='dotted')
   title(args$title, xlab="x", ylab="z")
   box()
+  legend_x <- "bottom"
+  if ("legend" %in% names(args)) {
+    legend_x <- args$legend
+  }
   legend(
-    "bottom",
+    legend_x,
     legend=paste(args$graphs),
     lty=paste(args$linetypes),
     horiz=TRUE
