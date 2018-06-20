@@ -1,0 +1,34 @@
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+% custom mathematical expressions
+\newcommand{\Var}[1]{\sigma_{#1}^2}
+\newcommand{\Fourier}[1]{\mathcal{F}\left\{#1\right\}}
+\newcommand{\InverseFourier}[1]{\mathcal{F}^{-1}\left\{#1\right\}}
+\newcommand{\Fun}[1]{\mathcal{D}_1\left(x,#1\right)}
+\newcommand{\FunSecond}[1]{\mathcal{D}_2\left(x,#1\right)}
+\newcommand{\FunThird}[1]{\mathcal{D}_2\left(x,#1\right)}
+\newcommand{\FunThreeD}[1]{\mathcal{D}_3\left(x,y,#1\right)}
+\newcommand{\Sinh}[1]{\cosh\left(#1\right)}
+\newcommand{\SinhX}[1]{\sinh\left(#1\right)}
+
+\newcommand{\FourierY}[2]{\mathcal{F}_{#2}\!\left\{#1\right\}}
+\newcommand{\InverseFourierY}[2]{\mathcal{F}^{-1}_{#2}\!\left\{#1\right\}}
+
+\newcommand{\FourierX}[3]{\mathcal{F}_{#2}\!\left\{#1\right\}\!\left(#3\right)}
+\newcommand{\InverseFourierX}[3]{\mathcal{F}^{-1}_{#2}\!\left\{#1\right\}\!\left(#3\right)}
+
+% properly aligned version of sqrt for \zeta_y^2
+\newcommand{\SqrtZeta}[1]{\sqrt{\vphantom{\zeta_x^2}\smash[b]{#1}}}
+
+% normalisation
+\newcommand{\SqrtZetaX}{\sqrt{1 + \zeta_x^2}}
+\newcommand{\SqrtZetaY}{\SqrtZeta{1 + \zeta_x^2 + \zeta_y^2}}
+\newcommand{\FracSqrtZetaX}[1]{\frac{#1}{\SqrtZetaX{}}}
+\newcommand{\FracSqrtZetaY}[1]{\frac{#1}{\SqrtZetaY{}}}
+
+% wave vector
+\newcommand{\Kvec}{\vec{k}}
+\newcommand{\Kveclen}{\lvert\smash[b]{\Kvec}\rvert}
+

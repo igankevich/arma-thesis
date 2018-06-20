@@ -23,6 +23,7 @@
 	\vfill\inserttitlegraphic%
 	\vfill\spbuInsertField{date}%
 }
+\setbeamerfont{block title}{size=\small}
 \frame{\maketitle}
 #+end_export
 
@@ -499,7 +500,7 @@ arma.plot_nonlinear(file.path("build", "nit-standing"), args)
 [[file:build/slides-nit-ru.pdf]]
 
 
-* Формула для поля давлений
+* Поле давлений под дискретно заданной взволнованной поверхностью
 ** Уравнения потенциального течения
 #+begin_export latex
 \begin{align*}
@@ -530,111 +531,87 @@ arma.plot_nonlinear(file.path("build", "nit-standing"), args)
 }
 #+end_export
 
-** Двухмерный случай
+** Трехмерный случай
 
-#+begin_export latex
-\small%
-\begin{minipage}{0.4\textwidth}
-  \vspace{-\baselineskip}
-  \begin{align*}
-      & \phi_{xx}+\phi_{zz}=0\\
-      & \zeta_t =
-    \only<1>{\left(\zeta_x/\sqrt{1 + \zeta_x^2}-\zeta_x\right) \phi_x}%
-    \only<2->{\rectemph{dzetadphi2}{\left(\zeta_x/\sqrt{1 + \zeta_x^2}-\zeta_x\right) \phi_x}}
-    - \phi_z
-  \end{align*}
-\end{minipage}
-\newline
-Решение в рамках линейной теории
+#+beamer: \small
+
+\begin{align*}
+    & \phi_{xx} + \phi_{yy} + \phi_{zz} = 0\\
+    & \zeta_t 
+    = \underbrace{\fillrectemph{f1}{\left(\FracSqrtZetaY{\zeta_x} - \zeta_x\right)}}_{f_1} \phi_x
+    + \underbrace{\fillrectemph{f2}{\left(\FracSqrtZetaY{\zeta_y} - \zeta_y\right)}}_{f_2} \phi_y
+    - \underbrace{\fillrectemph{f3}{\FracSqrtZetaY{1}}}_{f_3} \phi_z
+\end{align*}
+
+Решение в рамках линейной теории:
 \begin{equation*}
-  \phi(x,z,t)
-  =
-  \InverseFourierX{
-    \frac{\Sinh{2\pi u (z+h)}}{2\pi u \Sinh{2\pi u h}}
-    \FourierX{-\zeta_t}{x}{u}
-  }{u}{x}
-  =
-  \only<1>{\mathcal{W}(x,z)}
-  \only<2->{\rectemph{windowFunc}{\mathcal{W}(x,z)}}
-  \mathrel{*} \zeta_t(x,t)
+	\phi(x,y,z,t) = \mathcal{W}(x,y,z) \mathrel{*} \zeta_t(x,y,t)
 \end{equation*}
-Общее решение
+
+Общее решение:
 \begin{equation*}
-  \boxed{
-    \phi(x,z,t)
-    =
-    \InverseFourierX{
-      \frac{\Sinh{2\pi u (z+h)}}{2\pi u}
-      \frac{
-        \FourierX{ \zeta_t / \left(i \:\!\:\! f(x) - 1\right) }{x}{u}
-      }{
-        \FourierX{ \FunSecond{\zeta(x,t)} }{x}{u}
-      }
-    }{u}{x}
-  }
+	\phi(x,y,z,t)
+	=
+	\mathcal{W}(x,y,z)
+	\mathrel{*}
+	\frac{\zeta_t(x,y,t)}{i f_1(x,y,t) + i f_2(x,y,t) - f_3(x,y,t)}
 \end{equation*}
-\only<2->{%
-\begin{tikzpicture}[remember picture,overlay]
-  \node[fill=none,baseline,anchor=north,xshift=0cm,yshift=-1.2cm]
-    (dzetadphiLabel) at (current page.north) {%
-    \small нет в линейной теории%
-  };
-  \path[->,thick] (dzetadphiLabel.west) edge [bend right=20](dzetadphi2.north);
-  \node[fill=spbuWhite2,anchor=north east,xshift=-0.2cm,yshift=-1.2cm]
-    (windowFunctionGraph) at (current page.north east) {%
-    \includegraphics[scale=0.4]{window-function-2}
-  };
-  \path[->,thick] (windowFunctionGraph.south) edge [bend right,out=0](windowFunc.north);
-\end{tikzpicture}
-}
-#+end_export
 
 ** Сравнение с линейной теорией
+
+*** Columns
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: T
+:END:
+
+**** Линейная теория
+:PROPERTIES:
+:BEAMER_env: block
+:BEAMER_col: 0.4
+:END:
+
 #+begin_export latex
-\centering
-\begin{columns}
-  \begin{column}{0.15\textwidth}
-    \only<1>{$A=1$м}%
-    \only<2>{$A=2$м}%
-    \only<3>{$A=4$м}%
-  \end{column}
-  \begin{column}{0.4\textwidth}
-    \begin{block}{\small Линейная теория}
-      \includegraphics<1>{velocity-ref-1}
-      \includegraphics<2>{velocity-ref-2}
-      \includegraphics<3>{velocity-ref-4}
-    \end{block}
-  \end{column}
-  \begin{column}{0.4\textwidth}
-    \begin{block}{\small Новая формула}
-      \includegraphics<1>{velocity-1}
-      \includegraphics<2>{velocity-2}
-      \includegraphics<3>{velocity-4}
-    \end{block}
-  \end{column}
-\end{columns}
+\includegraphics<1>{velocity-ref-1}
+\includegraphics<2>{velocity-ref-2}
+\includegraphics<3>{velocity-ref-4}
+#+end_export
+
+**** Новая формула
+:PROPERTIES:
+:BEAMER_env: block
+:BEAMER_col: 0.4
+:END:
+
+#+begin_export latex
+\includegraphics<1>{velocity-1}
+\includegraphics<2>{velocity-2}
+\includegraphics<3>{velocity-4}
 #+end_export
 
 ** Сравнение с формулой для ВМА
-#+begin_export latex
-\centering
-\begin{columns}[T]
-  \begin{column}{0.45\textwidth}
-    \begin{block}{\small Малая амплитуда}
-      \vspace{0.25\baselineskip}%
-      \includegraphics{low-amp-color}
-    \end{block}
-  \end{column}
-  \begin{column}{0.45\textwidth}
-    \begin{block}{\small Высокая амплитуда}
-      \vspace{0.25\baselineskip}%
-      \includegraphics{high-amp-color}
-    \end{block}
-  \end{column}
-\end{columns}
-#+end_export
 
-** Выводы
+*** Columns
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: T
+:END:
+
+**** Малая амплитуда
+:PROPERTIES:
+:BEAMER_env: block
+:BEAMER_col: 0.45
+:END:
+[[file:graphics/slides/low-amp-color.eps]]
+
+**** Большая амплитуда
+:PROPERTIES:
+:BEAMER_env: block
+:BEAMER_col: 0.45
+:END:
+[[file:graphics/slides/high-amp-color.eps]]
+
+** Выводы						:noexport:
 Метод подходит для
 - дискретно заданной $\zeta(x,y,t)$,
 - волн произвольных амплитуд,
@@ -759,7 +736,6 @@ arma.plot_nonlinear(file.path("build", "nit-standing"), args)
 
 ** Апробация
 
-#+latex: \setbeamerfont{block title}{size=\small}
 #+latex: \small
 
 - Конференции: ISSW'14, HPCS'15, HPCS'16, HPCS'17.
