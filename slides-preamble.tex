@@ -16,6 +16,7 @@
 \usepackage{colortbl}
 \usepackage{tikz}
 \usetikzlibrary{shapes}
+\usetikzlibrary{positioning}
 
 \graphicspath{{build/}{graphics/slides/}}
 
@@ -45,7 +46,7 @@
 \newcommand*{\rectemph}[2]{%
   \begin{tikzpicture}[baseline=(#1tmp.base),remember picture]
     \node[fill=none,inner sep=0mm] (#1tmp) {$\displaystyle\phantom{#2}$};%
-    \node[overlay,rectangle,fill=none,ultra thick,draw=markBlue, inner xsep=0.5mm, inner ysep=1mm] (#1) at (#1tmp) {$\displaystyle#2$};%
+    \node[overlay,rectangle,fill=none,ultra thick,draw=none, inner xsep=0.5mm, inner ysep=1mm] (#1) at (#1tmp) {$\displaystyle#2$};%
   \end{tikzpicture}
 }
 

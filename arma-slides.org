@@ -54,7 +54,7 @@
 
 Недостатки: периодичность, вероятностная сходимость, линейная теория волн.
 
-** Цель и задачи
+** Постановка задачи
 
 Разработать /без предположений линейной теории волн/
 - трехмерную имитационную модель морского волнения,
@@ -62,21 +62,82 @@
 - программный комплекс для систем с общей и распределенной памятью.
 
 * Трехмерная модель АРСС
-** Основные формулы
+
+** Процесс АРСС
+
 \begin{equation*}
-  \zeta_{i,j,k} =
+  \rectemph{zeta1}{\zeta_{i,j,k}} =
   \sum\limits_{l=0}^{p_1}
   \sum\limits_{m=0}^{p_2}
   \sum\limits_{n=0}^{p_3}
-  \Phi_{l,m,n} \zeta_{i-l,j-m,k-n}
+  \rectemph{phi}{\Phi_{l,m,n}} \rectemph{zeta2}{\zeta_{i-l,j-m,k-n}}
   +
   \sum\limits_{l=0}^{q_1}
   \sum\limits_{m=0}^{q_2}
   \sum\limits_{n=0}^{q_3}
-  \Theta_{l,m,n} \epsilon_{i-l,j-m,k-n}
-  ,
-  \label{eq:arma-process}
+  \rectemph{theta}{\Theta_{l,m,n}} \rectemph{eps}{\epsilon_{i-l,j-m,k-n}}
 \end{equation*}
+
+#+BEAMER: \vspace{0.5cm}
+
+#+begin_src dot :exports results :file build/arma-pipeline-ru.pdf
+digraph G {
+
+  node [fontname="Open Sans",fontsize=10,margin="0.055,0",shape=box,bgcolor="E5E6E5",style="filled",height="0.37"]
+  graph [nodesep="0.25",ranksep="0.30",rankdir="LR" margin=0]
+  edge [arrowsize=0.66]
+  bgcolor="#F5F6F5"
+
+  acf [label="АКФ"]
+  yule_walker_equations [label="Уравнения\nЮла—Уокера"]
+  nonlinear_equations [label="Нелинейные\nуравнения"]
+  ar_process [label="Процесс\nАР"]
+  ma_process [label="Процесс\nСС"]
+  arma_process [label="Процесс\nАРСС"]
+
+  acf->yule_walker_equations->ar_process->arma_process
+  acf->nonlinear_equations->ma_process->arma_process
+
+}
+#+end_src
+
+#+RESULTS:
+[[file:build/arma-pipeline-ru.pdf]]
+
+#+begin_export latex
+\begin{tikzpicture}[remember picture,overlay]
+\node[fill=none,baseline,anchor=south west,xshift=1.1cm,yshift=-1.75cm]
+	(zetaLabel) at (current page.north west)
+	{\scriptsize{}подъем взволнованной поверхности};
+\node[fill=none,anchor=south east,xshift=-2cm,yshift=-1.75cm]
+	(epsLabel) at (current page.north east)
+	{\scriptsize{}белый шум};
+\node[fill=none,baseline,anchor=north west,below=of phi,yshift=0.2cm]
+	(phiLabel)
+	{\scriptsize{}коэф. АР};
+\node[fill=none,baseline,anchor=north west,below=of theta,yshift=0.2cm]
+	(thetaLabel)
+	{\scriptsize{}коэф. СС};
+\path[->,thick] (zetaLabel.south -| zeta1.north) edge (zeta1.north);
+\path[->,thick] (zetaLabel.south -| zeta2.north west)
+	edge [transform canvas={xshift=2mm}]
+	(zeta2.north west);
+\path[->,thick] (epsLabel.south -| eps.north west)
+	edge [transform canvas={xshift=2mm}]
+	(eps.north west);
+\path[->,thick] (phiLabel.north -| phi.south west)
+	edge [transform canvas={xshift=2.5mm}]
+	(phi.south west);
+\path[->,thick] (thetaLabel.north -| theta.south west)
+	edge [transform canvas={xshift=2.5mm}]
+	(theta.south west);
+\end{tikzpicture}
+#+end_export
+
+*** Note
+:PROPERTIES:
+:BEAMER_ENV: note
+:END:
 
 По сравнению с моделью ЛХ
 - высоко-производительная,
@@ -87,7 +148,159 @@
 - трехмерная,
 - исследуются трехмерные АКФ, а не спектры.
 
-** Определение коэффициентов                                      :noexport:
+** АКФ морской поверхности
+
+*** Columns
+:PROPERTIES:
+:BEAMER_env: columns
+:END:
+
+**** Column 1
+:PROPERTIES:
+:BEAMER_col: 1.00
+:END:
+
+#+latex: \vspace{-0.5cm}
+#+begin_src dot :exports results :file build/acf-pipeline-ru.pdf
+digraph G {
+
+  node [fontname="Open Sans",fontsize=10,margin="0.055,0",shape=box,bgcolor="E5E6E5",style="filled"]
+  graph [nodesep="0.25",ranksep="0.20",rankdir="TB" margin=0]
+  edge [arrowsize=0.66]
+  bgcolor="#F5F6F5"
+
+  function [label="Формула\nпрофиля волны",height="0.40"]
+  discrete_function [label="Дискретный\nпрофиль волны",height="0.40"]
+  field_data [label="Натурные\nданные",width="1.1",height="0.40"]
+  theorem [label="Теорема Винера—Хинчина",height="0.20"]
+  acf [label="АКФ",height="0.20"]
+
+  function->theorem
+  discrete_function->theorem
+  field_data->theorem
+  theorem->acf
+
+}
+#+end_src
+
+#+RESULTS:
+[[file:build/acf-pipeline-ru.pdf]]
+
+**** Column 2					:noexport:
+:PROPERTIES:
+:BEAMER_col: 0.37
+:END:
+
+\begin{equation*}
+\hat{\gamma} = |\hat{\zeta}|^2
+\end{equation*}
+
+*** Separator
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
+*** Columns
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: T
+:END:
+
+**** Column 1
+:PROPERTIES:
+:BEAMER_col: 0.30
+:END:
+
+#+header: :width 1.7 :height 1.2 :bg #F5F6F5 :font sans
+#+begin_src R :file build/acf-propagating-plain-wave-ru.pdf
+source(file.path("R", "common.R"))
+par(mar=c(0,0.5,0,0))
+df <- data.frame(t=rep(NA,0), x=rep(NA,0), y=rep(NA,0), z=rep(NA,0))
+n <- 20
+grid <- seq(1, n)
+alpha <- 2.13975
+beta <- 0.77341
+gamm <- 0.549017
+for (i in grid) {
+	for (j in grid) {
+    x <- i/(n-1)
+    y <- j/(n-1)
+		z <- gamm * exp(-alpha*(x+y)) * cos(beta*(x+y))
+		df[nrow(df) + 1,] <- c(0,i,j,z)
+	}
+}
+arma.wavy_plot(df, 0, zlim=c(0,0.5), expand=0.5, border=NA)
+#+end_src
+
+#+caption: Плоская волна
+#+RESULTS:
+[[file:build/acf-propagating-plain-wave-ru.pdf]]
+
+
+**** Column 2
+:PROPERTIES:
+:BEAMER_col: 0.35
+:END:
+
+#+header: :width 1.7 :height 1.2 :bg #F5F6F5 :font sans
+#+begin_src R :file build/acf-standing-plain-wave-ru.pdf
+source(file.path("R", "common.R"))
+par(mar=c(0,0.5,0,0))
+df <- data.frame(t=rep(NA,0), x=rep(NA,0), y=rep(NA,0), z=rep(NA,0))
+n <- 20
+grid <- seq(1, n)
+alpha <- 2.31906
+beta <- -5.49873
+gamm <- 0.0680413
+for (i in grid) {
+	for (j in grid) {
+    x <- i/(n-1)
+    y <- j/(n-1)
+		z <- gamm * exp(-alpha*(x+y)) * cos(beta*x) * cos(beta*y)
+		df[nrow(df) + 1,] <- c(0,i,j,z)
+	}
+}
+arma.wavy_plot(df, 0, zlim=c(-0.05,0.05), expand=0.5, border=NA)
+#+end_src
+
+#+caption: Плоская стоячая волна
+#+RESULTS:
+[[file:build/acf-standing-plain-wave-ru.pdf]]
+
+**** Column 3
+:PROPERTIES:
+:BEAMER_col: 0.30
+:END:
+
+#+header: :width 1.7 :height 1.2 :bg #F5F6F5 :font sans
+#+begin_src R :file build/acf-propagating-stokes-wave-ru.pdf
+source(file.path("R", "common.R"))
+par(mar=c(0,0.5,0,0))
+df <- data.frame(t=rep(NA,0), x=rep(NA,0), y=rep(NA,0), z=rep(NA,0))
+n <- 40
+alpha <- 0.5
+grid <- seq(1, n)
+k <- 0.77341
+t <- 0
+omega <- 0.3
+a <- 1.5
+for (i in grid) {
+	for (j in grid) {
+    x <- i/(n-1)
+    y <- j/(n-1)
+    theta <- k*(x + y) - omega*t
+		z <- a * exp(-alpha*(x+y)) * (cos(theta) + 0.5*k*a*cos(2*theta) + (3/8)*(k*a*k*a)*cos(3*theta))
+		df[nrow(df) + 1,] <- c(0,i,j,z)
+	}
+}
+arma.acf_plot(df, 0, zlim=c(0,1.0), expand=0.5, border=NA)
+#+end_src
+
+#+caption: Волна Стокса
+#+RESULTS:
+[[file:build/acf-propagating-stokes-wave-ru.pdf]]
+
+** Определение коэффициентов			:noexport:
 #+begin_export latex
 \framesubitile{Модель АР}
     \small%
@@ -145,230 +358,38 @@
     \end{equation*}
 #+end_export
 
-** Определение коэффициентов                                      :noexport:
-#+begin_export latex
-\framesubitile{Модель СС}
-    \small%
-    Solve non-linear system of equations for $\Theta$:
-    \begin{equation*}
-      K_{i,j,k} =
-      \left[
-        \displaystyle
-        \sum\limits_{l=i}^{q_1}
-        \sum\limits_{m=j}^{q_2}
-        \sum\limits_{n=k}^{q_3}
-        \Theta_{l,m,n}\Theta_{l-i,m-j,n-k}
-      \right]
-      \Var{\epsilon}
-    \end{equation*}
-    via fixed-point iteration method:
-    \begin{equation*}
-      \theta_{i,j,k} =
-        -\frac{K_{0,0,0}}{\Var{\epsilon}}
-        +
-        \sum\limits_{l=i}^{q_1}
-        \sum\limits_{m=j}^{q_2}
-        \sum\limits_{n=k}^{q_3}
-        \Theta_{l,m,n} \Theta_{l-i,m-j,n-k}.
-    \end{equation*}
-#+end_export
+** Определение коэффициентов				:noexport:
+#+BEAMER: \framesubitile{Модель СС}
+#+BEAMER: \small
+Решить систему нелинейных уравнений
+\begin{equation*}
+  K_{i,j,k} =
+  \left[
+	\displaystyle
+	\sum\limits_{l=i}^{q_1}
+	\sum\limits_{m=j}^{q_2}
+	\sum\limits_{n=k}^{q_3}
+	\Theta_{l,m,n}\Theta_{l-i,m-j,n-k}
+  \right]
+  \Var{\epsilon}
+\end{equation*}
+относительно \(\Theta\) с помощью метода простой итерации:
+\begin{equation*}
+  \theta_{i,j,k} =
+	-\frac{K_{0,0,0}}{\Var{\epsilon}}
+	+
+	\sum\limits_{l=i}^{q_1}
+	\sum\limits_{m=j}^{q_2}
+	\sum\limits_{n=k}^{q_3}
+	\Theta_{l,m,n} \Theta_{l-i,m-j,n-k}.
+\end{equation*}
 
-** Критерии выбора моделей АР и СС
+** Критерии выбора моделей АР и СС				:noexport:
 Использовать модель АР для стоячих волн и модель СС для прогрессивных.
 #+latex: \newline\newline
 Экспериментальный результат:
 - модели расходятся, если делать наоборот;
 - характеристики взволнованной поверхности соответствуют реальным.
-
-** АКФ морской поверхности
-
-#+begin_src dot :exports results :file build/acf-pipeline-ru.pdf
-digraph G {
-
-  node [fontname="Open Sans",fontsize=10,margin="0.055,0",shape=box,bgcolor="E5E6E5",style="filled"]
-  graph [nodesep="0.25",ranksep="0.20",rankdir="TB" margin=0]
-  edge [arrowsize=0.66]
-  bgcolor="#F5F6F5"
-
-  function [label="Формула\nпрофиля волны",height="0.40"]
-  discrete_function [label="Дискретный\nпрофиль волны",height="0.40"]
-  field_data [label="Натурные\nданные",width="1.1",height="0.40"]
-  theorem [label="Теорема Винера—Хинчина",height="0.20"]
-  acf [label="АКФ",height="0.20"]
-
-  function->theorem
-  discrete_function->theorem
-  field_data->theorem
-  theorem->acf
-
-}
-#+end_src
-
-#+RESULTS:
-[[file:build/acf-pipeline-ru.pdf]]
-
-*** Columns
-:PROPERTIES:
-:BEAMER_env: columns
-:BEAMER_opt: T
-:END:
-
-**** Column 1
-:PROPERTIES:
-:BEAMER_col: 0.30
-:END:
-
-#+latex: \vspace{-1cm}
-#+header: :width 1.7 :height 1.2 :bg #F5F6F5 :font sans
-#+begin_src R :file build/acf-propagating-plain-wave-ru.pdf
-source(file.path("R", "common.R"))
-par(mar=c(0,0.5,0,0))
-df <- data.frame(t=rep(NA,0), x=rep(NA,0), y=rep(NA,0), z=rep(NA,0))
-n <- 20
-grid <- seq(1, n)
-alpha <- 2.13975
-beta <- 0.77341
-gamm <- 0.549017
-for (i in grid) {
-	for (j in grid) {
-    x <- i/(n-1)
-    y <- j/(n-1)
-		z <- gamm * exp(-alpha*(x+y)) * cos(beta*(x+y))
-		df[nrow(df) + 1,] <- c(0,i,j,z)
-	}
-}
-arma.wavy_plot(df, 0, zlim=c(0,0.5), expand=0.5, border=NA)
-#+end_src
-
-#+caption: Плоская волна
-#+RESULTS:
-[[file:build/acf-propagating-plain-wave-ru.pdf]]
-
-
-**** Column 2
-:PROPERTIES:
-:BEAMER_col: 0.35
-:END:
-
-#+latex: \vspace{-1cm}
-#+header: :width 1.7 :height 1.2 :bg #F5F6F5 :font sans
-#+begin_src R :file build/acf-standing-plain-wave-ru.pdf
-source(file.path("R", "common.R"))
-par(mar=c(0,0.5,0,0))
-df <- data.frame(t=rep(NA,0), x=rep(NA,0), y=rep(NA,0), z=rep(NA,0))
-n <- 20
-grid <- seq(1, n)
-alpha <- 2.31906
-beta <- -5.49873
-gamm <- 0.0680413
-for (i in grid) {
-	for (j in grid) {
-    x <- i/(n-1)
-    y <- j/(n-1)
-		z <- gamm * exp(-alpha*(x+y)) * cos(beta*x) * cos(beta*y)
-		df[nrow(df) + 1,] <- c(0,i,j,z)
-	}
-}
-arma.wavy_plot(df, 0, zlim=c(-0.05,0.05), expand=0.5, border=NA)
-#+end_src
-
-#+caption: Плоская стоячая волна
-#+RESULTS:
-[[file:build/acf-standing-plain-wave-ru.pdf]]
-
-**** Column 3
-:PROPERTIES:
-:BEAMER_col: 0.30
-:END:
-
-#+latex: \vspace{-1cm}
-#+header: :width 1.7 :height 1.2 :bg #F5F6F5 :font sans
-#+begin_src R :file build/acf-propagating-stokes-wave-ru.pdf
-source(file.path("R", "common.R"))
-par(mar=c(0,0.5,0,0))
-df <- data.frame(t=rep(NA,0), x=rep(NA,0), y=rep(NA,0), z=rep(NA,0))
-n <- 40
-alpha <- 0.5
-grid <- seq(1, n)
-k <- 0.77341
-t <- 0
-omega <- 0.3
-a <- 1.5
-for (i in grid) {
-	for (j in grid) {
-    x <- i/(n-1)
-    y <- j/(n-1)
-    theta <- k*(x + y) - omega*t
-		z <- a * exp(-alpha*(x+y)) * (cos(theta) + 0.5*k*a*cos(2*theta) + (3/8)*(k*a*k*a)*cos(3*theta))
-		df[nrow(df) + 1,] <- c(0,i,j,z)
-	}
-}
-arma.acf_plot(df, 0, zlim=c(0,1.0), expand=0.5, border=NA)
-#+end_src
-
-#+caption: Волна Стокса
-#+RESULTS:
-[[file:build/acf-propagating-stokes-wave-ru.pdf]]
-
-** АКФ морской поверхности			:noexport:
-#+begin_export latex
-\small
-\begin{tikzpicture}[remember picture,overlay]
-  \node[fill=spbuWhite2,text width=2.3cm,xshift=1cm,yshift=1.5cm,anchor=west] (waveProfile) at (current page.west) {Формула профиля волны или спектра};
-  \node[fill=spbuWhite2,text width=2.0cm,yshift=1.5cm] (bigPoly) at (current page.center) {Полином высокой степени};
-  \node[fill=spbuWhite2,text width=2.0cm,xshift=-1cm,yshift=1.5cm,anchor=east] (acfApprox) at (current page.east) {Формула АКФ};
-  \draw[->,thick] (waveProfile) to node[above] {\scriptsize теорема} node[below] {\scriptsize Винера---Хинчина} (bigPoly);
-  \draw[->,thick] (bigPoly) to node[above] {\scriptsize аппроксимация} node[below] {\scriptsize модельной функцией} (acfApprox);
-\end{tikzpicture}
-\only<1>{
-\begin{tikzpicture}[remember picture,overlay]
-  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-0}};
-  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-00}};
-\end{tikzpicture}
-}
-\only<2>{
-\begin{tikzpicture}[remember picture,overlay]
-  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-1}};
-  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-00}};
-\end{tikzpicture}
-}
-\only<3>{
-\begin{tikzpicture}[remember picture,overlay]
-  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-3}};
-  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-00}};
-\end{tikzpicture}
-}
-\only<4>{
-\begin{tikzpicture}[remember picture,overlay]
-  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-4}};
-  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-00}};
-\end{tikzpicture}
-}
-\only<5>{
-\begin{tikzpicture}[remember picture,overlay]
-  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-4}};
-  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-00}};
-\end{tikzpicture}
-}
-\only<6>{
-\begin{tikzpicture}[remember picture,overlay]
-  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-4}};
-  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-01}};
-\end{tikzpicture}
-}
-\only<7>{
-\begin{tikzpicture}[remember picture,overlay]
-  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-4}};
-  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-03}};
-\end{tikzpicture}
-}
-\only<8>{
-\begin{tikzpicture}[remember picture,overlay]
-  \node[xshift=-3cm,yshift=-1.5cm,anchor=center] (acf1) at (current page.center) {\includegraphics[scale=0.7]{standing-acf-4}};
-  \node[xshift=3cm,yshift=-1.5cm,anchor=center] (acf2) at (current page.center) {\includegraphics[scale=0.7]{propagating-acf-04}};
-\end{tikzpicture}
-}
-#+end_export
 
 ** Верификация модели АРСС
 
