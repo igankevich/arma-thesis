@@ -8,7 +8,7 @@
 #+BEAMER_THEME: SaintPetersburg
 #+OPTIONS: todo:nil title:nil ':t toc:nil H:2
 #+STARTUP: indent
-#+PROPERTY: header-args:R :results graphics :exports results :eval no-export
+#+PROPERTY: header-args:R :results graphics :exports results
 
 #+begin_export latex
 \setbeamertemplate{title page}{%
@@ -408,7 +408,7 @@ arma.acf_plot(df, 0, zlim=c(0,1.0), expand=0.5, border=NA)
 source(file.path("R", "common.R"))
 par(pty="s", mfrow=c(2, 2), mar=c(1,1,1,0), mgp=c(3,0.3,0), cex=0.6, fg='black', col='navy')
 arma.qqplot_grid_adj(
-  file.path("build", "standing_wave"),
+  file.path("build", "arma-benchmarks", "verification-orig", "standing_wave"),
   c("elevation", "heights_y", "lengths_y", "periods"),
   c("подъем", "высота", "длина", "период"),
   0.1,
@@ -435,7 +435,7 @@ arma.qqplot_grid_adj(
 source(file.path("R", "common.R"))
 par(pty="s", mfrow=c(2, 2), mar=c(1,1,1,0), mgp=c(3,0.3,0), cex=0.6, col='navy')
 arma.qqplot_grid_adj(
-  file.path("build", "propagating_wave"),
+  file.path("build", "arma-benchmarks", "verification-orig", "propagating_wave"),
   c("elevation", "heights_y", "lengths_y", "periods"),
   c("подъем", "высота", "длина", "период"),
   0.1,
@@ -616,7 +616,7 @@ par(pty="s",mgp=c(3,0.2,0),mfrow=c(1,2),mar=c(1.5,1,0,0),cex=0.66,bty="n")
 # linear solver
 #par(fig=c(0,0.95,0,0.5),new=TRUE)
 arma.plot_velocity_potential_field(
-  file.path("build", "plain_wave_linear_solver"),
+  file.path("build", "arma-benchmarks", "verification-orig", "plain_wave_linear_solver"),
   levels=levels,
   col=col,
   contour_lwd=0.5,
@@ -630,7 +630,7 @@ arma.plot_velocity_potential_field(
 # high-amplitude solver
 #par(fig=c(0,0.95,0.5,1),new=TRUE)
 arma.plot_velocity_potential_field(
-  file.path("build", "plain_wave_high_amplitude_solver"),
+  file.path("build", "arma-benchmarks", "verification-orig", "plain_wave_high_amplitude_solver"),
   levels=levels,
   col=col,
   contour_lwd=0.5,
@@ -776,7 +776,7 @@ arma.plot_velocity_potential_field(
 - волн произвольных амплитуд,
 - произвольной глубины $h=\text{const}$.
 
-* Программный комплекс							:noexport:
+* Программный комплекс
 ** Диаграмма
 :PROPERTIES:
 :BEAMER_ENV: fullframe

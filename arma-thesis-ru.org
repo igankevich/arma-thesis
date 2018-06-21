@@ -679,7 +679,7 @@ Motion Programme (LAMP), программе для моделирования к
 source(file.path("R", "common.R"))
 par(pty="s", mfrow=c(2, 2), family="serif")
 arma.qqplot_grid(
-  file.path("build", "propagating_wave"),
+  file.path("build", "arma-benchmarks", "verification-orig", "propagating_wave"),
   c("elevation", "heights_y", "lengths_y", "periods"),
   c("подъем", "высота по Y", "длина по Y", "период"),
   xlab="x",
@@ -698,7 +698,7 @@ arma.qqplot_grid(
 source(file.path("R", "common.R"))
 par(pty="s", mfrow=c(2, 2), family="serif")
 arma.qqplot_grid(
-  file.path("build", "standing_wave"),
+  file.path("build", "arma-benchmarks", "verification-orig", "standing_wave"),
   c("elevation", "heights_y", "lengths_y", "periods"),
   c("подъем", "высота по Y       ", "длина по Y", "период"),
   xlab="x",
@@ -716,8 +716,8 @@ arma.qqplot_grid(
 #+header: :width 6 :height 9
 #+begin_src R :file build/acf-slices-ru.pdf
 source(file.path("R", "common.R"))
-propagating_acf <- read.csv(file.path("build", "propagating_wave", "acf.csv"))
-standing_acf <- read.csv(file.path("build", "standing_wave", "acf.csv"))
+propagating_acf <- read.csv(file.path("build", "arma-benchmarks", "verification-orig", "propagating_wave", "acf.csv"))
+standing_acf <- read.csv(file.path("build", "arma-benchmarks", "verification-orig", "standing_wave", "acf.csv"))
 par(mfrow=c(5, 2), mar=c(0,0,0,0), family="serif")
 for (i in seq(0, 4)) {
   arma.wavy_plot(standing_acf, i, zlim=c(-5,5))
@@ -986,9 +986,9 @@ args <- list(
   linetypes=c('solid', 'dashed', 'dotted')
 )
 args$title <- 'Прогрессивные волны'
-arma.plot_nonlinear(file.path("build", "nit-propagating"), args)
+arma.plot_nonlinear(file.path("build", "arma-benchmarks", "verification-orig", "nit-propagating"), args)
 args$title <- 'Стоячие волны'
-arma.plot_nonlinear(file.path("build", "nit-standing"), args)
+arma.plot_nonlinear(file.path("build", "arma-benchmarks", "verification-orig", "nit-standing"), args)
 #+end_src
 
 #+name: fig-nit
@@ -1650,7 +1650,7 @@ col <- palette(nlevels-1)
 # linear solver
 par(fig=c(0,0.95,0,0.5),new=TRUE)
 arma.plot_velocity_potential_field(
-  file.path("build", "plain_wave_linear_solver"),
+  file.path("build", "arma-benchmarks", "verification-orig", "plain_wave_linear_solver"),
   levels=levels,
   col=col
 )
@@ -1658,7 +1658,7 @@ arma.plot_velocity_potential_field(
 # high-amplitude solver
 par(fig=c(0,0.95,0.5,1),new=TRUE)
 arma.plot_velocity_potential_field(
-  file.path("build", "plain_wave_high_amplitude_solver"),
+  file.path("build", "arma-benchmarks", "verification-orig", "plain_wave_high_amplitude_solver"),
   levels=levels,
   col=col
 )

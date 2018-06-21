@@ -20,10 +20,18 @@ build/$(PHD_EN).pdf: $(PHD_EN).tex preamble.tex bib/*
 	latexmk $(FLAGS) -f $(PHD_EN).tex
 	true
 
-build/$(SLIDES).pdf: $(SLIDES).tex slides-preamble.tex $(SLIDES).org
-	org export $(SLIDES).org beamer
+build/$(SLIDES).pdf: $(SLIDES).tex slides-preamble.tex math.tex
 	latexmk $(FLAGS) -f $(SLIDES).tex
 	true
+
+$(PHD_EN).tex: $(PHD_EN).org
+	org export $< latex
+
+$(PHD_RU).tex: $(PHD_RU).org
+	org export $< latex
+
+$(SLIDES).tex: $(SLIDES).org
+	org export $< beamer
 
 clean:
 	rm -f build/$(PHD_EN)*
