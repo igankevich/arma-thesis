@@ -15,8 +15,11 @@
 
 \usepackage{colortbl}
 \usepackage{tikz}
-\usetikzlibrary{shapes}
+
+\usetikzlibrary{arrows}
+\usetikzlibrary{decorations.markings}
 \usetikzlibrary{positioning}
+\usetikzlibrary{shapes}
 
 \graphicspath{{build/}{graphics/slides/}}
 
@@ -43,6 +46,23 @@
     \node[fill=none,inner sep=0mm] (#1tmp) {$\displaystyle\phantom{#2}$};%
     \node[overlay,rectangle,fill=markRed,ultra thick,draw=none, inner xsep=0mm, inner ysep=0.5mm] (#1) at (#1tmp) {$\displaystyle#2$};%
   \end{tikzpicture}
+}
+
+% down arrow
+\newcommand*{\spbuArrow}{%
+\begin{center}%
+\begin{tikzpicture}[scale=1]%
+\draw[
+	-triangle 90,
+	very thick,
+	double,
+	double equal sign distance,
+	draw=spbuWhite2,
+	fill=spbuWhite2
+]
+	(0,0.1) -- (0,0);
+\end{tikzpicture}%
+\end{center}%
 }
 
 \AtBeginSection[]{\frame{\sectionpage}}
