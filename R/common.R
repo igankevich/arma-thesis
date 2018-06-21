@@ -144,7 +144,7 @@ arma.plot_partitions <- function() {
 }
 
 arma.plot_ramp_up_interval <- function(label="Ramp-up interval") {
-	zeta <- read.csv(file.path("build", "standing_wave", "zeta.csv"))
+	zeta <- read.csv(file.path("build", "arma-benchmarks", "verification-orig", "standing_wave", "zeta.csv"))
 	t <- round(mean(zeta$t))
 	res <- arma.wavy_plot(zeta, t, scale=FALSE)
 	library("grDevices")
@@ -215,14 +215,23 @@ arma.plot_ar_cubes <- function(nx, ny, nz) {
   view3d(45,30)
 }
 
-arma.plot_ar_cubes_2d <- function (nx, ny, xlabel, ylabel) {
+arma.plot_ar_cubes_2d_v2 <- function (nx, ny, xlabel, ylabel, args) {
+  if (!('arrow_args' %in% names(args))) {
+    args$arrow_args <- list(lwd=3,angle=7)
+  }
+  if (!('adj_x' %in% names(args))) {
+    args$adj_x <- 0.3
+  }
+  if (!('adj_y' %in% names(args))) {
+    args$adj_y <- 0.4
+  }
   part_size <- 2
   plot.new()
   plot.window(xlim=c(0,nx*part_size),ylim=rev(c(0,ny*part_size)))
-  par(pty="s", family="serif")
+  par(pty="s")
   char_idx <- 1
-  adj_x <- 0.3
-  adj_y <- 0.4
+  adj_x <- args$adj_x
+  adj_y <- args$adj_y
   for (i in c(1:nx)-1) {
     for (j in c(1:ny)-1) {
       x0 <- i*part_size
@@ -249,22 +258,28 @@ arma.plot_ar_cubes_2d <- function (nx, ny, xlabel, ylabel) {
               ym <- ym + adj_y
               y00 <- y00 - adj_y
             }
-            arrows(
-              x00 + part_size/2,
-              y00 + part_size/2,
-              xl + part_size/2,
-              ym + part_size/2,
-              angle=7, lwd=3)
+            do.call(arrows, c(list(
+              x0=x00 + part_size/2,
+              y0=y00 + part_size/2,
+              x1=xl + part_size/2,
+              y1=ym + part_size/2),
+              args$arrow_args))
           }
         }
       }
       char_idx <- char_idx + 1
     }
   }
-  axis(3, at=c(0:nx)*part_size, labels=c(0:nx))
-  axis(2, at=c(0:ny)*part_size, labels=c(0:ny))
-  mtext(xlabel, side=3, line=3)
-  mtext(ylabel, side=2, line=3)
+  if (!('no_axes' %in% names(args)) | !args$no_axes) {
+    axis(3, at=c(0:nx)*part_size, labels=c(0:nx))
+    axis(2, at=c(0:ny)*part_size, labels=c(0:ny))
+    mtext(xlabel, side=3, line=3)
+    mtext(ylabel, side=2, line=3)
+  }
+}
+
+arma.plot_ar_cubes_2d <- function (nx, ny, xlabel, ylabel) {
+  arma.plot_ar_cubes_2d_v2(nx, ny, xlabel, ylabel, list())
 }
 
 arma.plot_factory_vs_openmp <- function(...) {

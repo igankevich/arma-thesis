@@ -8,7 +8,7 @@
 #+BEAMER_THEME: SaintPetersburg
 #+OPTIONS: todo:nil title:nil ':t toc:nil H:2
 #+STARTUP: indent
-#+PROPERTY: header-args:R :results graphics :exports results
+#+PROPERTY: header-args:R :results graphics :exports results :cache yes
 
 #+begin_export latex
 \setbeamertemplate{title page}{%
@@ -777,7 +777,81 @@ arma.plot_velocity_potential_field(
 - произвольной глубины $h=\text{const}$.
 
 * Программный комплекс
-** Диаграмма
+
+** Программная реализация
+
+#+header: :width 1.6 :height 1.6 :bg #F5F6F5 :font sans
+#+begin_src R :file build/slides-ar-cubes-ru.pdf
+source(file.path("R", "common.R"))
+par(mgp=c(3,0.4,0), cex=0.6, mar=c(1,2,2,0))
+arma.plot_ar_cubes_2d_v2(
+	3,
+	3,
+	xlabel="Индекс части (X)",
+	ylabel="Индекс части (Y)",
+	list(
+		arrow_args=list(lwd=2,angle=7,length=0.125),
+		adj_x=0.4,
+		adj_y=0.5,
+		no_axes=TRUE
+	)
+)
+#+end_src
+
+** Система с общей памятью
+:PROPERTIES:
+:header-args:R: :results output raw :exports results
+:END:
+
+#+beamer: \small
+#+header: :results output raw :exports results
+#+name: tab-arma-performance
+#+begin_src R :results output org :exports results
+source(file.path("R", "benchmarks.R"))
+options(arma.mark=",")
+model_names <- list(
+	ar.x="АР",
+	ma.x="СС",
+	lh.x="ЛХ",
+	ar.y="АР",
+	ma.y="СС",
+	lh.y="ЛХ",
+  Row.names="\\orgcmidrule{2-4}{5-6}Подпрограмма"
+)
+row_names <- list(
+  determine_coefficients="Определение коэффициентов",
+  validate="Проверка модели",
+  generate_surface="Генерация поверхности",
+  nit="НБП",
+  write_all="Запись вывода в файл",
+  copy_to_host="Копирование данных с GPU",
+  velocity="Выч. потенциалов скорости"
+)
+arma.print_openmp_vs_opencl(model_names, row_names)
+#+end_src
+
+#+attr_latex: :booktabs t
+#+RESULTS: tab-arma-performance
+
+** Система с распределенной памятью
+
+#+header: :width 2 :height 2 :bg #F5F6F5 :font sans
+#+begin_src R :file build/slides-bscheduler-performance-ru.pdf
+source(file.path("R", "benchmarks.R"))
+par(mgp=c(3,0.4,0), cex=0.7, mar=c(2,2,0,0))
+data <- arma.load_bscheduler_performance_data()
+arma.plot_bscheduler_performance_data(
+  data,
+  list(
+    openmp="OpenMP",
+    bsc1="Bscheduler (один узел)",
+    bsc2="Bscheduler (два узла)"
+  )
+)
+title(xlab="Размер взволнованной поверхности", ylab="Время, сек.")
+#+end_src
+
+** Диаграмма				:noexport:
 :PROPERTIES:
 :BEAMER_ENV: fullframe
 :END:
@@ -827,32 +901,7 @@ arma.plot_velocity_potential_field(
   \end{tikzpicture}
 #+end_export
 
-** Время генерации, сек.
-#+begin_export latex
-\centering
-\small
-  \begin{tabular}{c lll lll}
-  \toprule
-  & \multicolumn{3}{c}{Модель Лонге---Хиггинса} & \multicolumn{3}{c}{Авторег. модель}\tabularnewline
-  \cmidrule{2-7}
-  Размер & OpenCL & OpenMP & MPI & OpenCL & OpenMP & MPI \\
-  \midrule
-  400000 & 0.82 & 40.44 & 32.60 & 1.80 & 0.800 & 0.750\\
-  440000 & 0.90 & 44.59 & 35.78 & 1.92 & 0.100 & 0.930\\
-  480000 & 0.99 & 48.49 & 38.93 & 2.29 & 0.970 & 0.126\\
-  520000 & 1.07 & 52.65 & 41.92 & 2.43 & 0.118 & 0.117\\
-  560000 & 1.15 & 56.45 & 45.00 & 2.51 & 0.117 & 0.161\\
-  600000 & 1.23 & 60.85 & 48.80 & 2.54 & 0.123 & 0.132\\
-  640000 & 1.31 & 65.07 & 53.02 & 2.73 & 0.123 & 0.160\\
-  680000 & 1.40 & 68.90 & 54.92 & 2.80 & 0.138 & 0.136\\
-  720000 & 1.48 & 72.49 & 58.42 & 2.88 & 0.144 & 0.173\\
-  760000 & \only<2>{\cellcolor{markBlue!50}}{1.56} & 76.86 & 61.41 & 3.47 & \only<2>{\cellcolor{markBlue!50}}{0.156} & 0.155\\
-  800000 & 1.64 & 81.03 & 66.42 & 3.25 & 0.166 & 0.174\\
-  \bottomrule
-\end{tabular}
-#+end_export
-
-** Оптимизация записи в файл
+** Оптимизация записи в файл			:noexport:
 #+begin_export latex
   \begin{columns}[T]
     \begin{column}{0.575\textwidth}
@@ -870,13 +919,13 @@ arma.plot_velocity_potential_field(
   \end{columns}
 #+end_export
 
-** Отказоустойчивость
+** Отказоустойчивость			:noexport:
 #+begin_export latex
 \centering%
 \includegraphics{mpp-time-color}
 #+end_export
 
-** Выводы
+** Выводы			:noexport:
 Программная реализация
 - масштабируется на SMP и MPP системы,
 - эффективна и без использования GPU
