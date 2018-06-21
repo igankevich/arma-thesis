@@ -545,7 +545,7 @@ arma.plot_nonlinear(file.path("build", "nit-standing"), args)
 
 Решение в рамках линейной теории:
 \begin{equation*}
-	\phi(x,y,z,t) = \mathcal{W}(x,y,z) \mathrel{*} \zeta_t(x,y,t)
+	\phi(x,y,z,t) = \mathcal{W}(x,y,z) \mathrel{*} \left(-\zeta_t(x,y,t)\right)
 \end{equation*}
 
 Общее решение:
@@ -557,7 +557,134 @@ arma.plot_nonlinear(file.path("build", "nit-standing"), args)
 	\frac{\zeta_t(x,y,t)}{i f_1(x,y,t) + i f_2(x,y,t) - f_3(x,y,t)}
 \end{equation*}
 
-** Сравнение с линейной теорией
+** Верификация метода выч. давлений
+
+*** Columns
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: T
+:END:
+
+**** Column 1
+:PROPERTIES:
+:BEAMER_col: 0.47
+:END:
+
+#+beamer: \vspace{-0.5cm}
+#+header: :width 2.7 :height 1.5 :bg #F5F6F5 :font sans
+#+begin_src R :file build/slides-plain-wave-velocity-field-comparison-ru.pdf
+source(file.path("R", "velocity-potentials.R"))
+nlevels <- 41
+levels <- pretty(c(-200,200), nlevels)
+palette <- colorRampPalette(c("blue", "lightyellow", "red"))
+col <- palette(nlevels-1)
+
+par(pty="s",mgp=c(3,0.2,0),mfrow=c(1,2),mar=c(1.5,1,0,0),cex=0.66,bty="n")
+
+# linear solver
+#par(fig=c(0,0.95,0,0.5),new=TRUE)
+arma.plot_velocity_potential_field(
+  file.path("build", "plain_wave_linear_solver"),
+  levels=levels,
+  col=col,
+  contour_lwd=0.5,
+  zeta_lwd=1,
+  sky_col='#F5F6F5',
+  axis_args=list(tck=-0.02),
+  z_min=-5,
+  title_args=list(main="     Линейная\n     теория",outer=FALSE,adj=0,line=-1.5,cex.main=0.77)
+)
+
+# high-amplitude solver
+#par(fig=c(0,0.95,0.5,1),new=TRUE)
+arma.plot_velocity_potential_field(
+  file.path("build", "plain_wave_high_amplitude_solver"),
+  levels=levels,
+  col=col,
+  contour_lwd=0.5,
+  zeta_lwd=1,
+  sky_col='#F5F6F5',
+  axis_args=list(tck=-0.02),
+  z_min=-5,
+  title_args=list(main="     Общее\n     решение",outer=FALSE,adj=0,line=-1.5,cex.main=0.77)
+)
+#+end_src
+
+#+RESULTS:
+[[file:build/slides-plain-wave-velocity-field-comparison-ru.pdf]]
+
+**** Column 2
+:PROPERTIES:
+:BEAMER_col: 0.47
+:END:
+
+#+beamer: \vspace{-0.5cm}
+#+header: :width 2.7 :height 1.3 :bg #F5F6F5 :font sans
+#+begin_src R :file build/slides-large-and-small-amplitude-velocity-field-comparison-ru.pdf
+source(file.path("R", "velocity-potentials.R"))
+linetypes = c("solid", "dashed")
+par(pty="s",mgp=c(3,0.3,0),mfrow=c(1,2),mar=c(1.5,1,0,0),cex=0.66,bty="n")
+arma.plot_velocity(
+  file.path("data", "velocity", "low-amp"),
+  file.path("data", "velocity", "low-amp-0"),
+  linetypes=linetypes,
+  ylim=c(-2,2),
+  axis_args=list(tck=-0.04),
+  title_args=list(main="  Малая\n  амплитуда",outer=FALSE,adj=0,line=-1.5,cex.main=0.77),
+  legend_x="bottomright"
+)
+arma.plot_velocity(
+  file.path("data", "velocity", "high-amp"),
+  file.path("data", "velocity", "high-amp-0"),
+  linetypes=linetypes,
+  ylim=c(-2,2),
+  title_args=list(main="Большая\n амплитуда",outer=FALSE,adj=1,line=-1.5,cex.main=0.77),
+  axis_args=list(tck=-0.04),
+  legend_x="bottomright"
+)
+#+end_src
+
+#+RESULTS:
+[[file:build/slides-large-and-small-amplitude-velocity-field-comparison-ru.pdf]]
+
+
+*** End column
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
+#+header: :width 5.5 :height 1.3 :bg #F5F6F5 :font sans
+#+begin_src R :file build/slides-irregular-wave-velocity-field-ru.pdf
+source(file.path("R", "velocity-potentials.R"))
+nlevels <- 41
+levels <- pretty(c(-40,40), nlevels)
+palette <- colorRampPalette(c("blue", "lightyellow", "red"))
+col <- palette(nlevels-1)
+
+par(mgp=c(3,0.2,0),mar=c(1.5,1,0,0),cex=0.66,bty="n")
+
+# high-amplitude solver
+arma.plot_velocity_potential_field(
+  file.path("build", "arma-benchmarks", "verification", "velocity", "our-formula"),
+  levels=levels,
+  col=col,
+  contour_lwd=0.5,
+  zeta_lwd=1,
+  sky_col='#F5F6F5',
+  axis_args=list(tck=-0.02),
+  x_max=40,
+  z_min=-5,
+  compare_to=file.path("build", "arma-benchmarks", "verification", "velocity", "linear"),
+  points_args=list(col="black",bg="black",pch=21,cex=1.5),
+  title_args=list(main="      Нерегулярное волнение",outer=FALSE,adj=0.01,line=-1.5,cex.main=0.77)
+)
+#+end_src
+
+#+RESULTS:
+[[file:build/slides-irregular-wave-velocity-field-ru.pdf]]
+
+
+** Сравнение с линейной теорией					:noexport:
 
 *** Columns
 :PROPERTIES:
@@ -589,7 +716,7 @@ arma.plot_nonlinear(file.path("build", "nit-standing"), args)
 \includegraphics<3>{velocity-4}
 #+end_export
 
-** Сравнение с формулой для ВМА
+** Сравнение с формулой для ВМА 				:noexport:
 
 *** Columns
 :PROPERTIES:

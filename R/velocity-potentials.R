@@ -4,6 +4,33 @@ arma.middle_element <- function (x) {
 
 arma.plot_velocity_potential_field <- function (dir, ...) {
   args <- list(...)
+  if (!('contour_lwd' %in% names(args))) {
+    args$contour_lwd = 1
+  }
+  if (!('zeta_lwd' %in% names(args))) {
+    args$zeta_lwd = 4
+  }
+  if (!('sky_col' %in% names(args))) {
+    args$sky_col = 'white'
+  }
+  if (!('axis_args' %in% names(args))) {
+    args$axis_args = list()
+  }
+  if (!('box_args' %in% names(args))) {
+    args$box_args = list()
+  }
+  if (!('x_max' %in% names(args))) {
+    args$x_max = 0
+  }
+  if (!('z_min' %in% names(args))) {
+    args$z_min = -8
+  }
+  if (!('points_args' %in% names(args))) {
+    args$points_args = list(pch=21,col='black', bg='white')
+  }
+  if (!('title_args' %in% names(args))) {
+    args$title_args = list(xlab="x", ylab="z")
+  }
   phi <- read.csv(file.path(dir, 'phi.csv'))
   left_top_x <- 0.1
   right_top_x <- max(phi$x)
@@ -11,7 +38,7 @@ arma.plot_velocity_potential_field <- function (dir, ...) {
   slice_t <- arma.middle_element(unique(phi$t))
   slice_y <- arma.middle_element(unique(phi$y))
   print(paste('Middle elements (TY) = ', slice_t, slice_y))
-  phi_slice <- phi[phi$t == slice_t & phi$y == slice_y & phi$x >= left_top_x & phi$z >= -8,]
+  phi_slice <- phi[phi$t == slice_t & phi$y == slice_y & phi$x >= left_top_x & phi$z >= args$z_min,]
   x <- unique(phi_slice$x)
   z <- unique(phi_slice$z)
   left_top_z <- max(phi_slice$z)
@@ -33,8 +60,9 @@ arma.plot_velocity_potential_field <- function (dir, ...) {
   zeta_slice <- zeta[zeta$t == slice_t & zeta$y == slice_y & zeta$x >= left_top_x,]
 
   plot.new()
-  plot.window(xlim=range(x),ylim=range(z),asp=1)
-  axis(1); axis(2); box()
+  plot.window(xlim=range(c(x,args$x_max)),ylim=range(z),asp=1)
+  do.call(axis, c(list(side=1), args$axis_args))
+  do.call(axis, c(list(side=2), args$axis_args))
 
   .filled.contour(
     x, z, u,
@@ -48,15 +76,32 @@ arma.plot_velocity_potential_field <- function (dir, ...) {
     levels=args$levels,
     asp=1,
     drawlabels=TRUE,
-    add=TRUE
+    add=TRUE,
+    lwd=args$contour_lwd
   )
 
   top_area_x <- c(left_top_x*0.99, zeta_slice$x, right_top_x*1.01)
   top_area_z <- c(left_top_z*1.10, zeta_slice$z, right_top_z*1.10)
-  polygon(top_area_x, top_area_z, lwd=4, border='white', col='white')
-  lines(zeta_slice$x, zeta_slice$z, lwd=4)
-  box()
-  title(xlab="x", ylab="z")
+  polygon(
+    top_area_x,
+    top_area_z,
+    lwd=args$zeta_lwd,
+    border=args$sky_col,
+    col=args$sky_col
+  )
+  lines(zeta_slice$x, zeta_slice$z, lwd=args$zeta_lwd)
+
+  # plot point having larger values than in the "compare_to" test
+  if ("compare_to" %in% names(args)) {
+    dir0 <- args$compare_to
+    phi0 <- read.csv(file.path(dir0, 'phi.csv'))
+    phi0_slice <- phi0[phi0$t == slice_t & phi0$y == slice_y & phi0$x >= left_top_x & phi0$z >= args$z_min,]
+    phi0_range <- range(phi0_slice[phi0_slice$z <= zeta_slice$z, "phi"])
+    large_phi <- phi_slice[phi_slice$z <= zeta_slice$z & (phi_slice$phi < phi0_range[[1]] | phi_slice$phi > phi0_range[[2]]),]
+    do.call(points, c(list(x=large_phi$x, y=large_phi$z), args$points_args))
+  }
+
+  do.call(title, args$title_args)
 }
 
 arma.plot_velocity_potential_field_legend <- function (...) {
@@ -83,6 +128,18 @@ arma.plot_velocity <- function(file1, file2, ...) {
   if ("ylim" %in% names(args)) {
     ylim <- args$ylim
   }
+  if (!("legend_x" %in% names(args))) {
+    args$legend_x <- "topleft"
+  }
+  if (!("legend_cex" %in% names(args))) {
+    args$legend_cex <- par("cex")
+  }
+  if (!('axis_args' %in% names(args))) {
+    args$axis_args = list()
+  }
+  if (!('title_args' %in% names(args))) {
+    args$title_args = list(xlab="x",ylab="u(x)")
+  }
   plot.new()
   plot.window(
     xlim = c(0, nrow(data1)-1),
@@ -90,16 +147,17 @@ arma.plot_velocity <- function(file1, file2, ...) {
   )
   lines(data1, lty=args$linetypes[[1]])
   lines(data2, lty=args$linetypes[[2]])
-  axis(1)
-  axis(2)
+  do.call(axis, c(list(side=1), args$axis_args))
+  do.call(axis, c(list(side=2), args$axis_args))
   box()
-  title(xlab="x",ylab="u(x)")
+  do.call(title, args$title_args)
   legend(
-    "topleft",
+    args$legend_x,
     c(
       as.expression(bquote(u[1](x))),
       as.expression(bquote(u[2](x)))
     ),
-    lty = paste(args$linetypes)
+    lty = paste(args$linetypes),
+    cex = args$legend_cex
   )
 }
