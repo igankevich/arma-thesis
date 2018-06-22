@@ -8,7 +8,7 @@
 #+BEAMER_THEME: SaintPetersburg
 #+OPTIONS: todo:nil title:nil ':t toc:nil H:2
 #+STARTUP: indent
-#+PROPERTY: header-args:R :results graphics :exports results :eval no-export
+#+PROPERTY: header-args:R :results graphics :exports results
 
 #+begin_export latex
 \setbeamertemplate{title page}{%
@@ -985,6 +985,8 @@ arma.plot_ar_cubes_2d_v2(
 #+RESULTS:
 [[file:build/slides-ar-cubes-ru.pdf]]
 
+[[file:build/arma-pipeline-ru.pdf]]
+
 ** Notes
 :PROPERTIES:
 :BEAMER_env: ignoreheading
@@ -1083,6 +1085,11 @@ OpenMP (процессора) и OpenCL (видеокарты). Из табли�
 
 #+beamer: \label{slide-mpp}
 
+*** Column 1
+:PROPERTIES:
+:BEAMER_col: 0.47
+:END:
+
 #+header: :width 2 :height 2 :bg #F5F6F5 :font sans
 #+begin_src R :file build/slides-bscheduler-performance-ru.pdf
 source(file.path("R", "benchmarks.R"))
@@ -1101,6 +1108,31 @@ title(xlab="Размер взволнованной поверхности", yla
 
 #+RESULTS:
 [[file:build/slides-bscheduler-performance-ru.pdf]]
+
+*** Column 2
+:PROPERTIES:
+:BEAMER_col: 0.47
+:END:
+
+#+name: fig-master-slave-failure
+#+header: :width 2 :height 2 :bg #F5F6F5 :font sans
+#+begin_src R :file build/slides-master-slave-failure-ru.pdf
+source(file.path("R", "benchmarks.R"))
+par(mgp=c(3,0.4,0), cex=0.7, mar=c(2,2,0,0))
+data <- arma.load_master_slave_failure_data()
+arma.plot_master_slave_failure_data(
+  data,
+  list(
+    master="Bscheduler (главный узел)",
+    slave="Bscheduler (подчиненный узел)",
+    nofailures="Bscheduler (без выхода из строя)"
+  )
+)
+title(xlab="Размер взволнованной поверхности", ylab="Время, сек.")
+#+end_src
+
+#+RESULTS: fig-master-slave-failure
+[[file:build/slides-master-slave-failure-ru.pdf]]
 
 ** Notes
 :PROPERTIES:
