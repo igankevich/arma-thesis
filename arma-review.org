@@ -1,0 +1,134 @@
+#+title: Ответы на вопросы рецензентов диссертации “Имитационное моделирование нерегулярного волнения для программ динамики морских объектов”
+#+language: ru
+#+options: num:nil toc:nil author:nil date:nil
+#+latex_header_extra: \input{preamble}
+
+* Овсянников Дмитрий Александрович
+
+#+begin_quote
+В формулах 18 и 24 потерян знаменатель в правой части уравнения, который,
+однако, присутствует в формуле из приложения 10.2. Так ли нужен знаменатель в
+этих формулах, содержащий квадраты пространственных производных, которые малы
+для океанских волн, поскольку их длина в несколько раз больше их высоты?
+#+end_quote
+
+
+#+begin_quote
+Разница между выведенной в работе формулой для поля потенциала скорости и
+формулой из линейной теории волн показана на обыкновенных синусоидах, а не на
+морских волнах (рис. 7). На сколько велика разница в форме и магнитуде поля
+потенциала скорости для волн, соотношение высоты и длины которых соответствует
+реальным морским волнам?
+#+end_quote
+
+* Кореньков Владимир Васильевич
+
+#+begin_quote
+Сформулированные во Введении "Положения, выносимые на защиту", более нигде в
+диссертации не упоминаюся и не совсем точно соответствуют выводам, приводимым в
+конце диссертации.
+#+end_quote
+
+#+begin_quote
+Анализ алгоритмов, систем планирования и обеспечения надежного функционирования
+параллельных приложений выполнен недостаточно глубоко.
+#+end_quote
+
+* Константинос Спироу (Kostas Spyrou)
+
+#+begin_quote
+My understanding, although this is not completely clear from the text and I
+intend to have it clarified during the presentation, is that the AR model is
+basically a difference equation where a current property (e.g. wave elevation)
+at a given location is determined from information at a number of earlier time
+instants, with addition of a single stochastic impulse. In other words there is
+no space-related information involved in this scheme. On the other hand, the MA
+supplement of the ARMA model holds the spatial information (but not time) and
+for this reason it is vital for obtaining a progressing wave. If I understand
+correctly, the white noise of the MA model is handled through a convolution
+integral which the author suggests that it can be 
+#+end_quote
+
+В данной работе обе модели используют все три координаты (две пространственные и
+одну временную). Авторегрессионная модель используется для генерации стоячих
+волн, а модель скользящего среднего --- для генерации прогрессивных. Комбинация
+моделей возможна в одномерном случае при условии пересчета коэффициентов по
+специальной формуле. Аналогичная формула для трехмерного случая мне не известна.
+Комбинацию можно провести и без формулы, но тогда характеристики на входе не
+будут соответствовать характеристикам на выходе.
+
+#+begin_quote
+I would like to know how one can optimally select the required number of earlier
+points in time and in space, respectively for the AR and MA processes. Is there
+any rule that the author would suggest? 
+#+end_quote
+
+#+begin_quote
+The 3d formulation of the governing equations of the ARMA model are given in
+section 3.2. However the author is advised to provide more explanations on how
+this model works computationally. For example, the impression is created that
+the AR model uses space-related information too. It is essential to explain what
+exactly has been implemented and verified.
+#+end_quote
+
+#+begin_quote
+The use of the non-linear intertialess tansform (NIT) is invoked in the
+paragraph with header “scientific novelty” (page 150) without any introduction
+justifying the use of this technique.
+#+end_quote
+
+#+begin_quote
+The calculation of the AR and MA processes coefficients (pages 157 to 162) is
+presented in an algorithmic manner, the reader cannot see the logic behind these
+computations. Some further explanations should be added, perhaps in an appendix.   
+#+end_quote
+
+
+
+#+begin_quote
+Due to the stochastic nature of the ARMA scheme, one-to-one comparison with a
+Longuet-Higgins deterministic wave realization, or indeed with a real wave
+produced in a tank, seems not possible. It will be good if the author could
+commend further on how his method could be validated in principle, beyond of
+course the level of producing waves that look realistic.
+#+end_quote
+
+* Котина Елена Дмитриевна
+
+#+begin_quote
+[...] в работе говорится о том, что модель АРСС не основана на линейной теории
+волн, однако формулы автоковариционных функций выводятся только для синусоид.
+Возможно ли вычислить автоковариационную функцию для других волн, например для
+волны Стокса?
+#+end_quote
+
+* Сотникова Маргарита Викторовна
+
+#+begin_quote
+В тексте диссертации упоминаются источники литературы, однако нет единого обзора
+литературы.
+#+end_quote
+
+#+begin_quote
+В работе отмечается, что для различных типов волн необходимо использовать
+различные варианты моделей. Так для стоячих волн предлагается использовать АР
+модель, а для прогрессивных волн – модель СС. Однако не обсуждается вопрос о
+том, насколько точно можно представить различные спектры морского волнения с
+помощью моделей АР и СС? То есть, каковы ограничения предлагаемого подхода к
+моделированию волнения?
+#+end_quote
+
+#+begin_quote
+В работе предлагается порядки АРСС модели (количество коэффициентов процесса
+скользящего среднего и процесса авторегрессии) выбирать вручную. Представляется
+возможным рассмотрение вариантов оптимизационных постановок задач, позволяющих
+автоматически находить указанные параметры, например, приближая заданные
+спектральные характеристики волнения.
+#+end_quote
+
+#+begin_quote
+В работе рассматриваются модели АР и СС для моделирования морского волнения.
+Однако, естественно, что более точное представление можно было бы получить,
+используя АРСС модель. Исследование данных вопросов представляется значимым для
+повышения адекватности разрабатываемых моделей реальным процессам.
+#+end_quote

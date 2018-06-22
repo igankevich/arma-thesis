@@ -1,8 +1,7 @@
 /build
 ltxpng
 auto/
-/arma-thesis*tex
-/arma-slides*tex
+/arma-*tex
 /Rplots.pdf
 *~
 /bib/*.html

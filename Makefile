@@ -2,6 +2,7 @@ PHD_RU = arma-thesis-ru
 PHD_EN = arma-thesis
 SLIDES = arma-slides
 SLIDES_WITH_NOTES = $(SLIDES)-with-notes
+REVIEW = arma-review
 FLAGS = -interaction=nonstopmode \
 	-output-directory=build \
 	-pdf \
@@ -29,6 +30,10 @@ build/$(SLIDES_WITH_NOTES).pdf: $(SLIDES_WITH_NOTES).tex slides-preamble.tex mat
 	latexmk $(FLAGS) -f $(SLIDES_WITH_NOTES).tex
 	true
 
+build/$(REVIEW).pdf: $(REVIEW).tex preamble.tex math.tex fonts.tex
+	latexmk $(FLAGS) -f $(REVIEW).tex
+	true
+
 $(PHD_EN).tex: $(PHD_EN).org
 	org export $< latex
 
@@ -37,6 +42,9 @@ $(PHD_RU).tex: $(PHD_RU).org
 
 $(SLIDES).tex: $(SLIDES).org
 	org export $< beamer
+
+$(REVIEW).tex: $(REVIEW).org
+	org export $< latex
 
 $(SLIDES_WITH_NOTES).tex: $(SLIDES).tex
 	sed -r -e 's/\\documentclass\[(.*)\]\{(.*)\}/\\documentclass[\1]{article}\\usepackage[\1]{beamerarticle}\\include{fonts}/g' < $< > $@
