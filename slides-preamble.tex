@@ -53,6 +53,7 @@
 
 % down arrow
 \newcommand*{\spbuArrow}{%
+\mode<presentation>{%
 \begin{center}%
 \begin{tikzpicture}[scale=1]%
 \draw[
@@ -66,6 +67,16 @@
 	(0,0.1) -- (0,0);
 \end{tikzpicture}%
 \end{center}%
+}%
 }
 
-\AtBeginSection[]{\frame{\sectionpage}}
+\newcommand*{\spbuSlide}[1]{%
+\clearpage%
+\pagebreak%
+%\vspace{1cm}%
+\begin{center}%
+\includeslide[width=\textwidth]{#1}%
+\end{center}%
+}
+
+%\AtBeginSection[]{\frame{\sectionpage}}
