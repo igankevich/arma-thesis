@@ -3,12 +3,12 @@
 #+DATE: Санкт-Петербург, 2018
 #+LANGUAGE: ru
 #+LATEX_CLASS: beamer
-#+LATEX_CLASS_OPTIONS: [14pt,aspectratio=169,ignorenonframetext]
+#+LATEX_CLASS_OPTIONS: [14pt,aspectratio=169]
 #+LATEX_HEADER_EXTRA: \input{slides-preamble}
 #+BEAMER_THEME: SaintPetersburg
 #+OPTIONS: todo:nil title:nil ':t toc:nil H:2
 #+STARTUP: indent
-#+PROPERTY: header-args:R :results graphics :exports results :cache yes :eval no-export
+#+PROPERTY: header-args:R :results graphics :exports results :eval no-export
 
 #+begin_export latex
 \setbeamertemplate{title page}{%
@@ -26,6 +26,7 @@
 \setbeamerfont{block title}{size=\small}
 \setbeamerfont{note page}{size=\footnotesize}
 \setjobnamebeamerversion{arma-slides}
+\mode*
 #+end_export
 
 * Введение
@@ -195,13 +196,10 @@ digraph G {
 
 Основным отличием модели АРСС от линейных аналогов является
 - использование автоковариационной функции вместо частотно-направленных спектров
-  морского волнения,
-- отсутствие периодичности, поскольку период реализации равен периоду генератора
-  псевдослучайных чисел, и
+  морского волнения и
 - нефизическая природа модели, поскольку ее формулы не выводятся из
   законов сохранения для морского волнения.
 Обсудим каждое из них по порядку.
-
 
 ** АКФ морской поверхности
 :PROPERTIES:
@@ -964,6 +962,8 @@ arma.plot_velocity_potential_field(
 :BEAMER_act: <presentation>
 :END:
 
+#+beamer: \label{slide-implementation}
+
 #+header: :width 1.6 :height 1.6 :bg #F5F6F5 :font sans
 #+begin_src R :file build/slides-ar-cubes-ru.pdf
 source(file.path("R", "common.R"))
@@ -982,11 +982,53 @@ arma.plot_ar_cubes_2d_v2(
 )
 #+end_src
 
+#+RESULTS:
+[[file:build/slides-ar-cubes-ru.pdf]]
+
+** Notes
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
+#+beamer: \spbuSlide{slide-implementation}
+
+Программный комплекс состоит из программных реализаций модели АРСС и линейной
+модели Лонге---Хиггинса и метода вычисления давлений. Для каждой модели и метода
+написана параллельная реализация для систем с общей памятью.  Высокая
+производительность обеспечивается параллельной реализацией каждой модели и
+метода для систем с общей памятью и использованием быстрых преобразований Фурье,
+где это возможно.
+
+Программная реализация модели авторегрессии включает в себя планировщик задач,
+который обеспечивает параллельную генерацию отдельных блоков, на которые
+разделяется взволнованная поверхность, с учетом авторегрессионных зависимостей.
+Сама формула модели сводится к вычислению большого количества полиномов, что
+эффективно реализуется с помощью инструкций процессора FMA (Fused Multiply-Add).
+
+Программная реализация модели Лонге---Хиггинса сводится к простому параллельному
+суммированию гармоник в каждой точке поверхности.
+
+Вычисление коэффициентов авторегрессии реализуется стандартным методом решения
+систем линейных алгебраических уравнений с симметричными матрицами. Вычисление
+коэффициентов скользящего среднего реализуется методом простой итерации.
+
+Практически все остальные модели и методы используют быстрое преобразование
+Фурье.
+- Программная реализация модели скользящего среднего сводится к параллельной
+  свертке на основе быстрых преобразований Фурье.
+- Программная реализация вычисления давлений сводится к четырем быстрым
+  преобразованиям Фурье с большим количеством трансцендентных математических
+  функций.
+- Вычисление автоковариационной функции сводится к трем быстрым преобразованиям
+  Фурье.
+
 ** Система с общей памятью
 :PROPERTIES:
 :header-args:R: :results output raw :exports results
 :BEAMER_act: <presentation>
 :END:
+
+#+beamer: \label{slide-smp}
 
 #+beamer: \small
 #+header: :results output raw :exports results
@@ -1004,8 +1046,8 @@ model_names <- list(
   Row.names="\\orgcmidrule{2-4}{5-6}Подпрограмма"
 )
 row_names <- list(
-  determine_coefficients="Определение коэффициентов",
-  validate="Проверка модели",
+  determine_coefficients="Определение коэф.",
+  validate="Проверка сходимости",
   generate_surface="Генерация поверхности",
   nit="НБП",
   write_all="Запись вывода в файл",
@@ -1018,10 +1060,28 @@ arma.print_openmp_vs_opencl(model_names, row_names)
 #+attr_latex: :booktabs t
 #+RESULTS: tab-arma-performance
 
+** Notes
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
+#+beamer: \spbuSlide{slide-smp}
+
+На слайде представлены результаты тестирования производительности различных
+компонент программного комплекса на системах с общей памятью с использованием
+OpenMP (процессора) и OpenCL (видеокарты). Из таблицы видно, что
+- большую часть времени система тратит на генерацию взволнованной поверхности,
+- использование видеокарты выгодно только для модели Лонге---Хиггинса и
+  вычисления давлений и
+- модель авторегрессии более производительна, чем модель скользящего среднего,
+  несмотря на использование быстрых преобразований Фурье.
+
 ** Система с распределенной памятью
 :PROPERTIES:
 :BEAMER_act: <presentation>
 :END:
+
+#+beamer: \label{slide-mpp}
 
 #+header: :width 2 :height 2 :bg #F5F6F5 :font sans
 #+begin_src R :file build/slides-bscheduler-performance-ru.pdf
@@ -1038,6 +1098,24 @@ arma.plot_bscheduler_performance_data(
 )
 title(xlab="Размер взволнованной поверхности", ylab="Время, сек.")
 #+end_src
+
+#+RESULTS:
+[[file:build/slides-bscheduler-performance-ru.pdf]]
+
+** Notes
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
+#+beamer: \spbuSlide{slide-mpp}
+
+Для модели авторегрессии сделана реализация для систем с распределенной памятью
+и отказоустойчивый планировщик задач. Планировщик позволяет добиться увеличения
+производительности с увеличением количества узлов, которое близко к линейному
+(график слева). Также планировщик позволяет продолжить вычисления, даже если
+один из узлов кластера выходит из строя. При этом перезапускается только та
+часть задачи, которая вычислялась на вышедшем из строя узле, и теряется 
+производительность только этого узла.
 
 ** Диаграмма				:noexport:
 :PROPERTIES:
@@ -1129,17 +1207,35 @@ title(xlab="Размер взволнованной поверхности", yla
 :BEAMER_act: <presentation>
 :END:
 
+#+beamer: \label{slide-conclusion}
+
 - Разработана трехмерная модель для генерации волн произвольных амплитуд.
 - Разработан метод вычисления поля давлений без предположений о малости амплитуд
   волн.
 - Разработан программный комплекс для систем с общей и распределенной памятью.
+
+** Notes
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
+#+beamer: \spbuSlide{slide-conclusion}
+
+Цель исследования заключалась в изучении и разработке альтернативных
+математических моделей и численных методов, которые бы позволили выйти за рамки
+линейной теории волн в задаче имитационного моделирования морского волнения. В
+рамках исследования были разработаны
+- трехмерная модель для генерации волн произвольных амплитуд,
+- метод вычисления поля давлений без предположений о малости амплитуд волн,
+- программный комплекс для систем с общей и распределенной памятью.
 
 ** Апробация
 :PROPERTIES:
 :BEAMER_act: <presentation>
 :END:
 
-#+latex: \small
+#+beamer: \label{slide-validation}
+#+beamer: \small
 
 - Конференции: ISSW'14, HPCS'15, HPCS'16, HPCS'17.
 - Глава в книге The Ocean in Motion (Springer Oceanography).
@@ -1178,6 +1274,25 @@ title(xlab="Размер взволнованной поверхности", yla
 [[file:graphics/slides/hpcs-15-poster-paper-award.png]]
 
 #+latex: \setbeamerfont{block title}{size=\normalsize}
+
+** Notes
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
+#+beamer: \spbuSlide{slide-validation}
+
+Доклады по теме диссертации были представлены на конференциях International Ship
+Stability Workshop и High-Performance Computing & Simulation. По результатам
+исследования опубликована глава в книге The Ocean in Motion.
+
+Модель авторегрессии и метод вычисления давлений были интегрированы в
+программный комплекс Large Amplitude Motion Program (LAMP4).
+
+На основе отказоустойчивого планировщика задач был сделан аналог для фреймворка
+обработки больших массивов данных Apache Spark.
+
+Доклад на конференции HPCS'15 был признан лучшим устным докладом.
 
 ** Взволнованная морская поверхность					:noexport:
 :PROPERTIES:
