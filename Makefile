@@ -38,15 +38,19 @@ build/$(ABSTRACT_RU).odt: $(ABSTRACT_RU).org
 
 build/$(THESIS_EN).tex: $(THESIS_EN).org
 	org export $< latex
+	mv $(THESIS_EN).tex $@
 
 build/$(THESIS_RU).tex: $(THESIS_RU).org
 	org export $< latex
+	mv $(THESIS_RU).tex $@
 
 build/$(SLIDES_RU).tex: $(SLIDES_RU).org
 	org export $< beamer
+	mv $(SLIDES_RU).tex $@
 
 build/$(REVIEW_RU).tex: $(REVIEW_RU).org
 	org export $< latex
+	mv $(REVIEW_RU).tex $@
 
 build/$(NOTES_RU).tex: build/$(SLIDES_RU).tex
 	sed -r -e 's/\\documentclass\[(.*)\]\{(.*)\}/\\documentclass[\1]{article}\\usepackage{beamerarticle}\\include{fonts}/g' < $< > $@
