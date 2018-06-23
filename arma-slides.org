@@ -1,0 +1,895 @@
+#+TITLE: Simulation modelling of irregular waves for marine object dynamics programmes
+#+AUTHOR: Ivan Gankevich
+#+DATE: St. Petersburg, 2018
+#+LANGUAGE: en
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [14pt,aspectratio=169]
+#+LATEX_HEADER_EXTRA: \input{slides-titlepage}
+#+LATEX_HEADER_EXTRA: \input{slides-preamble}
+#+BEAMER_THEME: SaintPetersburg
+#+OPTIONS: todo:nil title:nil ':t toc:nil H:2
+#+STARTUP: indent
+#+PROPERTY: header-args:R :results graphics :exports results :eval no-export
+
+# Novel modelling of irregular waves for simulating marine object dynamics
+
+#+begin_export latex
+\setbeamertemplate{title page}{%
+	\centering%
+	\vskip1cm\spbuInsertField{title}%
+	\ifx\insertsubtitle\empty\else%
+		\vskip0.5\baselineskip%
+		\spbuInsertField{subtitle}%
+	\fi%
+	\vfill\spbuInsertField{author}%
+	\vfill\spbuInsertField{institute}%
+	\vfill\inserttitlegraphic%
+	\vfill\spbuInsertField{date}%
+}
+\setbeamerfont{block title}{size=\small}
+\setbeamerfont{note page}{size=\footnotesize}
+\setjobnamebeamerversion{arma-slides}
+\mode*
+#+end_export
+
+* Introduction
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
+** Title page
+:PROPERTIES:
+:BEAMER_env: fullframe
+:BEAMER_act: <presentation>
+:END:
+
+#+beamer: \label{slide-title}
+#+beamer: \maketitle
+
+** Problem statement
+:PROPERTIES:
+:BEAMER_act: <presentation>
+:END:
+
+#+beamer: \label{slide-problem}
+
+Develop
+- three-dimensional simulation model for sea waves,
+- method for computing pressure field under wavy surface,
+- software suite for shared and distributed memory systems
+which are /alternative/ to their counterparts from linear wave theory.
+
+* Three-dimensional ARMA model
+
+** Three-dimensional ARMA model
+:PROPERTIES:
+:BEAMER_act: <presentation>
+:END:
+
+#+beamer: \label{slide-arma}
+
+\begin{equation*}
+  \rectemph{zeta1}{\zeta_{i,j,k}} =
+  \sum\limits_{l=0}^{p_1}
+  \sum\limits_{m=0}^{p_2}
+  \sum\limits_{n=0}^{p_3}
+  \rectemph{phi}{\Phi_{l,m,n}} \rectemph{zeta2}{\zeta_{i-l,j-m,k-n}}
+  +
+  \sum\limits_{l=0}^{q_1}
+  \sum\limits_{m=0}^{q_2}
+  \sum\limits_{n=0}^{q_3}
+  \rectemph{theta}{\Theta_{l,m,n}} \rectemph{eps}{\epsilon_{i-l,j-m,k-n}}
+\end{equation*}
+
+#+begin_export latex
+\begin{tikzpicture}[remember picture,overlay]
+\node[fill=none,baseline,anchor=south west,xshift=1.1cm,yshift=-1.75cm]
+	(zetaLabel) at (current page.north west)
+	{\scriptsize{}wavy surface elevation};
+\node[fill=none,anchor=south east,xshift=-2cm,yshift=-1.75cm]
+	(epsLabel) at (current page.north east)
+	{\scriptsize{}white noise};
+\node[fill=none,baseline,anchor=north west,below=of phi,yshift=0.2cm]
+	(phiLabel)
+	{\scriptsize{}AR coefficients};
+\node[fill=none,baseline,anchor=north west,below=of theta,yshift=0.2cm]
+	(thetaLabel)
+	{\scriptsize{}MA coefficients};
+\path[->,thick] (zetaLabel.south -| zeta1.north) edge (zeta1.north);
+\path[->,thick] (zetaLabel.south east)
+	edge [transform canvas={xshift=2mm}]
+	(zeta2.north west);
+\path[->,thick] (epsLabel.south -| eps.north west)
+	edge [transform canvas={xshift=2mm}]
+	(eps.north west);
+\path[->,thick] (phiLabel.north -| phi.south west)
+	edge [transform canvas={xshift=2.5mm}]
+	(phi.south west);
+\path[->,thick] (thetaLabel.north -| theta.south west)
+	edge [transform canvas={xshift=2.5mm}]
+	(theta.south west);
+\end{tikzpicture}
+#+end_export
+
+#+BEAMER: \vspace{0.5cm}\pause
+
+#+begin_src dot :exports results :file build/arma-pipeline.pdf
+digraph G {
+
+  node [
+	  fontname="Open Sans",
+	  fontsize=10,
+	  margin="0.055,0",
+	  shape=box,
+	  fillcolor="#E5E6E5",
+	  style="filled",
+	  height="0.37",
+	  color="#404040"
+  ]
+  graph [nodesep="0.25",ranksep="0.30",rankdir="LR" margin=0]
+  edge [arrowsize=0.66,color="#404040"]
+  bgcolor="#F5F6F5"
+
+  acf [label="ACF"]
+  yule_walker_equations [label="Yule—Walker\nequations"]
+  nonlinear_equations [label="Nonlinear\nequations"]
+  ar_process [label="AR\nmodel"]
+  ma_process [label="MA\nmodel"]
+  arma_process [label="ARMA\nmodel"]
+
+  acf->yule_walker_equations->ar_process->arma_process
+  acf->nonlinear_equations->ma_process->arma_process
+
+}
+#+end_src
+
+#+RESULTS:
+[[file:build/arma-pipeline.pdf]]
+
+** Wavy sea surface ACF
+:PROPERTIES:
+:BEAMER_act: <presentation>
+:END:
+
+#+beamer: \label{slide-acf}
+
+*** Columns
+:PROPERTIES:
+:BEAMER_env: columns
+:END:
+
+**** Column 1
+:PROPERTIES:
+:BEAMER_col: 1.00
+:END:
+
+#+latex: \vspace{-0.5cm}
+#+begin_src dot :exports results :file build/acf-pipeline.pdf
+digraph G {
+
+  node [
+	  fontname="Open Sans",
+	  fontsize=10,
+	  margin="0.055,0",
+	  shape=box,
+	  fillcolor="#E5E6E5",
+	  style="filled",
+	  color="#404040"
+  ]
+  graph [nodesep="0.25",ranksep="0.20",rankdir="TB" margin=0]
+  edge [arrowsize=0.66,color="#404040"]
+  bgcolor="#F5F6F5"
+
+  function [label="Wavy surface\nformula",height="0.40"]
+  discrete_function [label="Discrete\nwavy surface",height="0.40"]
+  field_data [label="Field\ndata",width="1.1",height="0.40"]
+  theorem [label="Wiener—Khinchin theorem",height="0.20"]
+  acf [label="ACF",height="0.20"]
+
+  function->theorem
+  discrete_function->theorem
+  field_data->theorem
+  theorem->acf
+
+}
+#+end_src
+
+#+RESULTS:
+[[file:build/acf-pipeline.pdf]]
+
+*** Separator
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
+*** Columns
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: T
+:END:
+
+**** Column 1
+:PROPERTIES:
+:BEAMER_col: 0.30
+:END:
+
+#+header: :width 1.7 :height 1.2 :bg #F5F6F5 :font sans
+#+begin_src R :file build/acf-propagating-plain-wave.pdf
+source(file.path("R", "common.R"))
+par(mar=c(0,0.5,0,0))
+df <- data.frame(t=rep(NA,0), x=rep(NA,0), y=rep(NA,0), z=rep(NA,0))
+n <- 20
+grid <- seq(1, n)
+alpha <- 2.13975
+beta <- 0.77341
+gamm <- 0.549017
+for (i in grid) {
+	for (j in grid) {
+    x <- i/(n-1)
+    y <- j/(n-1)
+		z <- gamm * exp(-alpha*(x+y)) * cos(beta*(x+y))
+		df[nrow(df) + 1,] <- c(0,i,j,z)
+	}
+}
+arma.wavy_plot(df, 0, zlim=c(0,0.5), expand=0.5, border=NA)
+#+end_src
+
+#+caption: Plain wave
+#+RESULTS:
+[[file:build/acf-propagating-plain-wave.pdf]]
+
+
+**** Column 2
+:PROPERTIES:
+:BEAMER_col: 0.35
+:END:
+
+#+header: :width 1.7 :height 1.2 :bg #F5F6F5 :font sans
+#+begin_src R :file build/acf-standing-plain-wave.pdf
+source(file.path("R", "common.R"))
+par(mar=c(0,0.5,0,0))
+df <- data.frame(t=rep(NA,0), x=rep(NA,0), y=rep(NA,0), z=rep(NA,0))
+n <- 20
+grid <- seq(1, n)
+alpha <- 2.31906
+beta <- -5.49873
+gamm <- 0.0680413
+for (i in grid) {
+	for (j in grid) {
+    x <- i/(n-1)
+    y <- j/(n-1)
+		z <- gamm * exp(-alpha*(x+y)) * cos(beta*x) * cos(beta*y)
+		df[nrow(df) + 1,] <- c(0,i,j,z)
+	}
+}
+arma.wavy_plot(df, 0, zlim=c(-0.05,0.05), expand=0.5, border=NA)
+#+end_src
+
+#+caption: Plain standing wave
+#+RESULTS:
+[[file:build/acf-standing-plain-wave.pdf]]
+
+**** Column 3
+:PROPERTIES:
+:BEAMER_col: 0.30
+:END:
+
+#+header: :width 1.7 :height 1.2 :bg #F5F6F5 :font sans
+#+begin_src R :file build/acf-propagating-stokes-wave.pdf
+source(file.path("R", "common.R"))
+par(mar=c(0,0.5,0,0))
+df <- data.frame(t=rep(NA,0), x=rep(NA,0), y=rep(NA,0), z=rep(NA,0))
+n <- 40
+alpha <- 0.5
+grid <- seq(1, n)
+k <- 0.77341
+t <- 0
+omega <- 0.3
+a <- 1.5
+for (i in grid) {
+	for (j in grid) {
+    x <- i/(n-1)
+    y <- j/(n-1)
+    theta <- k*(x + y) - omega*t
+		z <- a * exp(-alpha*(x+y)) * (cos(theta) + 0.5*k*a*cos(2*theta) + (3/8)*(k*a*k*a)*cos(3*theta))
+		df[nrow(df) + 1,] <- c(0,i,j,z)
+	}
+}
+arma.acf_plot(df, 0, zlim=c(0,1.0), expand=0.5, border=NA)
+#+end_src
+
+#+caption: Stokes wave
+#+RESULTS:
+[[file:build/acf-propagating-stokes-wave.pdf]]
+
+** ARMA model verification
+:PROPERTIES:
+:BEAMER_act: <presentation>
+:END:
+
+#+beamer: \label{slide-arma-verification}
+
+*** Standing waves
+:PROPERTIES:
+:BEAMER_col: 0.47
+:BEAMER_opt: T
+:END:
+
+#+latex: \vspace{-1cm}
+#+header: :width 2.7 :height 2.7 :bg #F5F6F5 :font sans
+#+begin_src R :file build/standing-wave-qqplots-slides.pdf
+source(file.path("R", "common.R"))
+par(pty="s", mfrow=c(2, 2), mar=c(1,1,1,0), mgp=c(3,0.3,0), cex=0.6, fg='black', col='navy')
+arma.qqplot_grid_adj(
+  file.path("build", "arma-benchmarks", "verification-orig", "standing_wave"),
+  c("elevation", "heights_y", "lengths_y", "periods"),
+  c("elevation", "height", "length", "period"),
+  0.1,
+  xlab="x",
+  ylab="y",
+  tck=0.04
+)
+#+end_src
+
+#+caption: Standing plain waves
+#+RESULTS:
+[[file:build/standing-wave-qqplots-slides.pdf]]
+
+
+*** Propagating waves
+:PROPERTIES:
+:BEAMER_col: 0.47
+:BEAMER_opt: T
+:END:
+
+#+latex: \vspace{-1cm}
+#+header: :width 2.7 :height 2.7 :bg #F5F6F5 :font sans
+#+begin_src R :file build/propagating-wave-qqplots-slides.pdf
+source(file.path("R", "common.R"))
+par(pty="s", mfrow=c(2, 2), mar=c(1,1,1,0), mgp=c(3,0.3,0), cex=0.6, col='navy')
+arma.qqplot_grid_adj(
+  file.path("build", "arma-benchmarks", "verification-orig", "propagating_wave"),
+  c("elevation", "heights_y", "lengths_y", "periods"),
+  c("elevation", "height", "length", "period"),
+  0.1,
+  xlab="x",
+  ylab="y",
+  tck=0.04
+)
+#+end_src
+
+#+caption: Propagating plain waves
+#+RESULTS:
+[[file:build/propagating-wave-qqplots-slides.pdf]]
+
+
+* Pressure field under discretely given wavy surface
+
+** Velocity potential equations
+:PROPERTIES:
+:BEAMER_act: <presentation>
+:END:
+
+#+beamer: \footnotesize
+#+beamer: \label{slide-potential-flow}
+#+begin_export latex
+\begin{beamercolorbox}[colsep*=.75ex,vmode]{block body}%
+\vspace{-\baselineskip}%
+\begin{align*}%
+    & \nabla^2\phi = 0
+	& \text{continuity equation}
+	\\
+    & \phi_t+\frac{1}{2} |\vec{\upsilon}|^2 + g\zeta=-\frac{p}{\rho}
+    & \text{dynamic BC for }z=\zeta(x,y,t)
+	\\
+    & D\zeta = \nabla \phi \cdot \vec{n}
+    & \text{kinematic BC for }z=\zeta(x,y,t)\\
+\end{align*}%
+\vspace{-2.5\baselineskip}%
+\end{beamercolorbox}%
+%
+\pause%
+%
+\spbuArrow{}%
+\vspace{-0.2cm}%
+%
+\begin{beamercolorbox}[colsep*=.75ex,vmode]{block body}%
+\vspace{-\baselineskip}%
+\begin{align*}%
+    & \phi_{xx} + \phi_{yy} + \phi_{zz} = 0\\
+    & \zeta_t 
+    = \underbrace{\fillrectemph{f1}{\left(\FracSqrtZetaY{\zeta_x} - \zeta_x\right)}}_{f_1} \phi_x
+    + \underbrace{\fillrectemph{f2}{\left(\FracSqrtZetaY{\zeta_y} - \zeta_y\right)}}_{f_2} \phi_y
+    - \underbrace{\fillrectemph{f3}{\FracSqrtZetaY{1}}}_{f_3} \phi_z \\
+\end{align*}%
+\vspace{-2.7\baselineskip}%
+\end{beamercolorbox}%
+%
+\pause%
+#+end_export
+
+*** Columns
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: T
+:END:
+
+**** Column 1
+:PROPERTIES:
+:BEAMER_col: 0.47
+:END:
+#+begin_export latex
+\vspace{-\baselineskip}%
+\spbuArrow{}%
+\vspace{-1.3\baselineskip}%
+\begingroup%
+\setlength\abovedisplayskip{1mm}%
+\begin{beamercolorbox}[colsep*=.75ex,vmode]{block body}%
+Linear wave theory solution:%
+\begin{equation*}%
+\phi(x,y,z,t) = \mathcal{W}_1(x,y,z) \mathrel{*} \left(-\zeta_t(x,y,t)\right)
+\end{equation*}%
+\vspace{-1.5\baselineskip}%
+\end{beamercolorbox}%
+\endgroup%
+#+end_export
+
+**** Column 2
+:PROPERTIES:
+:BEAMER_col: 0.47
+:END:
+#+begin_export latex
+\vspace{-\baselineskip}%
+\spbuArrow{}%
+\vspace{-1.3\baselineskip}%
+\begingroup%
+\setlength\abovedisplayskip{1mm}%
+\begin{beamercolorbox}[colsep*=.75ex,vmode]{block body}%
+Generic solution:\vspace{-0.5\baselineskip}%
+\begin{equation*}%
+	\phi(x,y,z,t)
+	=
+	\mathcal{W}_2(x,y,z)
+	\mathrel{*}
+%	\frac{\zeta_t(x,y,t)}{i f_1(x,y,t) + i f_2(x,y,t) - f_3(x,y,t)}
+	\frac{\zeta_t(x,y,t)}{F\left(f_1, f_2, f_3\right)}
+%	& \mathcal{W}_1 \approx \mathcal{W}_2
+\end{equation*}%
+\vspace{-1.35\baselineskip}%
+\end{beamercolorbox}%
+\endgroup%
+#+end_export
+
+** Pressure computation verification
+:PROPERTIES:
+:BEAMER_act: <presentation>
+:END:
+
+#+beamer: \label{slide-potential-verification}
+
+*** Columns
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: T
+:END:
+
+**** Column 1
+:PROPERTIES:
+:BEAMER_col: 0.47
+:END:
+
+#+beamer: \vspace{-0.5cm}
+#+header: :width 2.7 :height 1.5 :bg #F5F6F5 :font sans
+#+begin_src R :file build/slides-plain-wave-velocity-field-comparison.pdf
+source(file.path("R", "velocity-potentials.R"))
+nlevels <- 41
+levels <- pretty(c(-200,200), nlevels)
+palette <- colorRampPalette(c("blue", "lightyellow", "red"))
+col <- palette(nlevels-1)
+
+par(pty="s",mgp=c(3,0.2,0),mfrow=c(1,2),mar=c(1.5,1,0,0),cex=0.66,bty="n")
+
+# linear solver
+#par(fig=c(0,0.95,0,0.5),new=TRUE)
+arma.plot_velocity_potential_field(
+  file.path("build", "arma-benchmarks", "verification-orig", "plain_wave_linear_solver"),
+  levels=levels,
+  col=col,
+  contour_lwd=0.5,
+  zeta_lwd=1,
+  sky_col='#F5F6F5',
+  axis_args=list(tck=-0.02),
+  z_min=-5,
+  title_args=list(main="     Linear wave\n     theory",outer=FALSE,adj=0,line=-1.5,cex.main=0.77)
+)
+
+# high-amplitude solver
+#par(fig=c(0,0.95,0.5,1),new=TRUE)
+arma.plot_velocity_potential_field(
+  file.path("build", "arma-benchmarks", "verification-orig", "plain_wave_high_amplitude_solver"),
+  levels=levels,
+  col=col,
+  contour_lwd=0.5,
+  zeta_lwd=1,
+  sky_col='#F5F6F5',
+  axis_args=list(tck=-0.02),
+  z_min=-5,
+  title_args=list(main="     Generic\n     solution",outer=FALSE,adj=0,line=-1.5,cex.main=0.77)
+)
+#+end_src
+
+#+RESULTS:
+[[file:build/slides-plain-wave-velocity-field-comparison.pdf]]
+
+**** Column 2
+:PROPERTIES:
+:BEAMER_col: 0.47
+:END:
+
+#+beamer: \vspace{-0.5cm}
+#+header: :width 2.7 :height 1.3 :bg #F5F6F5 :font sans
+#+begin_src R :file build/slides-large-and-small-amplitude-velocity-field-comparison.pdf
+source(file.path("R", "velocity-potentials.R"))
+linetypes = c("solid", "dashed")
+par(pty="s",mgp=c(3,0.3,0),mfrow=c(1,2),mar=c(1.5,1,0,0),cex=0.66,bty="n")
+arma.plot_velocity(
+  file.path("data", "velocity", "low-amp"),
+  file.path("data", "velocity", "low-amp-0"),
+  linetypes=linetypes,
+  ylim=c(-2,2),
+  axis_args=list(tck=-0.04),
+  title_args=list(main="  Small\n  amplitude",outer=FALSE,adj=0,line=-1.5,cex.main=0.77),
+  legend_x="bottomright"
+)
+arma.plot_velocity(
+  file.path("data", "velocity", "high-amp"),
+  file.path("data", "velocity", "high-amp-0"),
+  linetypes=linetypes,
+  ylim=c(-2,2),
+  title_args=list(main="Large\n amplitude",outer=FALSE,adj=1,line=-1.5,cex.main=0.77),
+  axis_args=list(tck=-0.04),
+  legend_x="bottomright"
+)
+#+end_src
+
+#+RESULTS:
+[[file:build/slides-large-and-small-amplitude-velocity-field-comparison.pdf]]
+
+
+*** End column
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
+#+header: :width 5.5 :height 1.3 :bg #F5F6F5 :font sans
+#+begin_src R :file build/slides-irregular-wave-velocity-field.pdf
+source(file.path("R", "velocity-potentials.R"))
+nlevels <- 41
+levels <- pretty(c(-40,40), nlevels)
+palette <- colorRampPalette(c("blue", "lightyellow", "red"))
+col <- palette(nlevels-1)
+
+par(mgp=c(3,0.2,0),mar=c(1.5,1,0,0),cex=0.66,bty="n")
+
+# high-amplitude solver
+arma.plot_velocity_potential_field(
+  file.path("build", "arma-benchmarks", "verification", "velocity", "our-formula"),
+  levels=levels,
+  col=col,
+  contour_lwd=0.5,
+  zeta_lwd=1,
+  sky_col='#F5F6F5',
+  axis_args=list(tck=-0.02),
+  x_max=40,
+  z_min=-5,
+  compare_to=file.path("build", "arma-benchmarks", "verification", "velocity", "linear"),
+  points_args=list(col="black",bg="black",pch=21,cex=1.5),
+  title_args=list(main="      Irregular waves",outer=FALSE,adj=0.01,line=-1.5,cex.main=0.77)
+)
+#+end_src
+
+#+RESULTS:
+[[file:build/slides-irregular-wave-velocity-field.pdf]]
+
+
+* Software suite
+
+** Software implementation
+:PROPERTIES:
+:BEAMER_act: <presentation>
+:END:
+
+#+beamer: \label{slide-implementation}
+
+#+begin_export latex
+\tikzset{Ann/.style={
+	fill=none,
+	baseline,
+	font=\footnotesize\linespread{1}\selectfont,
+}}%
+\tikzset{Cube/.style={
+	rectangle,
+	text width=0.7cm,
+	text height=0.7cm,
+	draw=spbuDarkGray,
+	fill=spbuWhite2,
+	thick,
+	font=\footnotesize\linespread{1}\selectfont,
+	align=center,
+	inner sep=0.5mm
+}}%
+\tikzset{CubeText/.style={
+	fill=none,
+	baseline,
+	font=\footnotesize\linespread{1}\selectfont,
+	inner sep=0mm
+}}%
+\tikzset{DataBlock/.style={
+	rectangle,
+	draw=spbuDarkGray,
+	thick,
+	text width=2cm,
+	align=center,
+	fill=spbuWhite2,
+	font=\footnotesize\linespread{1}\selectfont,
+	inner sep=1mm
+}}%
+\tikzset{Arrow/.style={
+	very thick,
+	arrows={-Triangle[length=0.25cm,width=0.125cm]},
+	draw=spbuDarkGray
+}}%
+\tikzset{Dashed/.style={
+	very thick,
+	draw=spbuDarkGray2,
+	dashed
+}}%
+\vspace{2cm}
+\begin{tikzpicture}[x=3cm,y=1cm,remember picture]
+% nodes
+\node[DataBlock,text width=1.2cm] (umlACF) at (0,0)
+	{ACF};
+\node[DataBlock,text width=2.6cm] (umlYW) at (1.1,0.8)
+	{AR coefficients};
+\node[DataBlock,text width=2.6cm] (umlNonlin) at (1.1,-0.8)
+	{MA coefficients};
+\node[DataBlock,text width=1.5cm] (umlAR) at (2.1,0.8)
+	{AR model};
+\node[DataBlock,text width=1.5cm] (umlMA) at (2.1,-0.8)
+	{MA model};
+\node[DataBlock,text width=1.5cm] (umlARMA) at (3.1,0)
+	{ARMA model};
+\node[DataBlock] (umlPres) at (4.1,0)
+	{Pressures};
+% arrows
+\path[Arrow] (umlACF.east) -- (umlYW.west);
+\path[Arrow] (umlACF.east) -- (umlNonlin.west);
+\path[Arrow] (umlYW.east) -- (umlAR.west);
+\path[Arrow] (umlNonlin.east) -- (umlMA.west);
+\path[Arrow] (umlAR.east) -- (umlARMA.west);
+\path[Arrow] (umlMA.east) -- (umlARMA.west);
+\path[Arrow] (umlARMA.east) -- (umlPres.west);
+\end{tikzpicture}
+#+end_export
+
+#+begin_export latex
+\begin{tikzpicture}[remember picture,overlay]
+% cubes
+\node[Cube,anchor=north west,yshift=-1.2cm,xshift=-3.5cm]
+	(cube00) at (current page.north east) {};
+\node[Cube,right=-0.5mm of cube00] (cube01) {};
+\node[Cube,below=-0.5mm of cube00] (cube10) {};
+\node[Cube,below=-0.5mm of cube01] (cube11) {};
+% cube labels
+\node[CubeText] (cubeLabel00) at (cube00) {A};
+\node[CubeText] (cubeLabel01) at (cube01) {B};
+\node[CubeText] (cubeLabel10) at (cube10) {C};
+\node[CubeText] (cubeLabel11) at (cube11) {D};
+% cube arrows
+\path[Arrow] (cubeLabel01.west) -- (cubeLabel00.east);
+\path[Arrow] (cubeLabel10.north) -- (cubeLabel00.south);
+\path[Arrow] (cubeLabel11.north west) -- (cubeLabel00.south east);
+\path[Arrow] (cubeLabel11.north) -- (cubeLabel01.south);
+\path[Arrow] (cubeLabel11.west) -- (cubeLabel10.east);
+\end{tikzpicture}
+#+end_export
+
+#+begin_export latex
+\begin{tikzpicture}[remember picture,overlay]
+% nodes
+\node[Ann,anchor=north,below=of umlACF] (annACF)
+	{Convolution (\(2\mathcal{F}\))};
+\node[Ann,anchor=north,above=of umlYW,align=center] (annYW)
+	{Symmetric system\\of linear equations};
+\node[Ann,anchor=north,below=of umlNonlin] (annNonlin)
+	{Thomas algorithm};
+\node[Ann,anchor=north,below=of umlMA,yshift=\baselineskip] (annMA)
+	{Convolution (\(3\mathcal{F}\))};
+\node[Ann,anchor=north,below=of umlPres] (annPres)
+	{Convolution (\(4\mathcal{F}\))};
+\node[Ann,anchor=south,above=of umlAR,align=center,yshift=1.5\baselineskip] (annAR)
+	{Minimalistic job scheduler};
+\node[Ann,anchor=north,below=1mm of cube11.south west,align=center] (annARdeps)
+	{Autoregressive\\dependencies};
+% arrows
+\path[Dashed] (annACF.north -| umlACF.south) -- (umlACF.south);
+\path[Dashed] (annNonlin.north -| umlNonlin.south) -- (umlNonlin.south);
+\path[Dashed] (annYW.south -| umlYW.north) -- (umlYW.north);
+\path[Dashed] (annAR.south) -- (umlAR.north);
+\path[Dashed] (cube00.west |- annAR.east) -- (annAR.east);
+\path[Dashed] (annMA.north -| umlMA.south) -- (umlMA.south);
+\path[Dashed] (annPres.north -| umlPres.south) -- (umlPres.south);
+\end{tikzpicture}
+#+end_export
+
+** Shared memory system
+:PROPERTIES:
+:header-args:R: :results output raw :exports results
+:BEAMER_act: <presentation>
+:END:
+
+#+beamer: \label{slide-smp}
+
+#+beamer: \small
+#+header: :results output raw :exports results
+#+name: tab-arma-performance
+#+begin_src R :results output org :exports results
+source(file.path("R", "benchmarks.R"))
+options(arma.mark=",")
+model_names <- list(
+	ar.x="AR",
+	ma.x="MA",
+	lh.x="LH",
+	ar.y="AR",
+	ma.y="MA",
+	lh.y="LH",
+  Row.names="\\orgcmidrule{2-4}{5-6}Subroutine"
+)
+row_names <- list(
+  determine_coefficients="Coefficients",
+  validate="Validation",
+  generate_surface="Wavy surface",
+  write_all="File output",
+  copy_to_host="Copy data from GPU",
+  velocity="Pressures"
+)
+arma.print_openmp_vs_opencl(model_names, row_names)
+#+end_src
+
+#+attr_latex: :booktabs t
+#+RESULTS: tab-arma-performance
+
+{\hfill\footnotesize{}LH --- Longuet---Higgins model.}
+
+** Distributed memory system
+:PROPERTIES:
+:BEAMER_act: <presentation>
+:END:
+
+#+beamer: \label{slide-mpp}
+
+*** Columns
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: T
+:END:
+
+**** Column 1
+:PROPERTIES:
+:BEAMER_col: 0.37
+:END:
+
+#+beamer: \vspace{-1cm}
+#+header: :width 2.3 :height 3 :bg #F5F6F5 :font sans
+#+begin_src R :file build/slides-bscheduler-performance.pdf
+source(file.path("R", "benchmarks.R"))
+par(mgp=c(1.5,0.4,0), mar=c(3.2,2.5,0.5,0.7), cex=0.7)
+data <- arma.load_bscheduler_performance_data()
+arma.plot_bscheduler_performance_data(
+  data,
+  list(
+    openmp="OpenMP",
+    bsc1="Bscheduler (single node)",
+    bsc2="Bscheduler (two nodes)",
+	openmp_args=list(lty="solid", lwd=2, col='#404040', pch=19),
+	bsc1_args=list(lty="solid", lwd=2, col='#5353AC', pch=19),
+	bsc2_args=list(lty="solid", lwd=2, col='#E57575', pch=19)
+  )
+)
+title(xlab="Wavy surface size", ylab="Time, s")
+#+end_src
+
+#+RESULTS:
+[[file:build/slides-bscheduler-performance.pdf]]
+
+**** Column 2
+:PROPERTIES:
+:BEAMER_col: 0.57
+:END:
+
+#+beamer: \vspace{-1cm}
+#+name: fig-master-slave-failure
+#+header: :width 3 :height 3 :bg #F5F6F5 :font sans
+#+begin_src R :file build/slides-master-slave-failure.pdf
+source(file.path("R", "benchmarks.R"))
+par(mgp=c(1.5,0.4,0), mar=c(3,2.5,0.5,0.5), cex=0.7)
+data <- arma.load_master_slave_failure_data()
+arma.plot_master_slave_failure_data(
+  data,
+  list(
+    master="Bscheduler (master failure)",
+    slave="Bscheduler (slave failure)",
+    nofailures="Bscheduler (no failures)",
+	master_args=list(lty="solid", lwd=2, col='#E57575', pch=19),
+	slave_args=list(lty="solid", lwd=2, col='#5353AC', pch=19),
+	nofailures_args=list(lty="solid", lwd=2, col='#404040', pch=19)
+  )
+)
+title(xlab="Wavy surface size", ylab="Time, s")
+#+end_src
+
+#+RESULTS: fig-master-slave-failure
+[[file:build/slides-master-slave-failure.pdf]]
+
+* Conclusion
+:PROPERTIES:
+:BEAMER_env: ignoreheading
+:END:
+
+** Conclusion
+:PROPERTIES:
+:BEAMER_act: <presentation>
+:END:
+
+#+beamer: \label{slide-conclusion}
+
+The following items were developed in the course of the study.
+- Three-dimensional model for arbitrary-amplitude waves generation.
+- Pressure field computation method without small-amplitude waves assumption.
+- Software suite for shared and distributed memory systems.
+
+** Approbation
+:PROPERTIES:
+:BEAMER_act: <presentation>
+:END:
+
+#+beamer: \label{slide-validation}
+
+- International conferences: ISSW'14, HPCS'15, HPCS'16, HPCS'17.
+- Book chapter in /The Ocean in Motion/ (Springer Oceanography).
+
+*** Columns
+:PROPERTIES:
+:BEAMER_env: columns
+:BEAMER_opt: T
+:END:
+
+**** LAMP4
+:PROPERTIES:
+:BEAMER_col: 0.25
+:BEAMER_env: block
+:END:
+
+#+ATTR_LATEX: :width \linewidth
+[[file:graphics/slides/lamp4-ar-waves.png]]
+
+**** Ascheduler
+:PROPERTIES:
+:BEAMER_col: 0.25
+:BEAMER_env: block
+:END:
+
+#+ATTR_LATEX: :width \linewidth
+[[file:graphics/slides/spark-logo.png]]
+
+**** HPCS'15
+:PROPERTIES:
+:BEAMER_col: 0.25
+:BEAMER_env: block
+:END:
+
+#+ATTR_LATEX: :width \linewidth
+[[file:graphics/slides/hpcs-15-poster-paper-award.png]]
+
+#+latex: \setbeamerfont{block title}{size=\normalsize}
+

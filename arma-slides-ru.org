@@ -4,6 +4,7 @@
 #+LANGUAGE: ru
 #+LATEX_CLASS: beamer
 #+LATEX_CLASS_OPTIONS: [14pt,aspectratio=169]
+#+LATEX_HEADER_EXTRA: \input{slides-titlepage-ru}
 #+LATEX_HEADER_EXTRA: \input{slides-preamble}
 #+BEAMER_THEME: SaintPetersburg
 #+OPTIONS: todo:nil title:nil ':t toc:nil H:2
@@ -119,10 +120,10 @@
 	{\scriptsize{}белый шум};
 \node[fill=none,baseline,anchor=north west,below=of phi,yshift=0.2cm]
 	(phiLabel)
-	{\scriptsize{}коэф. АР};
+	{\scriptsize{}коэффициенты АР};
 \node[fill=none,baseline,anchor=north west,below=of theta,yshift=0.2cm]
 	(thetaLabel)
-	{\scriptsize{}коэф. СС};
+	{\scriptsize{}коэффициенты СС};
 \path[->,thick] (zetaLabel.south -| zeta1.north) edge (zeta1.north);
 \path[->,thick] (zetaLabel.south -| zeta2.north west)
 	edge [transform canvas={xshift=2mm}]
@@ -244,8 +245,8 @@ digraph G {
   edge [arrowsize=0.66,color="#404040"]
   bgcolor="#F5F6F5"
 
-  function [label="Формула\nпрофиля волны",height="0.40"]
-  discrete_function [label="Дискретный\nпрофиль волны",height="0.40"]
+  function [label="Формула\nповерхности волны",height="0.40"]
+  discrete_function [label="Дискретная\nповерхность волны",height="0.40"]
   field_data [label="Натурные\nданные",width="1.1",height="0.40"]
   theorem [label="Теорема Винера—Хинчина",height="0.20"]
   acf [label="АКФ",height="0.20"]
@@ -260,15 +261,6 @@ digraph G {
 
 #+RESULTS:
 [[file:build/acf-pipeline-ru.pdf]]
-
-**** Column 2					:noexport:
-:PROPERTIES:
-:BEAMER_col: 0.37
-:END:
-
-\begin{equation*}
-\hat{\gamma} = |\hat{\zeta}|^2
-\end{equation*}
 
 *** Separator
 :PROPERTIES:
@@ -392,103 +384,6 @@ arma.acf_plot(df, 0, zlim=c(0,1.0), expand=0.5, border=NA)
 поверхности или численно из дискретно заданной взволнованной поверхности или
 натурных данных. Модель способна воспроизводить плоские волны, волны Стокса и
 нерегулярное волнение, автоковариационные функции которых показаны на слайде.
-
-** Определение коэффициентов			:noexport:
-:PROPERTIES:
-:BEAMER_act: <presentation>
-:END:
-#+begin_export latex
-\framesubitile{Модель АР}
-    \small%
-    Решить СЛАУ (трехмерные уравнения Юла---Уокера) относительно $\Phi$:
-    \begin{equation*}
-        \Gamma
-        \left[
-            \begin{array}{l}
-                \Phi_{0,0,0}\\
-                \Phi_{0,0,1}\\
-                \vdotswithin{\Phi_{0,0,0}}\\
-                \Phi_{p_1,p_2,p_3}
-            \end{array}
-        \right]
-        =
-        \left[
-            \begin{array}{l}
-                K_{0,0,0}-\Var{\epsilon}\\
-                K_{0,0,1}\\
-                \vdotswithin{K_{0,0,0}}\\
-                K_{p_1,p_2,p_3}
-            \end{array}
-        \right],
-        \qquad
-        \Gamma=
-        \left[
-            \begin{array}{llll}
-                \Gamma_0 & \Gamma_1 & \cdots & \Gamma_{p_1} \\
-                \Gamma_1 & \Gamma_0 & \ddots & \vdotswithin{\Gamma_0} \\
-                \vdotswithin{\Gamma_0} & \ddots & \ddots & \Gamma_1 \\
-                \Gamma_{p_1} & \cdots & \Gamma_1 & \Gamma_0
-            \end{array}
-        \right],
-    \end{equation*}
-    \begin{equation*}
-      \Gamma_i =
-      \left[
-      \begin{array}{llll}
-        \Gamma^0_i & \Gamma^1_i & \cdots & \Gamma^{p_2}_i \\
-        \Gamma^1_i & \Gamma^0_i & \ddots & \vdotswithin{\Gamma^0_i} \\
-        \vdotswithin{\Gamma^0_i} & \ddots & \ddots & \Gamma^1_i \\
-        \Gamma^{p_2}_i & \cdots & \Gamma^1_i & \Gamma^0_i
-      \end{array}
-      \right]
-      \qquad
-      \Gamma_i^j=
-      \left[
-      \begin{array}{llll}
-        K_{i,j,0} & K_{i,j,1} & \cdots & K_{i,j,p_3} \\
-        K_{i,j,1} & K_{i,j,0} & \ddots &x \vdotswithin{K_{i,j,0}} \\
-        \vdotswithin{K_{i,j,0}} & \ddots & \ddots & K_{i,j,1} \\
-        K_{i,j,p_3} & \cdots & K_{i,j,1} & K_{i,j,0}
-      \end{array}
-      \right].
-    \end{equation*}
-#+end_export
-
-** Определение коэффициентов				:noexport:
-:PROPERTIES:
-:BEAMER_act: <presentation>
-:END:
-#+BEAMER: \framesubitile{Модель СС}
-#+BEAMER: \small
-Решить систему нелинейных уравнений
-\begin{equation*}
-  K_{i,j,k} =
-  \left[
-	\displaystyle
-	\sum\limits_{l=i}^{q_1}
-	\sum\limits_{m=j}^{q_2}
-	\sum\limits_{n=k}^{q_3}
-	\Theta_{l,m,n}\Theta_{l-i,m-j,n-k}
-  \right]
-  \Var{\epsilon}
-\end{equation*}
-относительно \(\Theta\) с помощью метода простой итерации:
-\begin{equation*}
-  \theta_{i,j,k} =
-	-\frac{K_{0,0,0}}{\Var{\epsilon}}
-	+
-	\sum\limits_{l=i}^{q_1}
-	\sum\limits_{m=j}^{q_2}
-	\sum\limits_{n=k}^{q_3}
-	\Theta_{l,m,n} \Theta_{l-i,m-j,n-k}.
-\end{equation*}
-
-** Критерии выбора моделей АР и СС				:noexport:
-Использовать модель АР для стоячих волн и модель СС для прогрессивных.
-#+latex: \newline\newline
-Экспериментальный результат:
-- модели расходятся, если делать наоборот;
-- характеристики взволнованной поверхности соответствуют реальным.
 
 ** Верификация модели АРСС
 :PROPERTIES:
@@ -910,72 +805,6 @@ arma.plot_velocity_potential_field(
 волнения, воспроизведенного моделью АРСС, новое решение показывает в среднем на
 20% большие значения потенциала скорости вблизи гребней волн.
 
-** Сравнение с линейной теорией					:noexport:
-:PROPERTIES:
-:BEAMER_act: <presentation>
-:END:
-
-*** Columns
-:PROPERTIES:
-:BEAMER_env: columns
-:BEAMER_opt: T
-:END:
-
-**** Линейная теория
-:PROPERTIES:
-:BEAMER_env: block
-:BEAMER_col: 0.4
-:END:
-
-#+begin_export latex
-\includegraphics<1>{velocity-ref-1}
-\includegraphics<2>{velocity-ref-2}
-\includegraphics<3>{velocity-ref-4}
-#+end_export
-
-**** Новая формула
-:PROPERTIES:
-:BEAMER_env: block
-:BEAMER_col: 0.4
-:END:
-
-#+begin_export latex
-\includegraphics<1>{velocity-1}
-\includegraphics<2>{velocity-2}
-\includegraphics<3>{velocity-4}
-#+end_export
-
-** Сравнение с формулой для ВМА 				:noexport:
-:PROPERTIES:
-:BEAMER_act: <presentation>
-:END:
-
-*** Columns
-:PROPERTIES:
-:BEAMER_env: columns
-:BEAMER_opt: T
-:END:
-
-**** Малая амплитуда
-:PROPERTIES:
-:BEAMER_env: block
-:BEAMER_col: 0.45
-:END:
-[[file:graphics/slides/low-amp-color.eps]]
-
-**** Большая амплитуда
-:PROPERTIES:
-:BEAMER_env: block
-:BEAMER_col: 0.45
-:END:
-[[file:graphics/slides/high-amp-color.eps]]
-
-** Выводы						:noexport:
-Метод подходит для
-- дискретно заданной $\zeta(x,y,t)$,
-- волн произвольных амплитуд,
-- произвольной глубины $h=\text{const}$.
-
 * Программный комплекс
 
 ** Программная реализация
@@ -1319,10 +1148,9 @@ title(xlab="Размер взволнованной поверхности", yla
 :END:
 
 #+beamer: \label{slide-validation}
-#+beamer: \small
 
 - Конференции: ISSW'14, HPCS'15, HPCS'16, HPCS'17.
-- Глава в книге The Ocean in Motion (Springer Oceanography).
+- Глава в книге /The Ocean in Motion/ (Springer Oceanography).
 
 *** Columns
 :PROPERTIES:
@@ -1332,7 +1160,7 @@ title(xlab="Размер взволнованной поверхности", yla
 
 **** LAMP4
 :PROPERTIES:
-:BEAMER_col: 0.30
+:BEAMER_col: 0.25
 :BEAMER_env: block
 :END:
 
@@ -1341,7 +1169,7 @@ title(xlab="Размер взволнованной поверхности", yla
 
 **** Ascheduler
 :PROPERTIES:
-:BEAMER_col: 0.30
+:BEAMER_col: 0.25
 :BEAMER_env: block
 :END:
 
@@ -1350,7 +1178,7 @@ title(xlab="Размер взволнованной поверхности", yla
 
 **** HPCS'15
 :PROPERTIES:
-:BEAMER_col: 0.30
+:BEAMER_col: 0.25
 :BEAMER_env: block
 :END:
 
