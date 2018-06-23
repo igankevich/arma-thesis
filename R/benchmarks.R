@@ -31,13 +31,19 @@ arma.print_openmp_vs_opencl <- function(model_names, row_names) {
   frameworks <- c("openmp", "opencl")
   tags <- list(
     determine_coefficients=c("deteremine_coefficients", "determine_coefficients"),
-    "validate",
-    "generate_surface",
+    validate=c("validate"),
+    generate_surface=c("generate_surface"),
     nit=c("nit_acf", "nit_realisation"),
-    "copy_to_host",
+    copy_to_host=c("copy_to_host"),
     velocity=c("window_function", "second_function", "fft", "dev_to_host_copy"),
-    "write_all"
+    write_all=c("write_all")
   )
+  # remove names that were not requested
+  for (name in names(tags)) {
+    if (!(name %in% names(row_names))) {
+      tags[[name]] <- NULL
+    }
+  }
   all_data <- list()
   for (framework in frameworks) {
     all_data[[framework]] <- arma.load_benchmark_data("a4", framework, models, tags)
@@ -322,41 +328,41 @@ arma.load_master_slave_failure_data <- function() {
 	arma.load_bscheduler_data(all_test_cases)
 }
 
-arma.plot_bscheduler_performance_data <- function (all_data, names) {
+arma.plot_bscheduler_performance_data <- function (all_data, args) {
+  if (!('openmp_args' %in% names(args))) {
+    args$openmp_args = list(col="black", lty="solid", lwd=1, pch=20)
+  }
+  if (!('bsc1_args' %in% names(args))) {
+    args$bsc1_args = list(col="black", lty="dashed", lwd=1, pch=20)
+  }
+  if (!('bsc2_args' %in% names(args))) {
+    args$bsc2_args = list(col="black", lty="dotted", lwd=1, pch=20)
+  }
 	plot.new()
 	plot.window(xlim=range(all_data$size), ylim=range(0,all_data$t))
 	conf <- list(
-		a=list(
+		a=c(args$openmp_args, list(
 			framework='a9-single-node-direct-openmp',
-			color='#000000',
-			lty="solid",
-			lwd=1,
-			name=names$openmp
-		),
-		b=list(
+			name=args$openmp
+		)),
+		b=c(args$bsc1_args, list(
 			framework='a9-single-node-direct-bscheduler',
-			color='#000000',
-			lty="dashed",
-			lwd=1,
-			name=names$bsc1
-		),
-		c=list(
+			name=args$bsc1
+		)),
+		c=c(args$bsc2_args, list(
 			framework='a9-two-nodes-direct-bscheduler',
-			color='#000000',
-			lty="dotted",
-			lwd=1,
-			name=names$bsc2
-		)
+			name=args$bsc2
+		))
 	)
 	for (c in conf) {
 		data <- all_data[all_data$framework==c$framework, ]
-		lines(data$size, data$t, col=c$color, lty=c$lty)
-		points(data$size, data$t, col=c$color)
+		lines(data$size, data$t, col=c$col, lty=c$lty, lwd=c$lwd)
+		points(data$size, data$t, col=c$col, lwd=c$lwd, pch=c$pch)
 	}
 	legend(
 		"bottomright",
 		legend=sapply(conf, function (c) c$name),
-		col=sapply(conf, function (c) c$color),
+		col=sapply(conf, function (c) c$col),
 		lty=sapply(conf, function (c) c$lty),
 		lwd=sapply(conf, function (c) c$lwd)
 	)
@@ -365,41 +371,41 @@ arma.plot_bscheduler_performance_data <- function (all_data, names) {
 	box()
 }
 
-arma.plot_master_slave_failure_data <- function (all_data, names) {
+arma.plot_master_slave_failure_data <- function (all_data, args) {
+  if (!('master_args' %in% names(args))) {
+    args$master_args = list(col="black", lty="solid", lwd=1, pch=20)
+  }
+  if (!('slave_args' %in% names(args))) {
+    args$slave_args = list(col="black", lty="dashed", lwd=1, pch=20)
+  }
+  if (!('nofailures_args' %in% names(args))) {
+    args$nofailures_args = list(col="black", lty="dotted", lwd=1, pch=20)
+  }
 	plot.new()
 	plot.window(xlim=range(all_data$size), ylim=range(0,all_data$t))
 	conf <- list(
-		a=list(
+		a=c(args$master_args, list(
 			framework='a10-failure-direct-master-bscheduler',
-			color='#000000',
-			lty="solid",
-			lwd=1,
-			name=names$master
-		),
-		b=list(
+			name=args$master
+		)),
+		b=c(args$slave_args, list(
 			framework='a10-failure-direct-slave-bscheduler',
-			color='#000000',
-			lty="dashed",
-			lwd=1,
-			name=names$slave
-		),
-		c=list(
+			name=args$slave
+		)),
+		c=c(args$nofailures_args, list(
 			framework='a9-single-node-direct-bscheduler',
-			color='#000000',
-			lty="dotted",
-			lwd=1,
-			name=names$nofailures
-		)
+			name=args$nofailures
+		))
 	)
 	for (c in conf) {
 		data <- all_data[all_data$framework==c$framework, ]
-		lines(data$size, data$t, col=c$color, lty=c$lty)
-		points(data$size, data$t, col=c$color)
+		lines(data$size, data$t, col=c$col, lty=c$lty, lwd=c$lwd)
+		points(data$size, data$t, col=c$col, lwd=c$lwd, pch=c$pch)
 	}
 	legend(
 		"bottomright",
 		legend=sapply(conf, function (c) c$name),
-		col=sapply(conf, function (c) c$color),
+		col=sapply(conf, function (c) c$col),
 		lty=sapply(conf, function (c) c$lty),
 		lwd=sapply(conf, function (c) c$lwd)
 	)
