@@ -1,9 +1,12 @@
-PHD_RU = arma-thesis-ru
-PHD_EN = arma-thesis
-SLIDES = arma-slides
-SLIDES_WITH_NOTES = $(SLIDES)-with-notes
-REVIEW = arma-review
-FLAGS = -interaction=nonstopmode \
+THESIS_RU = arma-thesis-ru
+THESIS_EN = arma-thesis
+SLIDES_RU = arma-slides-ru
+NOTES_RU = arma-notes-ru
+REVIEW_RU = arma-review-ru
+ABSTRACT_RU = arma-abstract-ru
+
+FLAGS = \
+	-interaction=nonstopmode \
 	-output-directory=build \
 	-pdf \
 	-xelatex \
@@ -12,45 +15,51 @@ FLAGS = -interaction=nonstopmode \
 
 export TEXINPUTS=$(PWD)//:
 
-all: build/$(PHD_RU).pdf build/$(PHD_EN).pdf build/$(SLIDES).pdf build/$(SLIDES_WITH_NOTES).pdf
+all: build build/$(THESIS_RU).pdf build/$(THESIS_EN).pdf build/$(SLIDES_RU).pdf build/$(NOTES_RU).pdf
 
-build/$(PHD_RU).pdf: $(PHD_RU).tex preamble.tex bib/*
-	latexmk $(FLAGS) -f $(PHD_RU).tex
-	true
+build/$(THESIS_RU).pdf: build/$(THESIS_RU).tex preamble.tex bib/*
+	-latexmk $(FLAGS) -f $<
 
-build/$(PHD_EN).pdf: $(PHD_EN).tex preamble.tex bib/*
-	latexmk $(FLAGS) -f $(PHD_EN).tex
-	true
+build/$(THESIS_EN).pdf: build/$(THESIS_EN).tex preamble.tex bib/*
+	-latexmk $(FLAGS) -f $<
 
-build/$(SLIDES).pdf: $(SLIDES).tex slides-preamble.tex math.tex
-	latexmk $(FLAGS) -f $(SLIDES).tex
-	true
+build/$(SLIDES_RU).pdf: build/$(SLIDES_RU).tex slides-preamble.tex math.tex fonts.tex org.tex
+	-latexmk $(FLAGS) -f $<
 
-build/$(SLIDES_WITH_NOTES).pdf: $(SLIDES_WITH_NOTES).tex slides-preamble.tex math.tex
-	latexmk $(FLAGS) -f $(SLIDES_WITH_NOTES).tex
-	true
+build/$(NOTES_RU).pdf: build/$(NOTES_RU).tex build/$(SLIDES_RU).pdf slides-preamble.tex math.tex fonts.tex
+	-latexmk $(FLAGS) -f $<
 
-build/$(REVIEW).pdf: $(REVIEW).tex preamble.tex math.tex fonts.tex
-	latexmk $(FLAGS) -f $(REVIEW).tex
-	true
+build/$(REVIEW_RU).pdf: build/$(REVIEW_RU).tex preamble.tex math.tex fonts.tex
+	-latexmk $(FLAGS) -f $<
 
-$(PHD_EN).tex: $(PHD_EN).org
+build/$(ABSTRACT_RU).odt: $(ABSTRACT_RU).org
+	org export $< odt
+	mv -v $(ABSTRACT_RU).odt build/$(ABSTRACT_RU).odt
+
+build/$(THESIS_EN).tex: $(THESIS_EN).org
 	org export $< latex
 
-$(PHD_RU).tex: $(PHD_RU).org
+build/$(THESIS_RU).tex: $(THESIS_RU).org
 	org export $< latex
 
-$(SLIDES).tex: $(SLIDES).org
+build/$(SLIDES_RU).tex: $(SLIDES_RU).org
 	org export $< beamer
 
-$(REVIEW).tex: $(REVIEW).org
+build/$(REVIEW_RU).tex: $(REVIEW_RU).org
 	org export $< latex
 
-$(SLIDES_WITH_NOTES).tex: $(SLIDES).tex
-	sed -r -e 's/\\documentclass\[(.*)\]\{(.*)\}/\\documentclass[\1]{article}\\usepackage[\1]{beamerarticle}\\include{fonts}/g' < $< > $@
+build/$(NOTES_RU).tex: build/$(SLIDES_RU).tex
+	sed -r -e 's/\\documentclass\[(.*)\]\{(.*)\}/\\documentclass[\1]{article}\\usepackage{beamerarticle}\\include{fonts}/g' < $< > $@
 	#sed -r -e 's/\\documentclass\[(.*)\]\{(.*)\}/\\documentclass[\1,notes]{\2}/g' < $< > $@
 
 clean:
-	rm -f build/$(PHD_EN)*
-	rm -f build/$(PHD_RU)*
-	rm -f build/$(SLIDES)*
+	rm -f build/$(THESIS_EN)*
+	rm -f build/$(THESIS_RU)*
+	rm -f build/$(SLIDES_RU)*
+	rm -f build/$(NOTES_RU)*
+	rm -f build/$(REVIEW_RU)*
+
+build:
+	@mkdir -p build
+
+.PHONY: clean all build

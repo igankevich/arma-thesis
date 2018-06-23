@@ -102,7 +102,7 @@
   \setcounter{page}{2}%
 }
 
-\AtBeginDocument{\maketitlepage}
+%\AtBeginDocument{\maketitlepage}
 
 % clear page before each section
 \RequirePackage{etoolbox}

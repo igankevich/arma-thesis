@@ -11,6 +11,8 @@
 #+LATEX_HEADER_EXTRA: \newcites{published}{Publications on the subject of thesis}
 #+LATEX_HEADER_EXTRA: \AtBeginDocument{\setcounter{page}{146}}
 
+#+latex: \maketitlepage
+
 * Introduction
 **** Topic relevance.
 Software programmes, which simulate ship behaviour in sea waves, are widely used
