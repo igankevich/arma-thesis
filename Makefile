@@ -5,6 +5,7 @@ SLIDES_EN = arma-slides
 NOTES_RU = arma-notes-ru
 REVIEW_RU = arma-review-ru
 ABSTRACT_RU = arma-abstract-ru
+HANDOUT_RU = arma-handout-ru
 
 FLAGS = \
 	-interaction=nonstopmode \
@@ -16,7 +17,7 @@ FLAGS = \
 
 export TEXINPUTS=$(PWD)//:
 
-all: build build/$(THESIS_RU).pdf build/$(THESIS_EN).pdf build/$(SLIDES_RU).pdf build/$(NOTES_RU).pdf build/$(SLIDES_EN).pdf
+all: build build/$(THESIS_RU).pdf build/$(THESIS_EN).pdf build/$(SLIDES_RU).pdf build/$(NOTES_RU).pdf build/$(SLIDES_EN).pdf build/$(HANDOUT_RU).pdf
 
 build/$(THESIS_RU).pdf: build/$(THESIS_RU).tex preamble.tex bib/*
 	-latexmk $(FLAGS) -f $<
@@ -25,6 +26,9 @@ build/$(THESIS_EN).pdf: build/$(THESIS_EN).tex preamble.tex bib/*
 	-latexmk $(FLAGS) -f $<
 
 build/$(SLIDES_RU).pdf: build/$(SLIDES_RU).tex slides-preamble.tex math.tex fonts.tex org.tex slides-titlepage-ru.tex
+	-latexmk $(FLAGS) -f $<
+
+build/$(HANDOUT_RU).pdf: build/$(HANDOUT_RU).tex slides-preamble.tex math.tex fonts.tex org.tex slides-titlepage-ru.tex
 	-latexmk $(FLAGS) -f $<
 
 build/$(SLIDES_EN).pdf: build/$(SLIDES_EN).tex slides-preamble.tex math.tex fonts.tex org.tex slides-titlepage.tex
@@ -62,7 +66,10 @@ build/$(REVIEW_RU).tex: $(REVIEW_RU).org
 
 build/$(NOTES_RU).tex: build/$(SLIDES_RU).tex
 	sed -r -e 's/\\documentclass\[(.*)\]\{(.*)\}/\\documentclass[\1]{article}\\usepackage{beamerarticle}\\include{fonts}/g' < $< > $@
-	#sed -r -e 's/\\documentclass\[(.*)\]\{(.*)\}/\\documentclass[\1,notes]{\2}/g' < $< > $@
+
+build/$(HANDOUT_RU).tex: build/$(SLIDES_RU).tex
+	sed -r -e 's/\\documentclass\[(.*)\]\{(.*)\}/\\documentclass[\1,handout]{\2}/g' < $< > $@
+
 
 clean:
 	rm -f build/$(THESIS_EN)*
@@ -71,6 +78,7 @@ clean:
 	rm -f build/$(SLIDES_EN)*
 	rm -f build/$(NOTES_RU)*
 	rm -f build/$(REVIEW_RU)*
+	rm -f build/$(HANDOUT_RU)*
 
 build:
 	@mkdir -p build

@@ -801,6 +801,12 @@ arma.plot_velocity_potential_field(
 волнения, воспроизведенного моделью АРСС, новое решение показывает в среднем на
 20% большие значения потенциала скорости вблизи гребней волн.
 
+** Empty frame
+:PROPERTIES:
+:BEAMER_env: fullframe
+:BEAMER_act: <handout>
+:END:
+
 * Программный комплекс
 
 ** Программная реализация
@@ -1142,7 +1148,7 @@ title(xlab="Размер взволнованной поверхности", yla
 :BEAMER_OPT: label=slide-validation
 :END:
 
-- Конференции: ISSW'14, HPCS'15, HPCS'16, HPCS'17.
+- Конференции: STAB'13, ISSW'14, HPCS'15, HPCS'16, HPCS'17.
 - Глава в книге /The Ocean in Motion/ (Springer Oceanography).
 
 *** Columns

@@ -855,7 +855,7 @@ The following items were developed in the course of the study.
 
 #+beamer: \label{slide-validation}
 
-- International conferences: ISSW'14, HPCS'15, HPCS'16, HPCS'17.
+- International conferences: STAB'13, ISSW'14, HPCS'15, HPCS'16, HPCS'17.
 - Book chapter in /The Ocean in Motion/ (Springer Oceanography).
 
 *** Columns
